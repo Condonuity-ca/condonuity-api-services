@@ -6,3 +6,7 @@ eureka-server/.mvn/
 gateway-server/.mvn/
 
 user-service/.mvn/
+
+common-service/.mvn/
+
+auth-service/.mvn/
