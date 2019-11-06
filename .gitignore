@@ -1,0 +1,8 @@
+
+config-server/.mvn/
+
+eureka-server/.mvn/
+
+gateway-server/.mvn/
+
+user-service/.mvn/
