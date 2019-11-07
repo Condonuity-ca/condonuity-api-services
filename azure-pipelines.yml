@@ -26,4 +26,9 @@ steps:
   inputs:
     script: 'find ./*/target -name "*.jar" -exec cp {} $(build.artifactstagingdirectory) \;'
 
-    
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(build.artifactstagingdirectory)'
+    publishLocation: 'pipeline'
+
+ 
