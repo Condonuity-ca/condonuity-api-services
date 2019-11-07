@@ -22,10 +22,8 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'clean install'
 
-- task: CopyFiles@2
+- task: CmdLine@2
   inputs:
-    SourceFolder: '**/target/'
-    Contents: '**.jar'
-    TargetFolder: '$(build.artifactstagingdirectory)'
-    CleanTargetFolder: true
-    OverWrite: true
+    script: 'find ./*/target -name "*.jar" -exec cp {} $(build.artifactstagingdirectory) \;'
+
+    
