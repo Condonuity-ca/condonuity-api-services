@@ -58,4 +58,24 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>dev-azure-com-torbaytech-condonuity-app-services</id>
+            <url>https://pkgs.dev.azure.com/TorbayTech/_packaging/condonuity-app-services/maven/v1</url>
+        </repository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>dev-azure-com-torbaytech-condonuity-app-services</id>
+            <url>https://pkgs.dev.azure.com/TorbayTech/_packaging/condonuity-app-services/maven/v1</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 </project>
