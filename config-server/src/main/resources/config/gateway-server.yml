@@ -18,5 +18,13 @@ zuul:
       serviceId: auth-service
       stripPrefix: false
       sensitiveHeaders: Cookie,Set-Cookie
+    client-service:
+      path: /clients/**
+      serviceId: client-service
+      stripPrefix: true
+    project-service:
+      path: /projects/**
+      serviceId: project-service
+      stripPrefix: true
 
 

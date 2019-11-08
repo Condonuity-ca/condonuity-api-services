@@ -10,3 +10,5 @@ user-service/.mvn/
 common-service/.mvn/
 
 auth-service/.mvn/
+
+project-service/.mvn/
