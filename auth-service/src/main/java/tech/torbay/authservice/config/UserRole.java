@@ -1,4 +1,4 @@
-package tech.torbay.commonservice;
+package tech.torbay.authservice.config;
 
 public enum UserRole {
     USER, ADMIN;

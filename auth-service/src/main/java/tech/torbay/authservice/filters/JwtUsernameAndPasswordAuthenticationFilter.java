@@ -10,7 +10,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import tech.torbay.commonservice.JwtConfig;
+import tech.torbay.authservice.config.JwtConfig;
+
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

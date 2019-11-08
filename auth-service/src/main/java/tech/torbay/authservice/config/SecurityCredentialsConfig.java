@@ -12,7 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import tech.torbay.authservice.filters.JwtUsernameAndPasswordAuthenticationFilter;
-import tech.torbay.commonservice.JwtConfig;
+import tech.torbay.authservice.config.JwtConfig;
 
 import javax.servlet.http.HttpServletResponse;
 

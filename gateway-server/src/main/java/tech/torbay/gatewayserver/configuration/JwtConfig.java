@@ -1,4 +1,4 @@
-package tech.torbay.commonservice;
+package tech.torbay.gatewayserver.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 

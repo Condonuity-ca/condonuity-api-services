@@ -12,7 +12,6 @@
 
     <modules>
         <module>config-server</module>
-        <module>common-service</module>
         <module>eureka-server</module>
         <module>gateway-server</module>
         <module>user-service</module>
