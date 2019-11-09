@@ -36,9 +36,9 @@ public class ClientController {
     @GetMapping("/clients")
     public List<Client> getAllClients() {
 
-        clientRepository.flush();
        return Lists.newArrayList(clientRepository.findAll());
     }
+
 
     @ApiOperation(value = "Fetching Single Client by Id")
     @ApiResponses(
