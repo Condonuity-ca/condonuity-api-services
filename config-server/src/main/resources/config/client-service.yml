@@ -11,6 +11,7 @@ spring:
     url: jdbc:mysql://condonuitydev.mysql.database.azure.com:3306/condonuitydev
     username: condonuitydev.mysql.database.azure.com
     password: A#C<)}5gCnP8qQv
+    driver-class-name: com.mysql.jdbc.Driver
 
 spring.jpa:
   hibernate:
@@ -21,5 +22,5 @@ spring.jpa:
   properties:
     hibernate:
       dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-  
+  database-platform: org.hibernate.dialect.MySQL5Dialect
 
