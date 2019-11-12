@@ -12,3 +12,11 @@ common-service/.mvn/
 auth-service/.mvn/
 
 project-service/.mvn/
+
+user-service/src/main/.DS_Store
+
+config-server/src/main/resources/.DS_Store
+
+user-service/src/main/resources/.DS_Store
+
+user-service/src/main/resources/user-service-local.yml
