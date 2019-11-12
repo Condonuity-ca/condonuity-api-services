@@ -1,4 +1,4 @@
-package tech.torbay.clientservice.controller;
+package tech.torbay.userservice.controller;
 
 
 import com.google.common.collect.Lists;
@@ -7,14 +7,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.torbay.clientservice.entity.Client;
-import tech.torbay.clientservice.exception.ResourceNotFoundException;
-import tech.torbay.clientservice.repository.ClientRepository;
-import tech.torbay.clientservice.service.ClientService;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import tech.torbay.userservice.constants.Constants.StatusCode;
+import tech.torbay.userservice.entity.Client;
+import tech.torbay.userservice.exception.ResourceNotFoundException;
+import tech.torbay.userservice.repository.ClientRepository;
+import tech.torbay.userservice.service.ClientService;
+import tech.torbay.userservice.status.message.ResponseMessage;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -27,7 +31,9 @@ public class ClientController {
 
     @Autowired
     ClientRepository clientRepository;
-   
+    
+    @Autowired
+    ClientService clientService;
 
     @ApiOperation(value = "Fetching All clients details with in a Organisation")
     @ApiResponses(
@@ -38,8 +44,7 @@ public class ClientController {
     @GetMapping("/clients")
     public List<Client> getAllClients() {
 
-       return Lists.newArrayList(clientRepository.findAll());
-    }
+       return clientService.findAll();   }
 
 
     @ApiOperation(value = "Fetching Single Client by Id")
@@ -82,10 +87,32 @@ public class ClientController {
     }
 
 
-
-
-
-
-
-
+	/*New APIs Structure*/
+    
+    @ApiOperation(value = "Client user existance check with Email")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A client record exist already")
+            }
+    )
+	@GetMapping("client/{email}")
+	public ResponseEntity<Object> clientExists(@PathVariable("email") String email) {
+		Client client = clientService.findByEmail(email);
+		
+		// check email 
+		//	- registered or not
+		//	- password reseted or not
+		//	- active/inactive
+		
+		if(client != null) {
+			ResponseMessage responseMessage = new ResponseMessage(StatusCode.REQUEST_SUCCESS.getValue(),"Success","Client Already Exists");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(StatusCode.NOT_FOUND.getValue(),"Resource not found error","Client Record Not Found");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		}
+		
+	}
+	
+    
 }
