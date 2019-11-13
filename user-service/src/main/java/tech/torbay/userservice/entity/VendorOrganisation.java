@@ -8,13 +8,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "vendor")
-public class Vendor {
+public class VendorOrganisation {
 
-    public Vendor() {
+    public VendorOrganisation() {
 
     }
     @Id
-	private Integer vendorId = 0;
+	private Integer vendorOrgId = 0;
     private Integer userType = Constants.UserType.VENDOR.getValue();
     private String legalName = "";
     private String companyName = "";
@@ -42,10 +42,10 @@ public class Vendor {
 	private String createdDate = "";
     
 	public Integer getVendorId() {
-		return vendorId;
+		return vendorOrgId;
 	}
 	public void setVendorId(Integer vendorId) {
-		this.vendorId = vendorId;
+		this.vendorOrgId = vendorId;
 	}
 	public Integer getUserType() {
 		return userType;
@@ -200,7 +200,7 @@ public class Vendor {
     
 	@Override
 	public String toString() {
-		return "Vendor [vendorId=" + vendorId + ", userType=" + userType + ", legalName=" + legalName + ", companyName="
+		return "Vendor [vendorId=" + vendorOrgId + ", userType=" + userType + ", legalName=" + legalName + ", companyName="
 				+ companyName + ", establishedDate=" + establishedDate + ", searchTerms=" + searchTerms
 				+ ", employeesCount=" + employeesCount + ", annualRevenue=" + annualRevenue + ", description="
 				+ description + ", contactPerson=" + contactPerson + ", contactPersonEmail=" + contactPersonEmail

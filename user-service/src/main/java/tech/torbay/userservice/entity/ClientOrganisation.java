@@ -8,11 +8,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "organisation")
-public class Organisation {
+public class ClientOrganisation {
 
-    public Organisation() {
+    public ClientOrganisation() {
 
     }
+    
     @Id
     private Integer organisationId = 0;
     private Integer userType = Constants.UserType.CLIENT.getValue();

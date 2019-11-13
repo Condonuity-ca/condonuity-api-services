@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="client")
-public class Client {
+public class ClientUser {
 
 
     private Integer userId;

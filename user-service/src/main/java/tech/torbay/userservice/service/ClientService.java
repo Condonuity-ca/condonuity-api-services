@@ -7,29 +7,49 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
-import tech.torbay.userservice.entity.Client;
-import tech.torbay.userservice.repository.ClientRepository;
+import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.repository.ClientOrganisationRepository;
+import tech.torbay.userservice.repository.ClientUserRepository;
 
 @Component
 public class ClientService {
 	
 	@Autowired
-	ClientRepository clientRepository;
+	ClientUserRepository clientUserRepository;
+	@Autowired
+	ClientOrganisationRepository clientOrganisationRepository;
 
-	public List<Client> findAll() {
+	public List<ClientUser> findAll() {
 //		// TODO Auto-generated method stub
-		return Lists.newArrayList(clientRepository.findAll());
+		return Lists.newArrayList(clientUserRepository.findAll());
 	}
 
-	public Client findByEmail(String email) {
+	public ClientUser findByEmail(String email) {
 		// TODO Auto-generated method stub
-		Client client = clientRepository.findByEmail(email);
+		ClientUser client = clientUserRepository.findByEmail(email);
 		System.out.println(client.toString());
 		return client;
 	}
-	
-	public int add(int a, int b) {
-		return a+b;
+
+	public ClientUser addClientOrgAccountAssociation(ClientUser clientUser) {
+		// TODO Auto-generated method stub
+		return /* clientUser */null;
+	}
+
+	public ClientUser addClient(ClientUser clientUser) {
+		// TODO Auto-generated method stub
+		return clientUserRepository.save(clientUser);
+	}
+
+	public ClientOrganisation addClientOrganisation(ClientOrganisation clientorganisation) {
+		// TODO Auto-generated method stub
+		return clientOrganisationRepository.save(clientorganisation);
+	}
+
+	public ClientUser findById(Integer userId) {
+		// TODO Auto-generated method stub
+		return clientUserRepository.findByClientId(userId);
 	}
 }
 

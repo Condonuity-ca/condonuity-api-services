@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import tech.torbay.userservice.constants.Constants.StatusCode;
-import tech.torbay.userservice.entity.Client;
+import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
-import tech.torbay.userservice.repository.ClientRepository;
+import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.service.ClientService;
-import tech.torbay.userservice.status.message.ResponseMessage;
+import tech.torbay.userservice.statusmessage.ResponseMessage;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ import java.util.List;
 public class ClientController {
 
     @Autowired
-    ClientRepository clientRepository;
+    ClientUserRepository clientRepository;
     
     @Autowired
     ClientService clientService;
@@ -42,7 +43,7 @@ public class ClientController {
             }
     )
     @GetMapping("/clients")
-    public List<Client> getAllClients() {
+    public List<ClientUser> getAllClients() {
 
        return clientService.findAll();   }
 
@@ -54,7 +55,7 @@ public class ClientController {
             }
     )
     @GetMapping("/clients/{clientId}")
-    public Client getClientById(@PathVariable(value = "clientId") Integer clientId) {
+    public ClientUser getClientById(@PathVariable(value = "clientId") Integer clientId) {
 
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "clientId", clientId));
@@ -67,10 +68,10 @@ public class ClientController {
             }
     )
     @PutMapping("/clients/{clientId}")
-    public Client updateClient(@PathVariable(value = "clientId") Integer clientId,
-                                               @Valid @RequestBody Client toUpdateClient) {
+    public ClientUser updateClient(@PathVariable(value = "clientId") Integer clientId,
+                                               @Valid @RequestBody ClientUser toUpdateClient) {
 
-        Client client = clientRepository.findById(clientId)
+        ClientUser client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
 
 
@@ -82,7 +83,7 @@ public class ClientController {
             client.setPhone(toUpdateClient.getPhone());
             client.setCountry_code(toUpdateClient.getCountry_code());
 
-        Client updatedClient = clientRepository.save(client);
+        ClientUser updatedClient = clientRepository.save(client);
         return updatedClient;
     }
 
@@ -95,9 +96,9 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "A client record exist already")
             }
     )
-	@GetMapping("client/{email}")
+	@GetMapping("client/user/{email}")
 	public ResponseEntity<Object> clientExists(@PathVariable("email") String email) {
-		Client client = clientService.findByEmail(email);
+		ClientUser client = clientService.findByEmail(email);
 		
 		// check email 
 		//	- registered or not
@@ -112,6 +113,116 @@ public class ClientController {
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 		
+	}
+    
+	@ApiOperation(value = "New Organisation Exist Client user accept email invitation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Accepted New Corporate Account Invitation")
+            }
+    )
+	@PostMapping("client/invite/accept")
+	public ResponseEntity<Object> acceptInvite(@RequestBody ClientUser client) {
+		
+		// accept invite requires
+		// 1. Already have an client account
+		// 2. userId
+		// 3. new Org Id differ from previous one --- NEED TO ACCEPT TERMS AND CONDITION
+		System.out.println(client.toString());
+		
+		if(clientService.findByEmail(client.getEmail()) != null) {
+			// Already have an client account
+			int userId = client.getUserId();
+			if(userId != 0  && client.getOrganisationId() > 0) {
+				if(clientService.addClientOrgAccountAssociation(client) != null) {
+					ResponseMessage responseMessage = new ResponseMessage(
+							StatusCode.REQUEST_SUCCESS.getValue(),
+							"Success",
+							"Client New Corporate Account Created");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(
+							StatusCode.NOT_FOUND.getValue(),
+							"Resource not found error",
+							"Client Record Not Found");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				}
+			} else {
+				ResponseMessage responseMessage = new ResponseMessage(
+						StatusCode.NOT_FOUND.getValue(),
+						"Resource not found error",
+						"Client Record Not Found");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			}
+		} else {
+			// Invite Error
+			ResponseMessage responseMessage = new ResponseMessage(
+					StatusCode.NOT_FOUND.getValue(),
+					"Resource not found error",
+					"Client Record Not Found");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		}
+		
+	}
+	
+	@ApiOperation(value = "New Client User Registration")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "New Client User Registred Successfully"),
+                    @ApiResponse(code = 201, message = "New Client User Record Created Successfully")
+            }
+    )
+	@PostMapping("client/user/register")
+	public ResponseEntity<Object> addUser(@RequestBody ClientUser client, UriComponentsBuilder builder) {
+		
+		// org_id
+		
+        ClientUser clientUser = clientService.addClient(client);
+        // check already exist or creation failed
+        
+        if (clientUser == null ) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			StatusCode.REQUEST_FAILED.getValue(),
+        			"Failed",
+        			"Client Record Already Exists");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setLocation(builder.path("/client/{id}").buildAndExpand(client.getUserId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		StatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"New Client Record Created Successfully");
+	        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+        }
+	}
+	
+	// Register a company
+	@ApiOperation(value = "New Client Organisation Registration")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful New Client Organisation Registered")
+            }
+    )
+	@PostMapping("client/org/register")
+	public ResponseEntity<Object> addClientCompany(@RequestBody ClientOrganisation organisation , UriComponentsBuilder builder) {
+		ClientOrganisation clientorganisation = clientService.addClientOrganisation(organisation);
+        if (clientorganisation == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			StatusCode.REQUEST_FAILED.getValue(),
+        			"Failed",
+        			"Client Organisation Already Exists");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+        } else {
+        	HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(organisation.getOrganisationId()).toUri());
+            ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Client Organisation Registered for verification");
+            return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+        }
+        
 	}
 	
     

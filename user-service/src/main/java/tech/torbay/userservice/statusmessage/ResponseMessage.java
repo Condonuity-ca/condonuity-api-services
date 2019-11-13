@@ -1,4 +1,4 @@
-package tech.torbay.userservice.status.message;
+package tech.torbay.userservice.statusmessage;
 
 import java.util.List;
 

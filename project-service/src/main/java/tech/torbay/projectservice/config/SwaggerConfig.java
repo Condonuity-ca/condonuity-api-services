@@ -1,4 +1,5 @@
-package tech.torbay.userservice.config;
+package tech.torbay.projectservice.config;
+
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,7 @@ public class SwaggerConfig {
     public Docket productApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("tech.torbay.userservice"))
+                .apis(RequestHandlerSelectors.basePackage("tech.torbay.projectservice"))
                 .paths(regex("/api.*"))
                 .build()
                 .apiInfo(metaInfo());
