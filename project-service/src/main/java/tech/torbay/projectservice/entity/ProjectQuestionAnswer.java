@@ -1,11 +1,13 @@
 package tech.torbay.projectservice.entity;
 
 import javax.persistence.Table;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@Entity
 @JsonInclude(value = Include.NON_NULL)
 @Table(name = "project_questions")
 public class ProjectQuestionAnswer {
@@ -17,18 +19,17 @@ public class ProjectQuestionAnswer {
     @Id
 	private Integer projectQAId = 0;
     private Integer projectId = 0;
-    private String createdDate;
-    private Integer createdUserId = 0;
-    private Integer createdUserType = 0;
+    private Integer clientUserId = 0;
     private String question;
     private String answer;
-    private Integer answeredUserId = 0;
-    private Integer answeredUserType = 0;
-	public Integer getId() {
+    private Integer vendorUserId = 0;
+    private String createdAt;
+    private String modifiedDate;
+	public Integer getProjectQAId() {
 		return projectQAId;
 	}
-	public void setId(Integer id) {
-		projectQAId = id;
+	public void setProjectQAId(Integer projectQAId) {
+		this.projectQAId = projectQAId;
 	}
 	public Integer getProjectId() {
 		return projectId;
@@ -36,23 +37,11 @@ public class ProjectQuestionAnswer {
 	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
 	}
-	public String getCreatedDate() {
-		return createdDate;
+	public Integer getClientUserId() {
+		return clientUserId;
 	}
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
-	}
-	public Integer getCreatedUserId() {
-		return createdUserId;
-	}
-	public void setCreatedUserId(Integer createdUserId) {
-		this.createdUserId = createdUserId;
-	}
-	public Integer getCreatedUserType() {
-		return createdUserType;
-	}
-	public void setCreatedUserType(Integer createdUserType) {
-		this.createdUserType = createdUserType;
+	public void setClientUserId(Integer clientUserId) {
+		this.clientUserId = clientUserId;
 	}
 	public String getQuestion() {
 		return question;
@@ -66,25 +55,29 @@ public class ProjectQuestionAnswer {
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
-	public Integer getAnsweredUserId() {
-		return answeredUserId;
+	public Integer getVendorUserId() {
+		return vendorUserId;
 	}
-	public void setAnsweredUserId(Integer answeredUserId) {
-		this.answeredUserId = answeredUserId;
+	public void setVendorUserId(Integer vendorUserId) {
+		this.vendorUserId = vendorUserId;
 	}
-	public Integer getAnsweredUserType() {
-		return answeredUserType;
+	public String getCreatedAt() {
+		return createdAt;
 	}
-	public void setAnsweredUserType(Integer answeredUserType) {
-		this.answeredUserType = answeredUserType;
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
 	}
-	
+	public String getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(String modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
 	@Override
 	public String toString() {
-		return "ProjectQuestionAnswer [Id=" + projectQAId + ", projectId=" + projectId + ", createdDate=" + createdDate
-				+ ", createdUserId=" + createdUserId + ", createdUserType=" + createdUserType + ", question=" + question
-				+ ", answer=" + answer + ", answeredUserId=" + answeredUserId + ", answeredUserType=" + answeredUserType
-				+ "]";
+		return "ProjectQuestionAnswer [projectQAId=" + projectQAId + ", projectId=" + projectId + ", clientUserId="
+				+ clientUserId + ", question=" + question + ", answer=" + answer + ", vendorUserId=" + vendorUserId
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
     
 }

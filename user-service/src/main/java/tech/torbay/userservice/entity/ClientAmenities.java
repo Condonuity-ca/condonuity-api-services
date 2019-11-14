@@ -15,19 +15,11 @@ public class ClientAmenities {
 	@Id
 	private int id;
 	private int organisationId;
-	private int gym;
-	private int partyRoom;
-	private int swimPool;
-	private int parking;
-	private int poolIndoor;
-	private int poolOutdoor;
-	private int parkingGroundLevel;
-	private int parkingUnderGround;
-	private int GroundLevelParkingSpots;
-	private int UnderGroundParkingSpots;
-	private int elevatorsCount;
-	private String otherInformation;
-	
+	private String amenities_name;
+	private String amenities_type;
+	private int amenities_count;
+	private String created_at;
+	private String modified_date;
 	public int getId() {
 		return id;
 	}
@@ -40,87 +32,42 @@ public class ClientAmenities {
 	public void setOrganisationId(int organisationId) {
 		this.organisationId = organisationId;
 	}
-	public int getGym() {
-		return gym;
+	public String getAmenities_name() {
+		return amenities_name;
 	}
-	public void setGym(int gym) {
-		this.gym = gym;
+	public void setAmenities_name(String amenities_name) {
+		this.amenities_name = amenities_name;
 	}
-	public int getPartyRoom() {
-		return partyRoom;
+	public String getAmenities_type() {
+		return amenities_type;
 	}
-	public void setPartyRoom(int partyRoom) {
-		this.partyRoom = partyRoom;
+	public void setAmenities_type(String amenities_type) {
+		this.amenities_type = amenities_type;
 	}
-	public int getSwimPool() {
-		return swimPool;
+	public int getAmenities_count() {
+		return amenities_count;
 	}
-	public void setSwimPool(int swimPool) {
-		this.swimPool = swimPool;
+	public void setAmenities_count(int amenities_count) {
+		this.amenities_count = amenities_count;
 	}
-	public int getParking() {
-		return parking;
+	public String getCreated_at() {
+		return created_at;
 	}
-	public void setParking(int parking) {
-		this.parking = parking;
+	public void setCreated_at(String created_at) {
+		this.created_at = created_at;
 	}
-	public int getPoolIndoor() {
-		return poolIndoor;
+	public String getModified_date() {
+		return modified_date;
 	}
-	public void setPoolIndoor(int poolIndoor) {
-		this.poolIndoor = poolIndoor;
-	}
-	public int getPoolOutdoor() {
-		return poolOutdoor;
-	}
-	public void setPoolOutdoor(int poolOutdoor) {
-		this.poolOutdoor = poolOutdoor;
-	}
-	public int getParkingGroundLevel() {
-		return parkingGroundLevel;
-	}
-	public void setParkingGroundLevel(int parkingGroundLevel) {
-		this.parkingGroundLevel = parkingGroundLevel;
-	}
-	public int getParkingUnderGround() {
-		return parkingUnderGround;
-	}
-	public void setParkingUnderGround(int parkingUnderGround) {
-		this.parkingUnderGround = parkingUnderGround;
-	}
-	public int getGroundLevelParkingSpots() {
-		return GroundLevelParkingSpots;
-	}
-	public void setGroundLevelParkingSpots(int groundLevelParkingSpots) {
-		GroundLevelParkingSpots = groundLevelParkingSpots;
-	}
-	public int getUnderGroundParkingSpots() {
-		return UnderGroundParkingSpots;
-	}
-	public void setUnderGroundParkingSpots(int underGroundParkingSpots) {
-		UnderGroundParkingSpots = underGroundParkingSpots;
-	}
-	public int getElevatorsCount() {
-		return elevatorsCount;
-	}
-	public void setElevatorsCount(int elevatorsCount) {
-		this.elevatorsCount = elevatorsCount;
-	}
-	public String getOtherInformation() {
-		return otherInformation;
-	}
-	public void setOtherInformation(String otherInformation) {
-		this.otherInformation = otherInformation;
+	public void setModified_date(String modified_date) {
+		this.modified_date = modified_date;
 	}
 	@Override
 	public String toString() {
-		return "ClientAmenities [id=" + id + ", organisationId=" + organisationId + ", gym=" + gym + ", partyRoom="
-				+ partyRoom + ", swimPool=" + swimPool + ", parking=" + parking + ", poolIndoor=" + poolIndoor
-				+ ", poolOutdoor=" + poolOutdoor + ", parkingGroundLevel=" + parkingGroundLevel
-				+ ", parkingUnderGround=" + parkingUnderGround + ", GroundLevelParkingSpots=" + GroundLevelParkingSpots
-				+ ", UnderGroundParkingSpots=" + UnderGroundParkingSpots + ", elevatorsCount=" + elevatorsCount
-				+ ", otherInformation=" + otherInformation + "]";
+		return "ClientAmenities [id=" + id + ", organisationId=" + organisationId + ", amenities_name=" + amenities_name
+				+ ", amenities_type=" + amenities_type + ", amenities_count=" + amenities_count + ", created_at="
+				+ created_at + ", modified_date=" + modified_date + "]";
 	}
 	
-
+	
 }

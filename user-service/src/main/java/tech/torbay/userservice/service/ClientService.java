@@ -1,5 +1,6 @@
 package tech.torbay.userservice.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +8,12 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientOrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.repository.ClientAmenitiesRepository;
+import tech.torbay.userservice.repository.ClientOrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 
@@ -19,6 +24,10 @@ public class ClientService {
 	ClientUserRepository clientUserRepository;
 	@Autowired
 	ClientOrganisationRepository clientOrganisationRepository;
+	@Autowired
+	ClientAmenitiesRepository clientAmenitiesRepository;
+	@Autowired
+	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
 
 	public List<ClientUser> findAll() {
 //		// TODO Auto-generated method stub
@@ -50,6 +59,46 @@ public class ClientService {
 	public ClientUser findById(Integer userId) {
 		// TODO Auto-generated method stub
 		return clientUserRepository.findByClientId(userId);
+	}
+
+	public List<ClientOrganisation> getAllCorporateAccounts(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ClientUser saveClient(ClientUser client) {
+		// TODO Auto-generated method stub
+		return clientUserRepository.save(client);
+	}
+
+	public ClientOrganisation updateOrganisation(ClientOrganisation clientOrg) {
+		// TODO Auto-generated method stub
+		return clientOrganisationRepository.save(clientOrg);
+	}
+
+	public ClientOrganisation getOrganisationById(Integer id) {
+		// TODO Auto-generated method stub
+		return clientOrganisationRepository.findByClientOrganisationId(id);
+	}
+
+	public List<ClientAmenities> getAmenitiesByOrgId(Integer orgId) {
+		// TODO Auto-generated method stub
+		return clientAmenitiesRepository.findAllByOrganisationId(orgId);
+	}
+
+	public List<ClientUser> getAllClientsByOrganisation(Integer orgId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<ClientOrganisationPayment> getPaymentBillingDetails(Integer orgId) {
+		// TODO Auto-generated method stub
+		return clientOrganisationPaymentRepository.findAllByOrganisationId(orgId);
+	}
+
+	public Object updateAmenities(ClientAmenities amenitiesInfo) {
+		// TODO Auto-generated method stub
+		return clientAmenitiesRepository.save(amenitiesInfo);
 	}
 }
 

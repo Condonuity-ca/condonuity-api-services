@@ -14,5 +14,5 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 
 	VendorOrganisation save(VendorOrganisation vendorOrganisation);
 	
-	VendorOrganisation findByVendorOrgId(Integer id);
+	VendorOrganisation findByVendorOrganisationId(Integer id);
 }

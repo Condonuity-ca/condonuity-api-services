@@ -2,12 +2,14 @@ package tech.torbay.projectservice.entity;
 
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@Entity
 @JsonInclude(value = Include.NON_NULL)
 @Table(name = "projects")
 public class Project {
@@ -127,10 +129,10 @@ public class Project {
 
 	@Id
 	private Integer projectId = 0;
+	private Integer clientOrgId = 0;
 	private Integer clientId = 0;
-    private String createdAt = "";
-    private String modifiedDate = "";
     private String projectName = "";
+    private Integer projectModifiedBy = 0;
     private String tags = "";
     private String bidEndDate = "";
     private String projectStartDate = "";
@@ -144,25 +146,43 @@ public class Project {
     private Integer insuranceRequired = 0;
     private Integer postType = 0;
     private Integer status = 0;
-    private List<ProjectProducts> products;
+    private Integer awardedBidId = 0;
+	private String createdAt = "";
+    private String modifiedDate = "";
     
-	public List<ProjectProducts> getProducts() {
-		return products;
+    public Integer getClientOrgId() {
+		return clientOrgId;
 	}
 
-	public void setProducts(List<ProjectProducts> products) {
-		this.products = products;
+	public void setClientOrgId(Integer clientOrgId) {
+		this.clientOrgId = clientOrgId;
+	}
+
+	public Integer getProjectModifiedBy() {
+		return projectModifiedBy;
+	}
+
+	public void setProjectModifiedBy(Integer projectModifiedBy) {
+		this.projectModifiedBy = projectModifiedBy;
+	}
+
+	public Integer getAwardedBidId() {
+		return awardedBidId;
+	}
+
+	public void setAwardedBidId(Integer awardedBidId) {
+		this.awardedBidId = awardedBidId;
 	}
 
 	@Override
 	public String toString() {
-		return "Project [projectId=" + projectId + ", clientId=" + clientId + ", createdAt=" + createdAt
+		return "Project [projectId=" + projectId + ", clientId=" + clientId + ", clientOrgId=" + clientOrgId + ", createdAt=" + createdAt
 				+ ", modifiedDate=" + modifiedDate + ", projectName=" + projectName + ", tags=" + tags + ", bidEndDate="
 				+ bidEndDate + ", projectStartDate=" + projectStartDate + ", projectCompletionDeadline="
 				+ projectCompletionDeadline + ", estimatedBudget=" + estimatedBudget + ", duration=" + duration
 				+ ", description=" + description + ", specialConditions=" + specialConditions + ", city=" + city
 				+ ", contractType=" + contractType + ", insuranceRequired=" + insuranceRequired + ", postType="
-				+ postType + ", status=" + status + ", products=" + products + "]";
+				+ postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", projectModifiedBy=" + projectModifiedBy + "]";
 	}
     
 

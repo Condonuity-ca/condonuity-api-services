@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
-import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
@@ -28,7 +27,7 @@ public class VendorService {
 	
 	public VendorOrganisation findByVendorOrgId(Integer id) {
 		// TODO Auto-generated method stub
-		return vendorOrganisationRepository.findByVendorOrgId(id);
+		return vendorOrganisationRepository.findByVendorOrganisationId(id);
 	}
 
 	public VendorUser findByEmail(String email) {

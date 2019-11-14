@@ -52,7 +52,7 @@ public class ProjectService {
 
 	public List<Project> getAllProjects(ProjectSortBy past, Integer id) {
 		// TODO Auto-generated method stub
-		return null;
+		return projectRepository.findAllByClientOrgIdAndStatus(id, past.getValue());
 	}
 
 	public ProjectQuestionAnswer createProjectQuestion(ProjectQuestionAnswer projectQA) {
@@ -73,6 +73,11 @@ public class ProjectService {
 	public ProjectQuestionAnswer answerProjectQuestion(ProjectQuestionAnswer projectQA) {
 		// TODO Auto-generated method stub
 		return projectQARepository.save(projectQA);
+	}
+
+	public List<Project> getAllProjects(Integer id) {
+		// TODO Auto-generated method stub
+		return projectRepository.findAll();
 	}
 }
 

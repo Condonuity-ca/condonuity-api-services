@@ -5,13 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import tech.torbay.userservice.service.ClientService;
-import tech.torbay.userservice.service.UserService;
-import tech.torbay.userservice.service.VendorService;
-
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import tech.torbay.userservice.service.VendorService;
 //import org.springframework.test.context.junit.jupiter.SpringExtension;
 //
 //@ExtendWith(SpringExtension.class)

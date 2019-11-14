@@ -23,7 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import tech.torbay.userservice.constants.Constants.StatusCode;
+import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorUser;
@@ -54,7 +54,7 @@ public class VendorController {
         VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(vendorOrganisation);
         if (vendorOrg == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
-	        		StatusCode.REQUEST_FAILED.getValue(),
+        			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Vendor Organisation Already Exists");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
@@ -62,7 +62,7 @@ public class VendorController {
 	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
 	        ResponseMessage responseMessage = new ResponseMessage(
-	        		StatusCode.REQUEST_SUCCESS.getValue(),
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
 	        		"New Vendor Organisation Created Successfully");
 			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
@@ -84,7 +84,7 @@ public class VendorController {
         VendorUser vendor_user = vendorService.addVendorUser(vendorUser);
         if (vendor_user == null ) {
         	ResponseMessage responseMessage = new ResponseMessage(
-	        		StatusCode.REQUEST_FAILED.getValue(),
+        			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Vendor User Already Exists");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
@@ -92,7 +92,7 @@ public class VendorController {
 //        	HttpHeaders headers = new HttpHeaders();
 //          headers.setLocation(builder.path("/vendor/user/{id}").buildAndExpand(vendorUser.getVendorId()).toUri());
         	ResponseMessage responseMessage = new ResponseMessage(
-	        		StatusCode.REQUEST_SUCCESS.getValue(),
+        			APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
 	        		"New Vendor User Created Successfully");
         	return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);	
@@ -112,13 +112,13 @@ public class VendorController {
 		
 		if(vendorUser != null ) {
 			ResponseMessage responseMessage = new ResponseMessage(
-	        		StatusCode.REQUEST_SUCCESS.getValue(),
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
 	        		"Vendor User Already Exists");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		} else {
 			ResponseMessage responseMessage = new ResponseMessage(
-	        		StatusCode.NOT_FOUND.getValue(),
+					APIStatusCode.NOT_FOUND.getValue(),
 	        		"RESOURCE_NOT_FOUND",
 	        		"Vendor User Record Not Found");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);

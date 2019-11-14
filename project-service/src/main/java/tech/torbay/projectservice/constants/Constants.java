@@ -3,7 +3,6 @@ package tech.torbay.projectservice.constants;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class Constants {
 
 
@@ -35,6 +34,33 @@ public class Constants {
 	    public int getValue() {
 	        return value;
 	    }
+	}
+	
+	public enum ClientUserType {
+		MANAGER(11),
+	    ASSISTANT_MANAGER(12),
+	    BOARD_MEMBER(13);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private ClientUserType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (ClientUserType pageType : ClientUserType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static ClientUserType valueOf(int pageType) {
+			return (ClientUserType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
 	}
 	
 	public enum UserRole {
@@ -93,23 +119,9 @@ public class Constants {
 	    SERVER_ERROR(2),
 	    BAD_REQUEST(3),
 	    NOT_FOUND(4),
-	    AUTHENTICATION_FAILED(5),
-	    RESET_PASSWORD(6),
-	    
-	    //User Registration
-	    USER_REGISTER_INPROGRESS(10),// password not set
-	    USER_REGISTER_VERIFIED(11),// password created
-	    ORGANISATION_REGISTER_INPROGRESS(12), // organisation created and submitted
-	    ORGANISATION_REGISTER_VERIFIED(13), // organisation verified
-	    DOCUMENT_VERIFICATION_SUBMITTED(14), // document for verification submitted 
-	    DOCUMENT_VERIFICATION_VERIFIED(15), // document verified
-	    DOCUMENT_VERIFICATION_REJECTED(16), // document rejected
-		USER_ACTIVE(20), // User active state
-	    USER_INACTIVE(21); // User Inactive state
+	    AUTHENTICATION_FAILED(5);
+		/* RESET_PASSWORD(6) */;
 		
-		
-//	    DOCUMENT_VERIFICATION_REJECTED(9);
-
 	    private int value;
 	    private static Map map = new HashMap<>();
 
@@ -128,53 +140,6 @@ public class Constants {
 	    }
 
 	    public int getValue() {
-	        return value;
-	    }
-	}
-	
-     // amenities varchar
-	 // 1 - GYM
-	 // 2 - PARTY ROOM
-	 // 3 - POOL
-	 // 4 - PARKING
-	 
-	 // amenities availability
-	 // 0 - info not available
-	 // 1 - yes
-	 // 2 - no
-	
-	// pool type
-	// 1 - indoor
-	// 2 - outdoor
-	
-	// parking type
-	// 1 - Underground
-	// 2 - Ground Level
-	
-	public enum Amenities {
-	    GYM("Gym"),
-	    PARTY_ROOM("Party Room"),
-	    POOL("Swim pool"),
-	    PARKING("Parking");
-
-	    private String value;
-	    private static Map map = new HashMap<>();
-
-	    private Amenities(String value) {
-	        this.value = value;
-	    }
-
-	    static {
-	        for (Amenities pageType : Amenities.values()) {
-	            map.put(pageType.value, pageType);
-	        }
-	    }
-
-	    public static Amenities valueOf(int pageType) {
-	        return (Amenities) map.get(pageType);
-	    }
-
-	    public String getValue() {
 	        return value;
 	    }
 	}
@@ -206,63 +171,11 @@ public class Constants {
 	    }
 	}
 	
-	public enum PoolType {
-	    Indoor("Indoor"),
-	    Outdoor("Outdoor");
-
-	    private String value;
-	    private static Map map = new HashMap<>();
-
-	    private PoolType(String value) {
-	        this.value = value;
-	    }
-
-	    static {
-	        for (PoolType pageType : PoolType.values()) {
-	            map.put(pageType.value, pageType);
-	        }
-	    }
-
-	    public static PoolType valueOf(int pageType) {
-	        return (PoolType) map.get(pageType);
-	    }
-
-	    public String getValue() {
-	        return value;
-	    }
-	}
-	
-	public enum ParkingType {
-	    UnderGround("Under Ground"),
-	    GroundLevel("Ground Level");
-
-	    private String value;
-	    private static Map map = new HashMap<>();
-
-	    private ParkingType(String value) {
-	        this.value = value;
-	    }
-
-	    static {
-	        for (ParkingType pageType : ParkingType.values()) {
-	            map.put(pageType.value, pageType);
-	        }
-	    }
-
-	    public static ParkingType valueOf(int pageType) {
-	        return (ParkingType) map.get(pageType);
-	    }
-
-	    public String getValue() {
-	        return value;
-	    }
-	}
-	
 	public enum ProjectPostType {
-		UNPUBLISHED(12),
-		PUBLISHED(13),
-		COMPLETED(14),
-		TERMINATED(15);
+		UNPUBLISHED(1),
+		PUBLISHED(2),
+		COMPLETED(3),
+		TERMINATED(4);
 
 	    private int value;
 	    private static Map map = new HashMap<>();
@@ -287,8 +200,8 @@ public class Constants {
 	}
 	
 	public enum ProjectPostTo {
-		ALL(0),
-		MARKED(1);
+		ALL(1),
+		MARKED(2);
 
 	    private int value;
 	    private static Map map = new HashMap<>();
@@ -391,4 +304,6 @@ public class Constants {
 	        return value;
 	    }
 	}
+	
+	
 }
