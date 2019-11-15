@@ -3,7 +3,10 @@ package tech.torbay.userservice.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import tech.torbay.userservice.constants.Constants;
+
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -11,8 +14,6 @@ import javax.persistence.*;
 @Table(name="client_user")
 public class ClientUser {
 
-
-    private Integer userId;
 
     @Id
     private Integer clientId = 0;
@@ -25,14 +26,21 @@ public class ClientUser {
     private String countryCode;
     private String createdAt;
     private String modifiedDate;
-	public Integer getUserId() {
-		return userId;
-	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-	public Integer getClientId() {
+    
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "client_association",
+			joinColumns = @JoinColumn(name = "client_id"/* , referencedColumnName = "client_id" */),
+			inverseJoinColumns = @JoinColumn(name = "organisation_id"/* , referencedColumnName = "client_org_id" */))
+    private Set<ClientOrganisation> clientOrganisations;
+
+    public Integer getClientId() {
 		return clientId;
+	}
+	public Set<ClientOrganisation> getClientOrganisations() {
+		return clientOrganisations;
+	}
+	public void setClientOrganisation(Set<ClientOrganisation> clientOrganisations) {
+		this.clientOrganisations = clientOrganisations;
 	}
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
@@ -93,11 +101,13 @@ public class ClientUser {
 	}
 	@Override
 	public String toString() {
-		return "ClientUser [userId=" + userId + ", clientId=" + clientId + ", email=" + email + ", firstName="
-				+ firstName + ", LastName=" + LastName + ", legalName=" + legalName + ", city=" + city + ", phone="
-				+ phone + ", countryCode=" + countryCode + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
-				+ "]";
+		return "ClientUser [clientId=" + clientId + ", email=" + email + ", firstName=" + firstName + ", LastName="
+				+ LastName + ", legalName=" + legalName + ", city=" + city + ", phone=" + phone + ", countryCode="
+				+ countryCode + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", clientOrganisations="
+				+ clientOrganisations + "]";
 	}
+	
+	
 
 	
 }

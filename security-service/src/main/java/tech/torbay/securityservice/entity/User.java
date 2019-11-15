@@ -13,23 +13,22 @@ public class User {
 
     }
 
-    public User(Integer id, String username, String password, int userId, int userType, int userRole) {
+    public User(Integer id, String username, String password, int userId, int userType) {
         super();
         this.id = id;
         this.username = username;
         this.password = password;
         this.userId = userId;
         this.userType = userType;
-        this.userRole = userRole;
     }
+    
     @Id
     private Integer id = 0;
     private String username = "";
     private String password = "";
     private Integer userId = 0;
     private Integer userType = 0;
-    private Integer userRole = 0;
-
+    
     public Integer getId() {
         return id;
     }
@@ -70,17 +69,9 @@ public class User {
         this.userType = userType;
     }
     
-    public Integer getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(Integer userRole) {
-        this.userRole = userRole;
-    }
-
     @Override
     public String toString() {
         return "User [id=" + id + ", username=" + username + ", password=" + password + ", userId=" + userId + 
-        		", userType=" + userType + ", userRole=" + userRole +"]";
+        		", userType=" + userType +"]";
     }
 }

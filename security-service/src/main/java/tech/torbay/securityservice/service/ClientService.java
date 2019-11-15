@@ -7,10 +7,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.repository.ClientOrganisationRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
+import tech.torbay.securityservice.repository.UserRepository;
 
 @Component
 public class ClientService {
@@ -19,8 +22,10 @@ public class ClientService {
 	ClientUserRepository clientUserRepository;
 	@Autowired
 	ClientOrganisationRepository clientOrganisationRepository;
+	@Autowired
+	UserRepository userRepository;
 
-	public List<ClientUser> findAll() {
+	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
 		return Lists.newArrayList(clientUserRepository.findAll());
 	}
@@ -39,7 +44,24 @@ public class ClientService {
 
 	public ClientUser addClient(ClientUser clientUser) {
 		// TODO Auto-generated method stub
-		return clientUserRepository.save(clientUser);
+		
+		if(clientUserRepository.save(clientUser) != null){
+			
+			clientUser = clientUserRepository.findByEmail(clientUser.getEmail());
+			
+			System.out.println(clientUser.toString());
+			
+			User user = new User();
+			user.setUserId(clientUser.getClientId());
+			user.setUsername(clientUser.getEmail());
+			user.setUserType(Constants.UserType.CLIENT.getValue());
+			
+			System.out.println(user.toString());
+			
+			userRepository.save(user);
+		}
+				
+		return clientUser;
 	}
 
 	public ClientOrganisation addClientOrganisation(ClientOrganisation clientorganisation) {

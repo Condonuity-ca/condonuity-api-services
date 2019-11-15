@@ -28,8 +28,10 @@ public class ClientService {
 	ClientAmenitiesRepository clientAmenitiesRepository;
 	@Autowired
 	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
+	@Autowired
+//	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
 
-	public List<ClientUser> findAll() {
+	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
 		return Lists.newArrayList(clientUserRepository.findAll());
 	}
@@ -56,14 +58,14 @@ public class ClientService {
 		return clientOrganisationRepository.save(clientorganisation);
 	}
 
-	public ClientUser findById(Integer userId) {
+	public ClientUser getClientUserById(Integer userId) {
 		// TODO Auto-generated method stub
 		return clientUserRepository.findByClientId(userId);
 	}
 
-	public List<ClientOrganisation> getAllCorporateAccounts(Integer id) {
+	public List<ClientOrganisation> getAllCorporateAccounts(Integer clientUserId) {
 		// TODO Auto-generated method stub
-		return null;
+		return null/* clientUserRepository.findClientOrganisationByClientId() */;
 	}
 
 	public ClientUser saveClient(ClientUser client) {

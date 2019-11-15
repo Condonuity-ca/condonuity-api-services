@@ -95,23 +95,14 @@ public class UserController {
 		
 		try {
 //		String loginInfo = "";
-		System.out.println(userInfo);
+		System.out.println("userInfo : "+userInfo);
 		
 		if(userInfo != null) {
 			if(userInfo.getUserType() == 1) {
 				
 				ClientUser clientInfo = clientService.findById(userInfo.getUserId());
-	//			return new ResponseEntity<>(clientInfo, HttpStatus.OK);
 				
-				// get User Registration Status
-				int registrationStatus = 20/*clientService.getClientRegistrationStatus(clientInfo.getClientId())*/; 
-				
-				
-				System.out.println(clientInfo);
-				
-				System.out.println("registrationStatus : "+registrationStatus);
-				clientInfo.setUserId(null);// user clientId instead of userId
-				if(registrationStatus == UserAccountStatus.ACTIVE.getValue()) {
+				if(clientInfo != null) {
 					HashMap<String, Object> list = new HashMap();
 					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 					list.put("statusMessage", "Success");
@@ -138,23 +129,21 @@ public class UserController {
 						 * list.put("responseMessage", "Please reset your password");
 						 * list.put("userDetails", clientInfo); return new ResponseEntity<>(list,
 						 * HttpStatus.OK); }
-						 */ else if(registrationStatus == UserAccountStatus.INACTIVE.getValue()) {
-					ResponseMessage responseMessage = new ResponseMessage(
-							APIStatusCode.REQUEST_FAILED.getValue(),
-			        		"Failed",
-			        		"Invalid Credentials");
-					return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-				}
+						 */ /*
+							 * else if(registrationStatus == UserAccountStatus.INACTIVE.getValue()) {
+							 * ResponseMessage responseMessage = new ResponseMessage(
+							 * APIStatusCode.REQUEST_FAILED.getValue(), "Failed", "Invalid Credentials");
+							 * return new ResponseEntity<>(responseMessage, HttpStatus.OK); }
+							 */
 				
 			} else if(userInfo.getUserType() == 2) {
 				
 				VendorUser vendorUserInfo = vendorService.findByVendorUserId(userInfo.getUserId());
-				System.out.println(vendorUserInfo);
-				VendorOrganisation vendorOrgInfo = new VendorOrganisation();
-				if(vendorUserInfo.getVendorOrganisationId() != 0) {
-				vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
-				System.out.println(vendorOrgInfo);
-				}
+//				VendorOrganisation vendorOrgInfo = new VendorOrganisation();
+//				if(vendorUserInfo.getVendorOrganisationId() != 0) {
+//				vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
+//				System.out.println(vendorOrgInfo);
+//				}
 				
 				if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
 					
@@ -163,19 +152,19 @@ public class UserController {
 					list.put("statusMessage", "Success");
 					list.put("responseMessage", "Vendor details fetched successfully");
 					list.put("vendorUserDetails", vendorUserInfo);
-					list.put("vendorOrgDetails",vendorOrgInfo);
+//					list.put("vendorOrgDetails",vendorOrgInfo);
 					
 					return new ResponseEntity<>(list, HttpStatus.OK);
 				} else if(vendorUserInfo.getAccountStatus() ==  VerificationStatus.NOT_VERIFIED.getValue()) {
 					HashMap<String, Object> list = new HashMap();
 					list.put("statusMessage", "User need to set New Password");
 					list.put("responseMessage", "Please reset your password");
-					list.put("userDetails", vendorUserInfo);
-					list.put("vendorDetails",vendorOrgInfo);
+					list.put("vendorUserDetails", vendorUserInfo);
+//					list.put("vendorOrgDetails",vendorOrgInfo);
 					
 					if(vendorUserInfo.getVendorOrganisationId() != 0) {
 						list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-						list.put("vendorDetails",vendorOrgInfo);
+//						list.put("vendorDetails",vendorOrgInfo);
 					} else {
 						list.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
 					}
@@ -275,47 +264,6 @@ public class UserController {
 	            .withoutPadding()
 	            .encodeToString(raw.getBytes(StandardCharsets.UTF_8));
 	}
-	
-//	@ApiOperation(value = "Returns New user Registration success message")
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(code = 200, message = "Successful New user Registration")
-//            }
-//    )
-//	@PostMapping("user")
-//	public ResponseEntity<Void> addUser(@RequestBody User user, UriComponentsBuilder builder) {
-//        boolean flag = userService.addUser(user);
-//        if (flag == false) {
-//        	return new ResponseEntity<Void>(HttpStatus.CONFLICT);
-//        }
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(builder.path("/user/{id}").buildAndExpand(user.getUserId()).toUri());
-//        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
-//	}
-	
-//	@ApiOperation(value = "Returns user update success message")
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(code = 200, message = "user details updated successfully")
-//            }
-//    )
-//	@PutMapping("user")
-//	public ResponseEntity<User> updateUser(@RequestBody User user) {
-//		userService.updateUser(user);
-//		return new ResponseEntity<User>(user, HttpStatus.OK);
-//	}
-	
-//	@ApiOperation(value = "Returns success message for user inactive")
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(code = 200, message = "A user inactive successfully")
-//            }
-//    )
-//	@DeleteMapping("user/{id}")
-//	public ResponseEntity<Void> deleteUser(@PathVariable("id") Integer id) {
-//		userService.deleteUser(id);
-//		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-//	}	
 	
 	@ApiOperation(value = "New User password reset implementation")
     @ApiResponses(

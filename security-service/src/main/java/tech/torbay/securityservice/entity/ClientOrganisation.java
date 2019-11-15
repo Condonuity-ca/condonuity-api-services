@@ -1,5 +1,10 @@
 package tech.torbay.securityservice.entity;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.*;
 
 import tech.torbay.securityservice.constants.Constants;
@@ -39,6 +44,44 @@ public class ClientOrganisation {
     private String managerPhone = "";
     private String createdAt = "";
     private String modifiedDate = "";
+    
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true/* , mappedBy = "amenities" */)
+    private List<ClientAmenities> amenities = new ArrayList<>();
+    
+//    @OneToMany(mappedBy = "client_organisation")
+//    Set<ClientAssociation> clientAssociations;
+    
+//    @ManyToMany(fetch = FetchType.LAZY,
+//            cascade = {
+//                CascadeType.PERSIST,
+//                CascadeType.MERGE
+//            },
+//            mappedBy = "client_organisation")
+//    private Set<ClientUser> clientUsers = new HashSet<>();
+
+	@Override
+	public String toString() {
+		return "ClientOrganisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType
+				+ ", organisationName=" + organisationName + ", managementCompany=" + managementCompany
+				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail="
+				+ generalEmail + ", managementEmail=" + managementEmail + ", boardEmail=" + boardEmail + ", address="
+				+ address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
+				+ ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber
+				+ ", units=" + units + ", votingUnits=" + votingUnits + ", managerName=" + managerName
+				+ ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + ", amenities=" + amenities + "]";
+	}
+
+
+	public List<ClientAmenities> getAmenities() {
+		return amenities;
+	}
+
+
+	public void setAmenities(List<ClientAmenities> amenities) {
+		this.amenities = amenities;
+	}
+
 
 	public String getModifiedDate() {
 		return modifiedDate;
@@ -47,21 +90,7 @@ public class ClientOrganisation {
 
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
-	}
-
-
-	@Override
-	public String toString() {
-		return "Client Organisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType 
-				+ ", organisationName=" + organisationName + ", managementCompany=" + managementCompany
-				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail=" + generalEmail + ", managementEmail=" + managementEmail
-				+ ", boardEmail=" + boardEmail + ", address=" + address + ", city=" + city + ", province=" + province
-				+ ", postalCode=" + postalCode + ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber
-				+ ", faxNumber=" + faxNumber + ", units=" + units + ", votingUnits=" + votingUnits + ", managerName="
-				+ managerName + ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt="
-				+ createdAt + "]";
-	}
-	
+	}	
 	
 	public String getGeneralEmail() {
 		return generalEmail;
@@ -122,11 +151,6 @@ public class ClientOrganisation {
 		this.managerPhone = managerPhone;
 	}
 
-
-	/*
-	 * public ClientAmenities getAmenities() { return amenities; } public void
-	 * setAmenities(ClientAmenities amenities) { this.amenities = amenities; }
-	 */
 	public Integer getClientOrganisationId() {
 		return clientOrganisationId;
 	}

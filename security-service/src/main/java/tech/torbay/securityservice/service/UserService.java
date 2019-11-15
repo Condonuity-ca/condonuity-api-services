@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
+import tech.torbay.securityservice.exception.ResourceNotFoundException;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorOrganisationRepository;
 import tech.torbay.securityservice.repository.VendorUserRepository;
@@ -39,6 +40,11 @@ public class UserService {
 
 	public User resetPassword(User user) {
 		// TODO Auto-generated method stub
+		user = userRepository.findByUserIdAndUserType(user.getUserId(), user.getUserType());
+		if( user == null) 
+		{
+			new ResourceNotFoundException("User", "userId", user.getUserId());
+		}
 		return userRepository.save(user);
 	}
 

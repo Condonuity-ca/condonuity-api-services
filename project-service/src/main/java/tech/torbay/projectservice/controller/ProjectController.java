@@ -129,9 +129,9 @@ public class ProjectController {
             }
     )
 	@PostMapping("/client/project/create")
-	public ResponseEntity<Object> createPostProject(@RequestBody Project project) {
+	public ResponseEntity<Object> createProject(@RequestBody Project project) {
 		
-		project = projectService.createPostProject(project);
+		project = projectService.createProject(project);
         if (project == null) {
      
         	ResponseMessage responseMessage = null;
@@ -140,12 +140,12 @@ public class ProjectController {
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Failed",
-            			"Failed to Create Project Bid");
+            			"Failed to Create Project");
         	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Failed",
-            			"Failed to Post Project Bid");
+            			"Failed to Post Project");
         		
         	}
         	
@@ -162,12 +162,12 @@ public class ProjectController {
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Success",
-                		"Project Bid created successfully");
+                		"Project created successfully");
         	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Success",
-                		"Project Bid posted successfully");
+                		"Project posted successfully");
         		
         	}
         	
@@ -194,12 +194,12 @@ public class ProjectController {
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Failed",
-            			"Failed to Create Project");
+            			"Failed to Create Project Bid");
         	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Failed",
-            			"Failed to Post Project");
+            			"Failed to Post Project Bid");
         		
         	}
         	
@@ -216,12 +216,12 @@ public class ProjectController {
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Success",
-                		"Project created successfully");
+                		"Project Bid created successfully");
         	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Success",
-                		"Project posted successfully");
+                		"Project Bid posted successfully");
         		
         	}
         	

@@ -2,6 +2,8 @@ package tech.torbay.userservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientUser;
 
 import java.util.List;
@@ -13,5 +15,7 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
 
     ClientUser findByClientId(Integer Id);
     
-    ClientUser findByEmail(String email);   
+    ClientUser findByEmail(String email);
+
+//	List<ClientOrganisation> findClientOrganisationByClientId();
 }

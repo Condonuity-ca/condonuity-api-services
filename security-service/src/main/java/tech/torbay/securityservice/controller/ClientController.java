@@ -36,58 +36,6 @@ public class ClientController {
     @Autowired
     ClientService clientService;
 
-    @ApiOperation(value = "Fetching All clients details with in a Organisation")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Successful All Client Details")
-            }
-    )
-    @GetMapping("/clients")
-    public List<ClientUser> getAllClients() {
-
-       return clientService.findAll();   }
-
-
-    @ApiOperation(value = "Fetching Single Client by Id")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Successful Client Details")
-            }
-    )
-    @GetMapping("/clients/{clientId}")
-    public ClientUser getClientById(@PathVariable(value = "clientId") Integer clientId) {
-
-        return clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "clientId", clientId));
-    }
-
-    @ApiOperation(value = "Client details Update Implementation")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "client details updated successfully")
-            }
-    )
-    @PutMapping("/clients/{clientId}")
-    public ClientUser updateClient(@PathVariable(value = "clientId") Integer clientId,
-                                               @Valid @RequestBody ClientUser toUpdateClient) {
-
-        ClientUser client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
-
-
-            client.setLegalName(toUpdateClient.getLegalName());
-            client.setFirstName(toUpdateClient.getFirstName());
-            client.setLastName(toUpdateClient.getLastName());
-//            client.setUserType(toUpdateClient.getUserType());
-            client.setCity(toUpdateClient.getCity());
-            client.setPhone(toUpdateClient.getPhone());
-            client.setCountryCode(toUpdateClient.getCountryCode());
-
-        ClientUser updatedClient = clientRepository.save(client);
-        return updatedClient;
-    }
-
-
 	/*New APIs Structure*/
     
     @ApiOperation(value = "Client user existance check with Email")
@@ -132,7 +80,7 @@ public class ClientController {
 		
 		if(clientService.findByEmail(client.getEmail()) != null) {
 			// Already have an client account
-			int userId = client.getUserId();
+			int userId = client.getClientId();
 			if (userId != 0 /* && client.getOrganisationId() > 0 - check org parameter */) {
 				if(clientService.addClientOrgAccountAssociation(client) != null) {
 					ResponseMessage responseMessage = new ResponseMessage(
@@ -188,7 +136,7 @@ public class ClientController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
         } else {
 	        HttpHeaders headers = new HttpHeaders();
-	        headers.setLocation(builder.path("/client/{id}").buildAndExpand(client.getUserId()).toUri());
+	        headers.setLocation(builder.path("/client/{id}").buildAndExpand(client.getClientId()).toUri());
 	        ResponseMessage responseMessage = new ResponseMessage(
 	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",

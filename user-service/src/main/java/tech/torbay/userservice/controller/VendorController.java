@@ -39,92 +39,6 @@ public class VendorController {
 	@Autowired
 	private VendorService vendorService;
 	
-	@ApiOperation(value = "New Vendor Registration")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Successfully New Vendor Registred"),
-                    @ApiResponse(code = 201, message = "Successfully New Vendor Registred")
-            }
-    )
-	@PostMapping("vendor/organisation/register")
-	public ResponseEntity<Object> addUser(@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
-		
-		// org_id
-		
-        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(vendorOrganisation);
-        if (vendorOrg == null) {
-        	ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
-	        		"Failed",
-	        		"Vendor Organisation Already Exists");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
-        } else {
-	        HttpHeaders headers = new HttpHeaders();
-//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
-	        ResponseMessage responseMessage = new ResponseMessage(
-	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"New Vendor Organisation Created Successfully");
-			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
-        }
-	}
-	
-	@ApiOperation(value = "New Vendor User Registration")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Successfully New Vendor User Registred"),
-                    @ApiResponse(code = 201, message = "Successfully New Vendor User Registred")
-            }
-    )
-	@PostMapping("vendor/user/create")
-	public ResponseEntity<Object> addVendorUser(@RequestBody VendorUser vendorUser, UriComponentsBuilder builder) {
-		
-		// org_id
-		
-        VendorUser vendor_user = vendorService.addVendorUser(vendorUser);
-        if (vendor_user == null ) {
-        	ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
-	        		"Failed",
-	        		"Vendor User Already Exists");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
-        } else {
-//        	HttpHeaders headers = new HttpHeaders();
-//          headers.setLocation(builder.path("/vendor/user/{id}").buildAndExpand(vendorUser.getVendorId()).toUri());
-        	ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"New Vendor User Created Successfully");
-        	return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);	
-        }
-        
-	}
-	
-	@ApiOperation(value = "Vendor existance check with Email")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "A vendor record exist already")
-            }
-    )
-	@GetMapping("vendor/user/{email}")
-	public ResponseEntity<Object> vendorUserExists(@PathVariable("email") String email) {
-		VendorUser vendorUser = vendorService.findByEmail(email);
-		
-		if(vendorUser != null ) {
-			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"Vendor User Already Exists");
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
-		} else {
-			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.NOT_FOUND.getValue(),
-	        		"RESOURCE_NOT_FOUND",
-	        		"Vendor User Record Not Found");
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
-		}
-	}
-	
 	@ApiOperation(value = "Fetching All vendor users details")
     @ApiResponses(
             value = {
@@ -132,8 +46,154 @@ public class VendorController {
             }
     )
     @GetMapping("/vendor/users")
-    public List<VendorUser> getAllVendorUsers() {
+    public ResponseEntity<Object> getAllVendorUsers() 
+	{
+		List<VendorUser> list = vendorService.findAllVendorUsers();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendor users in Condonuity Application fetched successfully");
+			response.put("vendors", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
 
-       return vendorService.findAll();   }
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
 	
+	
+	@ApiOperation(value = "Fetch A Vendor Details Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A vendor details fetched successfully")
+            }
+    )
+	@GetMapping("vendor/org/{id}")
+	public ResponseEntity<Object> getUserById(@PathVariable("id") Integer id) {
+		VendorOrganisation vendorOrganisation = vendorService.getVendorOrganisationById(id);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(vendorOrganisation != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor details fetched successfully");
+			response.put("vendor", vendorOrganisation);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetch A Vendor User Details Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A vendor user details fetched successfully")
+            }
+    )
+	@GetMapping("vendor/user/{id}")
+	public ResponseEntity<Object> getVendorUserById(@PathVariable("id") Integer id) {
+		VendorUser vendorUser = vendorService.getVendorUserById(id);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(vendorUser != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor user details fetched successfully");
+			response.put("vendorUser", vendorUser);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All Vendor Details as List")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor details fetched successfully in Condonuity Application")
+            }
+    )
+	@GetMapping("vendor/orgs")
+	public ResponseEntity<Object> getAllVendors() {
+		List<VendorOrganisation> list = vendorService.getAllVendorOrganisations();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
+			response.put("vendorOrgs", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Vendor User update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor user details updated successfully")
+            }
+    )
+	@PutMapping("vendor/user")
+	public ResponseEntity<Object> updateUser(@RequestBody VendorUser vendorUser) {
+		if(vendorService.updateVendorUser(vendorUser) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor User Details Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update vendor User Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
+	
+	@ApiOperation(value = "Vendor update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor details updated successfully")
+            }
+    )
+	@PutMapping("vendor/org")
+	public ResponseEntity<Object> updateVendor(@RequestBody VendorOrganisation vendorOrganisation) {
+		if(vendorService.updateVendorOrganisation(vendorOrganisation) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Details Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Vendor Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
 } 

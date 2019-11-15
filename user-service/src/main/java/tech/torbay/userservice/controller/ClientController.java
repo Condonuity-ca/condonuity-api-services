@@ -32,63 +32,33 @@ import java.util.List;
 public class ClientController {
 
     @Autowired
-    ClientUserRepository clientRepository;
-    
-    @Autowired
     ClientService clientService;
 
-//    @ApiOperation(value = "Fetching All clients details with in a Organisation")
+//    @ApiOperation(value = "Client details Update Implementation")
 //    @ApiResponses(
 //            value = {
-//                    @ApiResponse(code = 200, message = "Successful All Client Details")
+//                    @ApiResponse(code = 200, message = "client details updated successfully")
 //            }
 //    )
-//    @GetMapping("/clients")
-//    public List<ClientUser> getAllClients() 
-//    {
+//    @PutMapping("/clients/{clientId}")
+//    public ClientUser updateClientUser(@PathVariable(value = "clientId") Integer clientId,
+//                                               @Valid @RequestBody ClientUser toUpdateClient) {
 //
-//       return clientService.findAll();   
+//        ClientUser client = clientRepository.findById(clientId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
+//
+//
+//            client.setLegalName(toUpdateClient.getLegalName());
+//            client.setFirstName(toUpdateClient.getFirstName());
+//            client.setLastName(toUpdateClient.getLastName());
+////            client.setUserType(toUpdateClient.getUserType());
+//            client.setCity(toUpdateClient.getCity());
+//            client.setPhone(toUpdateClient.getPhone());
+//            client.setCountryCode(toUpdateClient.getCountryCode());
+//
+//        ClientUser updatedClient = clientRepository.save(client);
+//        return updatedClient;
 //    }
-
-
-    @ApiOperation(value = "Fetching Single Client by Id")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Successful Client Details")
-            }
-    )
-    @GetMapping("/clients/{clientId}")
-    public ClientUser getClientById(@PathVariable(value = "clientId") Integer clientId) {
-
-        return clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "clientId", clientId));
-    }
-
-    @ApiOperation(value = "Client details Update Implementation")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "client details updated successfully")
-            }
-    )
-    @PutMapping("/clients/{clientId}")
-    public ClientUser updateClient(@PathVariable(value = "clientId") Integer clientId,
-                                               @Valid @RequestBody ClientUser toUpdateClient) {
-
-        ClientUser client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
-
-
-            client.setLegalName(toUpdateClient.getLegalName());
-            client.setFirstName(toUpdateClient.getFirstName());
-            client.setLastName(toUpdateClient.getLastName());
-//            client.setUserType(toUpdateClient.getUserType());
-            client.setCity(toUpdateClient.getCity());
-            client.setPhone(toUpdateClient.getPhone());
-            client.setCountryCode(toUpdateClient.getCountryCode());
-
-        ClientUser updatedClient = clientRepository.save(client);
-        return updatedClient;
-    }
 
 
 	/*New APIs Structure*/
@@ -100,8 +70,8 @@ public class ClientController {
             }
     )
 	@GetMapping("client/user/{id}")
-	public ResponseEntity<Object> getUserById(@PathVariable("id") Integer id) {
-		ClientUser client = clientService.findById(id);
+	public ResponseEntity<Object> getClientUserById(@PathVariable("id") Integer id) {
+		ClientUser client = clientService.getClientUserById(id);
 		
 		System.out.println(client);
 		
@@ -141,9 +111,9 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Successful All Client Details")
             }
     )
-	@GetMapping("clients")
+	@GetMapping("client/users")
 	public ResponseEntity<Object> getAllClients() {
-		List<ClientUser> list = clientService.findAll();
+		List<ClientUser> list = clientService.getAllClientUsers();
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -168,8 +138,8 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "client details updated successfully")
             }
     )
-	@PutMapping("client")
-	public ResponseEntity<Object> updateUser(@RequestBody ClientUser client) {
+	@PutMapping("client/user")
+	public ResponseEntity<Object> updateClientUser(@RequestBody ClientUser client) {
 		if(clientService.saveClient(client) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),

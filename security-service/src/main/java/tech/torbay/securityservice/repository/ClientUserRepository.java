@@ -14,4 +14,6 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
     ClientUser findByClientId(Integer Id);
     
     ClientUser findByEmail(String email);   
+    
+	ClientUser save(ClientUser clientUser);   
 }

@@ -1,5 +1,8 @@
 package tech.torbay.userservice.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
 
 import tech.torbay.userservice.constants.Constants;
@@ -39,6 +42,11 @@ public class ClientOrganisation {
     private String managerPhone = "";
     private String createdAt = "";
     private String modifiedDate = "";
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true/* , mappedBy = "amenities" */)
+    private List<ClientAmenities> amenities = new ArrayList<>();
+    
+    
 
 	public String getModifiedDate() {
 		return modifiedDate;

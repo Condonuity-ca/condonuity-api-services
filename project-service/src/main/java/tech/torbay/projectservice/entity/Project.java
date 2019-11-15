@@ -129,7 +129,7 @@ public class Project {
 
 	@Id
 	private Integer projectId = 0;
-	private Integer clientOrgId = 0;
+	private Integer clientOrganisationId = 0;
 	private Integer clientId = 0;
     private String projectName = "";
     private Integer projectModifiedBy = 0;
@@ -150,12 +150,12 @@ public class Project {
 	private String createdAt = "";
     private String modifiedDate = "";
     
-    public Integer getClientOrgId() {
-		return clientOrgId;
+    public Integer getClientOrganisationId() {
+		return clientOrganisationId;
 	}
 
-	public void setClientOrgId(Integer clientOrgId) {
-		this.clientOrgId = clientOrgId;
+	public void setClientOrganisationId(Integer clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId;
 	}
 
 	public Integer getProjectModifiedBy() {
@@ -176,7 +176,7 @@ public class Project {
 
 	@Override
 	public String toString() {
-		return "Project [projectId=" + projectId + ", clientId=" + clientId + ", clientOrgId=" + clientOrgId + ", createdAt=" + createdAt
+		return "Project [projectId=" + projectId + ", clientId=" + clientId + ", clientOrganisationId=" + clientOrganisationId + ", createdAt=" + createdAt
 				+ ", modifiedDate=" + modifiedDate + ", projectName=" + projectName + ", tags=" + tags + ", bidEndDate="
 				+ bidEndDate + ", projectStartDate=" + projectStartDate + ", projectCompletionDeadline="
 				+ projectCompletionDeadline + ", estimatedBudget=" + estimatedBudget + ", duration=" + duration

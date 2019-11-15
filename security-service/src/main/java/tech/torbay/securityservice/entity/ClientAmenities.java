@@ -20,6 +20,7 @@ public class ClientAmenities {
 	private int amenities_count;
 	private String created_at;
 	private String modified_date;
+	
 	public int getId() {
 		return id;
 	}

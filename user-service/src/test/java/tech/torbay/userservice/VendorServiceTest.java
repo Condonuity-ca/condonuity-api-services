@@ -22,7 +22,7 @@ public class VendorServiceTest {
     void testEmailVerificationService() throws Exception{
     	
 //    	Client client = clientService.findByEmail("test@gmail.com"); 
-        assertEquals(1,vendorService.findByEmail("user@vendor.com").getUserId().intValue() );
+        assertEquals(1,vendorService.findVendorUserByEmail("user@vendor.com").getUserId().intValue() );
         
     }
     
