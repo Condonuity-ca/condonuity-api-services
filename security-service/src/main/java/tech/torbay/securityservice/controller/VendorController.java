@@ -76,10 +76,10 @@ public class VendorController {
                     @ApiResponse(code = 201, message = "Successfully New Vendor User Registred")
             }
     )
-	@PostMapping("vendor/user/create")
+	@PostMapping("vendor/user/register")
 	public ResponseEntity<Object> addVendorUser(@RequestBody VendorUser vendorUser, UriComponentsBuilder builder) {
 		
-		// org_id
+		// check vendor user already exist or not
 		
         VendorUser vendor_user = vendorService.addVendorUser(vendorUser);
         if (vendor_user == null ) {

@@ -59,6 +59,8 @@ public class ClientService {
 			System.out.println(user.toString());
 			
 			userRepository.save(user);
+		} else {
+			return null;
 		}
 				
 		return clientUser;

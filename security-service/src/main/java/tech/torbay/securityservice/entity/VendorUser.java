@@ -22,8 +22,8 @@ public class VendorUser {
     private String email = "";
 	private Integer accountStatus = 0;
 	private Integer accountVerificationStatus = 0;
-    private String createdAt = "";
-    private String modifiedDate = "";
+    private String createdAt;
+    private String modifiedDate;
     
 	public Integer getUserId() {
 		return userId;

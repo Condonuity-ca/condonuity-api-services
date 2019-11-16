@@ -3,10 +3,12 @@ package tech.torbay.securityservice.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
@@ -20,6 +22,9 @@ public class UserService {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+    private BCryptPasswordEncoder encoder;
 	
 	public List<User> findAll() {
 //		// TODO Auto-generated method stub
@@ -37,7 +42,9 @@ public class UserService {
 		// TODO Auto-generated method stub
 		return userRepository.findByUserIdAndUserType(id, userType);
 	}
-
+	
+	
+	
 	public User resetPassword(User user) {
 		// TODO Auto-generated method stub
 		user = userRepository.findByUserIdAndUserType(user.getUserId(), user.getUserType());
@@ -45,11 +52,14 @@ public class UserService {
 		{
 			new ResourceNotFoundException("User", "userId", user.getUserId());
 		}
+//		user.setPassword(SecurityAES.encrypt(user.getPassword()));
+		user.setPassword(user.getPassword());
 		return userRepository.save(user);
 	}
 
 	public User Login(String username, String password) {
 		// TODO Auto-generated method stub
+//		return userRepository.findByUsernameAndPassword(username, SecurityAES.encrypt(password));
 		return userRepository.findByUsernameAndPassword(username, password);
 	}
 }

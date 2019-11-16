@@ -15,5 +15,8 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
     
     VendorUser findByEmail(String email);
 
+	@SuppressWarnings("unchecked")
 	VendorUser save(VendorUser vendorUser);
+
+	VendorUser findByUserId(Integer userId);
 }

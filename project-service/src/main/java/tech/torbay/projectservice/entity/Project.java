@@ -147,8 +147,8 @@ public class Project {
     private Integer postType = 0;
     private Integer status = 0;
     private Integer awardedBidId = 0;
-	private String createdAt = "";
-    private String modifiedDate = "";
+	private String createdAt;
+    private String modifiedDate;
     
     public Integer getClientOrganisationId() {
 		return clientOrganisationId;

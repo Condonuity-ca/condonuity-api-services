@@ -138,24 +138,26 @@ public class UserController {
 				
 			} else if(userInfo.getUserType() == 2) {
 				
-				VendorUser vendorUserInfo = vendorService.findByVendorUserId(userInfo.getUserId());
-//				VendorOrganisation vendorOrgInfo = new VendorOrganisation();
-//				if(vendorUserInfo.getVendorOrganisationId() != 0) {
-//				vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
-//				System.out.println(vendorOrgInfo);
-//				}
 				
-				if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+				
+				VendorUser vendorUserInfo = vendorService.findByVendorUserId(userInfo.getUserId());
+				VendorOrganisation vendorOrgInfo = new VendorOrganisation();
+				if(vendorUserInfo.getVendorOrganisationId() != 0) {
+				vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
+				System.out.println(vendorOrgInfo);
+				}
+				
+				if(vendorUserInfo != null && vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
 					
 					HashMap<String, Object> list = new HashMap();
 					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 					list.put("statusMessage", "Success");
-					list.put("responseMessage", "Vendor details fetched successfully");
+					list.put("responseMessage", "Vendor User details fetched successfully");
 					list.put("vendorUserDetails", vendorUserInfo);
 //					list.put("vendorOrgDetails",vendorOrgInfo);
 					
 					return new ResponseEntity<>(list, HttpStatus.OK);
-				} else if(vendorUserInfo.getAccountStatus() ==  VerificationStatus.NOT_VERIFIED.getValue()) {
+				} else if(vendorUserInfo != null && vendorUserInfo.getAccountStatus() ==  VerificationStatus.NOT_VERIFIED.getValue()) {
 					HashMap<String, Object> list = new HashMap();
 					list.put("statusMessage", "User need to set New Password");
 					list.put("responseMessage", "Please reset your password");
@@ -164,7 +166,7 @@ public class UserController {
 					
 					if(vendorUserInfo.getVendorOrganisationId() != 0) {
 						list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-//						list.put("vendorDetails",vendorOrgInfo);
+//						list.put("vendorOrgDetails",vendorOrgInfo);
 					} else {
 						list.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
 					}

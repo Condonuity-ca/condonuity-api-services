@@ -7,9 +7,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
+import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorOrganisationRepository;
 import tech.torbay.securityservice.repository.VendorUserRepository;
 
@@ -20,6 +22,8 @@ public class VendorService {
 	VendorUserRepository vendorUserRepository;
 	@Autowired
 	VendorOrganisationRepository vendorOrganisationRepository;
+	@Autowired
+	UserRepository userRepository;
 
 	public List<VendorUser> findAll() {
 //		// TODO Auto-generated method stub
@@ -40,7 +44,31 @@ public class VendorService {
 
 	public VendorUser addVendorUser(VendorUser vendorUser) {
 		// TODO Auto-generated method stub
-		return vendorUserRepository.save(vendorUser);
+		try {
+		
+		if(vendorUserRepository.save(vendorUser) != null){
+			
+			vendorUser = vendorUserRepository.findByEmail(vendorUser.getEmail());
+			
+			System.out.println(vendorUser.toString());
+			
+			User user = new User();
+			user.setUserId(vendorUser.getUserId());
+			user.setUsername(vendorUser.getEmail());
+			user.setUserType(Constants.UserType.VENDOR.getValue());
+			
+			System.out.println(user.toString());
+			
+			userRepository.save(user);
+			
+			return vendorUser;
+		} else {
+			return null;
+		}
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
 	}
 
 	public VendorOrganisation addVendorOrgnisation(VendorOrganisation vendorOrganisation) {
@@ -50,7 +78,7 @@ public class VendorService {
 
 	public VendorUser findByVendorUserId(Integer userId) {
 		// TODO Auto-generated method stub
-		return null;
+		return vendorUserRepository.findByUserId(userId);
 	}
 }
 

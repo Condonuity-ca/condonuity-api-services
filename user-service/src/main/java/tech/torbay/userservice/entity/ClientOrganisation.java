@@ -40,8 +40,8 @@ public class ClientOrganisation {
     private String managerName = "";
     private String managerEmail = "";
     private String managerPhone = "";
-    private String createdAt = "";
-    private String modifiedDate = "";
+    private String createdAt;
+    private String modifiedDate;
     
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true/* , mappedBy = "amenities" */)
     private List<ClientAmenities> amenities = new ArrayList<>();

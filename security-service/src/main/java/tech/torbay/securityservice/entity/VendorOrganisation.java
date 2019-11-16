@@ -43,8 +43,8 @@ public class VendorOrganisation {
     private String brands = "";
     private String licenses = "";
     private String memberships = "";
-	private String createdAt = "";
-	private String modifiedDate = "";
+	private String createdAt;
+	private String modifiedDate;
 	
 	
     @Override
