@@ -45,7 +45,7 @@ public class ClientOrganisation {
     private String createdAt;
     private String modifiedDate;
     
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true/* , mappedBy = "amenities" */)
+	@OneToMany(targetEntity=ClientAmenities.class/* , mappedBy = "amenities" */)
     private List<ClientAmenities> amenities = new ArrayList<>();
     
 //    @OneToMany(mappedBy = "client_organisation")

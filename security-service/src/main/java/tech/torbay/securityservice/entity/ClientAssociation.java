@@ -31,7 +31,7 @@ public class ClientAssociation {
  
     @ManyToOne
     @MapsId("organisation_id")
-    @JoinColumn(name = "client_org_id")
+    @JoinColumn(name = "client_organisation_id")
     ClientOrganisation clientOrganisation;
     
 	public Integer getId() {

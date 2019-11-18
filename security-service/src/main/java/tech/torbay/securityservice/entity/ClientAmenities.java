@@ -14,7 +14,7 @@ public class ClientAmenities {
 	}
 	@Id
 	private int id;
-	private int organisationId;
+	private int organisationId = 0;
 	private String amenities_name;
 	private String amenities_type;
 	private int amenities_count;

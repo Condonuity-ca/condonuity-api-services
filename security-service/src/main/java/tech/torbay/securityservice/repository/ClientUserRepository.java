@@ -15,5 +15,8 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
     
     ClientUser findByEmail(String email);   
     
-	ClientUser save(ClientUser clientUser);   
+	@SuppressWarnings("unchecked")
+	ClientUser save(ClientUser clientUser);
+
+	boolean existsByEmail(String email);   
 }

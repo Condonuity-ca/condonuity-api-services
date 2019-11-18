@@ -26,11 +26,11 @@ public class ClientUser {
     private String createdAt;
     private String modifiedDate;
     
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "client_association",
-			joinColumns = @JoinColumn(name = "client_id"/* , referencedColumnName = "client_id" */),
-			inverseJoinColumns = @JoinColumn(name = "organisation_id"/* , referencedColumnName = "client_org_id" */))
-    private Set<ClientOrganisation> clientOrganisation;
+//    @ManyToMany(cascade = CascadeType.ALL)
+//    @JoinTable(name = "client_association",
+//			joinColumns = @JoinColumn(name = "client_id"/* , referencedColumnName = "client_id" */),
+//			inverseJoinColumns = @JoinColumn(name = "organisation_id"/* , referencedColumnName = "client_org_id" */))
+//    private Set<ClientOrganisation> clientOrganisation;
     
 	public Integer getClientId() {
 		return clientId;

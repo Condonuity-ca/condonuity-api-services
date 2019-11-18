@@ -41,17 +41,17 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @GetMapping("/users")
-    public List<User> getUsers() {
-
-        logger.info("Processing Users Request");
-
-        List<User> users = userService.findAll();
-
-        logger.info("Processed User Request");
-
-        return users;
-    }
+//    @GetMapping("/users")
+//    public List<User> getUsers() {
+//
+//        logger.info("Processing Users Request");
+//
+//        List<User> users = userService.findAll();
+//
+//        logger.info("Processed User Request");
+//
+//        return users;
+//    }
     
     @Autowired
 	private UserService userService;
@@ -154,6 +154,7 @@ public class UserController {
 					list.put("statusMessage", "Success");
 					list.put("responseMessage", "Vendor User details fetched successfully");
 					list.put("vendorUserDetails", vendorUserInfo);
+					
 //					list.put("vendorOrgDetails",vendorOrgInfo);
 					
 					return new ResponseEntity<>(list, HttpStatus.OK);

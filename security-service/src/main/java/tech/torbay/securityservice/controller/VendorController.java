@@ -125,15 +125,15 @@ public class VendorController {
 		}
 	}
 	
-	@ApiOperation(value = "Fetching All vendor users details")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Successful All Vendor Details")
-            }
-    )
-    @GetMapping("/vendor/users")
-    public List<VendorUser> getAllVendorUsers() {
-
-       return vendorService.findAll();   }
+//	@ApiOperation(value = "Fetching All vendor users details")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(code = 200, message = "Successful All Vendor Details")
+//            }
+//    )
+//    @GetMapping("/vendor/users")
+//    public List<VendorUser> getAllVendorUsers() {
+//
+//       return vendorService.findAll();   }
 	
 } 

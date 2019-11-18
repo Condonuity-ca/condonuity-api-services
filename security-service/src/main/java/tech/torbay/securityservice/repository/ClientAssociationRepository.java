@@ -2,6 +2,8 @@ package tech.torbay.securityservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorUser;
@@ -9,18 +11,10 @@ import tech.torbay.securityservice.entity.VendorUser;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface ClientAssociationRepository extends JpaRepository<ClientAssociation, Integer> {
 
-    List<User> findAll();
+    List<ClientAssociation> findAll();
 
-	User findByUsername(String email);
-	
-	User findByUserIdAndUserType(Integer id, Integer userType);
-
-	User findByUsernameAndPassword(String username, String password);
-
-	User save(User user);
-
-	void deleteByUserIdAndUserType(Integer clientId, int value);
+    ClientAssociation save(ClientAssociation clientAssociation);
 	
 }
