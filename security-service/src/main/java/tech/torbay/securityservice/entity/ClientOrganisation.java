@@ -45,11 +45,11 @@ public class ClientOrganisation {
     private String createdAt;
     private String modifiedDate;
     
-	@OneToMany(targetEntity=ClientAmenities.class/* , mappedBy = "amenities" */)
-    private List<ClientAmenities> amenities = new ArrayList<>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
+	private List<ClientAmenities> amenities = new ArrayList<>();
     
-//    @OneToMany(mappedBy = "client_organisation")
-//    Set<ClientAssociation> clientAssociations;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
+	private List<ClientAssociation> clientAssociations = new ArrayList<>();
     
 //    @ManyToMany(fetch = FetchType.LAZY,
 //            cascade = {
@@ -154,8 +154,8 @@ public class ClientOrganisation {
 	public Integer getClientOrganisationId() {
 		return clientOrganisationId;
 	}
-	public void setClientOrganisationId(Integer organisationId) {
-		this.clientOrganisationId = organisationId;
+	public void setClientOrganisationId(Integer clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId;
 	}
 	public Integer getUserType() {
 		return userType;

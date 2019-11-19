@@ -47,6 +47,9 @@ public class UserService {
 	
 	public User resetPassword(User user) {
 		// TODO Auto-generated method stub
+		
+		// New User used to reset password after accept invite
+		
 		user = userRepository.findByUserIdAndUserType(user.getUserId(), user.getUserType());
 		if( user == null) 
 		{

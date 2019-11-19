@@ -12,8 +12,8 @@ public class ClientAssociation {
 
     @Id
     private Integer id = 0;
-    @Column(name = "organisation_id")
-    private Integer organisationId = 0;
+    @Column(name = "client_organisation_id")
+    private Integer clientOrganisationId = 0;
     @Column(name = "client_id")
     private Integer clientId = 0;
     private Integer clientUserType = 0;
@@ -30,7 +30,7 @@ public class ClientAssociation {
  
     @ManyToOne
     @MapsId("organisation_id")
-    @JoinColumn(name = "client_org_id")
+    @JoinColumn(name = "client_organisation_id")
     ClientOrganisation clientOrganisation;
     
 	public Integer getId() {
@@ -39,11 +39,11 @@ public class ClientAssociation {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getOrganisationId() {
-		return organisationId;
+	public Integer getClientOrganisationId() {
+		return clientOrganisationId;
 	}
-	public void setOrganisationId(Integer organisationId) {
-		this.organisationId = organisationId;
+	public void setClientOrganisationId(Integer clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId;
 	}
 	public Integer getClientId() {
 		return clientId;
@@ -90,7 +90,7 @@ public class ClientAssociation {
 	
 	@Override
 	public String toString() {
-		return "ClientAssociation [id=" + id + ", organisationId=" + organisationId + ", clientId=" + clientId
+		return "ClientAssociation [id=" + id + ", clientOrganisationId=" + clientOrganisationId + ", clientId=" + clientId
 				+ ", clientUserType=" + clientUserType + ", userRole=" + userRole + ", accountVerificationStatus="
 				+ accountVerificationStatus + ", userAccountStatus=" + userAccountStatus + ", createdAt=" + createdAt
 				+ ", modifiedDate=" + modifiedDate + "]";

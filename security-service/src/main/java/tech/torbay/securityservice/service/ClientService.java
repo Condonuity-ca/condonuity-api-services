@@ -51,7 +51,7 @@ public class ClientService {
 		//2 : 
 		
 		ClientAssociation clientAssociation = new ClientAssociation();
-		clientAssociation.setOrganisationId(organisationId);
+		clientAssociation.setClientOrganisationId(organisationId);
 		clientAssociation.setClientId(clientUser.getClientId());
 		clientAssociation.setClientUserType(clientUserType);
 		clientAssociation.setUserRole(userRole);
@@ -110,11 +110,11 @@ public class ClientService {
 						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser) != null) {
 							return clientUser;
 						} else {
-							clientUserRepository.deleteById(clientUser.getClientId());
-							userRepository.deleteByUserIdAndUserType(clientUser.getClientId(),Constants.UserType.CLIENT.getValue());
+//							clientUserRepository.deleteById(clientUser.getClientId());
+//							userRepository.deleteByUserIdAndUserType(clientUser.getClientId(),Constants.UserType.CLIENT.getValue());
 						}
 					} else {
-						clientUserRepository.deleteById(clientUser.getClientId());
+//						clientUserRepository.deleteById(clientUser.getClientId());
 						return null;
 					}
 					
@@ -136,16 +136,26 @@ public class ClientService {
 	public ClientOrganisation addClientOrganisation(Integer clientId, ClientOrganisation clientOrganisation) {
 		// TODO Auto-generated method stub
 		
-		if(clientOrganisationRepository.save(clientOrganisation) != null) {
+		
+
+		try {
+			clientOrganisation = clientOrganisationRepository.save(clientOrganisation);
 			
-			
-			addClientOrgAccountAssociation(clientOrganisation.getClientOrganisationId(), 
-					Constants.ClientUserType.BOARD_MEMBER.getValue(),
-					Constants.UserRole.ADMIN.getValue(), clientUserRepository.findByClientId(clientId));
-			
-			return clientOrganisation;
-			
-		} else {
+			if(clientOrganisation != null) {
+				
+				addClientOrgAccountAssociation(clientOrganisation.getClientOrganisationId(), 
+						Constants.ClientUserType.BOARD_MEMBER.getValue(),
+						Constants.UserRole.ADMIN.getValue(), clientUserRepository.findByClientId(clientId));
+				
+				return clientOrganisation;
+				
+			} else {
+				return null;
+			}
+		
+		
+		} catch(Exception exp) {
+			exp.printStackTrace();
 			return null;
 		}
 		

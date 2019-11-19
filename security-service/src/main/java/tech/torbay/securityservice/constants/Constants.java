@@ -35,9 +35,9 @@ public class Constants {
 	}
 	
 	public enum ClientUserType {
-		MANAGER(11),
-	    ASSISTANT_MANAGER(12),
-	    BOARD_MEMBER(13);
+		MANAGER(1),
+	    ASSISTANT_MANAGER(3),
+	    BOARD_MEMBER(3);
 		
 		private int value;
 		private static Map map = new HashMap<>();

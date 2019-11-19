@@ -12,6 +12,7 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 
     List<VendorOrganisation> findAll();
 
+	@SuppressWarnings("unchecked")
 	VendorOrganisation save(VendorOrganisation vendorOrganisation);
 	
 	VendorOrganisation findByVendorOrganisationId(Integer id);

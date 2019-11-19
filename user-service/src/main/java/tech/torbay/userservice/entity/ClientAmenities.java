@@ -13,24 +13,31 @@ public class ClientAmenities {
 	
 	}
 	@Id
-	private int id;
-	private int organisationId;
+	@GeneratedValue(strategy=GenerationType.AUTO)  
+	private int id = 0;
+	
+//	@ManyToOne
+//    @JoinColumn(name = "client_organisation_id")
+//	private ClientOrganisation clientOrganisation;
+	
+	private int clientOrganisationId = 0;
 	private String amenities_name;
 	private String amenities_type;
 	private int amenities_count;
 	private String created_at;
 	private String modified_date;
+	
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getOrganisationId() {
-		return organisationId;
+	public int getClientOrganisationId() {
+		return clientOrganisationId/* clientOrganisation.getClientOrganisationId() */;
 	}
-	public void setOrganisationId(int organisationId) {
-		this.organisationId = organisationId;
+	public void setClientOrganisationId(int clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId/*.setClientOrganisationId(clientOrganisationId)*/;
 	}
 	public String getAmenities_name() {
 		return amenities_name;
@@ -64,10 +71,10 @@ public class ClientAmenities {
 	}
 	@Override
 	public String toString() {
-		return "ClientAmenities [id=" + id + ", organisationId=" + organisationId + ", amenities_name=" + amenities_name
+		return "ClientAmenities [id=" + id
+				+ /* ", clientOrganisationId=" + clientOrganisationId + */", amenities_name=" + amenities_name
 				+ ", amenities_type=" + amenities_type + ", amenities_count=" + amenities_count + ", created_at="
 				+ created_at + ", modified_date=" + modified_date + "]";
 	}
-	
 	
 }

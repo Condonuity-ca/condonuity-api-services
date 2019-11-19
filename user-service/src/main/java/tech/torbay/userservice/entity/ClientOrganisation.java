@@ -43,10 +43,11 @@ public class ClientOrganisation {
     private String createdAt;
     private String modifiedDate;
     
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true/* , mappedBy = "amenities" */)
-    private List<ClientAmenities> amenities = new ArrayList<>();
-    
-    
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
+//	private List<ClientAmenities> amenities = new ArrayList<>();
+//    
+//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
+//	private List<ClientAssociation> clientAssociations = new ArrayList<>();
 
 	public String getModifiedDate() {
 		return modifiedDate;

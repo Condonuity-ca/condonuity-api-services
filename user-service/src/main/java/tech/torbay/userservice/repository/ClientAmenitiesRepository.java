@@ -13,7 +13,7 @@ public interface ClientAmenitiesRepository extends JpaRepository<ClientAmenities
 
     List<ClientAmenities> findAll();
 
-    List<ClientAmenities> findAllByOrganisationId(Integer id);
+    List<ClientAmenities> findAllByClientOrganisationId(Integer id);
     
 //    ClientAmenities findById(Integer id);
 }

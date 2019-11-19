@@ -71,9 +71,27 @@ public class VendorService {
 		}
 	}
 
-	public VendorOrganisation addVendorOrgnisation(VendorOrganisation vendorOrganisation) {
+	public VendorOrganisation addVendorOrgnisation(Integer vendorUserId, VendorOrganisation vendorOrganisation) {
 		// TODO Auto-generated method stub
-		return vendorOrganisationRepository.save(vendorOrganisation);
+		
+		// Add new vendor
+		// update to vendor admin user after org created
+		try {
+		vendorOrganisation = vendorOrganisationRepository.save(vendorOrganisation);
+		if(vendorOrganisation != null) {
+			
+			VendorUser vendorUser = vendorUserRepository.findByUserId(vendorUserId);
+			vendorUser.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+			
+			vendorUserRepository.save(vendorUser);
+			
+			return vendorOrganisation;
+		}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
 	}
 
 	public VendorUser findByVendorUserId(Integer userId) {

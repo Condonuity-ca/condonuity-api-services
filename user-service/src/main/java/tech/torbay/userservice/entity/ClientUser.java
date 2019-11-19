@@ -27,21 +27,21 @@ public class ClientUser {
     private String createdAt;
     private String modifiedDate;
     
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "client_association",
-			joinColumns = @JoinColumn(name = "client_id"/* , referencedColumnName = "client_id" */),
-			inverseJoinColumns = @JoinColumn(name = "organisation_id"/* , referencedColumnName = "client_org_id" */))
-    private Set<ClientOrganisation> clientOrganisations;
+//    @ManyToMany(cascade = CascadeType.ALL)
+//    @JoinTable(name = "client_association",
+//			joinColumns = @JoinColumn(name = "client_id"/* , referencedColumnName = "client_id" */),
+//			inverseJoinColumns = @JoinColumn(name = "organisation_id"/* , referencedColumnName = "client_org_id" */))
+//    private Set<ClientOrganisation> clientOrganisations;
 
     public Integer getClientId() {
 		return clientId;
 	}
-	public Set<ClientOrganisation> getClientOrganisations() {
-		return clientOrganisations;
-	}
-	public void setClientOrganisation(Set<ClientOrganisation> clientOrganisations) {
-		this.clientOrganisations = clientOrganisations;
-	}
+//	public Set<ClientOrganisation> getClientOrganisations() {
+//		return clientOrganisations;
+//	}
+//	public void setClientOrganisation(Set<ClientOrganisation> clientOrganisations) {
+//		this.clientOrganisations = clientOrganisations;
+//	}
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
 	}
@@ -103,8 +103,10 @@ public class ClientUser {
 	public String toString() {
 		return "ClientUser [clientId=" + clientId + ", email=" + email + ", firstName=" + firstName + ", LastName="
 				+ LastName + ", legalName=" + legalName + ", city=" + city + ", phone=" + phone + ", countryCode="
-				+ countryCode + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", clientOrganisations="
-				+ clientOrganisations + "]";
+				+ countryCode + ", createdAt=" + createdAt + ", modifiedDate="
+				+ modifiedDate /*
+								 * + ", clientOrganisations=" + clientOrganisations
+								 */+ "]";
 	}
 	
 	

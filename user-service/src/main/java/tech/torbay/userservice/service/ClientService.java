@@ -85,7 +85,7 @@ public class ClientService {
 
 	public List<ClientAmenities> getAmenitiesByOrgId(Integer orgId) {
 		// TODO Auto-generated method stub
-		return clientAmenitiesRepository.findAllByOrganisationId(orgId);
+		return clientAmenitiesRepository.findAllByClientOrganisationId(orgId);
 	}
 
 	public List<ClientUser> getAllClientsByOrganisation(Integer orgId) {
@@ -101,6 +101,11 @@ public class ClientService {
 	public Object updateAmenities(ClientAmenities amenitiesInfo) {
 		// TODO Auto-generated method stub
 		return clientAmenitiesRepository.save(amenitiesInfo);
+	}
+
+	public List<ClientOrganisation> getAllClientOrganisations() {
+		// TODO Auto-generated method stub
+		return clientOrganisationRepository.findAll();
 	}
 }
 

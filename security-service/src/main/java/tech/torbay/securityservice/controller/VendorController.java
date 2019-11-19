@@ -46,12 +46,14 @@ public class VendorController {
                     @ApiResponse(code = 201, message = "Successfully New Vendor Registred")
             }
     )
-	@PostMapping("vendor/organisation/register")
-	public ResponseEntity<Object> addUser(@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
+	@PostMapping("vendor/organisation/register/{vendorUserId}")
+	public ResponseEntity<Object> addUser(
+			@PathVariable("vendorUserId") Integer vendorUserId, 
+			@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
 		
 		// org_id
 		
-        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(vendorOrganisation);
+        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(vendorUserId, vendorOrganisation);
         if (vendorOrg == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),

@@ -132,6 +132,33 @@ public class ClientController {
 		}
 	}
 	
+	@ApiOperation(value = "Fetching All clients details with in a Organisation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful All Client Details")
+            }
+    )
+	@GetMapping("client/orgs")
+	public ResponseEntity<Object> getAllClientOrganisations() {
+		List<ClientOrganisation> list = clientService.getAllClientOrganisations();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Client Organisations details fetched successfully");
+			response.put("clientOrganisations", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
 	@ApiOperation(value = "Client details Update Implementation")
     @ApiResponses(
             value = {
@@ -189,12 +216,12 @@ public class ClientController {
 		ClientOrganisation organisation = clientService.getOrganisationById(id);
 		System.out.println("organisation : "+organisation.toString());
 		List<ClientAmenities> amenitiesInfo = clientService.getAmenitiesByOrgId(id);
-		System.out.println("amenitiesInfo : "+amenitiesInfo.toString());
+//		System.out.println("amenitiesInfo : "+amenitiesInfo.toString());
 //		//IF admin get All other users details
 //		Clients allUsers = clientService;
 		HashMap<String, Object> list = new HashMap();
 		
-		if(organisation != null && amenitiesInfo != null) {
+		if (organisation != null /* && amenitiesInfo != null */) {
 			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Organisation details fetched successfully");
@@ -217,7 +244,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client Organisation Amenities Information Updated successfully")
             }
     )
-	@PostMapping("client/org/amenities/update")
+	@PutMapping("client/org/amenities/update")
 	public ResponseEntity<Object> updateAmenities(@RequestBody ClientAmenities amenitiesInfo) {
         if (clientService.updateAmenities(amenitiesInfo) == null) {
         	ResponseMessage responseMessage = new ResponseMessage(

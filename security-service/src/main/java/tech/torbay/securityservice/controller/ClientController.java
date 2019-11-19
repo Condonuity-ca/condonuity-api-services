@@ -66,10 +66,10 @@ public class ClientController {
 	@ApiOperation(value = "New Organisation Exist Client user accept email invitation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "Client Accepted New Corporate Account Invitation")
+                    @ApiResponse(code = 200, message = "Client User Accepted New Corporate Account Invitation")
             }
     )
-	@PostMapping("client/invite/accept/{orgId}")
+	@PostMapping("client/invite/accept")
 	public ResponseEntity<Object> acceptInvite(
 			@PathVariable("organisationId") Integer organisationId, 
 			@PathVariable("clientUserType") Integer clientUserType, 
@@ -206,7 +206,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Successful New Client Organisation Registered")
             }
     )
-	@PostMapping("client/org/register")
+	@PostMapping("client/org/register/{clientId}")
 	public ResponseEntity<Object> addClientCompany(
 			@RequestParam("clientId") Integer clientId,
 			@RequestBody ClientOrganisation organisation ,
