@@ -277,7 +277,6 @@ public class ClientController {
 	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("orgId") Integer id) {
 		List<ClientUser> clients = clientService.getAllClientsByOrganisation(id);
 		List<ClientOrganisationPayment> paymentBillingDetails = clientService.getPaymentBillingDetails(id);
-//		HashMap<String,String> billingAddress = clientService.getBillingAddress(id);
 		
 //		//IF admin get All other users details
 //		Clients allUsers = clientService;
@@ -286,8 +285,7 @@ public class ClientController {
 		if (clients != null /* && paymentDetails != null && billingAddress != null */) {
 			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			list.put("statusMessage", "Success");
-			list.put("responseMessage", "Client Corporation , Payment and Billing Informations fetched successfully");
-//			list.put("billing_address", billingAddress);
+			list.put("responseMessage", "Client Corporation Users, Payment and Billing Informations fetched successfully");
 			list.put("payment_billing_details",paymentBillingDetails);
 			list.put("users",clients);
 			

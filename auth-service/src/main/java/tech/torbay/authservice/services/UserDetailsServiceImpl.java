@@ -36,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         final List<LoginUser> app_users = userRepository.findAll();
         
         for (LoginUser user : app_users) {
-        	users.add(new AppUser(1, user.getUsername(), user.getPassword(), "USER"));
+        	users.add(new AppUser(1, user.getUsername(), encoder.encode(user.getPassword()), "ADMIN"));
         	System.out.println(user.toString());
         }
 

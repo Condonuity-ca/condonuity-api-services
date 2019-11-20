@@ -28,12 +28,20 @@ public class ClientUser {
     private String modifiedDate;
     
 //    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(name = "client_association",
-//			joinColumns = @JoinColumn(name = "client_id"/* , referencedColumnName = "client_id" */),
-//			inverseJoinColumns = @JoinColumn(name = "organisation_id"/* , referencedColumnName = "client_org_id" */))
+//    @JoinTable(
+//    		name = "client_association", joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "client_id"), 
+//    		inverseJoinColumns = @JoinColumn(name = "client_organisation_id", referencedColumnName = "client_organisation_id"))
 //    private Set<ClientOrganisation> clientOrganisations;
-
-    public Integer getClientId() {
+//    
+//    
+//    public Set<ClientOrganisation> getClientOrganisations() {
+//		return clientOrganisations;
+//	}
+//	public void setClientOrganisations(Set<ClientOrganisation> clientOrganisations) {
+//		this.clientOrganisations = clientOrganisations;
+//	}
+	
+	public Integer getClientId() {
 		return clientId;
 	}
 //	public Set<ClientOrganisation> getClientOrganisations() {

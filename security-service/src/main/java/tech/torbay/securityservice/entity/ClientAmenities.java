@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@Table(name = "organisation_amenities_info")
+@Table(name = "client_organisation_amenities")
 public class ClientAmenities {
 	
 	public ClientAmenities() {

@@ -2,17 +2,21 @@ package tech.torbay.userservice.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.entity.ClientAmenities;
+import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientOrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
+import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientOrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
@@ -28,6 +32,8 @@ public class ClientService {
 	ClientAmenitiesRepository clientAmenitiesRepository;
 	@Autowired
 	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
+	@Autowired
+	ClientAssociationRepository clientAssociationRepository;
 	@Autowired
 //	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
 
@@ -64,8 +70,24 @@ public class ClientService {
 	}
 
 	public List<ClientOrganisation> getAllCorporateAccounts(Integer clientUserId) {
+		
 		// TODO Auto-generated method stub
-		return null/* clientUserRepository.findClientOrganisationByClientId() */;
+		try {
+			
+			List<ClientAssociation> clientOrgIds = clientAssociationRepository.findClientOrganisationIdByClientId(clientUserId);
+			System.out.print(clientOrgIds.toString());
+			
+			List<Integer> ids = clientOrgIds.stream()
+                    .map(ClientAssociation::getClientOrganisationId).collect(Collectors.toList());
+			
+			List<ClientOrganisation> clientUserOrganisations = clientOrganisationRepository.findByClientOrganisationId(ids);
+			
+			return clientUserOrganisations;
+		
+		} catch (Exception exp) {
+			exp.printStackTrace();
+		}
+		return null;
 	}
 
 	public ClientUser saveClient(ClientUser client) {
@@ -83,13 +105,29 @@ public class ClientService {
 		return clientOrganisationRepository.findByClientOrganisationId(id);
 	}
 
-	public List<ClientAmenities> getAmenitiesByOrgId(Integer orgId) {
+	public List<ClientAmenities> getAmenitiesByOrgId(Integer clientOrgId) {
 		// TODO Auto-generated method stub
-		return clientAmenitiesRepository.findAllByClientOrganisationId(orgId);
+		return clientAmenitiesRepository.findAllByClientOrganisationId(clientOrgId);
 	}
 
-	public List<ClientUser> getAllClientsByOrganisation(Integer orgId) {
+	public List<ClientUser> getAllClientsByOrganisation(Integer clientOrgId) {
 		// TODO Auto-generated method stub
+		try {
+			
+			List<ClientAssociation> clientIds = clientAssociationRepository.findClientIdByClientOrganisationId(clientOrgId);
+			System.out.print(clientIds.toString());
+			
+			List<Integer> ids = clientIds.stream()
+                    .map(ClientAssociation::getClientId).collect(Collectors.toList());
+			
+			List<ClientUser> clientUsers = clientUserRepository.findByClientId(ids);
+			
+			return clientUsers;
+		
+		} catch (Exception exp) {
+			exp.printStackTrace();
+		}
+		
 		return null;
 	}
 
