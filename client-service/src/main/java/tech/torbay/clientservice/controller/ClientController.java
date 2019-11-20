@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.torbay.clientservice.entity.Client;
 import tech.torbay.clientservice.exception.ResourceNotFoundException;
 import tech.torbay.clientservice.repository.ClientRepository;
+import tech.torbay.clientservice.service.ClientService;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class ClientController {
 
     @Autowired
     ClientRepository clientRepository;
+   
 
     @ApiOperation(value = "Fetching All clients details with in a Organisation")
     @ApiResponses(

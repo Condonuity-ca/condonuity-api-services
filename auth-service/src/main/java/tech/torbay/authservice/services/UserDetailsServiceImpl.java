@@ -29,7 +29,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 new AppUser(1, "manav", encoder.encode("12345"), "USER"),
                 new AppUser(2, "admin", encoder.encode("12345"), "ADMIN"),
                 new AppUser(3, "nagaraj", encoder.encode("12345"), "ADMIN"),
-                new AppUser(4, "manoj", encoder.encode("12345"), "ADMIN")
+                new AppUser(4, "manoj", encoder.encode("12345"), "ADMIN"),
+                new AppUser(5, "prakash", encoder.encode("12345"), "ADMIN")
         );
 
 
