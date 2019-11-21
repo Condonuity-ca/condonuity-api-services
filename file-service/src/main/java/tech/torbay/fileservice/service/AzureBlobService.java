@@ -15,6 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class AzureBlobService {
@@ -24,12 +25,7 @@ public class AzureBlobService {
     @Autowired
     private CloudBlobClient cloudBlobClient;
 
-    @Autowired
-    private CloudBlobContainer cloudBlobContainer;
-
-
-    public boolean createContainer(String containerName){
-        boolean containerCreated = false;
+    public URI createContainer(String containerName){
         CloudBlobContainer container = null;
         try {
             container = cloudBlobClient.getContainerReference(containerName);
@@ -41,19 +37,30 @@ public class AzureBlobService {
             e.printStackTrace();
         }
         try {
-            containerCreated = container.createIfNotExists(BlobContainerPublicAccessType.CONTAINER, new BlobRequestOptions(), new OperationContext());
+            container.createIfNotExists(BlobContainerPublicAccessType.OFF, new BlobRequestOptions(), new OperationContext());
         } catch (StorageException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
-        return containerCreated;
+        return container.getUri();
     }
 
-    public URI upload(MultipartFile multipartFile){
+    public URI upload(String containerName, MultipartFile multipartFile){
         URI uri = null;
+        CloudBlobContainer container = null;
         CloudBlockBlob blob = null;
         try {
-            blob = cloudBlobContainer.getBlockBlobReference(multipartFile.getOriginalFilename());
+            container = cloudBlobClient.getContainerReference(containerName);
+        } catch (URISyntaxException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        } catch (StorageException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+        try {
+            UUID uuid = UUID.randomUUID();
+            blob = container.getBlockBlobReference(uuid.toString());
             blob.upload(multipartFile.getInputStream(), -1);
             uri = blob.getUri();
         } catch (URISyntaxException e) {

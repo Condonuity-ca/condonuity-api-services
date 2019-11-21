@@ -19,13 +19,13 @@ public class FileServiceController {
 
     @PostMapping("/container")
     public ResponseEntity createContainer(@RequestBody String containerName){
-        boolean created = azureBlobService.createContainer(containerName);
-        return ResponseEntity.ok(created);
+        URI url = azureBlobService.createContainer(containerName);
+        return ResponseEntity.ok(url);
     }
 
-    @PostMapping
-    public ResponseEntity upload(@RequestParam MultipartFile multipartFile){
-        URI url = azureBlobService.upload(multipartFile);
+    @PostMapping("/container/{containerName}")
+    public ResponseEntity upload(@PathVariable("containerName") String containerName ,@RequestParam MultipartFile multipartFile){
+        URI url = azureBlobService.upload(containerName, multipartFile);
         return ResponseEntity.ok(url);
     }
 
@@ -35,8 +35,8 @@ public class FileServiceController {
         return ResponseEntity.ok(uris);
     }
 
-    @DeleteMapping
-    public ResponseEntity delete(@RequestParam String containerName, @RequestParam String blobName){
+    @DeleteMapping("/container/{containerName}/{blobName}")
+    public ResponseEntity delete(@PathVariable("containerName") String containerName, @PathVariable("blobName") String blobName){
         azureBlobService.deleteBlob(containerName, blobName);
         return ResponseEntity.ok().build();
     }
