@@ -136,9 +136,17 @@ public class ClientService {
 		return clientOrganisationPaymentRepository.findAllByOrganisationId(orgId);
 	}
 
-	public Object updateAmenities(ClientAmenities amenitiesInfo) {
+	public ClientAmenities updateAmenities(ClientAmenities amenitiesInfo) {
 		// TODO Auto-generated method stub
-		return clientAmenitiesRepository.save(amenitiesInfo);
+		
+		try {
+			System.out.print(amenitiesInfo.toString());
+			ClientAmenities amenity = clientAmenitiesRepository.save(amenitiesInfo);
+			return amenity;
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		return null;
 	}
 
 	public List<ClientOrganisation> getAllClientOrganisations() {

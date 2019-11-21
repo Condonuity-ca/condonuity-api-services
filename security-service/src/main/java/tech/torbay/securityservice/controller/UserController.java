@@ -67,7 +67,7 @@ public class UserController {
                     @ApiResponse(code = 200, message = "A User details fetched successfully")
             }
     )
-	@GetMapping("user/{userType}/{id}")
+	@GetMapping("/user/{userType}/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable("id") Integer id, @PathVariable("userType") Integer userType) {
 		User user = userService.findByIdAndUserType(id, userType);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
@@ -89,7 +89,7 @@ public class UserController {
 //		}
 //        return new ResponseEntity<User>(userInfo, HttpStatus.OK);
 //	}
-	@PostMapping("user/login")
+	@PostMapping("/user/login")
 	public ResponseEntity<Object> getUserByLogin(@RequestBody User user, UriComponentsBuilder builder) {
 		User userInfo = userService.Login(user.getUsername(), user.getPassword());
 		
@@ -215,7 +215,7 @@ public class UserController {
                     @ApiResponse(code = 200, message = "A client record exist already")
             }
     )
-	@GetMapping("user/verify/{email}")
+	@GetMapping("/user/verify/{email}")
 	public ResponseEntity<Object> userExists(@PathVariable("email") String email) {
 		User user = userService.findByEmail(email);
 		
@@ -274,7 +274,7 @@ public class UserController {
                     @ApiResponse(code = 200, message = "New User password reset successfully")
             }
     )
-	@PostMapping("user/resetPassword")
+	@PostMapping("/user/resetPassword")
 	public ResponseEntity<Object> resetPassword(@RequestBody User user , UriComponentsBuilder builder) {
 	    if (userService.resetPassword(user) == null) {
 	    	ResponseMessage responseMessage = new ResponseMessage(

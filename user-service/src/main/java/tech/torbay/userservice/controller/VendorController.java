@@ -32,14 +32,14 @@ import tech.torbay.userservice.statusmessage.ResponseMessage;
 
 
 @RestController
-@RequestMapping("api/")
+@RequestMapping("/api")
 @Api(value = "Vendor Resource REST Endpoint", description = "Shows the vendor info")
 public class VendorController {
 	
 	@Autowired
 	private VendorService vendorService;
 	
-	@ApiOperation(value = "Fetching All vendor users details")
+	@ApiOperation(value = "Fetching All vendor users details in Condonuity Application")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "Successful All Vendor Details")
@@ -74,16 +74,43 @@ public class VendorController {
                     @ApiResponse(code = 200, message = "A vendor details fetched successfully")
             }
     )
-	@GetMapping("vendor/org/{id}")
-	public ResponseEntity<Object> getUserById(@PathVariable("id") Integer id) {
+	@GetMapping("/vendor/org/{id}")
+	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer id) {
 		VendorOrganisation vendorOrganisation = vendorService.getVendorOrganisationById(id);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorOrganisation != null) {
 			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			response.put("statusMessage", "Success");
-			response.put("responseMessage", "Vendor details fetched successfully");
+			response.put("responseMessage", "Vendor Organisation details fetched successfully");
 			response.put("vendor", vendorOrganisation);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetch A vendor organisation Users and other information Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A vendor organisation Users and other information fetched successfully")
+            }
+    )
+	@GetMapping("/vendor/org/account/{id}")
+	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("id") Integer id) {
+		List<VendorUser> vendorUsers = vendorService.getVendorOrganisationUsersById(id);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(vendorUsers != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor Organisation Account details fetched successfully");
+			response.put("vendorUsers", vendorUsers);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {
@@ -101,7 +128,7 @@ public class VendorController {
                     @ApiResponse(code = 200, message = "A vendor user details fetched successfully")
             }
     )
-	@GetMapping("vendor/user/{id}")
+	@GetMapping("/vendor/user/{id}")
 	public ResponseEntity<Object> getVendorUserById(@PathVariable("id") Integer id) {
 		VendorUser vendorUser = vendorService.getVendorUserById(id);
 		
@@ -122,14 +149,14 @@ public class VendorController {
 		}
 	}
 	
-	@ApiOperation(value = "Fetching All Vendor Details as List")
+	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "All Vendor details fetched successfully in Condonuity Application")
+                    @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
             }
     )
-	@GetMapping("vendor/orgs")
-	public ResponseEntity<Object> getAllVendors() {
+	@GetMapping("/vendor/orgs")
+	public ResponseEntity<Object> getAllVendorOrganisations() {
 		List<VendorOrganisation> list = vendorService.getAllVendorOrganisations();
 		
 		HashMap<String, Object> response = new HashMap();
@@ -155,8 +182,8 @@ public class VendorController {
                     @ApiResponse(code = 200, message = "vendor user details updated successfully")
             }
     )
-	@PutMapping("vendor/user")
-	public ResponseEntity<Object> updateUser(@RequestBody VendorUser vendorUser) {
+	@PutMapping("/vendor/user")
+	public ResponseEntity<Object> updateVendorUser(@RequestBody VendorUser vendorUser) {
 		if(vendorService.updateVendorUser(vendorUser) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),
@@ -176,11 +203,11 @@ public class VendorController {
 	@ApiOperation(value = "Vendor update Implementation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "vendor details updated successfully")
+                    @ApiResponse(code = 200, message = "vendor organisation details updated successfully")
             }
     )
-	@PutMapping("vendor/org")
-	public ResponseEntity<Object> updateVendor(@RequestBody VendorOrganisation vendorOrganisation) {
+	@PutMapping("/vendor/org")
+	public ResponseEntity<Object> updateVendorOrganisation(@RequestBody VendorOrganisation vendorOrganisation) {
 		if(vendorService.updateVendorOrganisation(vendorOrganisation) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),

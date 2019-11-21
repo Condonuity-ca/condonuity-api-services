@@ -32,7 +32,7 @@ import tech.torbay.securityservice.statusmessage.ResponseMessage;
 
 
 @RestController
-@RequestMapping("api/")
+@RequestMapping("/api")
 @Api(value = "Vendor Resource REST Endpoint", description = "Shows the vendor info")
 public class VendorController {
 	
@@ -46,7 +46,7 @@ public class VendorController {
                     @ApiResponse(code = 201, message = "Successfully New Vendor Registred")
             }
     )
-	@PostMapping("vendor/organisation/register/{vendorUserId}")
+	@PostMapping("/vendor/organisation/register/{vendorUserId}")
 	public ResponseEntity<Object> addUser(
 			@PathVariable("vendorUserId") Integer vendorUserId, 
 			@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
@@ -78,7 +78,7 @@ public class VendorController {
                     @ApiResponse(code = 201, message = "Successfully New Vendor User Registred")
             }
     )
-	@PostMapping("vendor/user/register")
+	@PostMapping("/vendor/user/register")
 	public ResponseEntity<Object> addVendorUser(@RequestBody VendorUser vendorUser, UriComponentsBuilder builder) {
 		
 		// check vendor user already exist or not
@@ -108,7 +108,7 @@ public class VendorController {
                     @ApiResponse(code = 200, message = "A vendor record exist already")
             }
     )
-	@GetMapping("vendor/user/{email}")
+	@GetMapping("/vendor/user/{email}")
 	public ResponseEntity<Object> vendorUserExists(@PathVariable("email") String email) {
 		VendorUser vendorUser = vendorService.findByEmail(email);
 		

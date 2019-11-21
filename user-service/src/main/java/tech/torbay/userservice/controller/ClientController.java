@@ -69,7 +69,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "A client details fetched successfully")
             }
     )
-	@GetMapping("client/user/{id}")
+	@GetMapping("/client/user/{id}")
 	public ResponseEntity<Object> getClientUserById(@PathVariable("id") Integer id) {
 		ClientUser client = clientService.getClientUserById(id);
 		
@@ -105,13 +105,13 @@ public class ClientController {
 		}
 	}
 	
-	@ApiOperation(value = "Fetching All clients details with in a Organisation")
+	@ApiOperation(value = "Fetching All clients details with in Condonuity Application")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "Successful All Client Details")
             }
     )
-	@GetMapping("client/users")
+	@GetMapping("/client/users")
 	public ResponseEntity<Object> getAllClients() {
 		List<ClientUser> list = clientService.getAllClientUsers();
 		
@@ -132,13 +132,13 @@ public class ClientController {
 		}
 	}
 	
-	@ApiOperation(value = "Fetching All clients details with in a Organisation")
+	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "Successful All Client Details")
             }
     )
-	@GetMapping("client/orgs")
+	@GetMapping("/client/orgs")
 	public ResponseEntity<Object> getAllClientOrganisations() {
 		List<ClientOrganisation> list = clientService.getAllClientOrganisations();
 		
@@ -165,7 +165,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "client details updated successfully")
             }
     )
-	@PutMapping("client/user")
+	@PutMapping("/client/user")
 	public ResponseEntity<Object> updateClientUser(@RequestBody ClientUser client) {
 		if(clientService.saveClient(client) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
@@ -188,7 +188,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "client organisation details updated successfully")
             }
     )
-	@PutMapping("client/org")
+	@PutMapping("/client/org")
 	public ResponseEntity<Object> updateOrganisation(@RequestBody ClientOrganisation clientOrg) {
 		if(clientService.updateOrganisation(clientOrg) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
@@ -211,7 +211,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "A Client Organisation details fetched successfully")
             }
     )
-	@GetMapping("client/org/{id}")
+	@GetMapping("/client/org/{id}")
 	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer id) {
 		ClientOrganisation organisation = clientService.getOrganisationById(id);
 		System.out.println("organisation : "+organisation.toString());
@@ -244,8 +244,9 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client Organisation Amenities Information Updated successfully")
             }
     )
-	@PutMapping("client/org/amenities/update")
+	@PutMapping("/client/org/amenity")
 	public ResponseEntity<Object> updateAmenities(@RequestBody ClientAmenities amenitiesInfo) {
+		System.out.println(amenitiesInfo);
         if (clientService.updateAmenities(amenitiesInfo) == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -273,7 +274,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client Corporation , Payment and Billing Informations fetched successfully")
             }
     )
-	@GetMapping("client/org/account/{orgId}")
+	@GetMapping("/client/org/account/{orgId}")
 	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("orgId") Integer id) {
 		List<ClientUser> clients = clientService.getAllClientsByOrganisation(id);
 		List<ClientOrganisationPayment> paymentBillingDetails = clientService.getPaymentBillingDetails(id);

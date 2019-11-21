@@ -16,4 +16,6 @@ public interface ClientAmenitiesRepository extends JpaRepository<ClientAmenities
     List<ClientAmenities> findAllByClientOrganisationId(Integer id);
     
 //    ClientAmenities findById(Integer id);
+    
+	ClientAmenities save(ClientAmenities clientAmenities);
 }

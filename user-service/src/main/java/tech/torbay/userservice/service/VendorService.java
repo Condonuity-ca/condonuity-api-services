@@ -48,7 +48,17 @@ public class VendorService {
 
 	public VendorOrganisation getVendorOrganisationById(Integer id) {
 		// TODO Auto-generated method stub
-		return vendorOrganisationRepository.findByVendorOrganisationId(id);
+		
+		try {
+			VendorOrganisation vO = vendorOrganisationRepository.findByVendorOrganisationId(id);
+			System.out.println(vO);
+			
+			return vO;
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null/* vendorOrganisationRepository.findByVendorOrganisationId(id) */;
 	}
 
 	public List<VendorOrganisation> getAllVendorOrganisations() {
@@ -64,6 +74,11 @@ public class VendorService {
 	public VendorOrganisation updateVendorOrganisation(VendorOrganisation vendorOrganisation) {
 		// TODO Auto-generated method stub
 		return vendorOrganisationRepository.save(vendorOrganisation);
+	}
+
+	public List<VendorUser> getVendorOrganisationUsersById(Integer id) {
+		// TODO Auto-generated method stub
+		return vendorUserRepository.findByVendorOrganisationId(id);
 	}
 }
 

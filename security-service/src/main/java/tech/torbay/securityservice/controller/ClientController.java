@@ -44,7 +44,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "A client record exist already")
             }
     )
-	@GetMapping("client/user/{email}")
+	@GetMapping("/client/user/{email}")
 	public ResponseEntity<Object> clientExists(@PathVariable("email") String email) {
 		ClientUser client = clientService.findByEmail(email);
 		
@@ -69,7 +69,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client User Accepted New Corporate Account Invitation")
             }
     )
-	@PostMapping("client/invite/accept")
+	@PostMapping("/client/invite/accept")
 	public ResponseEntity<Object> acceptInvite(
 			@PathVariable("organisationId") Integer organisationId, 
 			@PathVariable("clientUserType") Integer clientUserType, 
@@ -125,7 +125,7 @@ public class ClientController {
                     @ApiResponse(code = 201, message = "New Client User Record Created Successfully")
             }
     )
-	@PostMapping("client/user/register")
+	@PostMapping("/client/user/register")
 	public ResponseEntity<Object> registerClientUser(@RequestBody ClientUser client, UriComponentsBuilder builder) {
 		
 		// org_id
@@ -172,7 +172,7 @@ public class ClientController {
                     @ApiResponse(code = 201, message = "New Client User Record Created with in an Organisation Successfully")
             }
     )
-	@PostMapping("client/user/create")
+	@PostMapping("/client/user/create")
 	public ResponseEntity<Object> addClientUser(
 			@RequestParam("organisationId") Integer organisationId,
 			@RequestParam("clientUserType") Integer clientUserType, 
@@ -206,7 +206,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Successful New Client Organisation Registered")
             }
     )
-	@PostMapping("client/org/register/{clientId}")
+	@PostMapping("/client/org/register/{clientId}")
 	public ResponseEntity<Object> addClientCompany(
 			@RequestParam("clientId") Integer clientId,
 			@RequestBody ClientOrganisation organisation ,
