@@ -1,10 +1,26 @@
 package tech.torbay.securityservice.controller;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +32,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
+import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
@@ -28,12 +44,6 @@ import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -256,8 +266,6 @@ public class UserController {
 				.queryParam(encode("userId"), encode(String.valueOf(user.getUserId())))
 				.queryParam(encode("userType"), encode(String.valueOf(user.getUserType())))
 				.toUriString(); 
-		
-		
 		return query;
 	}
 	
@@ -290,6 +298,48 @@ public class UserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	    
+	}
+	
+	@ApiOperation(value = "Send Sample Welcome Email")
+	@ApiResponses(
+			value = {
+					@ApiResponse(code = 200, message = "New User password reset successfully")
+			}
+			)
+	@PostMapping("/user/welcomemail/{email}")
+	public ResponseEntity<Object> SendWelcomeEmail(@PathVariable("email") String email) {
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendEmailWithAttachment(email,"Sample Welcome Email");
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+		
+		//1
+//		TLSEmail tlsEmail = new TLSEmail();
+//		tlsEmail.main(new String[] {});
+//		tlsEmail.sendEmail(tlsEmail.getSession(), "prakash@torbay.tech", "subject", "body");
+		//2
+//		new SendEmail();
+		//3
+//		SSLEmail sslEmail = new SSLEmail();
+//		sslEmail.sendEmail(sslEmail.getSession(), "prakash.clds@gmail.com", "subject : SSLEmail Testing Subject", "body : SSLEmail Testing Body");
+		
+		ResponseMessage responseMessage = new ResponseMessage(
+    			APIStatusCode.REQUEST_FAILED.getValue(),
+        		"Success",
+        		"Welcome Mail Sent Successfully");
+		return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	}
 
 }

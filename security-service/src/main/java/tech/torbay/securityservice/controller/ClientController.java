@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import tech.torbay.securityservice.config.SecurityAES;
+import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
@@ -21,7 +24,10 @@ import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -160,11 +166,39 @@ public class ClientController {
 		        		APIStatusCode.REQUEST_SUCCESS.getValue(),
 		        		"Success",
 		        		"New Client Registered Successfully");
+		        try {
+		        	sendClientEmailVerification(clientUser);
+		        } catch(Exception exp) {
+		        	exp.printStackTrace();
+		        }
+		        
 		        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
 	        }
 		}
 	}
 	
+	private void sendClientEmailVerification(ClientUser clientUser) {
+		// TODO Auto-generated method stub
+		SecurityAES securityAES = new SecurityAES();
+		String content = securityAES.getRegisterEncodedURL(clientUser.getEmail(), clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendEmailWithAttachment(clientUser.getEmail(), content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+
 	@ApiOperation(value = "Add new Client in an Organisation")
     @ApiResponses(
             value = {

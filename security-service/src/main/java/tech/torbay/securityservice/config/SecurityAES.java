@@ -1,5 +1,6 @@
 package tech.torbay.securityservice.config;
 
+import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
@@ -9,6 +10,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.web.util.UriComponentsBuilder;
+
+import tech.torbay.securityservice.entity.User;
 
 public class SecurityAES {
 	
@@ -58,5 +63,23 @@ public class SecurityAES {
 	    }
 	    return null;
 	}
+	
+	
+	public String encode(String raw) {
+	    return Base64.getUrlEncoder()
+	            .withoutPadding()
+	            .encodeToString(raw.getBytes(StandardCharsets.UTF_8));
+	}
 
+	public String getRegisterEncodedURL(String email, Integer userId, int userType) {
+		// TODO Auto-generated method stub
+//		String query = UriComponentsBuilder.fromHttpUrl("http://localhost:8383/api/user/resetPassword")
+		String query = UriComponentsBuilder.fromHttpUrl("http://condonuity1.onlinedemo.co/auth/login")
+				.queryParam(encode("username"), encode(email))
+				.queryParam(encode("userId"), encode(String.valueOf(userId)))
+				.queryParam(encode("userType"), encode(String.valueOf(userType)))
+				.toUriString(); 
+		
+		return query;
+	}
 }

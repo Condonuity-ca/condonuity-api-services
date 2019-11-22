@@ -1,8 +1,11 @@
 package tech.torbay.securityservice.controller;
 
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +26,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.securityservice.config.SecurityAES;
+import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
@@ -47,7 +53,7 @@ public class VendorController {
             }
     )
 	@PostMapping("/vendor/organisation/register/{vendorUserId}")
-	public ResponseEntity<Object> addUser(
+	public ResponseEntity<Object> addVendorOrganisation(
 			@PathVariable("vendorUserId") Integer vendorUserId, 
 			@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
 		
@@ -97,10 +103,40 @@ public class VendorController {
         			APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
 	        		"New Vendor User Created Successfully");
+        	
+        	try {
+	        	sendVendorEmailVerification(vendor_user);
+	        } catch(Exception exp) {
+	        	exp.printStackTrace();
+	        }
+        	
         	return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);	
         }
         
 	}
+	
+	private void sendVendorEmailVerification(VendorUser vendorUser) {
+		// TODO Auto-generated method stub
+		SecurityAES securityAES = new SecurityAES();
+		String content = securityAES.getRegisterEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendEmailWithAttachment(vendorUser.getEmail(), content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+
 	
 	@ApiOperation(value = "Vendor existance check with Email")
     @ApiResponses(
