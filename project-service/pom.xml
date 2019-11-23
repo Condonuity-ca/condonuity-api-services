@@ -64,6 +64,12 @@
             <version>2.6.1</version>
             <scope>compile</scope>
         </dependency>
+        <!-- For Development Purpose Devtool used for instance restart without actual restart manually -->
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -75,6 +81,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+				<groupId>tech.torbay</groupId>
+			    <artifactId>config-server</artifactId>
+			    <version>0.0.1-SNAPSHOT</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 

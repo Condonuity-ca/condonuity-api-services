@@ -1,5 +1,8 @@
 package tech.torbay.userservice.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
 
 import tech.torbay.userservice.constants.Constants;
@@ -7,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@Table(name = "organisation")
+@Table(name = "client_organisation")
 public class ClientOrganisation {
 
     public ClientOrganisation() {
@@ -15,14 +18,13 @@ public class ClientOrganisation {
     }
     
     @Id
-    private Integer organisationId = 0;
+    private Integer clientOrganisationId = 0;
     private Integer userType = Constants.UserType.CLIENT.getValue();
-    private Integer userRole = Constants.UserRole.NOT_AVAILABLE.getValue();
 	private String organisationName = "";
     private String managementCompany = "";
     private String corporateNumber = "";
     private String registrationDate = "";
-    private String adminEmail = "";
+//    private String adminEmail = "";
     private String generalEmail = "";
     private String managementEmail = "";
     private String boardEmail = "";
@@ -30,7 +32,7 @@ public class ClientOrganisation {
     private String city = "";
     private String province = "";
     private String postalCode = "";
-    private int countryCode = 0;
+    private String countryCode = "";
     private String phoneNumber = "";
     private String faxNumber = "";
     private int units = 0;
@@ -38,20 +40,35 @@ public class ClientOrganisation {
     private String managerName = "";
     private String managerEmail = "";
     private String managerPhone = "";
-    private String createdAt = "";
-//    private ClientAmenities amenities;
+    private String createdAt;
+    private String modifiedDate;
     
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
+//	private List<ClientAmenities> amenities = new ArrayList<>();
+//    
+//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
+//	private List<ClientAssociation> clientAssociations = new ArrayList<>();
+
+	public String getModifiedDate() {
+		return modifiedDate;
+	}
+
+
+	public void setModifiedDate(String modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+
 	@Override
 	public String toString() {
-		return "Organisation [organisationId=" + organisationId + ", userType=" + userType + ", userRole=" + userRole
+		return "Client Organisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType 
 				+ ", organisationName=" + organisationName + ", managementCompany=" + managementCompany
-				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", adminEmail="
-				+ adminEmail + ", generalEmail=" + generalEmail + ", managementEmail=" + managementEmail
+				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail=" + generalEmail + ", managementEmail=" + managementEmail
 				+ ", boardEmail=" + boardEmail + ", address=" + address + ", city=" + city + ", province=" + province
 				+ ", postalCode=" + postalCode + ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber
 				+ ", faxNumber=" + faxNumber + ", units=" + units + ", votingUnits=" + votingUnits + ", managerName="
 				+ managerName + ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt="
-				+ createdAt /* + ", amenities=" + amenities */+ "]";
+				+ createdAt + "]";
 	}
 	
 	
@@ -119,11 +136,11 @@ public class ClientOrganisation {
 	 * public ClientAmenities getAmenities() { return amenities; } public void
 	 * setAmenities(ClientAmenities amenities) { this.amenities = amenities; }
 	 */
-	public Integer getOrganisationId() {
-		return organisationId;
+	public Integer getClientOrganisationId() {
+		return clientOrganisationId;
 	}
-	public void setOrganisationId(Integer organisationId) {
-		this.organisationId = organisationId;
+	public void setClientOrganisationId(Integer organisationId) {
+		this.clientOrganisationId = organisationId;
 	}
 	public Integer getUserType() {
 		return userType;
@@ -155,12 +172,6 @@ public class ClientOrganisation {
 	public void setRegistrationDate(String registrationDate) {
 		this.registrationDate = registrationDate;
 	}
-	public String getAdminEmail() {
-		return adminEmail;
-	}
-	public void setAdminEmail(String adminEmail) {
-		this.adminEmail = adminEmail;
-	}
 	public String getAddress() {
 		return address;
 	}
@@ -185,10 +196,10 @@ public class ClientOrganisation {
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
-	public int getCountryCode() {
+	public String getCountryCode() {
 		return countryCode;
 	}
-	public void setCountryCode(int countryCode) {
+	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
 	public String getPhoneNumber() {
@@ -196,12 +207,6 @@ public class ClientOrganisation {
 	}
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-	public Integer getUserRole() {
-		return userRole;
-	}
-	public void setUserRole(Integer userRole) {
-		this.userRole = userRole;
 	}
 	public String getFaxNumber() {
 		return faxNumber;

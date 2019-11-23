@@ -15,22 +15,15 @@ public class VendorUser {
     }
     @Id
     private Integer userId = 0;
-	private Integer vendorId = 0;
+	private Integer vendorOrganisationId = 0;
 	private Integer userType = Constants.UserType.VENDOR.getValue();
     private Integer userRole = Constants.UserRole.USER.getValue();
     private String legalName = "";
     private String email = "";
-    private String username = "";
-    private String password = "";
-	private Integer status = 0;
-    private String createdDate = "";
-    
-    public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
+	private Integer accountStatus = 0;
+	private Integer accountVerificationStatus = 0;
+    private String createdAt;
+    private String modifiedDate;
     
 	public Integer getUserId() {
 		return userId;
@@ -38,11 +31,11 @@ public class VendorUser {
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
-	public Integer getVendorId() {
-		return vendorId;
+	public Integer getVendorOrganisationId() {
+		return vendorOrganisationId;
 	}
-	public void setVendorId(Integer vendorId) {
-		this.vendorId = vendorId;
+	public void setVendorOrganisationId(Integer vendorOrganisationId) {
+		this.vendorOrganisationId = vendorOrganisationId;
 	}
 	public Integer getUserType() {
 		return userType;
@@ -68,25 +61,37 @@ public class VendorUser {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public Integer getStatus() {
-		return status;
+	public Integer getAccountStatus() {
+		return accountStatus;
 	}
-	public void setStatus(Integer status) {
-		this.status = status;
+	public void setAccountStatus(Integer accountStatus) {
+		this.accountStatus = accountStatus;
 	}
-	public String getCreatedDate() {
-		return createdDate;
+	public Integer getAccountVerificationStatus() {
+		return accountVerificationStatus;
 	}
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
+	public void setAccountVerificationStatus(Integer accountVerificationStatus) {
+		this.accountVerificationStatus = accountVerificationStatus;
+	}
+	public String getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+	public String getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(String modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 	
 	@Override
 	public String toString() {
-		return "VendorUser [userId=" + userId + ", vendorId=" + vendorId + ", userType=" + userType + ", userRole="
-				+ userRole + ", legalName=" + legalName + ", email=" + email + ", username=" + username + ", password="
-				+ password + ", status=" + status + ", createdDate=" + createdDate + "]";
+		return "VendorUser [userId=" + userId + ", vendorOrganisationId=" + vendorOrganisationId + ", userType="
+				+ userType + ", userRole=" + userRole + ", legalName=" + legalName + ", email=" + email
+				+ ", accountStatus=" + accountStatus + ", accountVerificationStatus=" + accountVerificationStatus
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
-
 	
 }

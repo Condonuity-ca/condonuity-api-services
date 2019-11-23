@@ -25,7 +25,7 @@
         <module>gateway-server</module>
         <module>user-service</module>
         <module>auth-service</module>
-        <module>client-service</module>
+        <module>security-service</module>
         <module>project-service</module>
     </modules>
 

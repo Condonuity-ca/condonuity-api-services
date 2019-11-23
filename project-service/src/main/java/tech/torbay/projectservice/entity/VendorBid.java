@@ -2,8 +2,10 @@ package tech.torbay.projectservice.entity;
 
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 
+@Entity
 public class VendorBid {
 	
 	public VendorBid() {
@@ -15,8 +17,6 @@ public class VendorBid {
     private Integer projectId = 0;
     private Integer vendorId = 0;
     private Integer clientId = 0;
-    private String createdDate;
-    private String modifiedDate;
     private String vendorStartDate;
     private String vendorCompletionDate;
     private String vendorProjectDuration;
@@ -26,23 +26,25 @@ public class VendorBid {
     private String reasonForChoose;
     private String bidPrice;
     private int bidStatus;
-    private List<BiddingProducts> biddingProducts;
+    private String createdAt;
+    private String modifiedDate;
+//    private List<BiddingProducts> biddingProducts;
     
     
     @Override
 	public String toString() {
 		return "VendorBid [Id=" + bidId + ", projectId=" + projectId + ", vendorId=" + vendorId + ", clientId=" + clientId
-				+ ", createdDate=" + createdDate + ", modifiedDate=" + modifiedDate + ", vendorStartDate="
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", vendorStartDate="
 				+ vendorStartDate + ", vendorCompletionDate=" + vendorCompletionDate + ", vendorProjectDuration="
 				+ vendorProjectDuration + ", inScope=" + inScope + ", outOfScope=" + outOfScope + ", preRequisite="
 				+ preRequisite + ", reasonForChoose=" + reasonForChoose + ", bidPrice=" + bidPrice
-				+ ", bidsStatus=" + bidStatus + ", biddingProducts=" + biddingProducts + "]";
+				+ ", bidsStatus=" + bidStatus + "]";
 	}
     
-	public Integer getId() {
+	public Integer getBidId() {
 		return bidId;
 	}
-	public void setId(Integer id) {
+	public void setBidId(Integer id) {
 		bidId = id;
 	}
 	public Integer getProjectId() {
@@ -63,11 +65,11 @@ public class VendorBid {
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
 	}
-	public String getCreatedDate() {
-		return createdDate;
+	public String getCreatedAt() {
+		return createdAt;
 	}
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
 	}
 	public String getModifiedDate() {
 		return modifiedDate;
@@ -128,12 +130,6 @@ public class VendorBid {
 	}
 	public void setBidStatus(int bidStatus) {
 		this.bidStatus = bidStatus;
-	}
-	public List<BiddingProducts> getBiddingProducts() {
-		return biddingProducts;
-	}
-	public void setBiddingProducts(List<BiddingProducts> biddingProducts) {
-		this.biddingProducts = biddingProducts;
 	}
     
 }

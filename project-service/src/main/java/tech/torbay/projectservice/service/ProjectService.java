@@ -35,9 +35,14 @@ public class ProjectService {
 		return projectRepository.findByProjectId(projectId);
 	}
 
-	public Project createPostProject(Project project) {
+	public Project createProject(Project project) {
 		// TODO Auto-generated method stub
+		try {
 		return projectRepository.save(project);
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
 	}
 
 	public VendorBid createProjectBid(VendorBid vendorBid) {
@@ -52,7 +57,7 @@ public class ProjectService {
 
 	public List<Project> getAllProjects(ProjectSortBy past, Integer id) {
 		// TODO Auto-generated method stub
-		return null;
+		return projectRepository.findAllByClientOrganisationIdAndStatus(id, past.getValue());
 	}
 
 	public ProjectQuestionAnswer createProjectQuestion(ProjectQuestionAnswer projectQA) {
@@ -73,6 +78,11 @@ public class ProjectService {
 	public ProjectQuestionAnswer answerProjectQuestion(ProjectQuestionAnswer projectQA) {
 		// TODO Auto-generated method stub
 		return projectQARepository.save(projectQA);
+	}
+
+	public List<Project> getAllProjects(Integer id) {
+		// TODO Auto-generated method stub
+		return projectRepository.findAll();
 	}
 }
 

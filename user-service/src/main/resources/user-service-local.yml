@@ -13,8 +13,8 @@ spring:
 #    password: A#C<)}5gCnP8qQv
     url: jdbc:mysql://localhost:3306/condonuitydev?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root
-    password: rootpass
-#    driver-class-name: com.mysql.jdbc.Driver
+    password: 
+    driver-class-name: com.mysql.jdbc.Driver
 
 spring.jpa:
   hibernate:

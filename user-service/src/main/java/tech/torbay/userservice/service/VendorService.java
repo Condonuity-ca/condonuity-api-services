@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
-import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
@@ -21,20 +20,14 @@ public class VendorService {
 	@Autowired
 	VendorOrganisationRepository vendorOrganisationRepository;
 
-	public List<VendorUser> findAll() {
+	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
 		return Lists.newArrayList(vendorUserRepository.findAll());
 	}
 	
-	public VendorOrganisation findByVendorOrgId(Integer id) {
-		// TODO Auto-generated method stub
-		return vendorOrganisationRepository.findByVendorOrgId(id);
-	}
-
-	public VendorUser findByEmail(String email) {
+	public VendorUser findVendorUserByEmail(String email) {
 		// TODO Auto-generated method stub
 		VendorUser client = vendorUserRepository.findByEmail(email);
-		System.out.println(client.toString());
 		return client;
 	}
 
@@ -48,9 +41,44 @@ public class VendorService {
 		return vendorOrganisationRepository.save(vendorOrganisation);
 	}
 
-	public VendorUser findByVendorUserId(Integer userId) {
+	public VendorUser getVendorUserById(Integer userId) {
 		// TODO Auto-generated method stub
-		return null;
+		return vendorUserRepository.findByUserId(userId);
+	}
+
+	public VendorOrganisation getVendorOrganisationById(Integer id) {
+		// TODO Auto-generated method stub
+		
+		try {
+			VendorOrganisation vO = vendorOrganisationRepository.findByVendorOrganisationId(id);
+			System.out.println(vO);
+			
+			return vO;
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null/* vendorOrganisationRepository.findByVendorOrganisationId(id) */;
+	}
+
+	public List<VendorOrganisation> getAllVendorOrganisations() {
+		// TODO Auto-generated method stub
+		return vendorOrganisationRepository.findAll();
+	}
+
+	public VendorUser updateVendorUser(VendorUser vendorUser) {
+		// TODO Auto-generated method stub
+		return vendorUserRepository.save(vendorUser);
+	}
+
+	public VendorOrganisation updateVendorOrganisation(VendorOrganisation vendorOrganisation) {
+		// TODO Auto-generated method stub
+		return vendorOrganisationRepository.save(vendorOrganisation);
+	}
+
+	public List<VendorUser> getVendorOrganisationUsersById(Integer id) {
+		// TODO Auto-generated method stub
+		return vendorUserRepository.findByVendorOrganisationId(id);
 	}
 }
 

@@ -1,10 +1,12 @@
 package tech.torbay.userservice.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import tech.torbay.userservice.entity.ClientUser;
-
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import tech.torbay.userservice.entity.ClientUser;
 
 @Repository
 public interface ClientUserRepository extends JpaRepository<ClientUser, Integer> {
@@ -13,5 +15,10 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
 
     ClientUser findByClientId(Integer Id);
     
-    ClientUser findByEmail(String email);   
+    ClientUser findByEmail(String email);
+
+    @Query("select cu from ClientUser cu where cu.clientId IN (?1)")
+	List<ClientUser> findByClientId(List<Integer> ids);
+
+//	List<ClientOrganisation> findClientOrganisationByClientId();
 }

@@ -34,7 +34,7 @@ import tech.torbay.projectservice.statusmessage.ResponseMessage;
 
 
 @RestController
-@RequestMapping("api/condonuity/")
+@RequestMapping("/api")
 @Api(value = "Project Resource REST Endpoint", description = "Shows the Projects info")
 public class ProjectController {
 	
@@ -47,9 +47,9 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "Success with All Projects Details")
             }
     )
-	@GetMapping("projects/all/client/{orgId}")
+	@GetMapping("/projects/all/client/organisation/{orgId}")
 	public ResponseEntity<Object> getAllProjects(@PathVariable("orgId") Integer id) {
-		List<Project> list = projectService.getAllProjects(ProjectSortBy.All,id);
+		List<Project> list = projectService.getAllProjects(id);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -74,7 +74,7 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "Success with Current Projects Details")
             }
     )
-	@GetMapping("projects/current/client/{orgId}")
+	@GetMapping("/projects/current/client/organisation/{orgId}")
 	public ResponseEntity<Object> getCurrentProjects(@PathVariable("orgId") Integer id) {
 		List<Project> list = projectService.getAllProjects(ProjectSortBy.Current,id);
 		
@@ -101,7 +101,7 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "Success with All Past Projects Details")
             }
     )
-	@GetMapping("projects/history/client/{orgId}")
+	@GetMapping("/projects/history/client/organisation/{orgId}")
 	public ResponseEntity<Object> getHistoryProjects(@PathVariable("orgId") Integer id) {
 		List<Project> list = projectService.getAllProjects(ProjectSortBy.Past,id);
 		
@@ -128,10 +128,10 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "Project Created/Published successfully")
             }
     )
-	@PostMapping("client/project/create")
-	public ResponseEntity<Object> createPostProject(@RequestBody Project project) {
+	@PostMapping("/client/project/create")
+	public ResponseEntity<Object> createProject(@RequestBody Project project) {
 		
-		project = projectService.createPostProject(project);
+		project = projectService.createProject(project);
         if (project == null) {
      
         	ResponseMessage responseMessage = null;
@@ -140,62 +140,8 @@ public class ProjectController {
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Failed",
-            			"Failed to Create Project Bid");
-        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Failed",
-            			"Failed to Post Project Bid");
-        		
-        	}
-        	
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-        } else {
-		/*
-		 * HttpHeaders headers = new HttpHeaders();
-		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
-		 * organisation.getOrganisationId()).toUri());
-		 */
-        	ResponseMessage responseMessage = null;
-        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
-            
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Success",
-                		"Project Bid created successfully");
-        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Success",
-                		"Project Bid posted successfully");
-        		
-        	}
-        	
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-        }
-        
-	}
-	
-	
-	@ApiOperation(value = "Vendor Project Bid Creation and Posting implementation")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Project Bid Created/Posted successfully")
-            }
-    )
-	@PostMapping("vendor/project/bid/create")
-	public ResponseEntity<Object> createProjectBid(@RequestBody VendorBid vendorBid) {
-		vendorBid = projectService.createProjectBid(vendorBid);
-        if (vendorBid == null) {
-     
-        	ResponseMessage responseMessage = null;
-        	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
-            
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Failed",
             			"Failed to Create Project");
-        	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
+        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Failed",
@@ -211,17 +157,71 @@ public class ProjectController {
 		 * organisation.getOrganisationId()).toUri());
 		 */
         	ResponseMessage responseMessage = null;
-        	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
             
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Success",
                 		"Project created successfully");
-        	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
+        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
         		responseMessage = new ResponseMessage(
                 		StatusCode.REQUEST_SUCCESS.getValue(),
                 		"Success",
                 		"Project posted successfully");
+        		
+        	}
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        }
+        
+	}
+	
+	
+	@ApiOperation(value = "Vendor Project Bid Creation and Posting implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Bid Created/Posted successfully")
+            }
+    )
+	@PostMapping("/vendor/project/bid/create")
+	public ResponseEntity<Object> createProjectBid(@RequestBody VendorBid vendorBid) {
+		vendorBid = projectService.createProjectBid(vendorBid);
+        if (vendorBid == null) {
+     
+        	ResponseMessage responseMessage = null;
+        	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+            
+        		responseMessage = new ResponseMessage(
+                		StatusCode.REQUEST_SUCCESS.getValue(),
+                		"Failed",
+            			"Failed to Create Project Bid");
+        	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
+        		responseMessage = new ResponseMessage(
+                		StatusCode.REQUEST_SUCCESS.getValue(),
+                		"Failed",
+            			"Failed to Post Project Bid");
+        		
+        	}
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+		/*
+		 * HttpHeaders headers = new HttpHeaders();
+		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
+		 * organisation.getOrganisationId()).toUri());
+		 */
+        	ResponseMessage responseMessage = null;
+        	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+            
+        		responseMessage = new ResponseMessage(
+                		StatusCode.REQUEST_SUCCESS.getValue(),
+                		"Success",
+                		"Project Bid created successfully");
+        	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
+        		responseMessage = new ResponseMessage(
+                		StatusCode.REQUEST_SUCCESS.getValue(),
+                		"Success",
+                		"Project Bid posted successfully");
         		
         	}
         	
@@ -236,7 +236,7 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "Project Question Posted successfully")
             }
     )
-	@PostMapping("projects/question/create")
+	@PostMapping("/projects/question/create")
 	public ResponseEntity<Object> createProjectQuestion(@RequestBody ProjectQuestionAnswer projectQA) {
 		projectQA = projectService.createProjectQuestion(projectQA);
         if (projectQA == null) {
@@ -268,7 +268,7 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "A Project details fetched successfully")
             }
     )
-	@GetMapping("projects/{id}")
+	@GetMapping("/projects/{id}")
 	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer id) {
 
 		Project project = projectService.findByProjectId(id);
@@ -301,7 +301,7 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "Project Question Answered successfully")
             }
     )
-	@PutMapping("projects/question/answer")
+	@PutMapping("/projects/question/answer")
 	public ResponseEntity<Object> answerProjectQuestion(@RequestBody ProjectQuestionAnswer projectQA) {
 		projectQA = projectService.answerProjectQuestion(projectQA);
         if (projectQA == null) {

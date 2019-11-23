@@ -7,14 +7,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@Table(name = "vendor")
+@Table(name = "vendor_organisation")
 public class VendorOrganisation {
 
     public VendorOrganisation() {
 
     }
     @Id
-	private Integer vendorOrgId = 0;
+	private Integer vendorOrganisationId = 0;
     private Integer userType = Constants.UserType.VENDOR.getValue();
     private String legalName = "";
     private String companyName = "";
@@ -27,25 +27,47 @@ public class VendorOrganisation {
     private String contactPersonEmail ="";
     private String contactPersonPhone ="";
     private String email = "";
-    private String adminEmail = "";
 	private String phoneNumber = "";
     private String faxNumber = "";
     private String website = "";
     private String expertiseCategory = "";
     private String logoName = "";
-    private Integer rating = 0;
     private String address = "";
     private String city = "";
     private String province = "";
     private String postalCode = "";
-    private Integer countryCode = 0;
-	private String createdDate = "";
-    
-	public Integer getVendorId() {
-		return vendorOrgId;
+    private String countryCode = "";
+    private String vendorServicesCities = "";
+    private String vendorServices = "";
+    private String products = "";
+    private String brands = "";
+    private String licenses = "";
+    private String memberships = "";
+	private String createdAt;
+	private String modifiedDate;
+	
+	
+    @Override
+	public String toString() {
+		return "VendorOrganisation [vendorOrganisationId=" + vendorOrganisationId + ", userType=" + userType
+				+ ", legalName=" + legalName + ", companyName=" + companyName + ", establishedDate=" + establishedDate
+				+ ", searchTerms=" + searchTerms + ", employeesCount=" + employeesCount + ", annualRevenue="
+				+ annualRevenue + ", description=" + description + ", contactPerson=" + contactPerson
+				+ ", contactPersonEmail=" + contactPersonEmail + ", contactPersonPhone=" + contactPersonPhone
+				+ ", email=" + email + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber + ", website="
+				+ website + ", expertiseCategory=" + expertiseCategory + ", logoName=" + logoName + ", address="
+				+ address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
+				+ ", countryCode=" + countryCode + ", vendorServicesCities=" + vendorServicesCities
+				+ ", vendorServices=" + vendorServices + ", products=" + products + ", brands=" + brands + ", licenses="
+				+ licenses + ", memberships=" + memberships + ", createdAt=" + createdAt + ", modifiedDate="
+				+ modifiedDate + "]";
 	}
-	public void setVendorId(Integer vendorId) {
-		this.vendorOrgId = vendorId;
+    
+	public Integer getVendorOrganisationId() {
+		return vendorOrganisationId;
+	}
+	public void setVendorOrganisationId(Integer vendorOrganisationId) {
+		this.vendorOrganisationId = vendorOrganisationId;
 	}
 	public Integer getUserType() {
 		return userType;
@@ -119,12 +141,6 @@ public class VendorOrganisation {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getAdminEmail() {
-		return adminEmail;
-	}
-	public void setAdminEmail(String adminEmail) {
-		this.adminEmail = adminEmail;
-	}
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -155,12 +171,6 @@ public class VendorOrganisation {
 	public void setLogoName(String logoName) {
 		this.logoName = logoName;
 	}
-	public Integer getRating() {
-		return rating;
-	}
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
 	public String getAddress() {
 		return address;
 	}
@@ -185,30 +195,59 @@ public class VendorOrganisation {
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
-	public Integer getCountryCode() {
+	public String getCountryCode() {
 		return countryCode;
 	}
-	public void setCountryCode(Integer countryCode) {
+	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
-	public String getCreatedDate() {
-		return createdDate;
+	public String getVendorServicesCities() {
+		return vendorServicesCities;
 	}
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
+	public void setVendorServicesCities(String vendorServicesCities) {
+		this.vendorServicesCities = vendorServicesCities;
 	}
-    
-	@Override
-	public String toString() {
-		return "Vendor [vendorId=" + vendorOrgId + ", userType=" + userType + ", legalName=" + legalName + ", companyName="
-				+ companyName + ", establishedDate=" + establishedDate + ", searchTerms=" + searchTerms
-				+ ", employeesCount=" + employeesCount + ", annualRevenue=" + annualRevenue + ", description="
-				+ description + ", contactPerson=" + contactPerson + ", contactPersonEmail=" + contactPersonEmail
-				+ ", contactPersonPhone=" + contactPersonPhone + ", email=" + email + ", adminEmail=" + adminEmail
-				+ ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber + ", website=" + website
-				+ ", expertiseCategory=" + expertiseCategory + ", logoName=" + logoName + ", rating=" + rating
-				+ ", address=" + address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
-				+ ", countryCode=" + countryCode + ", createdDate=" + createdDate + "]";
+	public String getVendorServices() {
+		return vendorServices;
 	}
-
+	public void setVendorServices(String vendorServices) {
+		this.vendorServices = vendorServices;
+	}
+	public String getProducts() {
+		return products;
+	}
+	public void setProducts(String products) {
+		this.products = products;
+	}
+	public String getBrands() {
+		return brands;
+	}
+	public void setBrands(String brands) {
+		this.brands = brands;
+	}
+	public String getLicenses() {
+		return licenses;
+	}
+	public void setLicenses(String licenses) {
+		this.licenses = licenses;
+	}
+	public String getMemberships() {
+		return memberships;
+	}
+	public void setMemberships(String memberships) {
+		this.memberships = memberships;
+	}
+	public String getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+	public String getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(String modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	
 }

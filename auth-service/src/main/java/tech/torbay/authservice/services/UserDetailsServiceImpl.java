@@ -11,6 +11,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import tech.torbay.authservice.entity.LoginUser;
+import tech.torbay.authservice.repository.UserRepository;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,19 +24,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private BCryptPasswordEncoder encoder;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         // hard coding the users. All passwords must be encoded.
-        final List<AppUser> users = Arrays.asList(
-                new AppUser(1, "manav", encoder.encode("12345"), "USER"),
-                new AppUser(2, "admin", encoder.encode("12345"), "ADMIN"),
-                new AppUser(3, "nagaraj", encoder.encode("12345"), "ADMIN"),
-                new AppUser(4, "manoj", encoder.encode("12345"), "ADMIN"),
-                new AppUser(5, "prakash", encoder.encode("12345"), "ADMIN")
-        );
+        final List<AppUser> users = new ArrayList();
 
+        final List<LoginUser> app_users = userRepository.findAll();
+        
+        for (LoginUser user : app_users) {
+        	users.add(new AppUser(1, user.getUsername(), encoder.encode(user.getPassword()), "ADMIN"));
+        	System.out.println(user.toString());
+        }
 
         for(AppUser appUser: users) {
             if(appUser.getUsername().equals(username)) {

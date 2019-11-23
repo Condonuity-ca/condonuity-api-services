@@ -6,27 +6,26 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@Table(name = "organisation_amenities_info")
+@Table(name = "client_organisation_amenities")
 public class ClientAmenities {
 	
 	public ClientAmenities() {
 	
 	}
 	@Id
-	private int id;
-	private int organisationId;
-	private int gym;
-	private int partyRoom;
-	private int swimPool;
-	private int parking;
-	private int poolIndoor;
-	private int poolOutdoor;
-	private int parkingGroundLevel;
-	private int parkingUnderGround;
-	private int GroundLevelParkingSpots;
-	private int UnderGroundParkingSpots;
-	private int elevatorsCount;
-	private String otherInformation;
+	@GeneratedValue(strategy=GenerationType.AUTO)  
+	private Integer id = 0;
+	
+//	@ManyToOne
+//    @JoinColumn(name = "client_organisation_id")
+//	private ClientOrganisation clientOrganisation;
+	
+	private Integer clientOrganisationId = 0;
+	private String amenitiesName = "";
+	private String amenitiesType = "";
+	private Integer amenitiesCount = 0;
+	private String createdAt;
+	private String modifiedDate;
 	
 	public int getId() {
 		return id;
@@ -34,93 +33,48 @@ public class ClientAmenities {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getOrganisationId() {
-		return organisationId;
+	public int getClientOrganisationId() {
+		return clientOrganisationId/* clientOrganisation.getClientOrganisationId() */;
 	}
-	public void setOrganisationId(int organisationId) {
-		this.organisationId = organisationId;
+	public void setClientOrganisationId(int clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId/*.setClientOrganisationId(clientOrganisationId)*/;
 	}
-	public int getGym() {
-		return gym;
+	public String getAmenitiesName() {
+		return amenitiesName;
 	}
-	public void setGym(int gym) {
-		this.gym = gym;
+	public void setAmenitiesName(String amenitiesName) {
+		this.amenitiesName = amenitiesName;
 	}
-	public int getPartyRoom() {
-		return partyRoom;
+	public String getAmenitiesType() {
+		return amenitiesType;
 	}
-	public void setPartyRoom(int partyRoom) {
-		this.partyRoom = partyRoom;
+	public void setAmenitiesType(String amenitiesType) {
+		this.amenitiesType = amenitiesType;
 	}
-	public int getSwimPool() {
-		return swimPool;
+	public int getAmenitiesCount() {
+		return amenitiesCount;
 	}
-	public void setSwimPool(int swimPool) {
-		this.swimPool = swimPool;
+	public void setAmenitiesCount(int amenitiesCount) {
+		this.amenitiesCount = amenitiesCount;
 	}
-	public int getParking() {
-		return parking;
+	public String getCreatedAt() {
+		return createdAt;
 	}
-	public void setParking(int parking) {
-		this.parking = parking;
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
 	}
-	public int getPoolIndoor() {
-		return poolIndoor;
+	public String getModifiedDate() {
+		return modifiedDate;
 	}
-	public void setPoolIndoor(int poolIndoor) {
-		this.poolIndoor = poolIndoor;
-	}
-	public int getPoolOutdoor() {
-		return poolOutdoor;
-	}
-	public void setPoolOutdoor(int poolOutdoor) {
-		this.poolOutdoor = poolOutdoor;
-	}
-	public int getParkingGroundLevel() {
-		return parkingGroundLevel;
-	}
-	public void setParkingGroundLevel(int parkingGroundLevel) {
-		this.parkingGroundLevel = parkingGroundLevel;
-	}
-	public int getParkingUnderGround() {
-		return parkingUnderGround;
-	}
-	public void setParkingUnderGround(int parkingUnderGround) {
-		this.parkingUnderGround = parkingUnderGround;
-	}
-	public int getGroundLevelParkingSpots() {
-		return GroundLevelParkingSpots;
-	}
-	public void setGroundLevelParkingSpots(int groundLevelParkingSpots) {
-		GroundLevelParkingSpots = groundLevelParkingSpots;
-	}
-	public int getUnderGroundParkingSpots() {
-		return UnderGroundParkingSpots;
-	}
-	public void setUnderGroundParkingSpots(int underGroundParkingSpots) {
-		UnderGroundParkingSpots = underGroundParkingSpots;
-	}
-	public int getElevatorsCount() {
-		return elevatorsCount;
-	}
-	public void setElevatorsCount(int elevatorsCount) {
-		this.elevatorsCount = elevatorsCount;
-	}
-	public String getOtherInformation() {
-		return otherInformation;
-	}
-	public void setOtherInformation(String otherInformation) {
-		this.otherInformation = otherInformation;
+	public void setModifiedDate(String modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 	@Override
 	public String toString() {
-		return "ClientAmenities [id=" + id + ", organisationId=" + organisationId + ", gym=" + gym + ", partyRoom="
-				+ partyRoom + ", swimPool=" + swimPool + ", parking=" + parking + ", poolIndoor=" + poolIndoor
-				+ ", poolOutdoor=" + poolOutdoor + ", parkingGroundLevel=" + parkingGroundLevel
-				+ ", parkingUnderGround=" + parkingUnderGround + ", GroundLevelParkingSpots=" + GroundLevelParkingSpots
-				+ ", UnderGroundParkingSpots=" + UnderGroundParkingSpots + ", elevatorsCount=" + elevatorsCount
-				+ ", otherInformation=" + otherInformation + "]";
+		return "ClientAmenities [id=" + id
+				+ ", clientOrganisationId=" + clientOrganisationId + ", amenitiesName=" + amenitiesName
+				+ ", amenitiesType=" + amenitiesType + ", amenitiesCount=" + amenitiesCount + ", createdAt="
+				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 	
-
 }
