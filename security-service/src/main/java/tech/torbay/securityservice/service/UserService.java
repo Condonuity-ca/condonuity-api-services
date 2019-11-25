@@ -50,14 +50,14 @@ public class UserService {
 		
 		// New User used to reset password after accept invite
 		
-		user = userRepository.findByUserIdAndUserType(user.getUserId(), user.getUserType());
-		if( user == null) 
+		User userObj = userRepository.findByUserIdAndUserType(user.getUserId(), user.getUserType());
+		if( userObj == null) 
 		{
 			new ResourceNotFoundException("User", "userId", user.getUserId());
 		}
 //		user.setPassword(SecurityAES.encrypt(user.getPassword()));
-		user.setPassword(user.getPassword());
-		return userRepository.save(user);
+		userObj.setPassword(user.getPassword());
+		return userRepository.save(userObj);
 	}
 
 	public User Login(String username, String password) {

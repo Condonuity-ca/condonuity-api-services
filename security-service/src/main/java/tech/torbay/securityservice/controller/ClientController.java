@@ -75,11 +75,11 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client User Accepted New Corporate Account Invitation")
             }
     )
-	@PostMapping("/client/invite/accept")
+	@PostMapping("/client/user/invite/accept")
 	public ResponseEntity<Object> acceptInvite(
-			@PathVariable("organisationId") Integer organisationId, 
-			@PathVariable("clientUserType") Integer clientUserType, 
-			@PathVariable("userRole") Integer userRole, 
+			@RequestParam("organisationId") Integer organisationId, 
+			@RequestParam("clientUserType") Integer clientUserType, 
+			@RequestParam("userRole") Integer userRole, 
 			@RequestBody ClientUser client) {
 		
 		// accept invite requires
@@ -97,7 +97,7 @@ public class ClientController {
 					ResponseMessage responseMessage = new ResponseMessage(
 							APIStatusCode.REQUEST_SUCCESS.getValue(),
 							"Success",
-							"Client New Corporate Account Created");
+							"Client User Account Verified for an Organisation");
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(
@@ -211,28 +211,73 @@ public class ClientController {
 			@RequestParam("organisationId") Integer organisationId,
 			@RequestParam("clientUserType") Integer clientUserType, 
 			@RequestParam("userRole") Integer userRole,
-			@RequestBody ClientUser client, UriComponentsBuilder builder) {
+			@RequestBody ClientUser clientUserObj, UriComponentsBuilder builder) {
 		
-        ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, client);
-        // check already exist or creation failed
-        
-        if (clientUser == null ) {
-        	ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
-        			"Failed",
-        			"Registering a new Client invite failed");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
-        } else {
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.setLocation(builder.path("/client/{id}").buildAndExpand(client.getClientId()).toUri());
-	        ResponseMessage responseMessage = new ResponseMessage(
-	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"New Client Record Created Successfully");
-	        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
-        }
+        // check already exist or not 
+		// if exist send email invite only
+		// else create user and send email invite
+		ClientUser existClient = clientService.findByEmail(clientUserObj.getEmail());
+		if(existClient != null) {
+			try {
+				// Invite Sent
+				sendNewClientUserInviteEmail(existClient , organisationId, clientUserType, userRole);
+				
+				HttpHeaders headers = new HttpHeaders();
+		        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Invite Sent Successfully");
+		        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+			} catch(Exception exp) {
+				exp.printStackTrace();
+				ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+		} else {
+			ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, clientUserObj);
+	        
+	        if (clientUser == null ) {
+	        	ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	        } else {
+	        	try {
+	        		HttpHeaders headers = new HttpHeaders();
+			        headers.setLocation(builder.path("/client/{id}").buildAndExpand(clientUser.getClientId()).toUri());
+			        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
+			        // Invite Sent
+			        sendNewClientUserInviteEmail(clientUser , organisationId, clientUserType, userRole);
+			        
+			        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+	        	} catch(Exception exp) {
+	        		exp.printStackTrace();
+	        		ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	        	}
+	        }
+		}
+			
 	}
 	
+	private void sendNewClientUserInviteEmail(ClientUser clientUser, Integer organisationId, Integer clientUserType,
+			Integer userRole) {
+		// TODO Auto-generated method stub
+		SecurityAES securityAES = new SecurityAES();
+		String content = securityAES.getClientUserInviteEncodedURL(clientUser.getEmail(), clientUser.getClientId(), organisationId, clientUserType, userRole);
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendEmailWithAttachment(clientUser.getEmail(), content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+
 	// Register a company
 	@ApiOperation(value = "New Client Organisation Registration")
     @ApiResponses(
@@ -240,7 +285,7 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Successful New Client Organisation Registered")
             }
     )
-	@PostMapping("/client/org/register/{clientId}")
+	@PostMapping("/client/org/register")
 	public ResponseEntity<Object> addClientCompany(
 			@RequestParam("clientId") Integer clientId,
 			@RequestBody ClientOrganisation organisation ,
@@ -259,6 +304,9 @@ public class ClientController {
             		APIStatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Client Organisation Registered for verification");
+            
+            
+            
             return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
         }
         

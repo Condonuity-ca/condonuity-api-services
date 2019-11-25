@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import tech.torbay.securityservice.constants.Constants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -26,11 +28,8 @@ public class ClientUser {
     private String createdAt;
     private String modifiedDate;
     
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(name = "client_association",
-//			joinColumns = @JoinColumn(name = "client_id"/* , referencedColumnName = "client_id" */),
-//			inverseJoinColumns = @JoinColumn(name = "organisation_id"/* , referencedColumnName = "client_org_id" */))
-//    private Set<ClientOrganisation> clientOrganisation;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientUser", targetEntity=ClientAssociation.class, orphanRemoval = true)
+//	private List<ClientAssociation> clientAssociations = new ArrayList<>();
     
 	public Integer getClientId() {
 		return clientId;

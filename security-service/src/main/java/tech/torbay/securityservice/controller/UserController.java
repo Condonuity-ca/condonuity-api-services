@@ -111,22 +111,14 @@ public class UserController {
 			if(userInfo.getUserType() == 1) {
 				
 				ClientUser clientInfo = clientService.findById(userInfo.getUserId());
-				
-				if(clientInfo != null) {
+				System.out.println("clientInfo : "+clientInfo);
+				if(clientInfo != null) { 
+					//
 					HashMap<String, Object> list = new HashMap();
 					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 					list.put("statusMessage", "Success");
 					list.put("responseMessage", "Client details fetched successfully");
 					list.put("userDetails", clientInfo);
-					//1
-//					TLSEmail tlsEmail = new TLSEmail();
-//					tlsEmail.main(new String[] {});
-//					tlsEmail.sendEmail(tlsEmail.getSession(), "prakash@torbay.tech", "subject", "body");
-					//2
-//					new SendEmail();
-					//3
-//					SSLEmail sslEmail = new SSLEmail();
-//					sslEmail.sendEmail(sslEmail.getSession(), "prakash.clds@gmail.com", "subject", "body");
 					
 					return new ResponseEntity<>(list, HttpStatus.OK);
 					
@@ -157,7 +149,10 @@ public class UserController {
 				System.out.println(vendorOrgInfo);
 				}
 				
-				if(vendorUserInfo != null && vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+					if (vendorUserInfo != null /*
+												 * && vendorUserInfo.getAccountStatus() ==
+												 * UserAccountStatus.ACTIVE.getValue()
+												 */) {
 					
 					HashMap<String, Object> list = new HashMap();
 					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());

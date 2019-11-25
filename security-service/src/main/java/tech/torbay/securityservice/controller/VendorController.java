@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -52,9 +53,9 @@ public class VendorController {
                     @ApiResponse(code = 201, message = "Successfully New Vendor Registred")
             }
     )
-	@PostMapping("/vendor/organisation/register/{vendorUserId}")
+	@PostMapping("/vendor/organisation/register")
 	public ResponseEntity<Object> addVendorOrganisation(
-			@PathVariable("vendorUserId") Integer vendorUserId, 
+			@RequestParam("vendorUserId") Integer vendorUserId, 
 			@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
 		
 		// org_id
@@ -128,6 +129,7 @@ public class VendorController {
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		} catch (IOException e) { 
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -159,6 +161,35 @@ public class VendorController {
 					APIStatusCode.NOT_FOUND.getValue(),
 	        		"RESOURCE_NOT_FOUND",
 	        		"Vendor User Record Not Found");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@ApiOperation(value = "New Organisation Vendor user accept email invitation and verification takes place")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor User Account Invitation Verified")
+            }
+    )
+	@PostMapping("/vendor/user/invite/accept")
+	public ResponseEntity<Object> VendorUserVerified(@RequestParam("vendorUserId") Integer vendorUserId) {
+		
+		VendorUser vendorUser = vendorService.findByVendorUserId(vendorUserId);
+		vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+		
+		vendorUser = vendorService.saveVendorUser(vendorUser);
+		
+		if(vendorUser != null ) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor User Account Verified Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.NOT_FOUND.getValue(),
+	        		"RESOURCE_NOT_FOUND",
+	        		"Vendor User Account Verification Failed");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
 		}
 	}

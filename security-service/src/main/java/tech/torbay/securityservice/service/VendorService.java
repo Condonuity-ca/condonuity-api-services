@@ -37,9 +37,8 @@ public class VendorService {
 
 	public VendorUser findByEmail(String email) {
 		// TODO Auto-generated method stub
-		VendorUser client = vendorUserRepository.findByEmail(email);
-		System.out.println(client.toString());
-		return client;
+		VendorUser vendor = vendorUserRepository.findByEmail(email);
+		return vendor;
 	}
 
 	public VendorUser addVendorUser(VendorUser vendorUser) {
@@ -97,6 +96,11 @@ public class VendorService {
 	public VendorUser findByVendorUserId(Integer userId) {
 		// TODO Auto-generated method stub
 		return vendorUserRepository.findByUserId(userId);
+	}
+
+	public VendorUser saveVendorUser(VendorUser vendorUser) {
+		// TODO Auto-generated method stub
+		return vendorUserRepository.save(vendorUser);
 	}
 }
 

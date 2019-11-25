@@ -74,10 +74,26 @@ public class SecurityAES {
 	public String getRegisterEncodedURL(String email, Integer userId, int userType) {
 		// TODO Auto-generated method stub
 //		String query = UriComponentsBuilder.fromHttpUrl("http://localhost:8383/api/user/resetPassword")
-		String query = UriComponentsBuilder.fromHttpUrl("http://condonuity1.onlinedemo.co/auth/login")
+		String query = UriComponentsBuilder.fromHttpUrl("http://condonuity1.onlinedemo.co/register/accept-invite")
 				.queryParam(encode("username"), encode(email))
 				.queryParam(encode("userId"), encode(String.valueOf(userId)))
 				.queryParam(encode("userType"), encode(String.valueOf(userType)))
+				.toUriString(); 
+		
+		//if UserType 1 - client user proceed registration and update account verification status - register org and update verified
+		//if UserType 2 - vendor user update account verification status - /vendor/user/invite/accept - update verified
+		return query;
+	}
+	
+	public String getClientUserInviteEncodedURL(String email, Integer userId, Integer organisationId, Integer clientUserType, Integer userRole) {
+		// TODO Auto-generated method stub
+//		String query = UriComponentsBuilder.fromHttpUrl("http://localhost:8383/api/user/resetPassword")
+		String query = UriComponentsBuilder.fromHttpUrl("http://condonuity1.onlinedemo.co/client/accept-invite")
+				.queryParam(encode("email"), encode(email))
+				.queryParam(encode("userId"), encode(String.valueOf(userId)))
+				.queryParam(encode("organisationId"), encode(String.valueOf(organisationId)))
+				.queryParam(encode("clientUserType"), encode(String.valueOf(clientUserType))) // clientuserType 1-M,2-AM,3-BM(BoardMemebr)
+				.queryParam(encode("userRole"), encode(String.valueOf(userRole)))// 1-Admin, 2-User
 				.toUriString(); 
 		
 		return query;

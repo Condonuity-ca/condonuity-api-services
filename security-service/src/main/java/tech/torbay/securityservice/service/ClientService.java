@@ -143,6 +143,7 @@ public class ClientService {
 			
 			if(clientOrganisation != null) {
 				
+				// Update client User - account activation status verified with account association
 				addClientOrgAccountAssociation(clientOrganisation.getClientOrganisationId(), 
 						Constants.ClientUserType.BOARD_MEMBER.getValue(),
 						Constants.UserRole.ADMIN.getValue(), clientUserRepository.findByClientId(clientId));

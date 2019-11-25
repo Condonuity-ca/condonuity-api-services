@@ -27,15 +27,15 @@ public class ClientAssociation {
     private String createdAt;
     private String modifiedDate;
     
-    @ManyToOne
-    @MapsId("client_id")
-    @JoinColumn(name = "client_id")
-    ClientUser clientUser;
- 
-    @ManyToOne
-    @MapsId("client_organisation_id")
-    @JoinColumn(name = "client_organisation_id")
-    ClientOrganisation clientOrganisation;
+//    @ManyToOne
+//    @MapsId("client_id")
+//    @JoinColumn(name = "client_id")
+//    ClientUser clientUser;
+//    
+//    @ManyToOne
+//    @MapsId("client_organisation_id")
+//    @JoinColumn(name = "client_organisation_id")
+//    ClientOrganisation clientOrganisation;
     
 	public Integer getId() {
 		return id;

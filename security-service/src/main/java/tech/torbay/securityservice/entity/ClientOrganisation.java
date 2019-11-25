@@ -48,8 +48,8 @@ public class ClientOrganisation {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
 	private List<ClientAmenities> amenities = new ArrayList<>();
     
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
-	private List<ClientAssociation> clientAssociations = new ArrayList<>();
+//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
+//	private List<ClientAssociation> clientAssociations = new ArrayList<>();
     
 //    @ManyToMany(fetch = FetchType.LAZY,
 //            cascade = {
