@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
@@ -77,12 +78,43 @@ public class ProjectService {
 
 	public ProjectQuestionAnswer answerProjectQuestion(ProjectQuestionAnswer projectQA) {
 		// TODO Auto-generated method stub
-		return projectQARepository.save(projectQA);
+		
+		ProjectQuestionAnswer qaObj = projectQARepository.findOneByProjectqaId(projectQA.getProjectqaId());
+		qaObj.setAnswer(projectQA.getAnswer());
+		qaObj.setClientUserId(projectQA.getClientUserId());
+		System.out.println(qaObj.toString());
+		
+		return projectQARepository.save(qaObj);
 	}
 
 	public List<Project> getAllProjects(Integer id) {
 		// TODO Auto-generated method stub
 		return projectRepository.findAll();
+	}
+
+	public Project updateProject(Project project) {
+		// TODO Auto-generated method stub
+		try {
+			return projectRepository.save(project);
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+	}
+
+	public Project publishProject(Integer projectId) {
+		// TODO Auto-generated method stub
+		Project project = projectRepository.findOneByProjectId(projectId);
+		project.setStatus(Constants.ProjectPostType.PUBLISHED.getValue());
+		
+		return projectRepository.save(project);
+	}
+
+	public VendorBid publishVendorBid(Integer bidId) {
+		// TODO Auto-generated method stub
+		VendorBid vendorBid = vendorBidRepository.findOneByBidId(bidId);
+		vendorBid.setBidStatus(Constants.ProjectPostType.PUBLISHED.getValue());
+		return vendorBidRepository.save(vendorBid);
 	}
 }
 

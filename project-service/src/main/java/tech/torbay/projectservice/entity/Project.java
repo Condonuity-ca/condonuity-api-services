@@ -1,9 +1,12 @@
 package tech.torbay.projectservice.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -149,6 +152,9 @@ public class Project {
     private Integer awardedBidId = 0;
 	private String createdAt;
     private String modifiedDate;
+    
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project", targetEntity=ProjectProducts.class, orphanRemoval = true)
+	private List<ProjectProducts> projectProducts = new ArrayList<>();
     
     public Integer getClientOrganisationId() {
 		return clientOrganisationId;

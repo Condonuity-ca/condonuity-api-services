@@ -3,6 +3,8 @@ package tech.torbay.projectservice.entity;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -18,12 +20,17 @@ public class ProjectProducts {
  
     @Id
 	private Integer Id = 0;
-    private Integer projectId = 0;
+//    private Integer projectId = 0;
     private String description = "";
     private Integer quantity = 0;
     private String unit;
     private String createdAt;
     private String modifiedDate;
+    
+    @ManyToOne
+//    @JoinColumn(name = "projectId", referencedColumnName = "projectId", insertable = false, updatable = false)
+    @JoinColumn(name = "project_id")
+	private Project project;
     
 	public Integer getId() {
 		return Id;
@@ -32,10 +39,10 @@ public class ProjectProducts {
 		Id = id;
 	}
 	public Integer getProjectId() {
-		return projectId;
+		return project.getProjectId();
 	}
 	public void setProjectId(Integer projectId) {
-		this.projectId = projectId;
+		this.project.setProjectId(projectId);;
 	}
 	public String getDescription() {
 		return description;
@@ -69,11 +76,8 @@ public class ProjectProducts {
 	}
 	@Override
 	public String toString() {
-		return "ProjectProducts [Id=" + Id + ", projectId=" + projectId + ", description=" + description + ", quantity="
+		return "ProjectProducts [Id=" + Id + /* ", projectId=" + projectId + */ ", description=" + description + ", quantity="
 				+ quantity + ", unit=" + unit + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
-    
-	
-	
 	
 }

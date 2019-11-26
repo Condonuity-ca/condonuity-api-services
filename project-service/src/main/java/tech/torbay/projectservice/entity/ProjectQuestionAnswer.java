@@ -2,6 +2,8 @@ package tech.torbay.projectservice.entity;
 
 import javax.persistence.Table;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,7 +19,8 @@ public class ProjectQuestionAnswer {
     }
  
     @Id
-	private Integer projectQAId = 0;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+	private Integer projectqaId = 0;
     private Integer projectId = 0;
     private Integer clientUserId = 0;
     private String question;
@@ -25,11 +28,12 @@ public class ProjectQuestionAnswer {
     private Integer vendorUserId = 0;
     private String createdAt;
     private String modifiedDate;
-	public Integer getProjectQAId() {
-		return projectQAId;
+    
+	public Integer getProjectqaId() {
+		return projectqaId;
 	}
-	public void setProjectQAId(Integer projectQAId) {
-		this.projectQAId = projectQAId;
+	public void setProjectqaId(Integer projectqaId) {
+		this.projectqaId = projectqaId;
 	}
 	public Integer getProjectId() {
 		return projectId;
@@ -75,7 +79,7 @@ public class ProjectQuestionAnswer {
 	}
 	@Override
 	public String toString() {
-		return "ProjectQuestionAnswer [projectQAId=" + projectQAId + ", projectId=" + projectId + ", clientUserId="
+		return "ProjectQuestionAnswer [projectqaId=" + projectqaId + ", projectId=" + projectId + ", clientUserId="
 				+ clientUserId + ", question=" + question + ", answer=" + answer + ", vendorUserId=" + vendorUserId
 				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}

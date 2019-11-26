@@ -131,8 +131,8 @@ public class ProjectController {
 	@PostMapping("/client/project/create")
 	public ResponseEntity<Object> createProject(@RequestBody Project project) {
 		
-		project = projectService.createProject(project);
-        if (project == null) {
+		Project projectObj = projectService.createProject(project);
+        if (projectObj == null) {
      
         	ResponseMessage responseMessage = null;
         	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
@@ -176,6 +176,63 @@ public class ProjectController {
         
 	}
 	
+	@ApiOperation(value = "Client Project Update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Updated Successfully")
+            }
+    )
+	@PutMapping("/client/project")
+	public ResponseEntity<Object> updateProject(@RequestBody Project project) {
+		
+		project = projectService.updateProject(project);
+        if (project == null) {
+     
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Failed",
+        			"Failed to Update Project");
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Project updated successfully");
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        }
+        
+	}
+	
+	@ApiOperation(value = "Client Project Publish Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Published Successfully")
+            }
+    )
+	@PutMapping("/client/project/publish/{projectId}")
+	public ResponseEntity<Object> publishProject(@PathVariable("projectId") Integer projectId) {
+		
+		Project project = projectService.publishProject(projectId);
+        if (project == null) {
+     
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Failed",
+        			"Failed to Publish Project");
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Project Published successfully");
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        }
+        
+	}
 	
 	@ApiOperation(value = "Vendor Project Bid Creation and Posting implementation")
     @ApiResponses(
@@ -224,6 +281,35 @@ public class ProjectController {
                 		"Project Bid posted successfully");
         		
         	}
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        }
+        
+	}
+	
+	@ApiOperation(value = "Client Project Publish Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Published Successfully")
+            }
+    )
+	@PutMapping("/vendor/bid/publish/{bidId}")
+	public ResponseEntity<Object> publishProjectBid(@PathVariable("bidId") Integer bidId) {
+		
+		VendorBid vendorBid = projectService.publishVendorBid(bidId);
+        if (vendorBid == null) {
+     
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Failed",
+        			"Failed to Publish Project Bid");
+        	 
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Project Bid Published successfully");
         	
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }

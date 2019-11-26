@@ -17,7 +17,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	List<Project> findAllByClientOrganisationIdAndStatus(Integer id, int value);
 	
-	
 	Project save(Project project);
+
+	Project findOneByProjectId(Integer projectId);
     
 }
