@@ -3,6 +3,8 @@ package tech.torbay.authservice.filters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +17,7 @@ import tech.torbay.authservice.config.JwtConfig;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,7 +37,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         // By default, UsernamePasswordAuthenticationFilter listens to "/login" path.
         // In our case, we use "/auth". So, we need to override the defaults.
-        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(jwtConfig.getUri(), "POST"));
+        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(jwtConfig.getUri() , "POST"));
     }
 
     @Override
@@ -78,6 +81,16 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         // Add token to header
         response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
+        
+		/*check token in body*/
+        response.setStatus(HttpStatus.OK.value());
+        Token responseBody = new Token();
+        responseBody.setToken(token);
+        
+        response.setStatus(HttpStatus.OK.value());
+        String json = new ObjectMapper().writeValueAsString(responseBody);
+        response.getWriter().write(json);
+        response.flushBuffer();
     }
 
     // A (temporary) class just to represent the user credentials
@@ -101,4 +114,16 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         }
     }
 
+    // A (temporary) class just to represent the user credentials
+    private static class Token {
+        private String token;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+    }
 }

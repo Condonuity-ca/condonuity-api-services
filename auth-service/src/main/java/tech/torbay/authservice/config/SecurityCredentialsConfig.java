@@ -6,11 +6,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import tech.torbay.authservice.filters.JwtUsernameAndPasswordAuthenticationFilter;
 import tech.torbay.authservice.config.JwtConfig;
 
@@ -29,12 +36,8 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                // make sure we use stateless session; session won't be used to store user's state.
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                // handle an authorized attempts
-                .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/security/**"/* ,"security/api/user/verify" */).permitAll()
                 .and()
                 // Add a filter to validate user credentials and add token in the response header
 
@@ -46,7 +49,16 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                 // allow all POST requests
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
                 // any other requests must be authenticated
-                .anyRequest().authenticated();
+				.antMatchers("/security/**"/* ,"security/api/user/verify" */).permitAll()
+				.anyRequest().authenticated()
+				.and()
+				// make sure we use stateless session; session won't be used to store user's state.
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and()
+				// handle an authorized attempts
+				.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+				.and()
+				.csrf().disable();
     }
 
     // Spring has UserDetailsService interface, which can be overriden to provide our implementation for fetching user from database (or any other source).
@@ -67,4 +79,14 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+//                        .allowedOrigins("https://allowed-origin.com")
+                        .allowedMethods("GET", "POST","PUT");
+            }
+        };
+    }
 }

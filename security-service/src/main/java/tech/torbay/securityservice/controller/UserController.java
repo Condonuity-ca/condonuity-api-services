@@ -158,7 +158,7 @@ public class UserController {
 					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 					list.put("statusMessage", "Success");
 					list.put("responseMessage", "Vendor User details fetched successfully");
-					list.put("vendorUserDetails", vendorUserInfo);
+					list.put("userDetails", vendorUserInfo);
 					
 //					list.put("vendorOrgDetails",vendorOrgInfo);
 					
@@ -167,7 +167,7 @@ public class UserController {
 					HashMap<String, Object> list = new HashMap();
 					list.put("statusMessage", "User need to set New Password");
 					list.put("responseMessage", "Please reset your password");
-					list.put("vendorUserDetails", vendorUserInfo);
+					list.put("userDetails", vendorUserInfo);
 //					list.put("vendorOrgDetails",vendorOrgInfo);
 					
 					if(vendorUserInfo.getVendorOrganisationId() != 0) {

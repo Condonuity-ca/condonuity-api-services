@@ -98,4 +98,16 @@ public class SecurityAES {
 		
 		return query;
 	}
+	
+	public String getVendorUserInviteEncodedURL(String email, Integer userId, Integer organisationId) {
+		// TODO Auto-generated method stub
+//		String query = UriComponentsBuilder.fromHttpUrl("http://localhost:8383/api/user/resetPassword")
+		String query = UriComponentsBuilder.fromHttpUrl("http://condonuity1.onlinedemo.co/client/accept-invite")
+				.queryParam(encode("email"), encode(email))
+				.queryParam(encode("userId"), encode(String.valueOf(userId)))
+				.queryParam(encode("organisationId"), encode(String.valueOf(organisationId)))
+				.toUriString(); 
+		
+		return query;
+	}
 }

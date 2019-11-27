@@ -194,6 +194,62 @@ public class VendorController {
 		}
 	}
 	
+	@ApiOperation(value = "New Organisation Vendor user email invitation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor User Account Created and Invitation Sent")
+            }
+    )
+	@PostMapping("/vendor/user/invite/register")
+	public ResponseEntity<Object> SendVendorUserInvitation(@RequestParam("vendorUserEmail") String vendorUserEmail, @RequestParam("vendorOrganisationId") Integer vendorOrganisationId) {
+		
+		VendorUser vendorUser = new VendorUser();
+		vendorUser.setEmail(vendorUserEmail);
+		vendorUser.setVendorOrganisationId(vendorOrganisationId);
+		vendorUser.setUserRole(Constants.UserRole.USER.getValue());
+		VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
+		
+		if(vendor_user != null ) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor User Account Created Successfully");
+			// Invite Sent
+			sendNewVendorUserInviteEmail(vendor_user , vendorOrganisationId);
+			
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.NOT_FOUND.getValue(),
+	        		"RESOURCE_NOT_FOUND",
+	        		"Vendor User Account Creation Failed");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
+	private void sendNewVendorUserInviteEmail(VendorUser vendorUser, Integer organisationId) {
+		// TODO Auto-generated method stub
+		SecurityAES securityAES = new SecurityAES();
+		String content = securityAES.getVendorUserInviteEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), organisationId);
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendEmailWithAttachment(vendorUser.getEmail(), content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+	
 //	@ApiOperation(value = "Fetching All vendor users details")
 //    @ApiResponses(
 //            value = {

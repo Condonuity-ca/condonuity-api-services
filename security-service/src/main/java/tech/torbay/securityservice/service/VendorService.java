@@ -102,5 +102,34 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		return vendorUserRepository.save(vendorUser);
 	}
+
+	public VendorUser createVendorUser(VendorUser vendorUser) {
+		// TODO Auto-generated method stub
+		try {
+			
+			if(vendorUserRepository.save(vendorUser) != null){
+				
+				vendorUser = vendorUserRepository.findByEmail(vendorUser.getEmail());
+				
+				System.out.println(vendorUser.toString());
+				
+				User user = new User();
+				user.setUserId(vendorUser.getUserId());
+				user.setUsername(vendorUser.getEmail());
+				user.setUserType(Constants.UserType.VENDOR.getValue());
+				
+				System.out.println(user.toString());
+				
+				userRepository.save(user);
+				
+				return vendorUser;
+			} else {
+				return null;
+			}
+			} catch (Exception exp) {
+				exp.printStackTrace();
+				return null;
+			}
+	}
 }
 
