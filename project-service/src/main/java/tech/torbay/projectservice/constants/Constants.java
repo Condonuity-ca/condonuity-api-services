@@ -9,10 +9,7 @@ public class Constants {
 	public enum UserType {
 	    CLIENT(1),
 	    VENDOR(2),
-	    SUPPORT_USER(3),
-	    MANAGER(11),
-	    ASSISTANT_MANAGER(12),
-	    BOARD_MEMBER(13);
+	    SUPPORT_USER(3);
 
 	    private int value;
 	    private static Map map = new HashMap<>();

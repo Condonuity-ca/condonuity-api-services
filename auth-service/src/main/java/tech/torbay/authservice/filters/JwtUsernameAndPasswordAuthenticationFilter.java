@@ -114,7 +114,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         }
     }
 
-    // A (temporary) class just to represent the user credentials
+    // A (temporary) class just to represent the token
     private static class Token {
         private String token;
 

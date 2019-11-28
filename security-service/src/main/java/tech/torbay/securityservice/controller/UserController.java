@@ -5,22 +5,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +27,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
-import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
+import tech.torbay.securityservice.constants.Token;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.User;
@@ -108,6 +102,9 @@ public class UserController {
 		System.out.println("userInfo : "+userInfo);
 		
 		if(userInfo != null) {
+			
+			String Token = getAuthToken();
+			
 			if(userInfo.getUserType() == 1) {
 				
 				ClientUser clientInfo = clientService.findById(userInfo.getUserId());
@@ -202,7 +199,38 @@ public class UserController {
 		}
 	}
 	
-//	@ApiOperation(value = "Returns All User Details as List in Condonuity Application")
+//	@Autowired
+//    private RestTemplate template;
+	
+	private String getAuthToken() {
+		// TODO Auto-generated method stub
+		
+		//Auth Service call internally and add one user for auth dynamically
+
+		//1
+//	    final String uri = "http://condonuityappdev.eastus2.cloudapp.azure.com:8762/auth";
+//	    RestTemplate restTemplate = new RestTemplate();
+//	    String result = restTemplate.getForObject(uri, String.class);
+//	    System.out.println(result);
+		
+		//2
+//		ResponseEntity<Token> tokenObj = template.getForObject("http://condonuityappdev.eastus2.cloudapp.azure.com:8762/auth", Token.class);
+//		Token token = tokenObj.getBody();
+//		System.out.println("Login Auth Token : "+ token.getToken());
+		
+		//3
+//		ResponseEntity<Token> responseEntity = template.exchange(
+//			    "\"http://condonuityappdev.eastus2.cloudapp.azure.com:8762/auth\"", 
+//			    HttpMethod.GET, 
+//			    null, 
+//			    new ParameterizedTypeReference<Token>() {
+//			    });
+//			Token pojoObjList = responseEntity.getBody();
+			
+		return null;
+	}
+
+	//	@ApiOperation(value = "Returns All User Details as List in Condonuity Application")
 //    @ApiResponses(
 //            value = {
 //                    @ApiResponse(code = 200, message = "Successful All User Details")

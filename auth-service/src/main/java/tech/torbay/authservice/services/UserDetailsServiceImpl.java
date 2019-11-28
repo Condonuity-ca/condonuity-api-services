@@ -37,7 +37,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         
         for (LoginUser user : app_users) {
         	users.add(new AppUser(1, user.getUsername(), encoder.encode(user.getPassword()), "ADMIN"));
-        	System.out.println(user.toString());
         }
 
         for(AppUser appUser: users) {

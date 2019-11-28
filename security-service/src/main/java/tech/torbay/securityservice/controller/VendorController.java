@@ -175,21 +175,32 @@ public class VendorController {
 	public ResponseEntity<Object> VendorUserVerified(@RequestParam("vendorUserId") Integer vendorUserId) {
 		
 		VendorUser vendorUser = vendorService.findByVendorUserId(vendorUserId);
-		vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
-		
-		vendorUser = vendorService.saveVendorUser(vendorUser);
 		
 		if(vendorUser != null ) {
-			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"Vendor User Account Verified Successfully");
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			
+			vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+			
+			vendorUser = vendorService.saveVendorUser(vendorUser);
+			
+			if(vendorUser != null ) {
+				ResponseMessage responseMessage = new ResponseMessage(
+						APIStatusCode.REQUEST_SUCCESS.getValue(),
+		        		"Success",
+		        		"Vendor User Account Verified Successfully");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			} else {
+				ResponseMessage responseMessage = new ResponseMessage(
+						APIStatusCode.REQUEST_FAILED.getValue(),
+		        		"Failed",
+		        		"Vendor User Account Verification Failed");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
+			}
+			
 		} else {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.NOT_FOUND.getValue(),
 	        		"RESOURCE_NOT_FOUND",
-	        		"Vendor User Account Verification Failed");
+	        		"Vendor User Account does not Exist");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
 		}
 	}

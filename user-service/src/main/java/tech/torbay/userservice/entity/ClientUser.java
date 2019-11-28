@@ -24,6 +24,7 @@ public class ClientUser {
     private String city = "";
     private String phone = "";
     private String countryCode;
+    private Integer userType = Constants.UserType.CLIENT.getValue();
     private String createdAt;
     private String modifiedDate;
     
@@ -40,6 +41,14 @@ public class ClientUser {
 //	public void setClientOrganisations(Set<ClientOrganisation> clientOrganisations) {
 //		this.clientOrganisations = clientOrganisations;
 //	}
+    
+    
+    public Integer getUserType() {
+		return userType;
+	}
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
 	
 	public Integer getClientId() {
 		return clientId;

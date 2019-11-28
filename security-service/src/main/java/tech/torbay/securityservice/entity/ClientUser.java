@@ -25,12 +25,20 @@ public class ClientUser {
     private String city = "";
     private String phone = "";
     private String countryCode="";
-    private String createdAt;
+    private Integer userType = Constants.UserType.CLIENT.getValue();
+	private String createdAt;
     private String modifiedDate;
     
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientUser", targetEntity=ClientAssociation.class, orphanRemoval = true)
 //	private List<ClientAssociation> clientAssociations = new ArrayList<>();
     
+    public Integer getUserType() {
+		return userType;
+	}
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+	
 	public Integer getClientId() {
 		return clientId;
 	}
