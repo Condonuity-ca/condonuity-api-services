@@ -1,14 +1,18 @@
 package tech.torbay.userservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import tech.torbay.userservice.constants.Constants;
-
+import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import tech.torbay.userservice.constants.Constants;
 
 @Entity
 @Table(name="client_user")
@@ -42,6 +46,16 @@ public class ClientUser {
 //		this.clientOrganisations = clientOrganisations;
 //	}
     
+//    @OneToMany(mappedBy = "clientUser", cascade = CascadeType.ALL)
+//    private Set<ClientAssociation> clientAssociations;
+    
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "client_association",
+            joinColumns = {@JoinColumn(name = "client_id")},
+            inverseJoinColumns = {@JoinColumn(name = "client_organisation_id")}
+    )
+    private Set<ClientOrganisation> clientOrganisations = new HashSet<>();
     
     public Integer getUserType() {
 		return userType;
@@ -116,6 +130,7 @@ public class ClientUser {
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+	
 	@Override
 	public String toString() {
 		return "ClientUser [clientId=" + clientId + ", email=" + email + ", firstName=" + firstName + ", LastName="

@@ -15,16 +15,16 @@ public class ClientOrganisationPayment {
 	@Id
 	private int id;
 	private int organisationId;
-	private int cardNumber;
-	private int nameOnCard;
-	private int expiryDate;
-	private int securityCode;
-	private int streetAddress;
-	private int city;
-	private int province;
-	private int postalCode;
-	private int createdAt;
-	private int modifiedDate;
+	private String cardNumber = "NA";
+	private String nameOnCard = "NA";
+	private String expiryDate = "NA";
+	private String securityCode = "NA";
+	private String streetAddress = "NA";
+	private String city = "NA";
+	private String province = "NA";
+	private String postalCode = "NA";
+	private String createdAt = "NA";
+	private String modifiedDate = "NA";
 	
 	public int getId() {
 		return id;
@@ -38,64 +38,64 @@ public class ClientOrganisationPayment {
 	public void setOrganisationId(int organisationId) {
 		this.organisationId = organisationId;
 	}
-	public int getCardNumber() {
+	public String getCardNumber() {
 		return cardNumber;
 	}
-	public void setCardNumber(int cardNumber) {
+	public void setCardNumber(String cardNumber) {
 		this.cardNumber = cardNumber;
 	}
-	public int getNameOnCard() {
+	public String getNameOnCard() {
 		return nameOnCard;
 	}
-	public void setNameOnCard(int nameOnCard) {
+	public void setNameOnCard(String nameOnCard) {
 		this.nameOnCard = nameOnCard;
 	}
-	public int getExpiryDate() {
+	public String getExpiryDate() {
 		return expiryDate;
 	}
-	public void setExpiryDate(int expiryDate) {
+	public void setExpiryDate(String expiryDate) {
 		this.expiryDate = expiryDate;
 	}
-	public int getSecurityCode() {
+	public String getSecurityCode() {
 		return securityCode;
 	}
-	public void setSecurityCode(int securityCode) {
+	public void setSecurityCode(String securityCode) {
 		this.securityCode = securityCode;
 	}
-	public int getStreetAddress() {
+	public String getStreetAddress() {
 		return streetAddress;
 	}
-	public void setStreetAddress(int streetAddress) {
+	public void setStreetAddress(String streetAddress) {
 		this.streetAddress = streetAddress;
 	}
-	public int getCity() {
+	public String getCity() {
 		return city;
 	}
-	public void setCity(int city) {
+	public void setCity(String city) {
 		this.city = city;
 	}
-	public int getProvince() {
+	public String getProvince() {
 		return province;
 	}
-	public void setProvince(int province) {
+	public void setProvince(String province) {
 		this.province = province;
 	}
-	public int getPostalCode() {
+	public String getPostalCode() {
 		return postalCode;
 	}
-	public void setPostalCode(int postalCode) {
+	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
-	public int getCreatedAt() {
+	public String getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(int createdAt) {
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
-	public int getModifiedDate() {
+	public String getModifiedDate() {
 		return modifiedDate;
 	}
-	public void setModifiedDate(int modifiedDate) {
+	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 	@Override

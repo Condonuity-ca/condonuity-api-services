@@ -23,15 +23,15 @@ public class ClientAssociation {
     private String createdAt;
     private String modifiedDate;
     
-    @ManyToOne
-    @MapsId("client_id")
-    @JoinColumn(name = "client_id")
-    ClientUser clientUser;
- 
-    @ManyToOne
-    @MapsId("organisation_id")
-    @JoinColumn(name = "client_organisation_id")
-    ClientOrganisation clientOrganisation;
+//    @ManyToOne
+//    @MapsId("client_id")
+//    @JoinColumn(name = "client_id")
+//    ClientUser clientUser;
+// 
+//    @ManyToOne
+//    @MapsId("client_organisation_id")
+//    @JoinColumn(name = "client_organisation_id")
+//    ClientOrganisation clientOrganisation;
     
 	public Integer getId() {
 		return id;
@@ -88,12 +88,26 @@ public class ClientAssociation {
 		this.modifiedDate = modifiedDate;
 	}
 	
+//	public ClientUser getClientUser() {
+//		return clientUser;
+//	}
+//	public void setClientUser(ClientUser clientUser) {
+//		this.clientUser = clientUser;
+//	}
+//	public ClientOrganisation getClientOrganisation() {
+//		return clientOrganisation;
+//	}
+//	public void setClientOrganisation(ClientOrganisation clientOrganisation) {
+//		this.clientOrganisation = clientOrganisation;
+//	}
 	@Override
 	public String toString() {
-		return "ClientAssociation [id=" + id + ", clientOrganisationId=" + clientOrganisationId + ", clientId=" + clientId
-				+ ", clientUserType=" + clientUserType + ", userRole=" + userRole + ", accountVerificationStatus="
-				+ accountVerificationStatus + ", userAccountStatus=" + userAccountStatus + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + "]";
+		return "ClientAssociation [id=" + id + ", clientOrganisationId=" + clientOrganisationId + ", clientId="
+				+ clientId + ", clientUserType=" + clientUserType + ", userRole=" + userRole
+				+ ", accountVerificationStatus=" + accountVerificationStatus + ", userAccountStatus="
+				+ userAccountStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", clientUser="
+				+ /* clientUser +*/ ", clientOrganisation=" + /* clientOrganisation + */  "]";
 	}
     
+	
 }

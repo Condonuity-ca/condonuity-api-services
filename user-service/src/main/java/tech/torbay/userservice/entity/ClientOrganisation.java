@@ -1,13 +1,18 @@
 package tech.torbay.userservice.entity;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import tech.torbay.userservice.constants.Constants;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "client_organisation")
@@ -48,6 +53,12 @@ public class ClientOrganisation {
 //    
 //	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
 //	private List<ClientAssociation> clientAssociations = new ArrayList<>();
+    
+//    @OneToMany(mappedBy = "clientOrganisation", cascade = CascadeType.ALL)
+//	private Set<ClientAssociation> clientAssociations;
+    
+    @ManyToMany(mappedBy = "clientOrganisations", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private Set<ClientUser> clientUsers = new HashSet<>();
 
 	public String getModifiedDate() {
 		return modifiedDate;
@@ -70,6 +81,7 @@ public class ClientOrganisation {
 				+ managerName + ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt="
 				+ createdAt + "]";
 	}
+	
 	
 	
 	public String getGeneralEmail() {

@@ -1,5 +1,6 @@
 package tech.torbay.userservice.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -133,7 +134,10 @@ public class ClientService {
 
 	public List<ClientOrganisationPayment> getPaymentBillingDetails(Integer orgId) {
 		// TODO Auto-generated method stub
-		return clientOrganisationPaymentRepository.findAllByOrganisationId(orgId);
+//		return clientOrganisationPaymentRepository.findAllByOrganisationId(orgId);
+		List paymentDetails = new ArrayList();
+		paymentDetails.add(new ClientOrganisationPayment());
+		return paymentDetails;
 	}
 
 	public ClientAmenities updateAmenities(ClientAmenities amenitiesInfo) {
