@@ -22,7 +22,13 @@ public class VendorUser {
     private String email = "";
 	private Integer accountStatus = 0;
 	private Integer accountVerificationStatus = 0;
+    
+	@Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
 	public Integer getUserId() {

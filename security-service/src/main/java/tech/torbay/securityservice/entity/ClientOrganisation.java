@@ -1,15 +1,22 @@
 package tech.torbay.securityservice.entity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.JoinColumn;
 
 import tech.torbay.securityservice.constants.Constants;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "client_organisation")
@@ -42,47 +49,28 @@ public class ClientOrganisation {
     private String managerName = "";
     private String managerEmail = "";
     private String managerPhone = "";
+    
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
-	private List<ClientAmenities> amenities = new ArrayList<>();
-    
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
+//	private List<ClientAmenities> amenities = new ArrayList<>();
+//    
 //	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
 //	private List<ClientAssociation> clientAssociations = new ArrayList<>();
     
-//    @ManyToMany(fetch = FetchType.LAZY,
-//            cascade = {
-//                CascadeType.PERSIST,
-//                CascadeType.MERGE
-//            },
-//            mappedBy = "client_organisation")
+//    @OneToMany(mappedBy = "clientOrganisation", cascade = CascadeType.ALL)
+//	private Set<ClientAssociation> clientAssociations;
+    
+//    @ManyToMany(mappedBy = "clientOrganisations", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 //    private Set<ClientUser> clientUsers = new HashSet<>();
 
-	@Override
-	public String toString() {
-		return "ClientOrganisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType
-				+ ", organisationName=" + organisationName + ", managementCompany=" + managementCompany
-				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail="
-				+ generalEmail + ", managementEmail=" + managementEmail + ", boardEmail=" + boardEmail + ", address="
-				+ address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
-				+ ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber
-				+ ", units=" + units + ", votingUnits=" + votingUnits + ", managerName=" + managerName
-				+ ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + ", amenities=" + amenities + "]";
-	}
-
-
-	public List<ClientAmenities> getAmenities() {
-		return amenities;
-	}
-
-
-	public void setAmenities(List<ClientAmenities> amenities) {
-		this.amenities = amenities;
-	}
-
-
+    
 	public String getModifiedDate() {
 		return modifiedDate;
 	}
@@ -90,7 +78,22 @@ public class ClientOrganisation {
 
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
-	}	
+	}
+
+
+	@Override
+	public String toString() {
+		return "Client Organisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType 
+				+ ", organisationName=" + organisationName + ", managementCompany=" + managementCompany
+				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail=" + generalEmail + ", managementEmail=" + managementEmail
+				+ ", boardEmail=" + boardEmail + ", address=" + address + ", city=" + city + ", province=" + province
+				+ ", postalCode=" + postalCode + ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber
+				+ ", faxNumber=" + faxNumber + ", units=" + units + ", votingUnits=" + votingUnits + ", managerName="
+				+ managerName + ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt="
+				+ createdAt + "]";
+	}
+	
+	
 	
 	public String getGeneralEmail() {
 		return generalEmail;
@@ -151,11 +154,16 @@ public class ClientOrganisation {
 		this.managerPhone = managerPhone;
 	}
 
+
+	/*
+	 * public ClientAmenities getAmenities() { return amenities; } public void
+	 * setAmenities(ClientAmenities amenities) { this.amenities = amenities; }
+	 */
 	public Integer getClientOrganisationId() {
 		return clientOrganisationId;
 	}
-	public void setClientOrganisationId(Integer clientOrganisationId) {
-		this.clientOrganisationId = clientOrganisationId;
+	public void setClientOrganisationId(Integer organisationId) {
+		this.clientOrganisationId = organisationId;
 	}
 	public Integer getUserType() {
 		return userType;
@@ -246,5 +254,5 @@ public class ClientOrganisation {
 	}
 	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
-	}
+	}	
 }

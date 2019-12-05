@@ -3,7 +3,9 @@ package tech.torbay.projectservice.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -150,7 +152,13 @@ public class Project {
     private Integer postType = 0;
     private Integer status = 0;
     private Integer awardedBidId = 0;
-	private String createdAt;
+	
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project", targetEntity=ProjectProducts.class, orphanRemoval = true)

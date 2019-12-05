@@ -3,7 +3,9 @@ package tech.torbay.userservice.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -29,9 +31,14 @@ public class ClientUser {
     private String phone = "";
     private String countryCode;
     private Integer userType = Constants.UserType.CLIENT.getValue();
-    private String createdAt;
-    private String modifiedDate;
     
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
+    private String modifiedDate;
 //    @ManyToMany(cascade = CascadeType.ALL)
 //    @JoinTable(
 //    		name = "client_association", joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "client_id"), 
@@ -49,13 +56,13 @@ public class ClientUser {
 //    @OneToMany(mappedBy = "clientUser", cascade = CascadeType.ALL)
 //    private Set<ClientAssociation> clientAssociations;
     
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "client_association",
-            joinColumns = {@JoinColumn(name = "client_id")},
-            inverseJoinColumns = {@JoinColumn(name = "client_organisation_id")}
-    )
-    private Set<ClientOrganisation> clientOrganisations = new HashSet<>();
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+//    @JoinTable(
+//            name = "client_association",
+//            joinColumns = {@JoinColumn(name = "client_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "client_organisation_id")}
+//    )
+//    private Set<ClientOrganisation> clientOrganisations = new HashSet<>();
     
     public Integer getUserType() {
 		return userType;

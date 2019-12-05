@@ -105,32 +105,32 @@ public class ClientController {
 		}
 	}
 	
-	@ApiOperation(value = "Fetching All clients details with in Condonuity Application")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "Successful All Client Details")
-            }
-    )
-	@GetMapping("/client/users")
-	public ResponseEntity<Object> getAllClients() {
-		List<ClientUser> list = clientService.getAllClientUsers();
-		
-		HashMap<String, Object> response = new HashMap();
-		if(list != null) {
-			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-			response.put("statusMessage", "Success");
-			response.put("responseMessage", "Client details fetched successfully");
-			response.put("clients", list);
-			
-			return new ResponseEntity<Object>(response, HttpStatus.OK);
-		} else {
-			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
-			response.put("statusMessage", "Failed");
-			response.put("responseMessage", "Database Error");
-
-			return new ResponseEntity<Object>(response, HttpStatus.OK);
-		}
-	}
+//	@ApiOperation(value = "Fetching All clients details with in Condonuity Application")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(code = 200, message = "Successful All Client Details")
+//            }
+//    )
+//	@GetMapping("/client/users")
+//	public ResponseEntity<Object> getAllClients() {
+//		List<ClientUser> list = clientService.getAllClientUsers();
+//		
+//		HashMap<String, Object> response = new HashMap();
+//		if(list != null) {
+//			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+//			response.put("statusMessage", "Success");
+//			response.put("responseMessage", "Client details fetched successfully");
+//			response.put("clients", list);
+//			
+//			return new ResponseEntity<Object>(response, HttpStatus.OK);
+//		} else {
+//			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+//			response.put("statusMessage", "Failed");
+//			response.put("responseMessage", "Database Error");
+//
+//			return new ResponseEntity<Object>(response, HttpStatus.OK);
+//		}
+//	}
 	
 	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
     @ApiResponses(

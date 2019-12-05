@@ -1,10 +1,16 @@
 package tech.torbay.userservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="client_association")
@@ -20,7 +26,13 @@ public class ClientAssociation {
     private Integer userRole = 0;
     private Integer accountVerificationStatus = 0;
     private Integer userAccountStatus = 0;
+    
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
 //    @ManyToOne
@@ -108,6 +120,4 @@ public class ClientAssociation {
 				+ userAccountStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", clientUser="
 				+ /* clientUser +*/ ", clientOrganisation=" + /* clientOrganisation + */  "]";
 	}
-    
-	
 }

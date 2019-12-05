@@ -381,6 +381,38 @@ public class ProjectController {
 		}
 	}
 	
+	@ApiOperation(value = "Fetching A Project Bid Details with All bidding Products details")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A Project Bid details fetched successfully")
+            }
+    )
+	@GetMapping("/projects/bid/{id}")
+	public ResponseEntity<Object> getProjectBidById(@PathVariable("id") Integer id) {
+
+		VendorBid vendorBid = projectService.findByBidId(id);
+//		List<VendorBid> projectAllBids = projectService.getAllBidsByProjectId(id);
+//		List<ProjectQuestionAnswer> projectAllQA = projectService.getAllQAByProjectId(id);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (vendorBid != null /* && projectAllBids != null && projectAllQA != null */ ) {
+			list.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "A Project Bid details fetched successfully");
+			list.put("vendorBid", vendorBid);
+//			list.put("allBids",projectAllBids);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
 	@ApiOperation(value = "Project Question Answer implementation")
     @ApiResponses(
             value = {

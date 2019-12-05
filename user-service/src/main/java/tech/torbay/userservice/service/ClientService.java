@@ -46,7 +46,6 @@ public class ClientService {
 	public ClientUser findByEmail(String email) {
 		// TODO Auto-generated method stub
 		ClientUser client = clientUserRepository.findByEmail(email);
-		System.out.println(client.toString());
 		return client;
 	}
 

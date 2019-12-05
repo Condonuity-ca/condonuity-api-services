@@ -2,6 +2,8 @@ package tech.torbay.projectservice.entity;
 
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,7 +31,13 @@ public class VendorBid {
     private String reasonForChoose;
     private String bidPrice;
     private int bidStatus;
+
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
 //    private List<BiddingProducts> biddingProducts;
     

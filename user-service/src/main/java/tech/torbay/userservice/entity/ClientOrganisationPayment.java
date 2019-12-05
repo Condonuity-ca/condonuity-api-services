@@ -23,8 +23,14 @@ public class ClientOrganisationPayment {
 	private String city = "NA";
 	private String province = "NA";
 	private String postalCode = "NA";
-	private String createdAt = "NA";
-	private String modifiedDate = "NA";
+	
+	@Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
+    private String modifiedDate;
 	
 	public int getId() {
 		return id;
