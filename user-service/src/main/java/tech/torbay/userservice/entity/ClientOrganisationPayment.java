@@ -13,6 +13,7 @@ public class ClientOrganisationPayment {
 	
 	}
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	private int organisationId;
 	private String cardNumber = "NA";

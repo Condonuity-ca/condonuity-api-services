@@ -53,7 +53,7 @@ public class ProjectService {
 	
 	public VendorBid findByBidId(Integer vendorBidId) {
 		// TODO Auto-generated method stub
-		return vendorBidRepository.findByBidId(vendorBidId);
+		return vendorBidRepository.findOneById(vendorBidId);
 	}
 
 	public List<Project> getAllProjects(ProjectSortBy past, Integer id) {
@@ -112,7 +112,7 @@ public class ProjectService {
 
 	public VendorBid publishVendorBid(Integer bidId) {
 		// TODO Auto-generated method stub
-		VendorBid vendorBid = vendorBidRepository.findOneByBidId(bidId);
+		VendorBid vendorBid = vendorBidRepository.findOneById(bidId);
 		vendorBid.setBidStatus(Constants.ProjectPostType.PUBLISHED.getValue());
 		return vendorBidRepository.save(vendorBid);
 	}

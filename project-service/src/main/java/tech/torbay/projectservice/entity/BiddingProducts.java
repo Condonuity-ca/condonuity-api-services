@@ -4,7 +4,10 @@ import javax.persistence.Table;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -34,6 +37,11 @@ public class BiddingProducts {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
+    
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "bidding_id")
+//    private VendorBid vendorBid;
+  //Constructors, getters and setters removed for brevity
     
 	public Integer getId() {
 		return Id;
@@ -98,4 +106,10 @@ public class BiddingProducts {
 				+ modifiedDate + "]";
 	}
     
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BiddingProducts )) return false;
+        return Id != null && Id.equals(((BiddingProducts) o).getId());
+    }
 }

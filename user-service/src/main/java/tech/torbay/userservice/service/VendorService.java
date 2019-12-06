@@ -7,9 +7,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
+import tech.torbay.userservice.entity.VendorPortfolio;
 import tech.torbay.userservice.entity.VendorUser;
+import tech.torbay.userservice.repository.VendorInsuranceRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
+import tech.torbay.userservice.repository.VendorPortfolioRepository;
 import tech.torbay.userservice.repository.VendorUserRepository;
 
 @Component
@@ -19,6 +23,10 @@ public class VendorService {
 	VendorUserRepository vendorUserRepository;
 	@Autowired
 	VendorOrganisationRepository vendorOrganisationRepository;
+	@Autowired
+	VendorPortfolioRepository vendorPortfolioRepository;
+	@Autowired
+	VendorInsuranceRepository vendorInsuranceRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -46,11 +54,11 @@ public class VendorService {
 		return vendorUserRepository.findByUserId(userId);
 	}
 
-	public VendorOrganisation getVendorOrganisationById(Integer id) {
+	public VendorOrganisation getVendorOrganisationById(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		
 		try {
-			VendorOrganisation vO = vendorOrganisationRepository.findByVendorOrganisationId(id);
+			VendorOrganisation vO = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
 			System.out.println(vO);
 			
 			return vO;
@@ -79,6 +87,36 @@ public class VendorService {
 	public List<VendorUser> getVendorOrganisationUsersById(Integer id) {
 		// TODO Auto-generated method stub
 		return vendorUserRepository.findByVendorOrganisationId(id);
+	}
+
+	public List<VendorPortfolio> getVendorPortfolio(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		return vendorPortfolioRepository.findByVendorOrganisationId(vendorOrganisationId);
+	}
+
+	public VendorPortfolio addVendorPortfolio(VendorPortfolio vendorPortfolio) {
+		// TODO Auto-generated method stub
+		return vendorPortfolioRepository.save(vendorPortfolio);
+	}
+	
+	public VendorPortfolio updateVendorPortfolio(VendorPortfolio vendorPortfolio) {
+		// TODO Auto-generated method stub
+		return vendorPortfolioRepository.save(vendorPortfolio);
+	}
+	
+	public List<VendorInsurance> getVendorInsurance(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		return vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisationId);
+	}
+
+	public VendorInsurance addVendorInsurance(VendorInsurance vendorPortfolio) {
+		// TODO Auto-generated method stub
+		return vendorInsuranceRepository.save(vendorPortfolio);
+	}
+	
+	public VendorInsurance updateVendorInsurance(VendorInsurance vendorPortfolio) {
+		// TODO Auto-generated method stub
+		return vendorInsuranceRepository.save(vendorPortfolio);
 	}
 }
 

@@ -4,6 +4,7 @@ import javax.persistence.Table;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,7 +23,7 @@ public class ProjectProducts {
  
     @Id
 	private Integer Id = 0;
-//    private Integer projectId = 0;
+    private Integer projectId = 0;
     private String description = "";
     private Integer quantity = 0;
     private String unit;
@@ -35,11 +36,10 @@ public class ProjectProducts {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-    @ManyToOne
-//    @JoinColumn(name = "projectId", referencedColumnName = "projectId", insertable = false, updatable = false)
-    @JoinColumn(name = "project_id")
-	private Project project;
-    
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "project_id")
+//    private Project project;
+	    
 	public Integer getId() {
 		return Id;
 	}
@@ -47,10 +47,10 @@ public class ProjectProducts {
 		Id = id;
 	}
 	public Integer getProjectId() {
-		return project.getProjectId();
+		return projectId;
 	}
 	public void setProjectId(Integer projectId) {
-		this.project.setProjectId(projectId);;
+		this.projectId = projectId;
 	}
 	public String getDescription() {
 		return description;
@@ -84,8 +84,15 @@ public class ProjectProducts {
 	}
 	@Override
 	public String toString() {
-		return "ProjectProducts [Id=" + Id + /* ", projectId=" + projectId + */ ", description=" + description + ", quantity="
+		return "ProjectProducts [Id=" + Id + ", projectId=" + projectId + ", description=" + description + ", quantity="
 				+ quantity + ", unit=" + unit + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProjectProducts )) return false;
+        return Id != null && Id.equals(((ProjectProducts) o).getId());
+    }
 	
 }

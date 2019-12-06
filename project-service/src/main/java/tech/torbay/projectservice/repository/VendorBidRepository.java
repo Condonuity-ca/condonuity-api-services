@@ -14,9 +14,7 @@ public interface VendorBidRepository extends JpaRepository<VendorBid, Integer> {
 
     List<VendorBid> findAll();
 
-	VendorBid findByBidId (Integer vendorBidId);
-	
-	VendorBid findOneByBidId (Integer vendorBidId);
+	VendorBid findOneById (Integer vendorBidId);
 
 	List<VendorBid> findVendorBidByProjectId(Integer id);
 

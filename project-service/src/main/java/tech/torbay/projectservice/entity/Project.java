@@ -7,6 +7,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -161,10 +162,19 @@ public class Project {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project", targetEntity=ProjectProducts.class, orphanRemoval = true)
+	
+	@OneToMany(targetEntity = ProjectProducts.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<ProjectProducts> projectProducts = new ArrayList<>();
     
-    public Integer getClientOrganisationId() {
+    public List<ProjectProducts> getProjectProducts() {
+		return projectProducts;
+	}
+
+	public void setProjectProducts(List<ProjectProducts> projectProducts) {
+		this.projectProducts = projectProducts;
+	}
+
+	public Integer getClientOrganisationId() {
 		return clientOrganisationId;
 	}
 
@@ -190,15 +200,15 @@ public class Project {
 
 	@Override
 	public String toString() {
-		return "Project [projectId=" + projectId + ", clientId=" + clientId + ", clientOrganisationId=" + clientOrganisationId + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + ", projectName=" + projectName + ", tags=" + tags + ", bidEndDate="
-				+ bidEndDate + ", projectStartDate=" + projectStartDate + ", projectCompletionDeadline="
-				+ projectCompletionDeadline + ", estimatedBudget=" + estimatedBudget + ", duration=" + duration
-				+ ", description=" + description + ", specialConditions=" + specialConditions + ", city=" + city
-				+ ", contractType=" + contractType + ", insuranceRequired=" + insuranceRequired + ", postType="
-				+ postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", projectModifiedBy=" + projectModifiedBy + "]";
+		return "Project [projectId=" + projectId + ", clientOrganisationId=" + clientOrganisationId + ", clientId="
+				+ clientId + ", projectName=" + projectName + ", projectModifiedBy=" + projectModifiedBy + ", tags="
+				+ tags + ", bidEndDate=" + bidEndDate + ", projectStartDate=" + projectStartDate
+				+ ", projectCompletionDeadline=" + projectCompletionDeadline + ", estimatedBudget=" + estimatedBudget
+				+ ", duration=" + duration + ", description=" + description + ", specialConditions=" + specialConditions
+				+ ", city=" + city + ", contractType=" + contractType + ", insuranceRequired=" + insuranceRequired
+				+ ", postType=" + postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", createdAt="
+				+ createdAt + ", modifiedDate=" + modifiedDate + ", projectProducts=" + projectProducts + "]";
 	}
-    
 
     
 }

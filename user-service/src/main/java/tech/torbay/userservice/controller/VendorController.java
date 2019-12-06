@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -25,7 +26,9 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
+import tech.torbay.userservice.entity.VendorPortfolio;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.service.VendorService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
@@ -75,8 +78,10 @@ public class VendorController {
             }
     )
 	@GetMapping("/vendor/org/{id}")
-	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer id) {
-		VendorOrganisation vendorOrganisation = vendorService.getVendorOrganisationById(id);
+	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer vendorOrganisationId) {
+		VendorOrganisation vendorOrganisation = vendorService.getVendorOrganisationById(vendorOrganisationId);
+		List<VendorPortfolio> vendorPortfolio = vendorService.getVendorPortfolio(vendorOrganisationId);
+		List<VendorInsurance> vendorInsurance = vendorService.getVendorInsurance(vendorOrganisationId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorOrganisation != null) {
@@ -84,6 +89,8 @@ public class VendorController {
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "Vendor Organisation details fetched successfully");
 			response.put("vendor", vendorOrganisation);
+			response.put("vendorPortfolio", vendorPortfolio);
+			response.put("vendorInsurances", vendorInsurance);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {
@@ -224,4 +231,109 @@ public class VendorController {
 		
 	}
 	
+	@ApiOperation(value = "Vendor Portfolio Creation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor Portfolio Created Successfully"),
+                    @ApiResponse(code = 201, message = "Vendor Portfolio Created Successfully")
+            }
+    )
+	@PostMapping("/vendor/org/portfolio/create")
+	public ResponseEntity<Object> addVendorPortfolio(
+			@RequestBody VendorPortfolio vendorPortfolio) {
+		
+        VendorPortfolio vendorPortfolioObj= vendorService.addVendorPortfolio(vendorPortfolio);
+        if (vendorPortfolioObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to create Vendor Portfolio");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Portfolio Created Successfully");
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+        }
+	}
+	
+	@ApiOperation(value = "Vendor Portfolio update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor Portfolio details updated successfully")
+            }
+    )
+	@PutMapping("/vendor/org/portfolio")
+	public ResponseEntity<Object> updateVendorPortfolio(@RequestBody VendorPortfolio vendorPortfolio) {
+		if(vendorService.updateVendorPortfolio(vendorPortfolio) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Portfolio Details Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Vendor Portfolio Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
+	
+	@ApiOperation(value = "Vendor Insurance Creation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor Insurance Created Successfully"),
+                    @ApiResponse(code = 201, message = "Vendor Insurance Created Successfully")
+            }
+    )
+	@PostMapping("/vendor/org/insurance/create")
+	public ResponseEntity<Object> addVendorInsurance(
+			@RequestBody VendorInsurance vendorInsurance) {
+		
+        VendorInsurance vendorInsuranceObj= vendorService.addVendorInsurance(vendorInsurance);
+        if (vendorInsuranceObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to create Vendor Insurance");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Insurance Created Successfully");
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+        }
+	}
+	
+	@ApiOperation(value = "Vendor Insurance update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor Insurance details updated successfully")
+            }
+    )
+	@PutMapping("/vendor/org/insurance")
+	public ResponseEntity<Object> updateVendorInsurance(@RequestBody VendorInsurance vendorInsurance) {
+		if(vendorService.updateVendorInsurance(vendorInsurance) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Insurance Details Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Vendor Insurance Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
 } 
