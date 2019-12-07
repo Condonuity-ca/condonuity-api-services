@@ -80,7 +80,9 @@ public class ClientService {
 			List<Integer> ids = clientOrgIds.stream()
                     .map(ClientAssociation::getClientOrganisationId).collect(Collectors.toList());
 			
-			List<ClientOrganisation> clientUserOrganisations = clientOrganisationRepository.findByClientOrganisationId(ids);
+//			List<Integer> ids = new ArrayList();
+//			ids.add(0);
+			List<ClientOrganisation> clientUserOrganisations = clientOrganisationRepository.findByClientOrganisationId(ids );
 			
 			return clientUserOrganisations;
 		
@@ -119,6 +121,8 @@ public class ClientService {
 			
 			List<Integer> ids = clientIds.stream()
                     .map(ClientAssociation::getClientId).collect(Collectors.toList());
+//			List<Integer> ids = new ArrayList();
+//			ids.add(0);
 			
 			List<ClientUser> clientUsers = clientUserRepository.findByClientId(ids);
 			

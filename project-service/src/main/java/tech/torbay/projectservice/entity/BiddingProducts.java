@@ -24,7 +24,7 @@ public class BiddingProducts {
     @Id
 	private Integer Id = 0;
 	private Integer productType = 0;
-    private Integer biddingId = 0;
+//    private Integer biddingId = 0; //uni-directional relation
     private String description;
     private Integer quantity = 0;
     private String unit;
@@ -38,11 +38,6 @@ public class BiddingProducts {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "bidding_id")
-//    private VendorBid vendorBid;
-  //Constructors, getters and setters removed for brevity
-    
 	public Integer getId() {
 		return Id;
 	}
@@ -55,12 +50,8 @@ public class BiddingProducts {
 	public void setProductType(Integer productType) {
 		this.productType = productType;
 	}
-	public Integer getBiddingId() {
-		return biddingId;
-	}
-	public void setBiddingId(Integer biddingId) {
-		this.biddingId = biddingId;
-	}
+//	
+
 	public String getDescription() {
 		return description;
 	}
@@ -101,7 +92,7 @@ public class BiddingProducts {
 	@Override
 	public String toString() {
 		return "BiddingProducts [Id=" + Id + ", productType=" + productType + 
-				", biddingId=" + biddingId + ", description=" + description + ", quantity="
+				", biddingId=" /* + biddingId */ + ", description=" + description + ", quantity="
 				+ quantity + ", unit=" + unit + ", price=" + price + ", createdAt=" + createdAt + ", modifiedDate="
 				+ modifiedDate + "]";
 	}

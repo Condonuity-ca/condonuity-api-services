@@ -1,6 +1,9 @@
 package tech.torbay.userservice.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -8,11 +11,15 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NaturalId;
 
 import tech.torbay.userservice.constants.Constants;
 
@@ -21,8 +28,17 @@ import tech.torbay.userservice.constants.Constants;
 public class ClientUser {
 
 
-    @Id
+	public ClientUser() {
+	}
+	
+    public ClientUser(String email) {
+    	this.email = email;
+	}
+    
+	@Id
+	@GeneratedValue
     private Integer clientId = 0;
+	@NaturalId
     private String email = "";
     private String firstName = "";
     private String LastName = "";
@@ -39,30 +55,38 @@ public class ClientUser {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(
-//    		name = "client_association", joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "client_id"), 
-//    		inverseJoinColumns = @JoinColumn(name = "client_organisation_id", referencedColumnName = "client_organisation_id"))
-//    private Set<ClientOrganisation> clientOrganisations;
-//    
-//    
-//    public Set<ClientOrganisation> getClientOrganisations() {
-//		return clientOrganisations;
-//	}
-//	public void setClientOrganisations(Set<ClientOrganisation> clientOrganisations) {
-//		this.clientOrganisations = clientOrganisations;
-//	}
     
-//    @OneToMany(mappedBy = "clientUser", cascade = CascadeType.ALL)
-//    private Set<ClientAssociation> clientAssociations;
+//    @OneToMany(
+//            mappedBy = "clientUser",
+//            cascade = CascadeType.ALL,
+//            orphanRemoval = true
+//        )
+//        private List<ClientAssociation> clientOrganisations = new ArrayList<>();
     
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-//    @JoinTable(
-//            name = "client_association",
-//            joinColumns = {@JoinColumn(name = "client_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "client_organisation_id")}
-//    )
-//    private Set<ClientOrganisation> clientOrganisations = new HashSet<>();
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+// 
+//        if (o == null || getClass() != o.getClass())
+//            return false;
+// 
+//        ClientUser clientUser = (ClientUser) o;
+//        return Objects.equals(email, clientUser.email);
+//    }
+// 
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(email);
+//    }
+//	public List<ClientAssociation> getClientOrganisations() {
+//	// TODO Auto-generated method stub 
+//	return clientOrganisations;
+//}
+//
+//public void setClientOrganisations(List<ClientAssociation> clientOrganisations) {
+//	// TODO Auto-generated method stub
+//	this.clientOrganisations = clientOrganisations;
+//}
     
     public Integer getUserType() {
 		return userType;
@@ -74,12 +98,6 @@ public class ClientUser {
 	public Integer getClientId() {
 		return clientId;
 	}
-//	public Set<ClientOrganisation> getClientOrganisations() {
-//		return clientOrganisations;
-//	}
-//	public void setClientOrganisation(Set<ClientOrganisation> clientOrganisations) {
-//		this.clientOrganisations = clientOrganisations;
-//	}
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
 	}
@@ -143,12 +161,8 @@ public class ClientUser {
 		return "ClientUser [clientId=" + clientId + ", email=" + email + ", firstName=" + firstName + ", LastName="
 				+ LastName + ", legalName=" + legalName + ", city=" + city + ", phone=" + phone + ", countryCode="
 				+ countryCode + ", createdAt=" + createdAt + ", modifiedDate="
-				+ modifiedDate /*
-								 * + ", clientOrganisations=" + clientOrganisations
-								 */+ "]";
+				+ modifiedDate + "]";
 	}
-	
-	
 
-	
+
 }

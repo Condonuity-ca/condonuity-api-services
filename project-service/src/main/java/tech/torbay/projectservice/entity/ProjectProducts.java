@@ -23,7 +23,7 @@ public class ProjectProducts {
  
     @Id
 	private Integer Id = 0;
-    private Integer projectId = 0;
+//    private Integer projectId = 0;
     private String description = "";
     private Integer quantity = 0;
     private String unit;
@@ -35,23 +35,14 @@ public class ProjectProducts {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
-    
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "project_id")
-//    private Project project;
-	    
+	
 	public Integer getId() {
 		return Id;
 	}
 	public void setId(Integer id) {
 		Id = id;
 	}
-	public Integer getProjectId() {
-		return projectId;
-	}
-	public void setProjectId(Integer projectId) {
-		this.projectId = projectId;
-	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -84,7 +75,7 @@ public class ProjectProducts {
 	}
 	@Override
 	public String toString() {
-		return "ProjectProducts [Id=" + Id + ", projectId=" + projectId + ", description=" + description + ", quantity="
+		return "ProjectProducts [Id=" + Id + ", projectId=" /* + projectId */ + ", description=" + description + ", quantity="
 				+ quantity + ", unit=" + unit + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 	

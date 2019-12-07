@@ -1,7 +1,10 @@
 package tech.torbay.userservice.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -9,24 +12,33 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.NaturalIdCache;
+
 import javax.persistence.JoinColumn;
 
 import tech.torbay.userservice.constants.Constants;
 
-@Entity
+@Entity(name = "ClientOrganisation")
 @Table(name = "client_organisation")
 public class ClientOrganisation {
 
-    public ClientOrganisation() {
-
+	public ClientOrganisation() {
+	}
+	
+    public ClientOrganisation(String corporateNumber) {
+    	this.corporateNumber = corporateNumber;
     }
     
     @Id
+    @GeneratedValue
     private Integer clientOrganisationId = 0;
     private Integer userType = Constants.UserType.CLIENT.getValue();
 	private String organisationName = "";
@@ -58,19 +70,6 @@ public class ClientOrganisation {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
-//	private List<ClientAmenities> amenities = new ArrayList<>();
-//    
-//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
-//	private List<ClientAssociation> clientAssociations = new ArrayList<>();
-    
-//    @OneToMany(mappedBy = "clientOrganisation", cascade = CascadeType.ALL)
-//	private Set<ClientAssociation> clientAssociations;
-    
-//    @ManyToMany(mappedBy = "clientOrganisations", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-//    private Set<ClientUser> clientUsers = new HashSet<>();
-
-    
 	public String getModifiedDate() {
 		return modifiedDate;
 	}
@@ -79,7 +78,50 @@ public class ClientOrganisation {
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-
+	
+//	@OneToMany(
+//	        mappedBy = "clientOrganisation",
+//	        cascade = CascadeType.ALL,
+//	        orphanRemoval = true
+//	    )
+//	    private List<ClientAssociation> clientUsers = new ArrayList<>();
+	
+	
+	//Getters and setters omitted for brevity
+	 
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        ClientOrganisation clientOrg = (ClientOrganisation) o;
+//        return Objects.equals(corporateNumber, clientOrg.corporateNumber);
+//    }
+// 
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(corporateNumber);
+//    }
+    
+//	public void addClientUser(ClientUser clientUser) {
+//	  ClientAssociation clientAssociation = new ClientAssociation(this, clientUser);
+//	  clientUsers.add(clientAssociation);
+//	  clientUser.getClientOrganisations().add(clientAssociation);
+//	}
+//	
+//	public void removeClientUser(ClientUser clientUser) {
+//	  for (Iterator<ClientAssociation> iterator = clientUsers.iterator();
+//	       iterator.hasNext(); ) {
+//		  ClientAssociation clientAssociation = iterator.next();
+//	
+//	      if (clientAssociation.getClientOrganisation().equals(this) &&
+//	    		  clientAssociation.getClientUser().equals(clientUser)) {
+//	          iterator.remove();
+//	          clientAssociation.getClientUser().getClientOrganisations().remove(clientAssociation);
+//	          clientAssociation.setClientOrganisation(null);
+//	          clientAssociation.setClientUser(null);
+//	      }
+//	  }
+//	}
 
 	@Override
 	public String toString() {

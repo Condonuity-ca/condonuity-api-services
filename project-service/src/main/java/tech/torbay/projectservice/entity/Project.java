@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -163,7 +164,8 @@ public class Project {
     private String modifiedDate;
     
 	
-	@OneToMany(targetEntity = ProjectProducts.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(/* mappedBy = "project", */targetEntity = ProjectProducts.class, cascade = CascadeType.ALL,  orphanRemoval = true)
+	@JoinColumn(name = "project_id")
 	private List<ProjectProducts> projectProducts = new ArrayList<>();
     
     public List<ProjectProducts> getProjectProducts() {
@@ -174,6 +176,16 @@ public class Project {
 		this.projectProducts = projectProducts;
 	}
 
+//	public void addProjectProducts(ProjectProducts projectProduct) {
+//		projectProducts.add(projectProduct);
+//		projectProduct.setProject(this);
+//    }
+//
+//    public void removeProjectProducts(ProjectProducts projectProduct) {
+//    	projectProducts.remove(projectProduct);
+//    	projectProduct.setProject(null);
+//    }
+    
 	public Integer getClientOrganisationId() {
 		return clientOrganisationId;
 	}

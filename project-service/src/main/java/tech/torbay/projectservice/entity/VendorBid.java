@@ -49,7 +49,7 @@ public class VendorBid {
     private String modifiedDate;
     
     @OneToMany(targetEntity = BiddingProducts.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "bidding_id")
+    @JoinColumn(name = "bidding_id")
     private List<BiddingProducts> biddingProducts;
 
 	public Integer getId() {

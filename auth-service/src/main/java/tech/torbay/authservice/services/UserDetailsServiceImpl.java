@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import tech.torbay.authservice.config.SecurityAES;
 import tech.torbay.authservice.entity.LoginUser;
 import tech.torbay.authservice.repository.UserRepository;
 
@@ -40,7 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         for(AppUser appUser: users) {
-            if(appUser.getUsername().equals(username)) {
+            if(appUser.getUsername().equals(SecurityAES.encrypt(username))) {
 
                 // Remember that Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
                 // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN")).
