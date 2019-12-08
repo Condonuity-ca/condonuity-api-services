@@ -55,14 +55,14 @@ public class UserService {
 		{
 			new ResourceNotFoundException("User", "userId", user.getUserId());
 		}
-		user.setPassword(SecurityAES.encrypt(user.getPassword()));
+		user.setPassword(/* SecurityAES.encrypt( */user.getPassword()/* ) */);
 		userObj.setPassword(user.getPassword());
 		return userRepository.save(userObj);
 	}
 
 	public User Login(String username, String password) {
 		// TODO Auto-generated method stub
-		return userRepository.findByUsernameAndPassword(username, SecurityAES.encrypt(password));
+		return userRepository.findByUsernameAndPassword(username, /* SecurityAES.encrypt( */password/* ) */);
 	}
 }
 
