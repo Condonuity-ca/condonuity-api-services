@@ -1,6 +1,8 @@
 package tech.torbay.securityservice.controller;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
@@ -12,16 +14,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -116,6 +123,7 @@ public class UserController {
 					list.put("statusMessage", "Success");
 					list.put("responseMessage", "Client details fetched successfully");
 					list.put("userDetails", clientInfo);
+					list.put("authToken", Token);
 					
 					return new ResponseEntity<>(list, HttpStatus.OK);
 					
@@ -154,6 +162,7 @@ public class UserController {
 					list.put("statusMessage", "Success");
 					list.put("responseMessage", "Vendor User details fetched successfully");
 					list.put("userDetails", vendorUserInfo);
+					list.put("authToken", Token);
 					
 //					list.put("vendorOrgDetails",vendorOrgInfo);
 					
@@ -202,31 +211,26 @@ public class UserController {
 //    private RestTemplate template;
 	
 	private String getAuthToken() {
-		// TODO Auto-generated method stub
 		
-		//Auth Service call internally and add one user for auth dynamically
-
-		//1
-//	    final String uri = "http://condonuityappdev.eastus2.cloudapp.azure.com:8762/auth";
-//	    RestTemplate restTemplate = new RestTemplate();
-//	    String result = restTemplate.getForObject(uri, String.class);
-//	    System.out.println(result);
-		
-		//2
-//		ResponseEntity<Token> tokenObj = template.getForObject("http://condonuityappdev.eastus2.cloudapp.azure.com:8762/auth", Token.class);
-//		Token token = tokenObj.getBody();
-//		System.out.println("Login Auth Token : "+ token.getToken());
-		
-		//3
-//		ResponseEntity<Token> responseEntity = template.exchange(
-//			    "\"http://condonuityappdev.eastus2.cloudapp.azure.com:8762/auth\"", 
-//			    HttpMethod.GET, 
-//			    null, 
-//			    new ParameterizedTypeReference<Token>() {
-//			    });
-//			Token pojoObjList = responseEntity.getBody();
-			
-		return null;
+		RestTemplate restTemplate = new RestTemplate();
+	     
+	    final String url = "https://condonuityappdev.eastus2.cloudapp.azure.com/auth";
+	    URI uri = null;
+		try {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	     
+	    AppUser user = new AppUser( "user@client.com", "12345");
+	 
+	    ResponseEntity<Token> result = restTemplate.postForEntity(uri, user, Token.class);
+	     
+	    //Verify request succeed
+//	    Assert.assertEquals(200, result.getStatusCodeValue());
+	    
+		return result.getBody().token;
 	}
 
 	//	@ApiOperation(value = "Returns All User Details as List in Condonuity Application")
@@ -363,5 +367,43 @@ public class UserController {
         		"Welcome Mail Sent Successfully");
 		return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	}
+
+	private static class Token {
+        private String token;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+    }
+	
+	 private static class AppUser {
+	        private String username, password;
+
+	        public AppUser(String username, String password) {
+	            this.username = username;
+	            this.password = password;
+	        }
+
+	        public String getUsername() {
+	            return username;
+	        }
+
+	        public void setUsername(String username) {
+	            this.username = username;
+	        }
+
+	        public String getPassword() {
+	            return password;
+	        }
+
+	        public void setPassword(String password) {
+	            this.password = password;
+	        }
+
+	    }
 
 }
