@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.VendorOrganisation;
+import tech.torbay.userservice.entity.VendorPortfolio;
 
 import java.util.List;
 
@@ -15,4 +16,8 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	VendorOrganisation save(VendorOrganisation vendorOrganisation);
 	
 	VendorOrganisation findByVendorOrganisationId(Integer id);
+
+//	List<VendorOrganisation> findAllOrderByCompanyNameAsc();
+
+//	List<VendorOrganisation> findAllOrderByCompanyNameDesc();
 }

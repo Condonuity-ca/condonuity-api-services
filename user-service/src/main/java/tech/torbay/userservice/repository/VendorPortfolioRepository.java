@@ -18,4 +18,15 @@ public interface VendorPortfolioRepository extends JpaRepository<VendorPortfolio
     VendorPortfolio save(VendorUser vendorUser);
 
 	List<VendorPortfolio> findByVendorOrganisationId(Integer vendorId);
+
+	List<VendorPortfolio> findByVendorOrganisationIdOrderByProjectNameAsc(Integer orgId);
+	
+	List<VendorPortfolio> findByVendorOrganisationIdOrderByProjectNameDesc(Integer orgId);
+	
+	List<VendorPortfolio> findByVendorOrganisationIdOrderByCreatedAtAsc(Integer orgId);
+
+	List<VendorPortfolio> findByVendorOrganisationIdOrderByCostAsc(Integer orgId);
+
+	List<VendorPortfolio> findByVendorOrganisationIdOrderByDurationAsc(Integer orgId);
+
 }

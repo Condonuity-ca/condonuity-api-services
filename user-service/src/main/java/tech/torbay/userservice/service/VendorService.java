@@ -59,7 +59,7 @@ public class VendorService {
 		
 		try {
 			VendorOrganisation vO = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
-			System.out.println(vO);
+//			System.out.println(vO);
 			
 			return vO;
 		} catch(Exception exp) {
@@ -118,5 +118,53 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		return vendorInsuranceRepository.save(vendorPortfolio);
 	}
+
+	public List<VendorPortfolio> sortVendorPortfolio(Integer orgId, Integer sortBy) {
+		// TODO Auto-generated method stub
+		
+		switch(sortBy) {
+			case 1: {//Constants.PortfolioSortBy.ASC
+				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByProjectNameAsc(orgId);
+			}
+			case 2: {//Constants.PortfolioSortBy.DESC
+				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByProjectNameDesc(orgId);
+			}
+			case 3: {//Constants.PortfolioSortBy.DATE
+				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByCreatedAtAsc(orgId);
+			}
+			case 4: {//Constants.PortfolioSortBy.COST
+				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByCostAsc(orgId);
+			}
+			case 5: {//Constants.PortfolioSortBy.DURATION
+				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByDurationAsc(orgId); // check - ?
+			}
+			
+		}
+		
+		return null;
+	}
+
+	public List<VendorOrganisation> sortVendorOrganisations(Integer userId, Integer userType, Integer sortBy) {
+		// TODO Auto-generated method stub
+		switch(sortBy) {
+		case 1: {//Constants.VendorSortBy.ASC
+//			return vendorOrganisationRepository.findAllOrderByCompanyNameAsc();
+		}
+		case 2: {//Constants.VendorSortBy.DESC
+//			return vendorOrganisationRepository.findAllOrderByCompanyNameDesc();
+		}
+		case 3: {//Constants.VendorSortBy.NEAREST
+//			return vendorOrganisationRepository.findByAllByLocationAsc(orgId);
+		}
+		case 4: {//Constants.VendorSortBy.HIGHEST_RATING
+//			return vendorOrganisationRepository.findByAllOrderByRatingAsc(orgId);
+		}
+		case 5: {//Constants.VendorSortBy.PREFERRED
+//			return vendorOrganisationRepository.findByAllOrderByUserIdAndUserType(orgId); // check - ?
+		}
+	}
+		return null;
+	}
+
 }
 

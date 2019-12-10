@@ -87,37 +87,6 @@ public class Constants {
 	    }
 	}
 	
-	// 001 - initiated
-	// 002 - verified
-	// 003 - failed_to_verify
-	// 004 - document_verified
-	// 005 - document_rejected
-	// 006 - bids_won
-	// 007 - bids_failed
-	// 008 - tag_created_and_submitted_for_approval
-	// 009 - tag_approved_by_support_user
-	// 010 - tag_rejected_by_support_user
-	// 011 - not_subscribed
-	// 012 - subscribed
-	// 013 - project_created
-	// 014 - project_active
-	// 015 - project_inactive
-	// 016 - task_created
-	// 017 - task_assigned/task_opened
-	// 018 - task_closed
-	/*RESET_PASSWORD(6),
-	    
-	    //User Registration
-	    USER_REGISTER_INPROGRESS(10),// password not set
-	    USER_REGISTER_VERIFIED(11),// password created
-	    ORGANISATION_REGISTER_INPROGRESS(12), // organisation created and submitted
-	    ORGANISATION_REGISTER_VERIFIED(13), // organisation verified
-	    DOCUMENT_VERIFICATION_SUBMITTED(14), // document for verification submitted 
-	    DOCUMENT_VERIFICATION_VERIFIED(15), // document verified
-	    DOCUMENT_VERIFICATION_REJECTED(16), // document rejected
-		USER_ACTIVE(20), // User active state
-	    USER_INACTIVE(21); // User Inactive state*/
-	
 	public enum APIStatusCode {
 		// API Responses
 	    REQUEST_SUCCESS(0),
@@ -233,4 +202,122 @@ public class Constants {
 	    }
 	}
 	
+	public enum PortfolioSortBy {
+	    ASC(1),
+	    DESC(2),
+	    DATE(3),
+	    COST(4),
+	    DURATION(5);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private PortfolioSortBy(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (PortfolioSortBy pageType : PortfolioSortBy.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static PortfolioSortBy valueOf(int pageType) {
+	        return (PortfolioSortBy) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum VendorSortBy {
+	    ASC(1),
+	    DESC(2),
+	    NEAREST(3),
+	    HIGHEST_RATING(4),
+	    PREFERRED(5);
+		
+		// ADD Keyword, location for filter
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private VendorSortBy(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (VendorSortBy pageType : VendorSortBy.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static VendorSortBy valueOf(int pageType) {
+	        return (VendorSortBy) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum ClientSortBy {
+	    ASC(1),
+	    DESC(2),
+	    NEAREST(3),
+	    SIZE_OF_UNITS(4),
+	    DATE_OF_REGISTRATION(5);
+		
+		// ADD keyword, Location, no.of.units(from - to) for filter
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private ClientSortBy(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (ClientSortBy pageType : ClientSortBy.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static ClientSortBy valueOf(int pageType) {
+	        return (ClientSortBy) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum ProjectSortBy {
+	    ASC(1),
+	    DESC(2);
+		
+		// ADD project_id, project_name, contract_type, date_created, bid_closed_date, tags, status, location, city, completion_date, favourite, no.of.bids, no.of.interests
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private ProjectSortBy(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (ProjectSortBy pageType : ProjectSortBy.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static ProjectSortBy valueOf(int pageType) {
+	        return (ProjectSortBy) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
 }

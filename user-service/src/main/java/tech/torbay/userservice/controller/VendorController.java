@@ -89,7 +89,7 @@ public class VendorController {
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "Vendor Organisation details fetched successfully");
 			response.put("vendor", vendorOrganisation);
-			response.put("vendorPortfolio", vendorPortfolio);
+			response.put("vendorPortfolios", vendorPortfolio);
 			response.put("vendorInsurances", vendorInsurance);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
@@ -182,6 +182,65 @@ public class VendorController {
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
 	}
+	
+	@ApiOperation(value = "Vendor Organisations Sorting Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor Organisations Sorted")
+            }
+    )
+	@GetMapping("/vendor/orgs/{userId}/{userType}/{sortby}")
+	public ResponseEntity<Object> sortVendorOrganisations(@PathVariable("userId") Integer userId, @PathVariable("userType") Integer userType, @PathVariable("sortby") Integer sortby) {
+				
+		List<VendorOrganisation> list = vendorService.sortVendorOrganisations(userId, userType, sortby);
+		
+		HashMap<String, Object> response = new HashMap();
+		
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor Organisations Sorted");
+			response.put("vendorPortfolios", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Failed to Sort Vendor Organisations");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	
+//	@ApiOperation(value = "Preferred Vendor Organisations listing Implementation")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(code = 200, message = "Preferred vendor Organisations Listed")
+//            }
+//    )
+//	@GetMapping("/vendor/orgs/{userId}/{userType}")
+//	public ResponseEntity<Object> getPreferredVendorOrganisations(@PathVariable("userId") Integer userId, @PathVariable("userType") Integer userType) {
+//				
+//		List<VendorPortfolio> list = vendorService.getPreferredVendorOrganisations(userId, userType);
+//		
+//		HashMap<String, Object> response = new HashMap();
+//		
+//		if(list != null) {
+//			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+//			response.put("statusMessage", "Success");
+//			response.put("responseMessage", "Preferred Vendor Organisations Sorted");
+//			response.put("vendorPortfolios", list);
+//			
+//			return new ResponseEntity<Object>(response, HttpStatus.OK);
+//		} else {
+//			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+//			response.put("statusMessage", "Failed");
+//			response.put("responseMessage", "Failed to list Preferred Vendor Organisations");
+//
+//			return new ResponseEntity<Object>(response, HttpStatus.OK);
+//		}
+//	}
 	
 	@ApiOperation(value = "Vendor User update Implementation")
     @ApiResponses(
@@ -335,5 +394,34 @@ public class VendorController {
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
 		}
 		
+	}
+	
+	@ApiOperation(value = "Vendor Portfolio Sorting Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor Portfolio Sorted")
+            }
+    )
+	@GetMapping("/vendor/org/portfolio/{orgId}/{sortby}")
+	public ResponseEntity<Object> sortVendorPortfolio(@PathVariable("orgId") Integer orgId, @PathVariable("sortby") Integer sortby) {
+				
+		List<VendorPortfolio> list = vendorService.sortVendorPortfolio(orgId, sortby);
+		
+		HashMap<String, Object> response = new HashMap();
+		
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor Portfolio Sorted");
+			response.put("vendorPortfolios", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Failed to Sort Portfolio");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
 	}
 } 

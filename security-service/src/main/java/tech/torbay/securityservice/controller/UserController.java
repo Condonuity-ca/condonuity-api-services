@@ -15,8 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -210,9 +215,11 @@ public class UserController {
 //	@Autowired
 //    private RestTemplate template;
 	
-	private String getAuthToken() {
+	private String getAuthToken() throws JsonParseException, JsonMappingException, IOException {
 		
 		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
 	     
 	    final String url = "https://condonuityappdev.eastus2.cloudapp.azure.com/auth";
 	    URI uri = null;
@@ -224,13 +231,20 @@ public class UserController {
 		}
 	     
 	    AppUser user = new AppUser( "user@client.com", "12345");
-	 
-	    ResponseEntity<Token> result = restTemplate.postForEntity(uri, user, Token.class);
+	    
+	    
+//	    HttpEntity<String> request = new HttpEntity<>(userJsonObj, headers);
+	    
+	    
+	    ResponseEntity<String> result = restTemplate.postForEntity(uri, user/*headers*/, String.class);
 	     
 	    //Verify request succeed
 //	    Assert.assertEquals(200, result.getStatusCodeValue());
 	    
-		return result.getBody().token;
+	    ObjectMapper objectMapper = new ObjectMapper();
+        Token tokenObj = objectMapper.readValue(result.getBody(), Token.class);
+	    
+		return tokenObj.token;
 	}
 
 	//	@ApiOperation(value = "Returns All User Details as List in Condonuity Application")
