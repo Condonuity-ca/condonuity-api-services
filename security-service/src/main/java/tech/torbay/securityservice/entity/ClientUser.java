@@ -29,7 +29,7 @@ public class ClientUser {
     private String legalName = "";
     private String city = "";
     private String phone = "";
-    private String countryCode;
+    private String countryCode="";
     private Integer userType = Constants.UserType.CLIENT.getValue();
     
     @Basic(optional = false)

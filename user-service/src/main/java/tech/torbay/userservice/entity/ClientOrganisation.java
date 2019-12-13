@@ -39,6 +39,7 @@ public class ClientOrganisation {
     
     @Id
     @GeneratedValue
+    @Column(name = "client_organisation_id")
     private Integer clientOrganisationId = 0;
     private Integer userType = Constants.UserType.CLIENT.getValue();
 	private String organisationName = "";
@@ -79,28 +80,31 @@ public class ClientOrganisation {
 		this.modifiedDate = modifiedDate;
 	}
 	
-//	@OneToMany(
-//	        mappedBy = "clientOrganisation",
-//	        cascade = CascadeType.ALL,
-//	        orphanRemoval = true
-//	    )
-//	    private List<ClientAssociation> clientUsers = new ArrayList<>();
+	@OneToMany(
+	        mappedBy = "clientOrganisation",
+	        cascade = CascadeType.ALL,
+	        orphanRemoval = true
+	    )
+	    private List<ClientAssociation> clientUsers = new ArrayList<>();
+	
+//	@OneToMany(mappedBy = "clientOrganisation")
+//    private Set<ClientAssociation> clientUsers = new HashSet<ClientAssociation>();
 	
 	
 	//Getters and setters omitted for brevity
 	 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        ClientOrganisation clientOrg = (ClientOrganisation) o;
-//        return Objects.equals(corporateNumber, clientOrg.corporateNumber);
-//    }
-// 
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(corporateNumber);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientOrganisation clientOrg = (ClientOrganisation) o;
+        return Objects.equals(clientOrganisationId, clientOrg.clientOrganisationId);
+    }
+ 
+    @Override
+    public int hashCode() {
+        return Objects.hash(clientOrganisationId);
+    }
     
 //	public void addClientUser(ClientUser clientUser) {
 //	  ClientAssociation clientAssociation = new ClientAssociation(this, clientUser);
@@ -121,6 +125,14 @@ public class ClientOrganisation {
 //	          clientAssociation.setClientUser(null);
 //	      }
 //	  }
+//	}
+
+//	public Set<ClientAssociation> getClientUsers() {
+//		return clientUsers;
+//	}
+//
+//	public void setClientUsers(Set<ClientAssociation> clientUsers) {
+//		this.clientUsers = clientUsers;
 //	}
 
 	@Override

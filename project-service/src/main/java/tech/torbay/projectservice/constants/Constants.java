@@ -86,29 +86,6 @@ public class Constants {
 	        return value;
 	    }
 	}
-	// 000 - success
-	// 111 - failed
-	// 001 - initiated
-	// 002 - verified
-	// 003 - failed_to_verify
-	// 004 - document_verified
-	// 005 - document_rejected
-	// 006 - bids_won
-	// 007 - bids_failed
-	// 008 - tag_created_and_submitted_for_approval
-	// 009 - tag_approved_by_support_user
-	// 010 - tag_rejected_by_support_user
-	// 011 - not_subscribed
-	// 012 - subscribed
-	// 013 - project_created
-	// 014 - project_active
-	// 015 - project_inactive
-	// 016 - task_created
-	// 017 - task_assigned/task_opened
-	// 018 - task_closed
-	// 019 - 
-	// 020 - active
-	// 021 - inactive
 	public enum StatusCode {
 		// API Responses
 	    REQUEST_SUCCESS(0),

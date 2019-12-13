@@ -71,7 +71,7 @@ public class ClientController {
     )
 	@GetMapping("/client/user/{id}")
 	public ResponseEntity<Object> getClientUserById(@PathVariable("id") Integer id) {
-		ClientUser client = clientService.getClientUserById(id);
+    	ClientUser client = clientService.getClientUserById(id);
 		
 		System.out.println(client);
 		

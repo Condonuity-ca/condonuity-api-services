@@ -37,6 +37,7 @@ public class ClientUser {
     
 	@Id
 	@GeneratedValue
+	@Column(name = "client_id")
     private Integer clientId = 0;
 	@NaturalId
     private String email = "";
@@ -56,28 +57,33 @@ public class ClientUser {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-//    @OneToMany(
-//            mappedBy = "clientUser",
-//            cascade = CascadeType.ALL,
-//            orphanRemoval = true
-//        )
-//        private List<ClientAssociation> clientOrganisations = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "clientUser",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+        )
+        private List<ClientAssociation> clientOrganisations = new ArrayList<>();
     
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-// 
-//        if (o == null || getClass() != o.getClass())
-//            return false;
-// 
-//        ClientUser clientUser = (ClientUser) o;
-//        return Objects.equals(email, clientUser.email);
-//    }
-// 
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(email);
-//    }
+//    @OneToMany(mappedBy = "clientUser")
+//    private Set<ClientAssociation> clientOrganisations = new HashSet<ClientAssociation>();
+    
+    
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+ 
+        if (o == null || getClass() != o.getClass())
+            return false;
+ 
+        ClientUser clientUser = (ClientUser) o;
+        return Objects.equals(clientId, clientUser.clientId);
+    }
+ 
+    @Override
+    public int hashCode() {
+        return Objects.hash(clientId);
+    }
 //	public List<ClientAssociation> getClientOrganisations() {
 //	// TODO Auto-generated method stub 
 //	return clientOrganisations;
@@ -88,7 +94,15 @@ public class ClientUser {
 //	this.clientOrganisations = clientOrganisations;
 //}
     
-    public Integer getUserType() {
+//    public Set<ClientAssociation> getClientOrganisations() {
+//		return clientOrganisations;
+//	}
+//
+//	public void setClientOrganisations(Set<ClientAssociation> clientOrganisations) {
+//		this.clientOrganisations = clientOrganisations;
+//	}
+
+	public Integer getUserType() {
 		return userType;
 	}
 	public void setUserType(Integer userType) {

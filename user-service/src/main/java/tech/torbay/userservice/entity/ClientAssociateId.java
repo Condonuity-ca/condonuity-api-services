@@ -10,17 +10,17 @@ import javax.persistence.Embeddable;
 public class ClientAssociateId
     implements Serializable {
  
-    @Column(name = "client_organisation_id")
+    @Column(name = "client_organisation_id", insertable = false, updatable = false)
     private Integer clientOrganisationId;
  
-    @Column(name = "client_id")
+    @Column(name = "client_id", insertable = false, updatable = false)
     private Integer clientId;
  
     private ClientAssociateId() {}
  
     public ClientAssociateId(
         Integer clientOrganisationId,
-        Integer clientId) {
+        Integer clientUserId) {
         this.clientOrganisationId = clientOrganisationId;
         this.clientId = clientId;
     }

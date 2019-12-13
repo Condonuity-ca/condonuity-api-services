@@ -36,6 +36,8 @@ import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
+import tech.torbay.securityservice.utils.QueryStringCreator;
+import tech.torbay.securityservice.utils.Utils;
 
 
 @RestController
@@ -118,8 +120,13 @@ public class VendorController {
 	
 	private void sendVendorEmailVerification(VendorUser vendorUser) {
 		// TODO Auto-generated method stub
-		SecurityAES securityAES = new SecurityAES();
-		String content = securityAES.getRegisterEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
+//		String content = securityAES.getRegisterEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
+		
+		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
+		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
+		
+		String content = "http://condonuityui-dev.azurewebsites.net/register/accept-invite/450?"+ encryptVendorUser; // AES algorithm
+		
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
@@ -241,8 +248,8 @@ public class VendorController {
 	
 	private void sendNewVendorUserInviteEmail(VendorUser vendorUser, Integer organisationId) {
 		// TODO Auto-generated method stub
-		SecurityAES securityAES = new SecurityAES();
-		String content = securityAES.getVendorUserInviteEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), organisationId);
+		QueryStringCreator queryStringCreator = new QueryStringCreator();
+		String content = queryStringCreator.getVendorUserInviteEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), organisationId);
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
