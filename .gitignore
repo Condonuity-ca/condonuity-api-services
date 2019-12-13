@@ -22,3 +22,5 @@ user-service/src/main/resources/.DS_Store
 user-service/src/main/resources/user-service-local.yml
 
 config-server/src/main/.DS_Store
+
+*.iml

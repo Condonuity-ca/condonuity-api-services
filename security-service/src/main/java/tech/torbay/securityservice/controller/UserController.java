@@ -221,7 +221,7 @@ public class UserController {
 		HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	     
-	    final String url = "https://condonuityappdev.eastus2.cloudapp.azure.com/auth";
+	    final String url = "http://127.0.0.1:8762/auth";
 	    URI uri = null;
 		try {
 			uri = new URI(url);
@@ -301,7 +301,7 @@ public class UserController {
 	
 	public String getEncodedURL(User user) {
 		
-		String query = UriComponentsBuilder.fromHttpUrl("http://localhost:8787/api/condonuity/user/resetPassword")
+		String query = UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:8762/api/condonuity/user/resetPassword")
 				.queryParam(encode("username"), encode(user.getUsername()))
 				.queryParam(encode("userId"), encode(String.valueOf(user.getUserId())))
 				.queryParam(encode("userType"), encode(String.valueOf(user.getUserType())))
