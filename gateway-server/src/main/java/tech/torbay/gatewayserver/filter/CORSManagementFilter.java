@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CorsFilter implements Filter {
+public class CORSManagementFilter implements Filter {
 
     private FilterConfig config;
 
