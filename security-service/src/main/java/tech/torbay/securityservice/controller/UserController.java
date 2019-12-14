@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.constants.Token;
@@ -50,6 +51,7 @@ import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
+import tech.torbay.securityservice.utils.QueryStringCreator;
 
 @RestController
 @RequestMapping("/api")
@@ -96,15 +98,6 @@ public class UserController {
                     @ApiResponse(code = 200, message = "Successful user Login Details")
             }
     )
-//	@PostMapping("user/login")
-//	public ResponseEntity<User> getUserByLogin(@RequestBody User user, UriComponentsBuilder builder) {
-//		User userInfo = userService.getUserByLogin(user.getUsername(), user.getPassword());
-//		
-//		if(userInfo.getUserType() == 1) {
-//			
-//		}
-//        return new ResponseEntity<User>(userInfo, HttpStatus.OK);
-//	}
 	@PostMapping("/user/login")
 	public ResponseEntity<Object> getUserByLogin(@RequestBody User user, UriComponentsBuilder builder) {
 		User userInfo = userService.Login(user.getUsername(), user.getPassword());
@@ -115,7 +108,7 @@ public class UserController {
 		
 		if(userInfo != null) {
 			
-			String Token = getAuthToken();
+			String Token = getAuthToken(user.getUsername(), user.getPassword());
 			
 			if(userInfo.getUserType() == 1) {
 				
@@ -212,10 +205,7 @@ public class UserController {
 		}
 	}
 	
-//	@Autowired
-//    private RestTemplate template;
-	
-	private String getAuthToken() throws JsonParseException, JsonMappingException, IOException {
+	private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {
 		
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -230,7 +220,7 @@ public class UserController {
 			e.printStackTrace();
 		}
 	     
-	    AppUser user = new AppUser( "user@client.com", "12345");
+	    AppUser user = new AppUser( username, password);
 	    
 	    
 //	    HttpEntity<String> request = new HttpEntity<>(userJsonObj, headers);
@@ -268,7 +258,7 @@ public class UserController {
 	@GetMapping("/user/verify/{email}")
 	public ResponseEntity<Object> userExists(@PathVariable("email") String email) {
 		User user = userService.findByEmail(email);
-		
+		QueryStringCreator queryStringCreator = new QueryStringCreator();
 		// check email 
 		//	- registered or not
 		//	- password reseted or not
@@ -286,7 +276,7 @@ public class UserController {
 				response.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
 				response.put("statusMessage", "User need to set New Password");
 				response.put("responseMessage", "Please reset your password");
-				response.put("action", getEncodedURL(user));
+				response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
 				
 				return new ResponseEntity<Object>(response, HttpStatus.OK);
 			}
@@ -297,23 +287,6 @@ public class UserController {
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 		
-	}
-	
-	public String getEncodedURL(User user) {
-		
-		String query = UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:8762/api/condonuity/user/resetPassword")
-				.queryParam(encode("username"), encode(user.getUsername()))
-				.queryParam(encode("userId"), encode(String.valueOf(user.getUserId())))
-				.queryParam(encode("userType"), encode(String.valueOf(user.getUserType())))
-				.toUriString(); 
-		return query;
-	}
-	
-	
-	public String encode(String raw) {
-	    return Base64.getUrlEncoder()
-	            .withoutPadding()
-	            .encodeToString(raw.getBytes(StandardCharsets.UTF_8));
 	}
 	
 	@ApiOperation(value = "New User password reset implementation")
@@ -380,6 +353,18 @@ public class UserController {
         		"Success",
         		"Welcome Mail Sent Successfully");
 		return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "Decrypt Data in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Decrypted successfully")
+            }
+    )
+	@PostMapping("/secure/decrypt")
+	public ResponseEntity<String> decrypt(@RequestBody String strToDecrypt) {
+		String decryptedData = SecurityAES.decrypt(strToDecrypt);
+		return new ResponseEntity<String>(decryptedData, HttpStatus.OK);
 	}
 
 	private static class Token {

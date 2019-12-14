@@ -1,6 +1,7 @@
 package tech.torbay.securityservice.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +24,8 @@ import tech.torbay.securityservice.exception.ResourceNotFoundException;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
+import tech.torbay.securityservice.utils.QueryStringCreator;
+import tech.torbay.securityservice.utils.Utils;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -179,8 +182,15 @@ public class ClientController {
 	
 	private void sendClientEmailVerification(ClientUser clientUser) {
 		// TODO Auto-generated method stub
-		SecurityAES securityAES = new SecurityAES();
-		String content = securityAES.getRegisterEncodedURL(clientUser.getEmail(), clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
+//		String content = securityAES.getRegisterEncodedURL(clientUser.getEmail(), clientUser.getClientId(), Constants.UserType.CLIENT.getValue()); // query format request with Base64 Encryption
+//		System.out.println("content->"+content);
+		
+		String responseJsonString = Utils.ClasstoJsonString(clientUser);
+		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
+		
+		String content = "http://condonuityui-dev.azurewebsites.net/register/accept-invite/450?"+ encryptClientUser; // AES algorithm
+//		System.out.println("contentAES Encrypt->"+content);
+//		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
@@ -258,8 +268,8 @@ public class ClientController {
 	private void sendNewClientUserInviteEmail(ClientUser clientUser, Integer organisationId, Integer clientUserType,
 			Integer userRole) {
 		// TODO Auto-generated method stub
-		SecurityAES securityAES = new SecurityAES();
-		String content = securityAES.getClientUserInviteEncodedURL(clientUser.getEmail(), clientUser.getClientId(), organisationId, clientUserType, userRole);
+		QueryStringCreator queryStringCreator = new QueryStringCreator();
+		String content = queryStringCreator.getClientUserInviteEncodedURL(clientUser.getEmail(), clientUser.getClientId(), organisationId, clientUserType, userRole);
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
