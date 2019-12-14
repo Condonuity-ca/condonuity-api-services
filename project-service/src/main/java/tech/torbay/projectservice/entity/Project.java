@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@JsonInclude(value = Include.NON_NULL)
+//@JsonInclude(value = Include.NON_NULL)
 @Table(name = "projects")
 public class Project {
 
@@ -168,7 +168,19 @@ public class Project {
 	@JoinColumn(name = "project_id")
 	private List<ProjectProducts> projectProducts = new ArrayList<>();
     
-    public List<ProjectProducts> getProjectProducts() {
+//	@OneToMany(/* mappedBy = "project", */targetEntity = ProjectTags.class, cascade = CascadeType.ALL,  orphanRemoval = true)
+//	@JoinColumn(name = "project_id")
+//	private List<ProjectTags> projectTags = new ArrayList<>();
+//	
+//    public List<ProjectTags> getProjectTags() {
+//		return projectTags;
+//	}
+//
+//	public void setProjectTags(List<ProjectTags> projectTags) {
+//		this.projectTags = projectTags;
+//	}
+
+	public List<ProjectProducts> getProjectProducts() {
 		return projectProducts;
 	}
 

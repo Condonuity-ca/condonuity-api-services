@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@JsonInclude(value = Include.NON_NULL)
+//@JsonInclude(value = Include.NON_NULL)
 @Table(name = "project_questions")
 public class ProjectQuestionAnswer {
 

@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -27,7 +28,7 @@ public class VendorBid {
 	private Integer id;
     private Integer projectId = 0;
     private Integer vendorOrgId = 0;
-    private Integer vendorUserId = 0;
+//    private Integer vendorUserId = 0;
     private String vendorStartDate;
     private String vendorEndDate;
     private String vendorProjectDuration;
@@ -51,6 +52,18 @@ public class VendorBid {
     @OneToMany(targetEntity = BiddingProducts.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.DETACH , CascadeType.REFRESH})
     @JoinColumn(name = "bidding_id")
     private List<BiddingProducts> biddingProducts;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "vendorUserId", referencedColumnName = "userId")
+    private VendorUser vendorUser;
+    
+	public VendorUser getVendorUser() {
+		return vendorUser;
+	}
+
+	public void setVendorUser(VendorUser vendorUser) {
+		this.vendorUser = vendorUser;
+	}
 
 	public Integer getId() {
 		return id;
@@ -76,13 +89,13 @@ public class VendorBid {
 		this.vendorOrgId = vendorOrgId;
 	}
 
-	public Integer getVendorUserId() {
-		return vendorUserId;
-	}
-
-	public void setVendorUserId(Integer vendorUserId) {
-		this.vendorUserId = vendorUserId;
-	}
+//	public Integer getVendorUserId() {
+//		return vendorUserId;
+//	}
+//
+//	public void setVendorUserId(Integer vendorUserId) {
+//		this.vendorUserId = vendorUserId;
+//	}
 
 	public String getVendorStartDate() {
 		return vendorStartDate;
@@ -199,7 +212,7 @@ public class VendorBid {
 	@Override
 	public String toString() {
 		return "VendorBid [id=" + id + ", projectId=" + projectId + ", vendorOrgId=" + vendorOrgId + ", vendorUserId="
-				+ vendorUserId + ", vendorStartDate=" + vendorStartDate + ", vendorEndDate=" + vendorEndDate
+		/* + vendorUserId */ + ", vendorStartDate=" + vendorStartDate + ", vendorEndDate=" + vendorEndDate
 				+ ", vendorProjectDuration=" + vendorProjectDuration + ", inScope=" + inScope + ", outOfScope="
 				+ outOfScope + ", isInsuranceAvailable=" + isInsuranceAvailable + ", insuranceId=" + insuranceId
 				+ ", preRequisite=" + preRequisite + ", reasonForChoose=" + reasonForChoose + ", bidPrice=" + bidPrice

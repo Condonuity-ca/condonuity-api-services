@@ -149,7 +149,7 @@ public class Constants {
 		UNPUBLISHED(1),
 		PUBLISHED(2),
 		COMPLETED(3),
-		TERMINATED(4);
+		TERMINATED(4);// Cancelled or Terminated
 
 	    private int value;
 	    private static Map map = new HashMap<>();
