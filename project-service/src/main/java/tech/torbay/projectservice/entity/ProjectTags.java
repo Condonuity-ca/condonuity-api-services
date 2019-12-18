@@ -21,7 +21,7 @@ public class ProjectTags {
     }
  
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id = 0;
     private Integer projectId = 0;//one to many
 	private Integer tagId = 0;

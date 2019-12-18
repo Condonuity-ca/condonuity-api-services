@@ -13,7 +13,7 @@ public class ClientAmenities {
 	
 	}
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)  
+	@GeneratedValue(strategy=GenerationType.IDENTITY)  
 	private int id = 0;
 	
 	@ManyToOne

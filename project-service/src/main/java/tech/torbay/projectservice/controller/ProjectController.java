@@ -4,6 +4,10 @@ package tech.torbay.projectservice.controller;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +35,7 @@ import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
+import tech.torbay.projectservice.exception.BadRequestException;
 import tech.torbay.projectservice.service.ProjectService;
 import tech.torbay.projectservice.statusmessage.ResponseMessage;
 
@@ -42,6 +47,8 @@ public class ProjectController {
 	
 	@Autowired
 	private ProjectService projectService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
 	
 	@ApiOperation(value = "Fetching All Projects details with in a Organisation")
     @ApiResponses(
@@ -131,50 +138,57 @@ public class ProjectController {
             }
     )
 	@PostMapping("/client/project/create")
-	public ResponseEntity<Object> createProject(@RequestBody Project project) {
+	public ResponseEntity<Object> createProject(@Valid @RequestBody Project project) {
 		
-		Project projectObj = projectService.createProject(project);
-        if (projectObj == null) {
-     
-        	ResponseMessage responseMessage = null;
-        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
-            
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Failed",
-            			"Failed to Create Project");
-        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Failed",
-            			"Failed to Post Project");
-        		
-        	}
-        	
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-        } else {
-		/*
-		 * HttpHeaders headers = new HttpHeaders();
-		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
-		 * organisation.getOrganisationId()).toUri());
-		 */
-        	ResponseMessage responseMessage = null;
-        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
-            
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Success",
-                		"Project created successfully");
-        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Success",
-                		"Project posted successfully");
-        		
-        	}
-        	
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-        }
+		try {
+			logger.info("projectObj "+ project.toString());
+			Project projectObj = projectService.createProject(project);
+	        if (projectObj == null) {
+	     
+	        	ResponseMessage responseMessage = null;
+	        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+	            
+	        		responseMessage = new ResponseMessage(
+	                		StatusCode.REQUEST_SUCCESS.getValue(),
+	                		"Failed",
+	            			"Failed to Create Project");
+	        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
+	        		responseMessage = new ResponseMessage(
+	                		StatusCode.REQUEST_SUCCESS.getValue(),
+	                		"Failed",
+	            			"Failed to Post Project");
+	        		
+	        	}
+	        	
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	        } else {
+			/*
+			 * HttpHeaders headers = new HttpHeaders();
+			 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
+			 * organisation.getOrganisationId()).toUri());
+			 */
+	        	ResponseMessage responseMessage = null;
+	        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+	            
+	        		responseMessage = new ResponseMessage(
+	                		StatusCode.REQUEST_SUCCESS.getValue(),
+	                		"Success",
+	                		"Project created successfully");
+	        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
+	        		responseMessage = new ResponseMessage(
+	                		StatusCode.REQUEST_SUCCESS.getValue(),
+	                		"Success",
+	                		"Project posted successfully");
+	        		
+	        	}
+	        	
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	        }
+		} catch(BadRequestException exp) {
+			new BadRequestException(exp.getMessage());
+		}
+		return null;
+		
         
 	}
 	
@@ -244,8 +258,8 @@ public class ProjectController {
     )
 	@PostMapping("/vendor/project/bid/create")
 	public ResponseEntity<Object> createProjectBid(@RequestBody VendorBid vendorBid) {
-		vendorBid = projectService.createProjectBid(vendorBid);
-        if (vendorBid == null) {
+		VendorBid vendorBidObj = projectService.createProjectBid(vendorBid);
+        if (vendorBidObj == null) {
      
         	ResponseMessage responseMessage = null;
         	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {

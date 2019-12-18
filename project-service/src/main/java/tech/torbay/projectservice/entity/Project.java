@@ -8,10 +8,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -24,7 +30,61 @@ public class Project {
     public Project() {
 
     }
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer projectId = 0;
+    @NotNull
+	private Integer clientOrganisationId = 0;
+    @NotNull
+	private Integer clientId = 0;
+	@NotNull
+	@Size(min=2, message="Project Name should have atleast 2 characters")
+    private String projectName = "";
+    private Integer projectModifiedBy = 0;
+    private String tags = "";
+    @NotNull
+    private String bidEndDate = "";
+    @NotNull
+    private String projectStartDate = "";
+    @NotNull
+    private String projectCompletionDeadline = "";
+    @NotEmpty(message = "Project Estimation Budget must not be empty")
+    private String estimatedBudget = "";
+    private String duration = "";
+    private String description = "";
+    private String specialConditions = "";
+    private String city = "";
+    private Integer contractType = 0;
+    private Integer insuranceRequired = 0;
+    private Integer postType = 0;
+    private Integer status = 0;
+    private Integer awardedBidId = 0;
+	
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
+    private String modifiedDate;
  
+    @OneToMany(/* mappedBy = "project", */targetEntity = ProjectProducts.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL,  orphanRemoval = true)
+	@JoinColumn(name = "project_id")
+	private List<ProjectProducts> projectProducts = new ArrayList<>();
+    
+//	@OneToMany(/* mappedBy = "project", */targetEntity = ProjectTags.class, cascade = CascadeType.ALL,  orphanRemoval = true)
+//	@JoinColumn(name = "project_id")
+//	private List<ProjectTags> projectTags = new ArrayList<>();
+//	
+//    public List<ProjectTags> getProjectTags() {
+//		return projectTags;
+//	}
+//
+//	public void setProjectTags(List<ProjectTags> projectTags) {
+//		this.projectTags = projectTags;
+//	}
+    
 	public Integer getProjectId() {
 		return projectId;
 	}
@@ -134,52 +194,6 @@ public class Project {
 		this.status = status;
 	}
 
-	@Id
-	private Integer projectId = 0;
-	private Integer clientOrganisationId = 0;
-	private Integer clientId = 0;
-    private String projectName = "";
-    private Integer projectModifiedBy = 0;
-    private String tags = "";
-    private String bidEndDate = "";
-    private String projectStartDate = "";
-    private String projectCompletionDeadline = "";
-    private String estimatedBudget = "";
-    private String duration = "";
-    private String description = "";
-    private String specialConditions = "";
-    private String city = "";
-    private Integer contractType = 0;
-    private Integer insuranceRequired = 0;
-    private Integer postType = 0;
-    private Integer status = 0;
-    private Integer awardedBidId = 0;
-	
-    @Basic(optional = false)
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private String createdAt;
-    
-    @Basic(optional = false)
-    @Column(name = "modified_date", insertable = false, updatable = false)
-    private String modifiedDate;
-    
-	
-	@OneToMany(/* mappedBy = "project", */targetEntity = ProjectProducts.class, cascade = CascadeType.ALL,  orphanRemoval = true)
-	@JoinColumn(name = "project_id")
-	private List<ProjectProducts> projectProducts = new ArrayList<>();
-    
-//	@OneToMany(/* mappedBy = "project", */targetEntity = ProjectTags.class, cascade = CascadeType.ALL,  orphanRemoval = true)
-//	@JoinColumn(name = "project_id")
-//	private List<ProjectTags> projectTags = new ArrayList<>();
-//	
-//    public List<ProjectTags> getProjectTags() {
-//		return projectTags;
-//	}
-//
-//	public void setProjectTags(List<ProjectTags> projectTags) {
-//		this.projectTags = projectTags;
-//	}
-
 	public List<ProjectProducts> getProjectProducts() {
 		return projectProducts;
 	}
@@ -231,7 +245,7 @@ public class Project {
 				+ ", duration=" + duration + ", description=" + description + ", specialConditions=" + specialConditions
 				+ ", city=" + city + ", contractType=" + contractType + ", insuranceRequired=" + insuranceRequired
 				+ ", postType=" + postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + ", projectProducts=" + projectProducts + "]";
+				+ createdAt + ", modifiedDate=" + modifiedDate + ", projectProducts=" + projectProducts.toString() + "]";
 	}
 
     

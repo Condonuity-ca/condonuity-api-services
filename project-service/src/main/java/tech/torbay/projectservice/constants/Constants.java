@@ -199,6 +199,33 @@ public class Constants {
 	    }
 	}
 	
+	public enum BidPostType {
+		UNPUBLISHED(1),
+		PUBLISHED(2),
+		AWARDED(3);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private BidPostType(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (BidPostType pageType : BidPostType.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static BidPostType valueOf(int pageType) {
+	        return (BidPostType) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	public enum ContractType {
 		Fixed_cost(1),
 		Time_and_Material(2),

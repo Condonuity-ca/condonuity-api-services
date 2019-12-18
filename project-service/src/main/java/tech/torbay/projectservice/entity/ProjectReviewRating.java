@@ -21,6 +21,7 @@ public class ProjectReviewRating {
     }
  
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id = 0;
     private Integer projectId = 0;
     private Integer clientId = 0;

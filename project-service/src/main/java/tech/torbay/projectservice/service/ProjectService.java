@@ -1,10 +1,15 @@
 package tech.torbay.projectservice.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +23,7 @@ import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.repository.PredefinedTagsRepository;
+import tech.torbay.projectservice.repository.ProjectProductsRepository;
 import tech.torbay.projectservice.repository.ProjectQARepository;
 import tech.torbay.projectservice.repository.ProjectRepository;
 import tech.torbay.projectservice.repository.ProjectReviewRatingRepository;
@@ -29,6 +35,8 @@ public class ProjectService {
 	@Autowired
 	ProjectRepository projectRepository;
 	@Autowired
+	ProjectProductsRepository projectProductsRepository;
+	@Autowired
 	VendorBidRepository vendorBidRepository;
 	@Autowired
 	ProjectQARepository projectQARepository;
@@ -36,6 +44,8 @@ public class ProjectService {
 	ProjectReviewRatingRepository projectReviewRatingRepository;
 	@Autowired
 	PredefinedTagsRepository predefinedTagsRepository;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
 	public List<Project> findAll() {
 //		// TODO Auto-generated method stub
@@ -59,16 +69,47 @@ public class ProjectService {
 	public Project createProject(Project project) {
 		// TODO Auto-generated method stub
 		try {
-		return projectRepository.save(project);
+		
+			project.setDuration(calculateDuration(project.getDuration(), project.getProjectStartDate(), project.getProjectCompletionDeadline()));
+			project = projectRepository.save(project);
+//			int id = project.getProjectId();
+//			logger.info("project id" + id);
+			
+			return project;
+			
 		} catch (Exception exp) {
 			exp.printStackTrace();
 			return null;
 		}
 	}
 
+	private String calculateDuration(String emptyDuration, String startingDate, String endingDate) {
+		// TODO Auto-generated method stub
+		
+		try {
+			LocalDate startDate = LocalDate.parse(startingDate);
+			LocalDate endDate = LocalDate.parse(endingDate);
+			Period period = Period.between(startDate, endDate); 
+			String projectDuration = period.toString().replace("P", "").replace("Y", " Year ").replace("M", " Months ").replace("D", " Days ");
+			return projectDuration;
+		} catch(Exception exp) {
+			logger.error("Exception :"+exp);
+		}
+		return emptyDuration;
+		
+	}
+
 	public VendorBid createProjectBid(VendorBid vendorBid) {
 		// TODO Auto-generated method stub
-		return vendorBidRepository.save(vendorBid);
+		try {
+			vendorBid.setVendorProjectDuration(calculateDuration(vendorBid.getVendorProjectDuration(), vendorBid.getVendorStartDate(),vendorBid.getVendorEndDate()));
+			
+			return vendorBidRepository.save(vendorBid);
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+		
 	}
 	
 	public VendorBid findByBidId(Integer vendorBidId) {
@@ -133,7 +174,7 @@ public class ProjectService {
 	public VendorBid publishVendorBid(Integer bidId) {
 		// TODO Auto-generated method stub
 		VendorBid vendorBid = vendorBidRepository.findOneById(bidId);
-		vendorBid.setBidStatus(Constants.ProjectPostType.PUBLISHED.getValue());
+		vendorBid.setBidStatus(Constants.BidPostType.PUBLISHED.getValue());
 		return vendorBidRepository.save(vendorBid);
 	}
 

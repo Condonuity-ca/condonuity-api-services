@@ -14,6 +14,7 @@ public class VendorInsurance {
 
     }
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer insuranceId = 0;
     private Integer vendorOrganisationId = 0;
     private Integer insuranceAvailability = 0;

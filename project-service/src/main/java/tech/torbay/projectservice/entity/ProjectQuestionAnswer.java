@@ -21,7 +21,7 @@ public class ProjectQuestionAnswer {
     }
  
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer projectqaId = 0;
     private Integer projectId = 0;
     private Integer clientUserId = 0;

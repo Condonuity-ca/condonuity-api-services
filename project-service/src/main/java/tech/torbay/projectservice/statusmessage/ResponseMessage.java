@@ -21,7 +21,7 @@ public class ResponseMessage
     private int statusCode;
    	// nature of error
     private String statusMessage;
-  //General error message about nature of error
+    // General error message about nature of error
     private String responseMessage;
 
     public String getResponseMessage() {

@@ -24,7 +24,7 @@ public class VendorBid {
     }
  
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
     private Integer projectId = 0;
     private Integer vendorOrgId = 0;
@@ -49,11 +49,11 @@ public class VendorBid {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-    @OneToMany(targetEntity = BiddingProducts.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.DETACH , CascadeType.REFRESH})
+    @OneToMany(targetEntity = BiddingProducts.class, fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "bidding_id")
     private List<BiddingProducts> biddingProducts;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "vendorUserId", referencedColumnName = "userId")
     private VendorUser vendorUser;
     

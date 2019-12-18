@@ -3,10 +3,10 @@ package tech.torbay.projectservice.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class BadRequestException extends RuntimeException {
 
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 1L;
 	
     private String resourceName;
     private String fieldName;
@@ -24,23 +24,14 @@ public class ResourceNotFoundException extends RuntimeException {
         return fieldValue;
     }
 
-    public ResourceNotFoundException(String resourceName, String fieldName, Object fieldValue) {
+    public BadRequestException(String resourceName, String fieldName, Object fieldValue) {
         super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
     }
     
-    public ResourceNotFoundException() {
-        super();
-    }
-    public ResourceNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public ResourceNotFoundException(String message) {
-        super(message);
-    }
-    public ResourceNotFoundException(Throwable cause) {
-        super(cause);
+    public BadRequestException(String exception) {
+        super(exception);
     }
 }

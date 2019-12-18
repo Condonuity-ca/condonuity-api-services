@@ -1,6 +1,8 @@
 package tech.torbay.securityservice.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 import tech.torbay.securityservice.constants.Constants;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,12 +16,17 @@ public class VendorUser {
 
     }
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId = 0;
 	private Integer vendorOrganisationId = 0;
 	private Integer userType = Constants.UserType.VENDOR.getValue();
     private Integer userRole = Constants.UserRole.USER.getValue();
     private String legalName = "";
+    
+    @NotEmpty(message = "Email must not be empty")
+    @Email(message = "Email must be a valid email address")
     private String email = "";
+    
 	private Integer accountStatus = 0;
 	private Integer accountVerificationStatus = 0;
 	@Basic(optional = false)

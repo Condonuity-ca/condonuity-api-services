@@ -8,11 +8,15 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 import tech.torbay.securityservice.constants.Constants;
 
@@ -22,8 +26,13 @@ public class ClientUser {
 
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer clientId = 0;
+    
+    @NotEmpty(message = "Email must not be empty")
+    @Email(message = "Email must be a valid email address")
     private String email = "";
+    
     private String firstName = "";
     private String LastName = "";
     private String legalName = "";

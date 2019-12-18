@@ -14,6 +14,7 @@ public class VendorOrganisation {
 
     }
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer vendorOrganisationId = 0;
     private Integer userType = Constants.UserType.VENDOR.getValue();
     private String legalName = "";

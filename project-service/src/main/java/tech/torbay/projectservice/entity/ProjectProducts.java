@@ -1,6 +1,9 @@
 package tech.torbay.projectservice.entity;
 
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,12 +27,19 @@ public class ProjectProducts {
     }
  
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id = 0;
 //    private Integer projectId = 0;//one to many
-    private String description = "";
-    private Integer quantity = 0;
-    private String unit;
+//    @NotEmpty(message = "Description must not be empty")
+    @Column(name = "description")
+    public String description = "";
+//    @Min(value = 1, message = "Quantity must be greater than 1")
+    @Column(name = "quantity")
+    public Integer quantity = 0;
+//    @NotEmpty(message = "Unit must not be empty")
+    @Column(name = "unit")
+    public String unit = "";
+    
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -38,7 +48,7 @@ public class ProjectProducts {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
-	
+    
 	public Integer getId() {
 		return id;
 	}

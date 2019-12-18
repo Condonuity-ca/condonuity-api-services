@@ -14,7 +14,7 @@ public class VendorPortfolio {
 
     }
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer Id = 0;
 	private Integer vendorOrganisationId = 0;
     private String projectName = "";

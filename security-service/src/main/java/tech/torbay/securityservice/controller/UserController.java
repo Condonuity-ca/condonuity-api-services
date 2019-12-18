@@ -7,8 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +107,7 @@ public class UserController {
 		
 		try {
 //		String loginInfo = "";
-		System.out.println("userInfo : "+userInfo);
+		logger.info("userInfo : "+userInfo);
 		
 		if(userInfo != null) {
 			
@@ -113,7 +116,7 @@ public class UserController {
 			if(userInfo.getUserType() == 1) {
 				
 				ClientUser clientInfo = clientService.findById(userInfo.getUserId());
-				System.out.println("clientInfo : "+clientInfo);
+				logger.info("clientInfo : "+clientInfo);
 				if(clientInfo != null) { 
 					//
 					HashMap<String, Object> list = new HashMap();
@@ -147,7 +150,7 @@ public class UserController {
 				VendorOrganisation vendorOrgInfo = new VendorOrganisation();
 				if(vendorUserInfo.getVendorOrganisationId() != 0) {
 				vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
-				System.out.println(vendorOrgInfo);
+				logger.info("vendorOrgInfo"+vendorOrgInfo);
 				}
 				
 					if (vendorUserInfo != null /*
@@ -256,38 +259,63 @@ public class UserController {
             }
     )
 	@GetMapping("/user/verify/{email}")
-	public ResponseEntity<Object> userExists(@PathVariable("email") String email) {
-		User user = userService.findByEmail(email);
-		QueryStringCreator queryStringCreator = new QueryStringCreator();
-		// check email 
-		//	- registered or not
-		//	- password reseted or not
-		//	- active/inactive
-		
-		if(user != null) {
-			ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","User Already Exists");
-			
-			if(user.getPassword() == null || user.getPassword().trim().length() == 0) {
+	public ResponseEntity<Object> userExists(@Valid @PathVariable("email") @Email(message = "Email must be a valid email address") String email) {
+		try {
+			if(isValid(email)) {
+				User user = userService.findByEmail(email);
+				QueryStringCreator queryStringCreator = new QueryStringCreator();
+				// check email 
+				//	- registered or not
+				//	- password reseted or not
+				//	- active/inactive
 				
-				// Send Email Alert to Reset Password
-				
-				HashMap<String, Object> response = new HashMap();
-				
-				response.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
-				response.put("statusMessage", "User need to set New Password");
-				response.put("responseMessage", "Please reset your password");
-				response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
-				
-				return new ResponseEntity<Object>(response, HttpStatus.OK);
+				if(user != null) {
+					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","User Already Exists");
+					
+					if(user.getPassword() == null || user.getPassword().trim().length() == 0) {
+						
+						// Send Email Alert to Reset Password
+						
+						HashMap<String, Object> response = new HashMap();
+						
+						response.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+						response.put("statusMessage", "User need to set New Password");
+						response.put("responseMessage", "Please reset your password");
+						response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
+						
+						return new ResponseEntity<Object>(response, HttpStatus.OK);
+					}
+					
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.NOT_FOUND.getValue(),"Resource not found error","User Record Not Found");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				}
+			} else {
+				logger.info("Invalid Email Address");
+				ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.BAD_REQUEST.getValue(),"Invalid Email Address","Please check email address");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			}
 			
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
-		} else {
+		} catch(Exception exp) {
+			logger.info("User Email Validation Error");
 			ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.NOT_FOUND.getValue(),"Resource not found error","User Record Not Found");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
-		
 	}
+	
+	public static boolean isValid(String email) 
+    { 
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+ 
+                            "[a-zA-Z0-9_+&*-]+)*@" + 
+                            "(?:[a-zA-Z0-9-]+\\.)+[a-z" + 
+                            "A-Z]{2,7}$"; 
+                              
+        Pattern pat = Pattern.compile(emailRegex); 
+        if (email == null) 
+            return false; 
+        return pat.matcher(email).matches(); 
+    } 
 	
 	@ApiOperation(value = "New User password reset implementation")
     @ApiResponses(
@@ -322,7 +350,7 @@ public class UserController {
 	@PostMapping("/user/welcomemail/{email}")
 	public ResponseEntity<Object> SendWelcomeEmail(@PathVariable("email") String email) {
 		
-		System.out.println("Sending Email...");
+		logger.info("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
@@ -336,7 +364,7 @@ public class UserController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Done");
+		logger.info("Done");
 		
 		//1
 //		TLSEmail tlsEmail = new TLSEmail();

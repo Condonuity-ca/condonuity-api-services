@@ -21,7 +21,7 @@ public class PredefinedTags {
     }
  
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer tagId = 0;
     private String tagName = "";
     private String tagStatus = "";

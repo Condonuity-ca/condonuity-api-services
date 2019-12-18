@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.entity.Project;
+import tech.torbay.projectservice.entity.ProjectProducts;
 
 import java.util.List;
 
@@ -17,8 +18,6 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	List<Project> findAllByClientOrganisationIdAndStatus(Integer id, int value);
 	
-	Project save(Project project);
-
 	Project findOneByProjectId(Integer projectId);
     
 }
