@@ -1,16 +1,27 @@
 package tech.torbay.userservice.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
+import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorPortfolio;
+import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
+import tech.torbay.userservice.repository.PredefinedTagsRepository;
+import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorInsuranceRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
 import tech.torbay.userservice.repository.VendorPortfolioRepository;
@@ -27,6 +38,10 @@ public class VendorService {
 	VendorPortfolioRepository vendorPortfolioRepository;
 	@Autowired
 	VendorInsuranceRepository vendorInsuranceRepository;
+	@Autowired
+	UserWishListRepository userWishListRepository;
+	@Autowired
+	PredefinedTagsRepository predefinedTagsRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -54,14 +69,22 @@ public class VendorService {
 		return vendorUserRepository.findByUserId(userId);
 	}
 
-	public VendorOrganisation getVendorOrganisationById(Integer vendorOrganisationId) {
+	public Object getVendorOrganisationById(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		
 		try {
-			VendorOrganisation vO = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
-//			System.out.println(vO);
+			VendorOrganisation vendorOrg = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
 			
-			return vO;
+			
+			List<VendorTags> vendorTags = vendorOrg.getVendorTags();
+			List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
+			
+			ObjectMapper objMapper = new ObjectMapper();
+	        Map<String, Object> mappedObj = objMapper.convertValue(vendorOrg, Map.class);
+	        
+	        mappedObj.put("vendorTags", predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+			
+			return mappedObj;
 		} catch(Exception exp) {
 			exp.printStackTrace();
 		}
@@ -163,6 +186,52 @@ public class VendorService {
 //			return vendorOrganisationRepository.findByAllOrderByUserIdAndUserType(orgId); // check - ?
 		}
 	}
+		return null;
+	}
+
+	public List<Object> getAllVendorOrganisationsByClientOrgId(Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAll();
+		
+		List<Object> vendorOrganisations = new ArrayList();
+		
+		for(VendorOrganisation vendorOrg : vendorOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        
+	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
+	        
+	        map.put("isPreferred", "false");
+	        
+	        if(userWish != null) {
+	        	map.put("isPreferred", "true");
+	        }
+	        vendorOrganisations.add(map);
+		}
+		
+    			
+		return vendorOrganisations;
+	}
+
+	public UserWishList addClientAsFavourite(UserWishList userWishList) {
+		// TODO Auto-generated method stub
+		
+		userWishList.setWisherUserType(Constants.UserType.VENDOR.getValue());
+		userWishList.setFavouriteUserType(Constants.UserType.CLIENT.getValue());
+		
+		return userWishListRepository.save(userWishList);
+	}
+
+	public List<String> getVendorTags(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		
+//		List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+//		        .map(Integer::parseInt)
+//		        .collect(Collectors.toList());
+//		
+//		project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		
 		return null;
 	}
 

@@ -3,24 +3,29 @@ package tech.torbay.userservice.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
+import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientOrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientOrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
+import tech.torbay.userservice.repository.UserWishListRepository;
 
 @Component
 public class ClientService {
@@ -35,8 +40,10 @@ public class ClientService {
 	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
 	@Autowired
 	ClientAssociationRepository clientAssociationRepository;
-	@Autowired
+//	@Autowired
 //	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
+	@Autowired
+	UserWishListRepository userWishListRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -159,6 +166,41 @@ public class ClientService {
 	public List<ClientOrganisation> getAllClientOrganisations() {
 		// TODO Auto-generated method stub
 		return clientOrganisationRepository.findAll();
+	}
+
+	public List<Object> getAllClientOrganisationsByVendorOrgId(Integer vendorOrgId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAll();
+		
+		List<Object> clientOrganisations = new ArrayList();
+		
+		for(ClientOrganisation clientOrg : clientOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+	        
+	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(vendorOrgId, Constants.UserType.VENDOR.getValue(), clientOrg.getClientOrganisationId(), Constants.UserType.CLIENT.getValue() );
+	        
+	        map.put("isPreferred", "false");
+	        
+	        if(userWish != null) {
+	        	map.put("isPreferred", "true");
+	        }
+			clientOrganisations.add(map);
+		}
+		
+    			
+		return clientOrganisations;
+	}
+
+	public UserWishList addVendorAsFavourite(UserWishList userWishList) {
+		// TODO Auto-generated method stub
+		
+		userWishList.setWisherUserType(Constants.UserType.CLIENT.getValue());
+		userWishList.setFavouriteUserType(Constants.UserType.VENDOR.getValue());
+		
+		return userWishListRepository.save(userWishList);
 	}
 }
 

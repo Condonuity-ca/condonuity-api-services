@@ -67,8 +67,8 @@ public class VendorController {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
-	        		"Vendor Organisation Already Exists");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+	        		"Failed to create Vendor Organisation");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
 	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
@@ -76,7 +76,7 @@ public class VendorController {
 	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
 	        		"New Vendor Organisation Created Successfully");
-			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
         }
 	}
 	
@@ -97,8 +97,8 @@ public class VendorController {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
-	        		"Vendor User Already Exists");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+	        		"Failed to Create Vendor User");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
 //        	HttpHeaders headers = new HttpHeaders();
 //          headers.setLocation(builder.path("/vendor/user/{id}").buildAndExpand(vendorUser.getVendorId()).toUri());
@@ -113,7 +113,7 @@ public class VendorController {
 	        	exp.printStackTrace();
 	        }
         	
-        	return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);	
+        	return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);	
         }
         
 	}
@@ -168,7 +168,7 @@ public class VendorController {
 					APIStatusCode.NOT_FOUND.getValue(),
 	        		"RESOURCE_NOT_FOUND",
 	        		"Vendor User Record Not Found");
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 	}
 	
@@ -200,7 +200,7 @@ public class VendorController {
 						APIStatusCode.REQUEST_FAILED.getValue(),
 		        		"Failed",
 		        		"Vendor User Account Verification Failed");
-				return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			}
 			
 		} else {
@@ -208,7 +208,7 @@ public class VendorController {
 					APIStatusCode.NOT_FOUND.getValue(),
 	        		"RESOURCE_NOT_FOUND",
 	        		"Vendor User Account does not Exist");
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 	}
 	
@@ -241,7 +241,7 @@ public class VendorController {
 					APIStatusCode.NOT_FOUND.getValue(),
 	        		"RESOURCE_NOT_FOUND",
 	        		"Vendor User Account Creation Failed");
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 	}
 	

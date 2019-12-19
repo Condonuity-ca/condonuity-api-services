@@ -1,8 +1,12 @@
 package tech.torbay.securityservice.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
 
 import tech.torbay.securityservice.constants.Constants;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -52,8 +56,19 @@ public class VendorOrganisation {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
 	
+    @OneToMany(/* mappedBy = "project", */targetEntity = VendorTags.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL,  orphanRemoval = true)
+   	@JoinColumn(name = "vendor_id")
+   	private List<VendorTags> vendorTags = new ArrayList<>();
+    
+    public List<VendorTags> getVendorTags() {
+		return vendorTags;
+	}
+
+	public void setVendorTags(List<VendorTags> vendorTags) {
+		this.vendorTags = vendorTags;
+	}
 	
-    @Override
+	@Override
 	public String toString() {
 		return "VendorOrganisation [vendorOrganisationId=" + vendorOrganisationId + ", userType=" + userType
 				+ ", legalName=" + legalName + ", companyName=" + companyName + ", establishedDate=" + establishedDate
@@ -66,9 +81,9 @@ public class VendorOrganisation {
 				+ ", countryCode=" + countryCode + ", vendorServicesCities=" + vendorServicesCities
 				+ ", vendorServices=" + vendorServices + ", products=" + products + ", brands=" + brands + ", licenses="
 				+ licenses + ", memberships=" + memberships + ", createdAt=" + createdAt + ", modifiedDate="
-				+ modifiedDate + "]";
+				+ modifiedDate + ", vendorTags=" + vendorTags + "]";
 	}
-    
+
 	public Integer getVendorOrganisationId() {
 		return vendorOrganisationId;
 	}

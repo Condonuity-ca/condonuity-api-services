@@ -17,6 +17,7 @@ import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientOrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.service.ClientService;
@@ -141,6 +142,33 @@ public class ClientController {
 	@GetMapping("/client/orgs")
 	public ResponseEntity<Object> getAllClientOrganisations() {
 		List<ClientOrganisation> list = clientService.getAllClientOrganisations();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Client Organisations details fetched successfully");
+			response.put("clientOrganisations", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful All Client Details")
+            }
+    )
+	@GetMapping("/client/orgs/{vendorOrgId}")
+	public ResponseEntity<Object> getAllClientOrganisationsByVendorOrgId(@PathVariable("vendorOrgId") Integer vendorOrgId) {
+		List<Object> list = clientService.getAllClientOrganisationsByVendorOrgId(vendorOrgId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -300,5 +328,33 @@ public class ClientController {
 		}
 	}
 	
+	@ApiOperation(value = "Adding Preferenced Vendor Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Preferenced Vendor Added Successfully"),
+                    @ApiResponse(code = 201, message = "Preferenced Vendor Created Successfully")
+            }
+    )
+	@PostMapping("/client/org/preference/add")
+	public ResponseEntity<Object> addClientAsFavourite(
+			@RequestBody UserWishList userWishList) {
+		
+		UserWishList userWishListObj = clientService.addVendorAsFavourite(userWishList);
+        if (userWishListObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to add Vendor Preference");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Preferenced Vendor Added Successfully");
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+        }
+	}
     
 }

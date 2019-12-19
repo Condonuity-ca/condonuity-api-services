@@ -119,7 +119,18 @@ public class ProjectService {
 
 	public List<Project> getAllProjects(ProjectSortBy past, Integer id) {
 		// TODO Auto-generated method stub
-		return projectRepository.findAllByClientOrganisationIdAndStatus(id, past.getValue());
+		
+		List<Project> projects = projectRepository.findAllByClientOrganisationIdAndStatus(id, past.getValue());
+		
+		for(Project project : projects) {
+			List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+			        .map(Integer::parseInt)
+			        .collect(Collectors.toList());
+			
+			project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		}
+		
+		return projects;
 	}
 
 	public ProjectQuestionAnswer createProjectQuestion(ProjectQuestionAnswer projectQA) {
@@ -150,7 +161,17 @@ public class ProjectService {
 
 	public List<Project> getAllProjects(Integer id) {
 		// TODO Auto-generated method stub
-		return projectRepository.findAll();
+		List<Project> projects = projectRepository.findAll();
+		
+		for(Project project : projects) {
+			List<Integer> ids = Stream.of(project.getTags().split(","))
+			        .map(Integer::parseInt)
+			        .collect(Collectors.toList());
+			
+			project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		}
+		
+		return projects;
 	}
 
 	public Project updateProject(Project project) {

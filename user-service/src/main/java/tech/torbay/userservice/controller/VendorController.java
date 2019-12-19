@@ -26,9 +26,11 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorPortfolio;
+import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.service.VendorService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
@@ -79,9 +81,10 @@ public class VendorController {
     )
 	@GetMapping("/vendor/org/{id}")
 	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer vendorOrganisationId) {
-		VendorOrganisation vendorOrganisation = vendorService.getVendorOrganisationById(vendorOrganisationId);
+		Object vendorOrganisation = vendorService.getVendorOrganisationById(vendorOrganisationId);
 		List<VendorPortfolio> vendorPortfolio = vendorService.getVendorPortfolio(vendorOrganisationId);
 		List<VendorInsurance> vendorInsurance = vendorService.getVendorInsurance(vendorOrganisationId);
+		List<String> vendorTags = vendorService.getVendorTags(vendorOrganisationId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorOrganisation != null) {
@@ -165,6 +168,33 @@ public class VendorController {
 	@GetMapping("/vendor/orgs")
 	public ResponseEntity<Object> getAllVendorOrganisations() {
 		List<VendorOrganisation> list = vendorService.getAllVendorOrganisations();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
+			response.put("vendorOrgs", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
+            }
+    )
+	@GetMapping("/vendor/orgs/{clientOrgId}")
+	public ResponseEntity<Object> getAllVendorOrganisationsByClientOrgId(@PathVariable("clientOrgId") Integer clientOrgId) {
+		List<Object> list = vendorService.getAllVendorOrganisationsByClientOrgId(clientOrgId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -307,7 +337,7 @@ public class VendorController {
         			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Failed to create Vendor Portfolio");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
 	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
@@ -360,7 +390,7 @@ public class VendorController {
         			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Failed to create Vendor Insurance");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
 	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
@@ -423,5 +453,34 @@ public class VendorController {
 
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
+	}
+	
+	@ApiOperation(value = "Adding Preferenced Client Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Preferenced Client Added Successfully"),
+                    @ApiResponse(code = 201, message = "Preferenced Client Created Successfully")
+            }
+    )
+	@PostMapping("/vendor/org/preference/add")
+	public ResponseEntity<Object> addClientAsFavourite(
+			@RequestBody UserWishList userWishList) {
+		
+		UserWishList userWishListObj = vendorService.addClientAsFavourite(userWishList);
+        if (userWishListObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to add Client Preference");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Preferenced Client Added Successfully");
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+        }
 	}
 } 
