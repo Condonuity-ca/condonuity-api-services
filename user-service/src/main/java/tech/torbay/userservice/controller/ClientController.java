@@ -18,6 +18,7 @@ import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientOrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.UserWishList;
+import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.service.ClientService;
@@ -353,8 +354,35 @@ public class ClientController {
 	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
 	        		"Preferenced Vendor Added Successfully");
-			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
         }
 	}
     
+	@ApiOperation(value = "Client Rates Vendor by category")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor Rated Successfully"),
+            }
+    )
+	@PostMapping("/client/rate/vendor")
+	public ResponseEntity<Object> rateVendorByCategory(
+			@RequestBody List<VendorCategoryRatings> vendorCategoryRatings) {
+		
+		boolean isRated = clientService.rateVendorByCategory(vendorCategoryRatings);
+        if (!isRated) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Rate Vendor");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Rated Successfully");
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
+        }
+	}
 }

@@ -1,4 +1,4 @@
-package tech.torbay.projectservice.entity;
+package tech.torbay.userservice.entity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;

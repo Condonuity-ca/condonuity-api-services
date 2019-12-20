@@ -20,12 +20,14 @@ import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientOrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.UserWishList;
+import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientOrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
+import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 
 @Component
 public class ClientService {
@@ -44,6 +46,8 @@ public class ClientService {
 //	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
 	@Autowired
 	UserWishListRepository userWishListRepository;
+	@Autowired
+	VendorCategoryRatingsRepository vendorCategoryRatingsRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -201,6 +205,26 @@ public class ClientService {
 		userWishList.setFavouriteUserType(Constants.UserType.VENDOR.getValue());
 		
 		return userWishListRepository.save(userWishList);
+	}
+
+	public boolean rateVendorByCategory(List<VendorCategoryRatings> vendorCategoryRatings) {
+		// TODO Auto-generated method stub
+		
+		try {
+			for(VendorCategoryRatings vendorRating : vendorCategoryRatings) {
+			    
+				VendorCategoryRatings rate = vendorCategoryRatingsRepository.save(vendorRating);
+				
+				if(rate == null) {
+					return false;
+				}
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 }
 

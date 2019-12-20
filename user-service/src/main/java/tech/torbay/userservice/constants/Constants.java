@@ -320,4 +320,32 @@ public class Constants {
 	        return value;
 	    }
 	}
+	
+	public enum VendorRatingCategory {
+	    ON_TIME_DELIVERY(1),
+	    ATTITUDE(2),
+		MAINTANANCE(3),
+		PERFECTION(4);
+		
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private VendorRatingCategory(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (VendorRatingCategory pageType : VendorRatingCategory.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static VendorRatingCategory valueOf(int pageType) {
+	        return (VendorRatingCategory) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
 }

@@ -166,7 +166,7 @@ public class VendorController {
     )
 	@GetMapping("/vendor/orgs")
 	public ResponseEntity<Object> getAllVendorOrganisations() {
-		List<VendorOrganisation> list = vendorService.getAllVendorOrganisations();
+		List<Object> list = vendorService.getAllVendorOrganisations();
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {

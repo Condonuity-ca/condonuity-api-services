@@ -1,6 +1,7 @@
 package tech.torbay.userservice.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,14 +15,19 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.UserWishList;
+import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorPortfolio;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
+import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
+import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
+import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorInsuranceRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
 import tech.torbay.userservice.repository.VendorPortfolioRepository;
@@ -42,6 +48,12 @@ public class VendorService {
 	UserWishListRepository userWishListRepository;
 	@Autowired
 	PredefinedTagsRepository predefinedTagsRepository;
+	@Autowired
+	VendorCategoryRatingsRepository vendorCategoryRatingsRepository;
+	@Autowired
+	ProjectReviewRatingRepository projectReviewRatingRepository;
+	@Autowired
+	ClientUserRepository clientUserRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -84,8 +96,12 @@ public class VendorService {
 	        } else {
 	        	mappedObj.put("vendorTags","");
 	        }
-			
+	        mappedObj.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        mappedObj.put("detailedRating",getVendorDetailedRatings(vendorOrg.getVendorOrganisationId()));
+	        mappedObj.put("reviewsRatings",getVendorReviewsRatings(vendorOrg.getVendorOrganisationId()));
+	        
 			return mappedObj;
+			
 		} catch(Exception exp) {
 			exp.printStackTrace();
 		}
@@ -93,9 +109,100 @@ public class VendorService {
 		return null/* vendorOrganisationRepository.findByVendorOrganisationId(id) */;
 	}
 
-	public List<VendorOrganisation> getAllVendorOrganisations() {
+	private Object getVendorReviewsRatings(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		return vendorOrganisationRepository.findAll();
+		 try {
+			 List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByVendorOrganisationId(vendorOrganisationId);
+			 
+			 List<Object> vendorAllReviews = new ArrayList();
+			 
+			 for (ProjectReviewRating vendorReviewsForProject : projectReviewsForVendors) {
+				 ObjectMapper objMapper = new ObjectMapper();
+				 Map<String, Object> mappedObj = objMapper.convertValue(vendorReviewsForProject, Map.class);
+				 
+				 mappedObj.put("clientName",clientUserRepository.findByClientId(vendorReviewsForProject.getClientId()).getLegalName());
+				 mappedObj.put("vendorName",vendorUserRepository.findByUserId(vendorReviewsForProject.getVendorId()).getLegalName());
+				 
+				 vendorAllReviews.add(mappedObj);
+			 }
+			 
+			 return vendorAllReviews;
+		 } catch(Exception exp){
+			 exp.printStackTrace();
+			 return null;
+		 }
+	}
+
+	private Object getVendorDetailedRatings(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrganisationId);
+		
+        try {
+        	double sumCategory1 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 1).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategory2 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 2).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategory3 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 3).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategory4 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 4).mapToDouble(VendorCategoryRatings::getRating).sum();
+	        
+        	Map<String, Object> mappedObj = new HashMap<String, Object>();
+        	
+        	mappedObj.put("onTimeDelivery", sumCategory1);
+        	mappedObj.put("attitude", sumCategory2);
+        	mappedObj.put("maintanance", sumCategory3);
+        	mappedObj.put("perfection", sumCategory4);
+        	
+        	return mappedObj;
+	        
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return null;
+        }
+        
+	}
+
+	private Double getVendorCategoryRatings(Integer vendorOrgId) {
+		// TODO Auto-generated method stub
+		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrgId);
+		
+        try {
+        	double sum = vendorRatings.stream().filter(o -> o.getRating() > 0).mapToDouble(VendorCategoryRatings::getRating).sum();
+	        
+	        if(sum >0) {
+	        	double rating = sum/vendorRatings.size();
+		       
+	        	return rating; 
+	        }
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return 0d;
+        }
+        
+        
+        return 0d;
+        
+	}
+
+	public List<Object> getAllVendorOrganisations() {
+		// TODO Auto-generated method stub
+		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAll();
+		
+		List<Object> vendorOrganisations = new ArrayList();
+		
+		for(VendorOrganisation vendorOrg : vendorOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        
+	        
+	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
+	        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
+	        } else {
+	        	map.put("vendorTags","");
+	        }
+	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        vendorOrganisations.add(map);
+		}
+		
+		return vendorOrganisations;
 	}
 
 	public VendorUser updateVendorUser(VendorUser vendorUser) {
@@ -209,7 +316,7 @@ public class VendorService {
 	        } else {
 	        	map.put("vendorTags","");
 	        }
-	        
+	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        if(userWish != null) {
 	        	map.put("isPreferred", "true");
 	        }
@@ -231,12 +338,18 @@ public class VendorService {
 
 	public String getVendorTags(List<VendorTags> vendorTags) {
 		// TODO Auto-generated method stub
-		
-		List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
-		
-        String tags = predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(","));
-		
-		return tags;
+		try {
+			
+			List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
+			
+	        String tags = predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(","));
+	        
+	        return tags;
+			
+		} catch(Exception exp){
+			exp.printStackTrace();
+			return null;
+		}
 	}
 
 }
