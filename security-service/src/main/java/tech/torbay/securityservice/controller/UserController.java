@@ -13,6 +13,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
+import org.apache.catalina.authenticator.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +48,12 @@ import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.constants.Token;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.SupportUser;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.service.ClientService;
+import tech.torbay.securityservice.service.SupportService;
 import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
@@ -80,7 +83,8 @@ public class UserController {
 	private ClientService clientService;
 	@Autowired
 	private VendorService vendorService;
-	
+	@Autowired
+	private SupportService supportService;
 	
 	@ApiOperation(value = "Fetch A User Basic Details in Condonuity Application")
     @ApiResponses(
@@ -185,6 +189,20 @@ public class UserController {
 //					
 //					return new ResponseEntity<>(list, HttpStatus.OK);
 //				}
+			} else if(userInfo.getUserType() == 3) {
+				
+				SupportUser supportUserInfo = supportService.findBySupportUserId(userInfo.getUserId());
+					if (supportUserInfo != null) {
+					
+					HashMap<String, Object> list = new HashMap();
+					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+					list.put("statusMessage", "Success");
+					list.put("responseMessage", "Support User details fetched successfully");
+					list.put("userDetails", supportUserInfo);
+					list.put("authToken", Token);
+					
+					return new ResponseEntity<>(list, HttpStatus.OK);
+				} 
 			}
 		} else {
 			ResponseMessage responseMessage = new ResponseMessage(

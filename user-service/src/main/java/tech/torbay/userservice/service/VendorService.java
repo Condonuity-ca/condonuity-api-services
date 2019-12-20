@@ -76,13 +76,14 @@ public class VendorService {
 			VendorOrganisation vendorOrg = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
 			
 			
-			List<VendorTags> vendorTags = vendorOrg.getVendorTags();
-			List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
-			
 			ObjectMapper objMapper = new ObjectMapper();
 	        Map<String, Object> mappedObj = objMapper.convertValue(vendorOrg, Map.class);
 	        
-	        mappedObj.put("vendorTags", predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
+	        	mappedObj.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
+	        } else {
+	        	mappedObj.put("vendorTags","");
+	        }
 			
 			return mappedObj;
 		} catch(Exception exp) {
@@ -199,10 +200,15 @@ public class VendorService {
 			ObjectMapper oMapper = new ObjectMapper();
 	        // object -> Map
 	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        map.put("isPreferred", "false");
 	        
 	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
 	        
-	        map.put("isPreferred", "false");
+	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
+	        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
+	        } else {
+	        	map.put("vendorTags","");
+	        }
 	        
 	        if(userWish != null) {
 	        	map.put("isPreferred", "true");
@@ -223,16 +229,14 @@ public class VendorService {
 		return userWishListRepository.save(userWishList);
 	}
 
-	public List<String> getVendorTags(Integer vendorOrganisationId) {
+	public String getVendorTags(List<VendorTags> vendorTags) {
 		// TODO Auto-generated method stub
 		
-//		List<Integer> ids = Stream.of(project.getTags().trim().split(","))
-//		        .map(Integer::parseInt)
-//		        .collect(Collectors.toList());
-//		
-//		project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
 		
-		return null;
+        String tags = predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(","));
+		
+		return tags;
 	}
 
 }

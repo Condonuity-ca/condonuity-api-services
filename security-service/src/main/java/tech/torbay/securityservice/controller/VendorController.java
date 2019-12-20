@@ -92,29 +92,39 @@ public class VendorController {
 		
 		// check vendor user already exist or not
 		
-        VendorUser vendor_user = vendorService.addVendorUser(vendorUser);
-        if (vendor_user == null ) {
-        	ResponseMessage responseMessage = new ResponseMessage(
+		if(vendorService.findByEmail(vendorUser.getEmail()) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
-	        		"Failed to Create Vendor User");
+	        		"Vendor User Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-        } else {
-//        	HttpHeaders headers = new HttpHeaders();
-//          headers.setLocation(builder.path("/vendor/user/{id}").buildAndExpand(vendorUser.getVendorId()).toUri());
-        	ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"New Vendor User Created Successfully");
-        	
-        	try {
-	        	sendVendorEmailVerification(vendor_user);
-	        } catch(Exception exp) {
-	        	exp.printStackTrace();
+			
+		} else {
+			VendorUser vendor_user = vendorService.addVendorUser(vendorUser);
+	        if (vendor_user == null ) {
+	        	ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.REQUEST_FAILED.getValue(),
+		        		"Failed",
+		        		"Failed to Create Vendor User");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	        } else {
+//	        	HttpHeaders headers = new HttpHeaders();
+//	          headers.setLocation(builder.path("/vendor/user/{id}").buildAndExpand(vendorUser.getVendorId()).toUri());
+	        	ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.REQUEST_SUCCESS.getValue(),
+		        		"Success",
+		        		"New Vendor User Created Successfully");
+	        	
+	        	try {
+		        	sendVendorEmailVerification(vendor_user);
+		        } catch(Exception exp) {
+		        	exp.printStackTrace();
+		        }
+	        	
+	        	return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);	
 	        }
-        	
-        	return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);	
-        }
+		}
+        
         
 	}
 	

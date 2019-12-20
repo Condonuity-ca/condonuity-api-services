@@ -84,7 +84,6 @@ public class VendorController {
 		Object vendorOrganisation = vendorService.getVendorOrganisationById(vendorOrganisationId);
 		List<VendorPortfolio> vendorPortfolio = vendorService.getVendorPortfolio(vendorOrganisationId);
 		List<VendorInsurance> vendorInsurance = vendorService.getVendorInsurance(vendorOrganisationId);
-		List<String> vendorTags = vendorService.getVendorTags(vendorOrganisationId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorOrganisation != null) {
