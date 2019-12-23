@@ -322,10 +322,10 @@ public class Constants {
 	}
 	
 	public enum VendorRatingCategory {
-	    ON_TIME_DELIVERY(1),
-	    ATTITUDE(2),
-		MAINTANANCE(3),
-		PERFECTION(4);
+	    RESPONSIVENESS(1),
+	    PROFESSIONALISM(2),
+		ACCURACY(3),
+		QUALITY(4);
 		
 	    private int value;
 	    private static Map map = new HashMap<>();
@@ -348,4 +348,33 @@ public class Constants {
 	        return value;
 	    }
 	}
+
+	public enum VendorRatingCategoryPercentage {
+	    RESPONSIVENESS(10),
+	    PROFESSIONALISM(30),
+		ACCURACY(30),
+		QUALITY(30);
+		
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private VendorRatingCategoryPercentage(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (VendorRatingCategoryPercentage pageType : VendorRatingCategoryPercentage.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static VendorRatingCategoryPercentage valueOf(int pageType) {
+	        return (VendorRatingCategoryPercentage) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+
 }

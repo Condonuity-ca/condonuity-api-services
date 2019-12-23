@@ -288,8 +288,6 @@ public class UserController {
 				//	- active/inactive
 				
 				if(user != null) {
-					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","User Already Exists");
-					
 					if(user.getPassword() == null || user.getPassword().trim().length() == 0) {
 						
 						// Send Email Alert to Reset Password
@@ -303,8 +301,26 @@ public class UserController {
 						
 						return new ResponseEntity<Object>(response, HttpStatus.OK);
 					}
+//					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","User Already Exists");
+					HashMap<String, Object> response = new HashMap();
+					response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+					response.put("statusMessage", "Success");
+					response.put("responseMessage", "User Already Exists");
 					
-					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+					String userName = "";
+					if(user.getUserType().equals(tech.torbay.securityservice.constants.Constants.UserType.CLIENT.getValue())) {
+						ClientUser clientUser = clientService.findById(user.getUserId());
+						userName = clientUser.getFirstName()+" "+clientUser.getLastName();
+					} else if(user.getUserType().equals(tech.torbay.securityservice.constants.Constants.UserType.VENDOR.getValue())) {
+						VendorUser vendorUser = vendorService.findByVendorUserId(user.getUserId());
+						userName = vendorUser.getLegalName();
+					} else if(user.getUserType().equals(tech.torbay.securityservice.constants.Constants.UserType.SUPPORT_USER.getValue())) {
+						SupportUser supportUser = supportService.findBySupportUserId(user.getUserId());
+						userName = supportUser.getFullName();
+					}
+					
+					response.put("username", userName);
+					return new ResponseEntity<Object>(response, HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.NOT_FOUND.getValue(),"Resource not found error","User Record Not Found");
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);

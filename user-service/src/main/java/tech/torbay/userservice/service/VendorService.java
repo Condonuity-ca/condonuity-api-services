@@ -138,17 +138,17 @@ public class VendorService {
 		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrganisationId);
 		
         try {
-        	double sumCategory1 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 1).mapToDouble(VendorCategoryRatings::getRating).sum();
-        	double sumCategory2 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 2).mapToDouble(VendorCategoryRatings::getRating).sum();
-        	double sumCategory3 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 3).mapToDouble(VendorCategoryRatings::getRating).sum();
-        	double sumCategory4 = vendorRatings.stream().filter(o -> o.getRatingCategory() == 4).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryResponsiveness = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryProfessionalism = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryAccuracy = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryQuality = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
 	        
         	Map<String, Object> mappedObj = new HashMap<String, Object>();
         	
-        	mappedObj.put("onTimeDelivery", sumCategory1);
-        	mappedObj.put("attitude", sumCategory2);
-        	mappedObj.put("maintanance", sumCategory3);
-        	mappedObj.put("perfection", sumCategory4);
+        	mappedObj.put("responsiveness", sumCategoryResponsiveness);
+        	mappedObj.put("professionalism", sumCategoryProfessionalism);
+        	mappedObj.put("accuracy", sumCategoryAccuracy);
+        	mappedObj.put("quality", sumCategoryQuality);
         	
         	return mappedObj;
 	        
@@ -164,21 +164,45 @@ public class VendorService {
 		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrgId);
 		
         try {
-        	double sum = vendorRatings.stream().filter(o -> o.getRating() > 0).mapToDouble(VendorCategoryRatings::getRating).sum();
-	        
-	        if(sum >0) {
-	        	double rating = sum/vendorRatings.size();
-		       
-	        	return rating; 
-	        }
+        	// Case1
+//        	-- Common Over all Rating
+//        	double sum = vendorRatings.stream().filter(o -> o.getRating() > 0).mapToDouble(VendorCategoryRatings::getRating).sum();
+//	        
+//	        if(sum >0) {
+//	        	double rating = sum/vendorRatings.size();
+//		       
+//	        	return rating; 
+//	        }
+        	
+        	//Case2
+//        	Overall Rating By Category Percentage
+        	double sumCategoryResponsiveness = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryProfessionalism = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryAccuracy = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryQuality = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	
+        	System.out.print("sumCategoryResponsiveness "+ sumCategoryResponsiveness);
+        	System.out.print("sumCategoryProfessionalism "+ sumCategoryProfessionalism);
+        	System.out.print("sumCategoryAccuracy "+ sumCategoryAccuracy);
+        	System.out.print("sumCategoryQuality "+ sumCategoryQuality);
+        	
+        	double overAllRating = (sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
+        			(sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
+        			(sumCategoryAccuracy * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
+        			(sumCategoryQuality * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue() "+ sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue() "+ sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.ACCURACY.getValue() "+ sumCategoryAccuracy *Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.QUALITY.getValue() "+ sumCategoryQuality *Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	
+        	return overAllRating;
+        	
         } catch(Exception exp) {
         	exp.printStackTrace();
         	return 0d;
         }
-        
-        
-        return 0d;
-        
 	}
 
 	public List<Object> getAllVendorOrganisations() {
