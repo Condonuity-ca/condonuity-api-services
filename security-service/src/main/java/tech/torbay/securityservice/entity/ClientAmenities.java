@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
+@JsonInclude(value = Include.NON_NULL)
 @Table(name = "client_organisation_amenities")
 public class ClientAmenities {
 	
@@ -14,16 +15,16 @@ public class ClientAmenities {
 	}
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)  
-	private int id = 0;
+	private Integer id = 0;
 	
 	@ManyToOne
     @JoinColumn(name = "client_organisation_id")
 	private ClientOrganisation clientOrganisation;
 	
-//	private int clientOrganisationId = 0;
+//	private int clientOrganisationId = 0; // one to many
 	private String amenitiesName;
 	private String amenitiesType;
-	private int amenitiesCount;
+	private Integer amenitiesCount;
 	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
@@ -31,18 +32,20 @@ public class ClientAmenities {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
+    
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ClientAmenities )) return false;
+        return id != null && id.equals(((ClientAmenities) o).getId());
+    }
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
-	}
-	public int getClientOrganisationId() {
-		return clientOrganisation.getClientOrganisationId();
-	}
-	public void setClientOrganisationId(int clientOrganisationId) {
-		this.clientOrganisation.setClientOrganisationId(clientOrganisationId);
 	}
 	public String getAmenitiesName() {
 		return amenitiesName;
@@ -56,10 +59,10 @@ public class ClientAmenities {
 	public void setAmenitiesType(String amenitiesType) {
 		this.amenitiesType = amenitiesType;
 	}
-	public int getAmenitiesCount() {
+	public Integer getAmenitiesCount() {
 		return amenitiesCount;
 	}
-	public void setAmenitiesCount(int amenitiesCount) {
+	public void setAmenitiesCount(Integer amenitiesCount) {
 		this.amenitiesCount = amenitiesCount;
 	}
 	public String getCreatedAt() {
@@ -77,7 +80,7 @@ public class ClientAmenities {
 	@Override
 	public String toString() {
 		return "ClientAmenities [id=" + id
-				+ /* ", clientOrganisationId=" + clientOrganisationId + */ ", amenitiesName=" + amenitiesName
+				+ ", amenitiesName=" + amenitiesName
 				+ ", amenitiesType=" + amenitiesType + ", amenitiesCount=" + amenitiesCount + ", createdAt="
 				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}

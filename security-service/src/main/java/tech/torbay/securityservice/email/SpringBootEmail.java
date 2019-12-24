@@ -31,7 +31,7 @@ public class SpringBootEmail {
         SimpleMailMessage msg = new SimpleMailMessage();
 //	        msg.setTo("mayaclinic@onlinedemo.co");
         msg.setTo(toEmail);
-        msg.setFrom("mayaclinic@onlinedemo.co");
+//        msg.setFrom("mayaclinic@onlinedemo.co");
 
         msg.setSubject("This is Welcome Email From Torbay Tech Condonuity Application");
         msg.setText("Thanks for using our application");
@@ -51,7 +51,7 @@ public class SpringBootEmail {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("mayaclinic@onlinedemo.co", "Condonuity"));
+//        msg.setFrom(new InternetAddress("mayaclinic@onlinedemo.co", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
         // default = text/plain
@@ -80,15 +80,37 @@ public class SpringBootEmail {
     }
 	
 	
+//	@Bean
+//	public JavaMailSender getJavaMailSender() {
+//	    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+//	    mailSender.setHost("gator4061.hostgator.com");
+////		    mailSender.setPort(587); //ttls
+//	    mailSender.setPort(465); //ssl
+//	     
+//	    mailSender.setUsername("mayaclinic@onlinedemo.co");
+//	    mailSender.setPassword("mayaclinic@123");
+//	     
+//	    Properties props = mailSender.getJavaMailProperties();
+//	    props.put("mail.transport.protocol", "smtp");
+//	    props.put("mail.smtp.auth", "true");
+////		    props.put("mail.smtp.starttls.enable", "true");//ttls port 587
+//	    props.put("mail.smtp.ssl.enable", "true");//ssl
+//	    props.put("mail.smtp.socketFactory.port", "465"); //SSL Port
+//		props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory"); //SSL Factory Class
+//	    props.put("mail.debug", "true");
+//	     
+//	    return mailSender;
+//	}
+	
 	@Bean
 	public JavaMailSender getJavaMailSender() {
 	    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-	    mailSender.setHost("gator4061.hostgator.com");
+	    mailSender.setHost("smtp.gmail.com");
 //		    mailSender.setPort(587); //ttls
 	    mailSender.setPort(465); //ssl
 	     
-	    mailSender.setUsername("mayaclinic@onlinedemo.co");
-	    mailSender.setPassword("mayaclinic@123");
+	    mailSender.setUsername("condonuitydev@gmail.com");
+	    mailSender.setPassword("yixtxkshnfaykpsh");
 	     
 	    Properties props = mailSender.getJavaMailProperties();
 	    props.put("mail.transport.protocol", "smtp");

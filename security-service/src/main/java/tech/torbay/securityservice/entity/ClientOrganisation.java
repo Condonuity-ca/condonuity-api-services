@@ -1,5 +1,6 @@
 package tech.torbay.securityservice.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,8 +48,8 @@ public class ClientOrganisation {
     private String countryCode = "";
     private String phoneNumber = "";
     private String faxNumber = "";
-    private int units = 0;
-    private int votingUnits = 0;
+    private Integer units = 0;
+    private Integer votingUnits = 0;
     private String managerName = "";
     private String managerEmail = "";
     private String managerPhone = "";
@@ -63,6 +64,10 @@ public class ClientOrganisation {
     
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
 //	private List<ClientAmenities> amenities = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "clientOrganisation", targetEntity = ClientAmenities.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE,  orphanRemoval = true)
+   	@JoinColumn(name = "client_organisation_id")
+   	private List<ClientAmenities> clientAmenities = new ArrayList<>();
 //    
 //	@OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAssociation.class, orphanRemoval = true)
 //	private List<ClientAssociation> clientAssociations = new ArrayList<>();
@@ -82,22 +87,32 @@ public class ClientOrganisation {
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+	
+	
+	public List<ClientAmenities> getClientAmenities() {
+		return clientAmenities;
+	}
+
+
+	public void setClientAmenities(List<ClientAmenities> clientAmenities) {
+		this.clientAmenities = clientAmenities;
+	}
 
 
 	@Override
 	public String toString() {
-		return "Client Organisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType 
+		return "ClientOrganisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType
 				+ ", organisationName=" + organisationName + ", managementCompany=" + managementCompany
-				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail=" + generalEmail + ", managementEmail=" + managementEmail
-				+ ", boardEmail=" + boardEmail + ", address=" + address + ", city=" + city + ", province=" + province
-				+ ", postalCode=" + postalCode + ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber
-				+ ", faxNumber=" + faxNumber + ", units=" + units + ", votingUnits=" + votingUnits + ", managerName="
-				+ managerName + ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt="
-				+ createdAt + "]";
+				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail="
+				+ generalEmail + ", managementEmail=" + managementEmail + ", boardEmail=" + boardEmail + ", address="
+				+ address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
+				+ ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber
+				+ ", units=" + units + ", votingUnits=" + votingUnits + ", managerName=" + managerName
+				+ ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + ", clientAmenities=" + clientAmenities + "]";
 	}
-	
-	
-	
+
+
 	public String getGeneralEmail() {
 		return generalEmail;
 	}
@@ -158,10 +173,6 @@ public class ClientOrganisation {
 	}
 
 
-	/*
-	 * public ClientAmenities getAmenities() { return amenities; } public void
-	 * setAmenities(ClientAmenities amenities) { this.amenities = amenities; }
-	 */
 	public Integer getClientOrganisationId() {
 		return clientOrganisationId;
 	}
@@ -240,16 +251,16 @@ public class ClientOrganisation {
 	public void setFaxNumber(String faxNumber) {
 		this.faxNumber = faxNumber;
 	}
-	public int getUnits() {
+	public Integer getUnits() {
 		return units;
 	}
-	public void setUnits(int units) {
+	public void setUnits(Integer units) {
 		this.units = units;
 	}
-	public int getVotingUnits() {
+	public Integer getVotingUnits() {
 		return votingUnits;
 	}
-	public void setVotingUnits(int votingUnits) {
+	public void setVotingUnits(Integer votingUnits) {
 		this.votingUnits = votingUnits;
 	}
 	public String getCreatedAt() {

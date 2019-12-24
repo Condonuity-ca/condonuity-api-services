@@ -32,7 +32,7 @@ public class QueryStringCreator {
 	public String getClientUserInviteEncodedURL(String email, Integer userId, Integer organisationId, Integer clientUserType, Integer userRole) {
 		// TODO Auto-generated method stub
 //		String query = UriComponentsBuilder.fromHttpUrl("http://localhost:8383/api/user/resetPassword")
-		String query = UriComponentsBuilder.fromHttpUrl("http://condonuityui-dev.azurewebsites.net/register/accept-invite/450")
+		String query = UriComponentsBuilder.fromHttpUrl("http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450")
 				.queryParam(encode("email"), encode(email))
 				.queryParam(encode("userId"), encode(String.valueOf(userId)))
 				.queryParam(encode("organisationId"), encode(String.valueOf(organisationId)))
@@ -47,11 +47,12 @@ public class QueryStringCreator {
 		// TODO Auto-generated method stub
 //		String query = UriComponentsBuilder.fromHttpUrl("http://localhost:8383/api/user/resetPassword")
 //		String query = UriComponentsBuilder.fromHttpUrl("http://condonuity1.onlinedemo.co/client/accept-invite")
-			 	String query = UriComponentsBuilder.fromHttpUrl("http://condonuityui-dev.azurewebsites.net/register/accept-invite/450")
-				.queryParam(encode("email"), encode(email))
-				.queryParam(encode("userId"), encode(String.valueOf(userId)))
-				.queryParam(encode("organisationId"), encode(String.valueOf(organisationId)))
-				.toUriString(); 
+//			 	String query = UriComponentsBuilder.fromHttpUrl("http://condonuityui-dev.azurewebsites.net/register/accept-invite/450")
+	 	String query = UriComponentsBuilder.fromHttpUrl("http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450")
+		.queryParam(encode("email"), encode(email))
+		.queryParam(encode("userId"), encode(String.valueOf(userId)))
+		.queryParam(encode("organisationId"), encode(String.valueOf(organisationId)))
+		.toUriString(); 
 		
 		return query;
 	}

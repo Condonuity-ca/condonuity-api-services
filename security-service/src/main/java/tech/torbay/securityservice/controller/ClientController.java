@@ -188,7 +188,7 @@ public class ClientController {
 		String responseJsonString = Utils.ClasstoJsonString(clientUser);
 		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityui-dev.azurewebsites.net/register/accept-invite/450?"+ encryptClientUser; // AES algorithm
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ encryptClientUser; // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
 //		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
 		
@@ -265,11 +265,12 @@ public class ClientController {
 			
 	}
 	
+	//Need to change like Registration flow
 	private void sendNewClientUserInviteEmail(ClientUser clientUser, Integer organisationId, Integer clientUserType,
 			Integer userRole) {
 		// TODO Auto-generated method stub
 		QueryStringCreator queryStringCreator = new QueryStringCreator();
-		String content = queryStringCreator.getClientUserInviteEncodedURL(clientUser.getEmail(), clientUser.getClientId(), organisationId, clientUserType, userRole);
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ queryStringCreator.getClientUserInviteEncodedURL(clientUser.getEmail(), clientUser.getClientId(), organisationId, clientUserType, userRole);
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();

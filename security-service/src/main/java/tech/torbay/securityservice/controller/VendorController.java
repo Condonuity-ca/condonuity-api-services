@@ -135,7 +135,7 @@ public class VendorController {
 		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
 		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityui-dev.azurewebsites.net/register/accept-invite/450?"+ encryptVendorUser; // AES algorithm
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ encryptVendorUser; // AES algorithm
 		
 		
 		System.out.println("Sending Email...");
@@ -255,11 +255,11 @@ public class VendorController {
 		}
 	}
 	
-	
+	// Need to change as Registration flow
 	private void sendNewVendorUserInviteEmail(VendorUser vendorUser, Integer organisationId) {
 		// TODO Auto-generated method stub
 		QueryStringCreator queryStringCreator = new QueryStringCreator();
-		String content = queryStringCreator.getVendorUserInviteEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), organisationId);
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ queryStringCreator.getVendorUserInviteEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), organisationId);
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();

@@ -39,7 +39,7 @@ public class VendorTags {
 	}
 
 	public void setId(Integer id) {
-		id = id;
+		this.id = id;
 	}
 
 	public Integer getTagId() {
