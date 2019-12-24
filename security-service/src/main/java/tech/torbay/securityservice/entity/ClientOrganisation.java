@@ -65,7 +65,7 @@ public class ClientOrganisation {
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clientOrganisation", targetEntity=ClientAmenities.class, orphanRemoval = true)
 //	private List<ClientAmenities> amenities = new ArrayList<>();
     
-    @OneToMany(mappedBy = "clientOrganisation", targetEntity = ClientAmenities.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE,  orphanRemoval = true)
+	@OneToMany(/* mappedBy = "clientOrganisation", */ targetEntity = ClientAmenities.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE,  orphanRemoval = true)
    	@JoinColumn(name = "client_organisation_id")
    	private List<ClientAmenities> clientAmenities = new ArrayList<>();
 //    
