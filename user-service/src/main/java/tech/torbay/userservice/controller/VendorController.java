@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
@@ -113,6 +114,7 @@ public class VendorController {
 	@GetMapping("/vendor/org/account/{id}")
 	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("id") Integer id) {
 		List<VendorUser> vendorUsers = vendorService.getVendorOrganisationUsersById(id);
+		List<OrganisationPayment> paymentBillingDetails = vendorService.getPaymentBillingDetails(id);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorUsers != null) {
@@ -120,6 +122,7 @@ public class VendorController {
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "Vendor Organisation Account details fetched successfully");
 			response.put("vendorUsers", vendorUsers);
+			response.put("payment_billing_details", paymentBillingDetails);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {

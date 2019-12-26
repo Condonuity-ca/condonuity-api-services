@@ -21,7 +21,8 @@ public class VendorUser {
 	private Integer vendorOrganisationId = 0;
 	private Integer userType = Constants.UserType.VENDOR.getValue();
     private Integer userRole = Constants.UserRole.USER.getValue();
-    private String legalName = "";
+    private String firstName = "";
+    private String lastName = "";
     private String email = "";
 	private Integer accountStatus = null;
 	private Integer accountVerificationStatus = null;
@@ -63,11 +64,17 @@ public class VendorUser {
 	public void setUserRole(Integer userRole) {
 		this.userRole = userRole;
 	}
-	public String getLegalName() {
-		return legalName;
+	public String getFirstName() {
+		return firstName;
 	}
-	public void setLegalName(String legalName) {
-		this.legalName = legalName;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	public String getEmail() {
 		return email;
@@ -103,7 +110,7 @@ public class VendorUser {
 	@Override
 	public String toString() {
 		return "VendorUser [userId=" + userId + ", vendorOrganisationId=" + vendorOrganisationId + ", userType="
-				+ userType + ", userRole=" + userRole + ", legalName=" + legalName + ", email=" + email
+				+ userType + ", userRole=" + userRole + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", accountStatus=" + accountStatus + ", accountVerificationStatus=" + accountVerificationStatus
 				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}

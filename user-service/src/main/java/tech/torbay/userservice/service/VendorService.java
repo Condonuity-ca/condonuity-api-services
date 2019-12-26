@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
@@ -121,7 +122,8 @@ public class VendorService {
 				 Map<String, Object> mappedObj = objMapper.convertValue(vendorReviewsForProject, Map.class);
 				 
 				 mappedObj.put("clientName",clientUserRepository.findByClientId(vendorReviewsForProject.getClientId()).getLegalName());
-				 mappedObj.put("vendorName",vendorUserRepository.findByUserId(vendorReviewsForProject.getVendorId()).getLegalName());
+				 VendorUser vendorUser = vendorUserRepository.findByUserId(vendorReviewsForProject.getVendorId());
+				 mappedObj.put("vendorName",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
 				 
 				 vendorAllReviews.add(mappedObj);
 			 }
@@ -374,6 +376,13 @@ public class VendorService {
 			exp.printStackTrace();
 			return null;
 		}
+	}
+	
+	public List<OrganisationPayment> getPaymentBillingDetails(Integer orgId) {
+		// TODO Auto-generated method stub
+		List paymentDetails = new ArrayList();
+		paymentDetails.add(new OrganisationPayment());
+		return paymentDetails;
 	}
 
 }

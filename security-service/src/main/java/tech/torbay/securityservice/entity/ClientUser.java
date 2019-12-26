@@ -40,6 +40,7 @@ public class ClientUser {
     private String phone = "";
     private String countryCode="";
     private Integer userType = Constants.UserType.CLIENT.getValue();
+    private Integer primaryOrgId = 0;
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -73,7 +74,14 @@ public class ClientUser {
     )
     private Set<ClientOrganisation> clientOrganisations = new HashSet<>();
     
-    public Integer getUserType() {
+    public Integer getPrimaryOrgId() {
+		return primaryOrgId;
+	}
+	public void setPrimaryOrgId(Integer primaryOrgId) {
+		this.primaryOrgId = primaryOrgId;
+	}
+	
+	public Integer getUserType() {
 		return userType;
 	}
 	public void setUserType(Integer userType) {
@@ -151,12 +159,9 @@ public class ClientUser {
 	public String toString() {
 		return "ClientUser [clientId=" + clientId + ", email=" + email + ", firstName=" + firstName + ", LastName="
 				+ LastName + ", legalName=" + legalName + ", city=" + city + ", phone=" + phone + ", countryCode="
-				+ countryCode + ", createdAt=" + createdAt + ", modifiedDate="
-				+ modifiedDate /*
-								 * + ", clientOrganisations=" + clientOrganisations
-								 */+ "]";
+				+ countryCode + ", userType=" + userType + ", primaryOrgId=" + primaryOrgId + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
-	
 	
 
 	

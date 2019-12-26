@@ -7,15 +7,16 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "organisation_payment_billing_details")
-public class ClientOrganisationPayment {
+public class OrganisationPayment {
 	
-	public ClientOrganisationPayment() {
+	public OrganisationPayment() {
 	
 	}
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private int organisationId;
+	private int userType;
 	private String cardNumber = "NA";
 	private String nameOnCard = "NA";
 	private String expiryDate = "NA";
@@ -44,6 +45,12 @@ public class ClientOrganisationPayment {
 	}
 	public void setOrganisationId(int organisationId) {
 		this.organisationId = organisationId;
+	}
+	public int getUserType() {
+		return userType;
+	}
+	public void setUserType(int userType) {
+		this.userType = userType;
 	}
 	public String getCardNumber() {
 		return cardNumber;
@@ -107,12 +114,11 @@ public class ClientOrganisationPayment {
 	}
 	@Override
 	public String toString() {
-		return "OrganisationPayment [id=" + id + ", organisationId=" + organisationId + ", cardNumber=" + cardNumber
-				+ ", nameOnCard=" + nameOnCard + ", expiryDate=" + expiryDate + ", securityCode=" + securityCode
-				+ ", streetAddress=" + streetAddress + ", city=" + city + ", province=" + province + ", postalCode="
-				+ postalCode + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "OrganisationPayment [id=" + id + ", organisationId=" + organisationId + ", userType=" + userType
+				+ ", cardNumber=" + cardNumber + ", nameOnCard=" + nameOnCard + ", expiryDate=" + expiryDate
+				+ ", securityCode=" + securityCode + ", streetAddress=" + streetAddress + ", city=" + city
+				+ ", province=" + province + ", postalCode=" + postalCode + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
-	
-	
 	
 }

@@ -142,7 +142,7 @@ public class VendorController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendEmailWithAttachment(vendorUser.getEmail(), content);
+			springBootEmail.sendWelcomeEmailWithAttachment(vendorUser.getEmail(), content);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -265,7 +265,7 @@ public class VendorController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendEmailWithAttachment(vendorUser.getEmail(), content);
+			springBootEmail.sendWelcomeEmailWithAttachment(vendorUser.getEmail(), content);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

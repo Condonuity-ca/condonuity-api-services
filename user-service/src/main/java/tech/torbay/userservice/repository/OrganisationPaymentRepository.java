@@ -5,16 +5,16 @@ import org.springframework.stereotype.Repository;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientOrganisation;
-import tech.torbay.userservice.entity.ClientOrganisationPayment;
+import tech.torbay.userservice.entity.OrganisationPayment;
 
 import java.util.List;
 
 @Repository
-public interface ClientOrganisationPaymentRepository extends JpaRepository<ClientOrganisationPayment, Integer> {
+public interface OrganisationPaymentRepository extends JpaRepository<OrganisationPayment, Integer> {
 
-    List<ClientOrganisationPayment> findAll();
+    List<OrganisationPayment> findAll();
 
-    List<ClientOrganisationPayment> findAllByOrganisationId(Integer id);
+    List<OrganisationPayment> findAllByOrganisationId(Integer id);
     
 //    ClientAmenities findById(Integer id);
 }

@@ -48,6 +48,7 @@ import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.constants.Token;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.SupportUser;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
@@ -58,6 +59,7 @@ import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
 import tech.torbay.securityservice.utils.QueryStringCreator;
+import tech.torbay.securityservice.utils.Utils;
 
 @RestController
 @RequestMapping("/api")
@@ -313,7 +315,7 @@ public class UserController {
 						userName = clientUser.getFirstName()+" "+clientUser.getLastName();
 					} else if(user.getUserType().equals(tech.torbay.securityservice.constants.Constants.UserType.VENDOR.getValue())) {
 						VendorUser vendorUser = vendorService.findByVendorUserId(user.getUserId());
-						userName = vendorUser.getLegalName();
+						userName = vendorUser.getFirstName()+" "+vendorUser.getLastName();
 					} else if(user.getUserType().equals(tech.torbay.securityservice.constants.Constants.UserType.SUPPORT_USER.getValue())) {
 						SupportUser supportUser = supportService.findBySupportUserId(user.getUserId());
 						userName = supportUser.getFullName();
@@ -388,7 +390,7 @@ public class UserController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendEmailWithAttachment(email,"Sample Welcome Email");
+			springBootEmail.sendWelcomeEmailWithAttachment(email,"Sample Welcome Email");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -466,5 +468,115 @@ public class UserController {
 	        }
 
 	    }
+	 
+	 @ApiOperation(value = "Send Password reset link to User Email")
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(code = 200, message = "Password reset link sent to the User Email")
+	            }
+	    )
+		@GetMapping("/user/forgotpwd/{email}")
+		public ResponseEntity<Object> forgotPassword(@Valid @PathVariable("email") @Email(message = "Email must be a valid email address") String email) {
+			try {
+				if(isValid(email)) {
+					User user = userService.findByEmail(email);
+					if(user != null) {
+						
+						HashMap<String, Object> response = new HashMap();
+						
+						
+						try {
+				        	sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());
+				        	response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+							response.put("statusMessage", "Success");
+							response.put("responseMessage", "Password reset link sent to the User Email");
+				        } catch(Exception exp) {
+				        	exp.printStackTrace();
+				        	response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+							response.put("statusMessage", "Failed");
+							response.put("responseMessage", "Failed to send reset link to User Email");
+				        	return new ResponseEntity<Object>(response, HttpStatus.OK);
+				        }
+						
+						return new ResponseEntity<Object>(response, HttpStatus.OK);
+					} else {
+						ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.NOT_FOUND.getValue(),"Resource not found error","User Record Not Found");
+						return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+					}
+				} else {
+					logger.info("Invalid Email Address");
+					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.BAD_REQUEST.getValue(),"Invalid Email Address","Please check email address");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				}
+				
+			} catch(Exception exp) {
+				logger.info("User Email Validation Error");
+				ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.NOT_FOUND.getValue(),"Resource not found error","User Record Not Found");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			}
+		}
 
+
+	private void sendForgotPasswordResetLink(String email, Integer userId, Integer userType) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", email);
+		userObj.put("userId", userId);
+		userObj.put("userType", userType);
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		
+		String encryptUser = SecurityAES.encrypt(responseJsonString);
+		
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password/450?"+ encryptUser; // AES algorithm
+//		System.out.println("contentAES Encrypt->"+content);
+//		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendPasswordResetEmailWithAttachment(email, content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+
+	 @ApiOperation(value = "Fetching A Client Details In an Organisation")
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(code = 200, message = "A client details fetched successfully")
+	            }
+	    )
+		@GetMapping("/service/cities")
+		public ResponseEntity<Object> getClientUserByIdAndOrgId() {
+		
+		 List<ServiceCities> serviceCities = userService.findAllServiceCities();
+		 
+		 HashMap<String, Object> list = new HashMap();
+		 if(serviceCities != null) {
+		 	list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+		 	list.put("statusMessage", "Success");
+		 	list.put("responseMessage", "List of All Service Cities fetched successfully");
+		 	list.put("serviceCities",serviceCities);
+		 	
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 } else {
+		 	
+		 	list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+		 	list.put("statusMessage", "Failed");
+		 	list.put("responseMessage", "Database Error");
+
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 }
+
+		}
 }

@@ -196,7 +196,7 @@ public class ClientController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendEmailWithAttachment(clientUser.getEmail(), content);
+			springBootEmail.sendWelcomeEmailWithAttachment(clientUser.getEmail(), content);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -276,7 +276,7 @@ public class ClientController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendEmailWithAttachment(clientUser.getEmail(), content);
+			springBootEmail.sendWelcomeEmailWithAttachment(clientUser.getEmail(), content);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

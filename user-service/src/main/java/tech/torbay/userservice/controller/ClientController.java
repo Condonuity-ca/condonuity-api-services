@@ -15,7 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientOrganisation;
-import tech.torbay.userservice.entity.ClientOrganisationPayment;
+import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
@@ -65,7 +65,7 @@ public class ClientController {
 
 	/*New APIs Structure*/
     
-    @ApiOperation(value = "Fetching A Client Details In an Organisation")
+    @ApiOperation(value = "Fetching A Client Details with All Organisation")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "A client details fetched successfully")
@@ -73,11 +73,11 @@ public class ClientController {
     )
 	@GetMapping("/client/user/{id}")
 	public ResponseEntity<Object> getClientUserById(@PathVariable("id") Integer id) {
-    	ClientUser client = clientService.getClientUserById(id);
+    	Object client = clientService.getClientUserById(id);
 		
 		System.out.println(client);
 		
-		List<ClientOrganisation> orgs = clientService.getAllCorporateAccounts(id);
+		List<Object> orgs = clientService.getAllCorporateAccounts(id);
 //		NotificationSettings notifications = clientService.getNotificationSettings();
 		
 		HashMap<String, Object> list = new HashMap();
@@ -107,6 +107,39 @@ public class ClientController {
 		}
 	}
 	
+    @ApiOperation(value = "Fetching A Client Details In an Organisation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A client details fetched successfully")
+            }
+    )
+	@GetMapping("/client/user/{id}/{clientOrgId}")
+	public ResponseEntity<Object> getClientUserByIdAndOrgId(@PathVariable("id") Integer id, @PathVariable("clientOrgId") Integer clientOrgId) {
+    	Object client = clientService.getClientUserByIdAndClientOrgId(id, clientOrgId);
+		
+		System.out.println(client);
+		
+		List<Object> orgs = clientService.getAllCorporateAccounts(id);
+//		NotificationSettings notifications = clientService.getNotificationSettings();
+		
+		HashMap<String, Object> list = new HashMap();
+		if(client != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client details fetched successfully");
+			list.put("client",client);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+    
 //	@ApiOperation(value = "Fetching All clients details with in Condonuity Application")
 //    @ApiResponses(
 //            value = {
@@ -305,8 +338,8 @@ public class ClientController {
     )
 	@GetMapping("/client/org/account/{orgId}")
 	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("orgId") Integer id) {
-		List<ClientUser> clients = clientService.getAllClientsByOrganisation(id);
-		List<ClientOrganisationPayment> paymentBillingDetails = clientService.getPaymentBillingDetails(id);
+		List<Object> clients = clientService.getAllClientsByOrganisation(id);
+		List<OrganisationPayment> paymentBillingDetails = clientService.getPaymentBillingDetails(id);
 		
 //		//IF admin get All other users details
 //		Clients allUsers = clientService;
@@ -384,5 +417,34 @@ public class ClientController {
 	        		"Vendor Rated Successfully");
 			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
         }
+	}
+	
+	@ApiOperation(value = "Setting Client User Primary Organisation Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client User Primary Organisation Updated successfully")
+            }
+    )
+	@PutMapping("/client/{clientUserId}/primary/{clientOrgId}")
+	public ResponseEntity<Object> updateClientPrimaryOrganisation(@PathVariable("clientUserId") Integer clientUserId , @PathVariable("clientOrgId") Integer clientOrgId) {
+        if (clientService.updateClientPrimaryOrganisation(clientUserId, clientOrgId) == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			"Failed",
+        			"Failed to Update Client User Primary Organisation");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+		/*
+		 * HttpHeaders headers = new HttpHeaders();
+		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
+		 * organisation.getOrganisationId()).toUri());
+		 */
+            ResponseMessage responseMessage = new ResponseMessage(
+            		APIStatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Client User Primary Organisation Updated successfully");
+            return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        }
+        
 	}
 }

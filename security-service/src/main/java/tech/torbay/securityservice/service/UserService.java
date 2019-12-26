@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.config.SecurityAES;
+import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
+import tech.torbay.securityservice.repository.ServiceCitiesRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorOrganisationRepository;
 import tech.torbay.securityservice.repository.VendorUserRepository;
@@ -22,6 +24,8 @@ public class UserService {
 	
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	ServiceCitiesRepository serviceCitiesRepository;
 	
 	@Autowired
     private BCryptPasswordEncoder encoder;
@@ -63,6 +67,11 @@ public class UserService {
 	public User Login(String username, String password) {
 		// TODO Auto-generated method stub
 		return userRepository.findByUsernameAndPassword(username, /* SecurityAES.encrypt( */password/* ) */);
+	}
+
+	public List<ServiceCities> findAllServiceCities() {
+		// TODO Auto-generated method stub
+		return serviceCitiesRepository.findAll();
 	}
 }
 

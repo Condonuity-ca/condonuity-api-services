@@ -41,7 +41,7 @@ public class SpringBootEmail {
     }
 	
 	
-	public void sendEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException {
+	public void sendWelcomeEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException {
 		
 		javaMailSender = getJavaMailSender();
 
@@ -51,7 +51,7 @@ public class SpringBootEmail {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-//        msg.setFrom(new InternetAddress("mayaclinic@onlinedemo.co", "Condonuity"));
+        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
         // default = text/plain
@@ -122,5 +122,39 @@ public class SpringBootEmail {
 	    props.put("mail.debug", "true");
 	     
 	    return mailSender;
+	}
+
+
+	public void sendPasswordResetEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException  {
+		// TODO Auto-generated method stub
+		javaMailSender = getJavaMailSender();
+
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+		
+        helper.setTo(toEmail);
+        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        helper.setSubject("Reset your password");
+
+        // default = text/plain
+        //helper.setText("Check attachment for image!");
+
+        // true = text/html
+        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" + 
+        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
+        		"</div>\r\n" + 
+        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
+        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Reset your password</div>\r\n" + 
+        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">You requested to reset the password to your Condonuity application with the email address("+ toEmail +")</div>\r\n" + 
+        		"</div>"+
+        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please click the link to reset your password\n"
+        + content +"</div>\r\n" + 
+        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+        "</div>", true);
+
+
+        javaMailSender.send(msg);
 	}
 } 

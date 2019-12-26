@@ -17,13 +17,13 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientOrganisation;
-import tech.torbay.userservice.entity.ClientOrganisationPayment;
+import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
-import tech.torbay.userservice.repository.ClientOrganisationPaymentRepository;
+import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
@@ -39,7 +39,7 @@ public class ClientService {
 	@Autowired
 	ClientAmenitiesRepository clientAmenitiesRepository;
 	@Autowired
-	ClientOrganisationPaymentRepository clientOrganisationPaymentRepository;
+	OrganisationPaymentRepository clientOrganisationPaymentRepository;
 	@Autowired
 	ClientAssociationRepository clientAssociationRepository;
 //	@Autowired
@@ -80,7 +80,7 @@ public class ClientService {
 		return clientUserRepository.findByClientId(userId);
 	}
 
-	public List<ClientOrganisation> getAllCorporateAccounts(Integer clientUserId) {
+	public List<Object> getAllCorporateAccounts(Integer clientUserId) {
 		
 		// TODO Auto-generated method stub
 		try {
@@ -95,7 +95,23 @@ public class ClientService {
 //			ids.add(0);
 			List<ClientOrganisation> clientUserOrganisations = clientOrganisationRepository.findByClientOrganisationId(ids );
 			
-			return clientUserOrganisations;
+			ClientUser clientUser = clientUserRepository.findByClientId(clientUserId);
+			Integer clientPrimaryOrgId = clientUser.getPrimaryOrgId(); 
+			
+			List<Object> clientOrgs = new ArrayList();
+			for(ClientOrganisation clientOrg : clientUserOrganisations) {
+				ObjectMapper oMapper = new ObjectMapper();
+		        // object -> Map
+		        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+				if(clientOrg.getClientOrganisationId() == clientPrimaryOrgId) {
+					map.put("isPrimary", "true");
+				} else {
+					map.put("isPrimary","false");
+				}
+				clientOrgs.add(map);
+			}
+			
+			return clientOrgs;
 		
 		} catch (Exception exp) {
 			exp.printStackTrace();
@@ -123,7 +139,7 @@ public class ClientService {
 		return clientAmenitiesRepository.findAllByClientOrganisationId(clientOrgId);
 	}
 
-	public List<ClientUser> getAllClientsByOrganisation(Integer clientOrgId) {
+	public List<Object> getAllClientsByOrganisation(Integer clientOrgId) {
 		// TODO Auto-generated method stub
 		try {
 			
@@ -137,7 +153,23 @@ public class ClientService {
 			
 			List<ClientUser> clientUsers = clientUserRepository.findByClientId(ids);
 			
-			return clientUsers;
+			List<Object> clientList = new ArrayList();
+			
+			for(ClientUser clientObj : clientUsers) {
+				ObjectMapper oMapper = new ObjectMapper();
+		        // object -> Map
+		        Map<String, Object> map = oMapper.convertValue(clientObj, Map.class);
+		        
+		        ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientObj.getClientId(), clientOrgId);
+		        
+		        map.put("clientUserType", clientAssociate.getClientUserType());
+		        map.put("userRole", clientAssociate.getUserRole());
+		        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+		        
+		        clientList.add(map);
+			}
+			
+			return clientList;
 		
 		} catch (Exception exp) {
 			exp.printStackTrace();
@@ -146,11 +178,11 @@ public class ClientService {
 		return null;
 	}
 
-	public List<ClientOrganisationPayment> getPaymentBillingDetails(Integer orgId) {
+	public List<OrganisationPayment> getPaymentBillingDetails(Integer orgId) {
 		// TODO Auto-generated method stub
 //		return clientOrganisationPaymentRepository.findAllByOrganisationId(orgId);
 		List paymentDetails = new ArrayList();
-		paymentDetails.add(new ClientOrganisationPayment());
+		paymentDetails.add(new OrganisationPayment());
 		return paymentDetails;
 	}
 
@@ -225,6 +257,32 @@ public class ClientService {
 		}
 		
 		return true;
+	}
+
+	public ClientUser updateClientPrimaryOrganisation(Integer clientUserId, Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		ClientUser clientUser = clientUserRepository.findByClientId(clientUserId);
+		clientUser.setPrimaryOrgId(clientOrgId);
+		
+		return clientUserRepository.save(clientUser);
+	}
+
+	public Object getClientUserByIdAndClientOrgId(Integer id, Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		
+		ClientUser clientUser = clientUserRepository.findByClientId(id);
+		
+		ObjectMapper oMapper = new ObjectMapper();
+        // object -> Map
+        Map<String, Object> clientObj = oMapper.convertValue(clientUser, Map.class);
+        
+        ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(id, clientOrgId);
+        
+        clientObj.put("clientUserType", clientAssociate.getClientUserType());
+        clientObj.put("userRole", clientAssociate.getUserRole());
+        clientObj.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+
+        return clientObj;
 	}
 }
 
