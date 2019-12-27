@@ -2,6 +2,8 @@ package tech.torbay.userservice.entity;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.NaturalId;
+
 import tech.torbay.userservice.constants.Constants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -21,6 +23,8 @@ public class VendorUser {
     private Integer userRole = Constants.UserRole.USER.getValue();
     private String firstName = "";
     private String lastName = "";
+    
+    @NaturalId
     private String email = "";
 	private Integer accountStatus = 0;
 	private Integer accountVerificationStatus = 0;

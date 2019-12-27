@@ -197,5 +197,42 @@ public class ClientService {
 		
 		return null;
 	}
+
+	public List<ClientAssociation> getAllClientUsersInOrganisation(Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientOrganisationId(clientOrganisationId);
+		
+		// check Active clients count
+		
+		return clientAssociations;
+	}
+
+	public ClientAssociation updateClientUserVerificationStatus(Integer clientOrgId, Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientId, clientOrgId);
+		clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+		clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		
+		return clientAssociationRepository.save(clientAssociation);
+	}
+
+	public boolean checkClientOrgAssociationFound(Integer clientId, Integer organisationId) {
+		// TODO Auto-generated method stub
+		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientId, organisationId);
+		System.out.println(clientAssociation);
+		if(clientAssociation == null) {
+			return false;
+		} else if(clientAssociation.getAccountVerificationStatus() == Constants.VerificationStatus.NOT_VERIFIED.getValue()) {
+			return true;
+		} else if(clientAssociation.getUserAccountStatus() == Constants.UserAccountStatus.INACTIVE.getValue()) {
+			return true;
+		} else if(clientAssociation != null){
+			return true;
+		}
+		
+		return false;
+	}
 }
 

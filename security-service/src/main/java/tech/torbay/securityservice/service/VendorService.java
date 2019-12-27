@@ -131,5 +131,10 @@ public class VendorService {
 				return null;
 			}
 	}
+
+	public List<VendorUser> getAllVendorUsersInOrganisation(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		return vendorUserRepository.findAllByVendorOrganisationId(vendorOrganisationId);
+	}
 }
 

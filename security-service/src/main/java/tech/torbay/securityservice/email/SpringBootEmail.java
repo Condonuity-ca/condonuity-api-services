@@ -58,16 +58,29 @@ public class SpringBootEmail {
         //helper.setText("Check attachment for image!");
 
         // true = text/html
-        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" + 
-        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
-        		"</div>\r\n" + 
-        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
-        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Wecome to Condonuity</div>\r\n" + 
-        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
-        		"</div>"+
-        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify email to continue Registration\n"
-        + content +"</div>\r\n" + 
-        "</div>", true);
+//        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" + 
+//        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
+//        		"</div>\r\n" + 
+//        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
+//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Wecome to Condonuity</div>\r\n" + 
+//        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
+//        		"</div>"+
+//        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify email to continue Registration\n"
+//        + content +"</div>\r\n" + 
+//        "</div>", true);
+        helper.setText("<div style=\"width: 100%;\">\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"</div>\r\n" +
+        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
+        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Wecome to Condonuity</div>\r\n" +
+        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Thank you for Registering in Condonuity Application</div>\r\n" +
+				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please verify email to continue Registration" +"</div>\r\n" +
+        		
+         "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">VERIFY EMAIL</a>" +"</div>\r\n" +
+        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+        "</div>\r\n" +				
+				"</div>", true);
+        
 
 		// hard coded a file path
         //FileSystemResource file = new FileSystemResource(new File("path/android.png"));
@@ -142,18 +155,19 @@ public class SpringBootEmail {
         //helper.setText("Check attachment for image!");
 
         // true = text/html
-        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" + 
-        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
-        		"</div>\r\n" + 
-        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
-        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Reset your password</div>\r\n" + 
-        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">You requested to reset the password to your Condonuity application with the email address("+ toEmail +")</div>\r\n" + 
-        		"</div>"+
-        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please click the link to reset your password\n"
-        + content +"</div>\r\n" + 
-        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
-        "</div>", true);
 
+        helper.setText("<div style=\"width: 100%;\">\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"</div>\r\n" +
+        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
+        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Reset your password</div>\r\n" +
+        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">You requested to reset the password to your Condonuity application with the email address (<a style=\"color:#d84d34;\">"+ toEmail +"</a>) </div>\r\n" +
+				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please click the button to reset your password" +"</div>\r\n" +
+        		
+         "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">RESET PASSWORD</a>" +"</div>\r\n" +
+        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+        "</div>\r\n" +				
+				"</div>", true);
 
         javaMailSender.send(msg);
 	}

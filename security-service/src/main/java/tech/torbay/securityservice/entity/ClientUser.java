@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.NaturalId;
+
 import tech.torbay.securityservice.constants.Constants;
 
 @Entity
@@ -29,6 +31,7 @@ public class ClientUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer clientId = 0;
     
+    @NaturalId
     @NotEmpty(message = "Email must not be empty")
     @Email(message = "Email must be a valid email address")
     private String email = "";

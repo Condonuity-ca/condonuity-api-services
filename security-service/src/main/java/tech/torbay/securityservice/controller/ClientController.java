@@ -1,38 +1,41 @@
 package tech.torbay.securityservice.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
+import java.util.List;
+
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.email.SpringBootEmail;
+import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
-import tech.torbay.securityservice.exception.ResourceNotFoundException;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.service.ClientService;
+import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
 import tech.torbay.securityservice.utils.QueryStringCreator;
 import tech.torbay.securityservice.utils.Utils;
-
-import javax.mail.MessagingException;
-import javax.validation.Valid;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -44,6 +47,8 @@ public class ClientController {
     
     @Autowired
     ClientService clientService;
+    @Autowired
+    UserService userService;
 
 	/*New APIs Structure*/
     
@@ -81,8 +86,6 @@ public class ClientController {
 	@PostMapping("/client/user/invite/accept")
 	public ResponseEntity<Object> acceptInvite(
 			@RequestParam("organisationId") Integer organisationId, 
-			@RequestParam("clientUserType") Integer clientUserType, 
-			@RequestParam("userRole") Integer userRole, 
 			@RequestBody ClientUser client) {
 		
 		// accept invite requires
@@ -96,7 +99,7 @@ public class ClientController {
 			// Already have an client account
 			int userId = client.getClientId();
 			if (userId != 0 /* && client.getOrganisationId() > 0 - check org parameter */) {
-				if(clientService.addClientOrgAccountAssociation(organisationId, clientUserType, userRole, client) != null) {
+				if(clientService.updateClientUserVerificationStatus(organisationId, client.getClientId()) != null) {
 					ResponseMessage responseMessage = new ResponseMessage(
 							APIStatusCode.REQUEST_SUCCESS.getValue(),
 							"Success",
@@ -143,7 +146,7 @@ public class ClientController {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
         			"Failed",
-        			"Client Record Already Exists");
+        			"User Record Already Exists");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
 		} else {
 			ClientUser clientUser;
@@ -229,38 +232,67 @@ public class ClientController {
 		ClientUser existClient = clientService.findByEmail(clientUserObj.getEmail());
 		if(existClient != null) {
 			try {
-				// Invite Sent
+//				if Association Not-found/association-verification-pending/user-not-active  Send Invite
+//				if(clientService.checkClientOrgAssociationFound(existClient.getClientId(), organisationId)) {
+//					
+//					
+//					// Invite Sent
+//					sendNewClientUserInviteEmail(existClient , organisationId, clientUserType, userRole);
+//					
+//					HttpHeaders headers = new HttpHeaders();
+//			        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
+//			        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+//				} 
+//				else {
+//					//else return already associated
+//					 ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Client Already Associated with Same Organisation");
+//					 return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+//				}
+				
+//				 Invite Sent
 				sendNewClientUserInviteEmail(existClient , organisationId, clientUserType, userRole);
 				
 				HttpHeaders headers = new HttpHeaders();
-		        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Invite Sent Successfully");
-		        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+		        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
+		        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
+				
 			} catch(Exception exp) {
 				exp.printStackTrace();
-				ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+				ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering Invite to Exist Client User Failed");
 	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 			}
 		} else {
-			ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, clientUserObj);
-	        
-	        if (clientUser == null ) {
-	        	ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
-	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-	        } else {
-	        	try {
-	        		HttpHeaders headers = new HttpHeaders();
-			        headers.setLocation(builder.path("/client/{id}").buildAndExpand(clientUser.getClientId()).toUri());
-			        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
-			        // Invite Sent
-			        sendNewClientUserInviteEmail(clientUser , organisationId, clientUserType, userRole);
-			        
-			        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
-	        	} catch(Exception exp) {
-	        		exp.printStackTrace();
-	        		ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+			List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
+			if(clientUsers.size() < Constants.MAX_USER_COUNT) {
+				// Add Client and user-org Association 
+				ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, clientUserObj);
+		        
+		        if (clientUser == null ) {
+		        	ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-	        	}
-	        }
+		        } else {
+		        	try {
+		        		HttpHeaders headers = new HttpHeaders();
+				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(clientUser.getClientId()).toUri());
+				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
+				        // Invite Sent
+				        sendNewClientUserInviteEmail(clientUser , organisationId, clientUserType, userRole);
+				        
+				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+		        	} catch(Exception exp) {
+		        		exp.printStackTrace();
+		        		ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+			        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		        	}
+		        }
+			} else {
+				ResponseMessage responseMessage = new ResponseMessage(
+						APIStatusCode.REQUEST_SUCCESS.getValue(),
+		        		"Success",
+		        		"Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			}
+			
 		}
 			
 	}

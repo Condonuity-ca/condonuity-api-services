@@ -34,6 +34,7 @@ import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
+import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
 import tech.torbay.securityservice.utils.QueryStringCreator;
@@ -47,6 +48,8 @@ public class VendorController {
 	
 	@Autowired
 	private VendorService vendorService;
+	@Autowired
+	private UserService userService;
 	
 	@ApiOperation(value = "New Vendor Registration")
     @ApiResponses(
@@ -229,29 +232,46 @@ public class VendorController {
             }
     )
 	@PostMapping("/vendor/user/invite/register")
-	public ResponseEntity<Object> SendVendorUserInvitation(@RequestParam("vendorUserEmail") String vendorUserEmail, @RequestParam("vendorOrganisationId") Integer vendorOrganisationId) {
+	public ResponseEntity<Object> SendVendorUserInvitation(@RequestBody VendorUser vendorUser) {
 		
-		VendorUser vendorUser = new VendorUser();
-		vendorUser.setEmail(vendorUserEmail);
-		vendorUser.setVendorOrganisationId(vendorOrganisationId);
-		vendorUser.setUserRole(Constants.UserRole.USER.getValue());
-		VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
 		
-		if(vendor_user != null ) {
+		VendorUser existVendorUserObj = vendorService.findByEmail(vendorUser.getEmail());
+		
+		if(existVendorUserObj != null ) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
-	        		"Vendor User Account Created Successfully");
-			// Invite Sent
-			sendNewVendorUserInviteEmail(vendor_user , vendorOrganisationId);
-			
+	        		"Vendor User Already Exists");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		} else {
-			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.NOT_FOUND.getValue(),
-	        		"RESOURCE_NOT_FOUND",
-	        		"Vendor User Account Creation Failed");
-			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			List<VendorUser> vendorUsers = vendorService.getAllVendorUsersInOrganisation(vendorUser.getVendorOrganisationId());
+			if(vendorUsers.size() < Constants.MAX_USER_COUNT) {
+				vendorUser.setUserType(Constants.UserType.VENDOR.getValue());
+				VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
+				
+				if(vendor_user != null ) {
+					ResponseMessage responseMessage = new ResponseMessage(
+							APIStatusCode.REQUEST_SUCCESS.getValue(),
+			        		"Success",
+			        		"Vendor User Account Created Successfully");
+					// Invite Sent
+					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId());
+					
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(
+							APIStatusCode.NOT_FOUND.getValue(),
+			        		"RESOURCE_NOT_FOUND",
+			        		"Vendor User Account Creation Failed");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				}
+			} else {
+				ResponseMessage responseMessage = new ResponseMessage(
+						APIStatusCode.REQUEST_SUCCESS.getValue(),
+		        		"Success",
+		        		"Maximum of "+Constants.MAX_USER_COUNT+" Vendor User Added in this Organisation");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			}
 		}
 	}
 	

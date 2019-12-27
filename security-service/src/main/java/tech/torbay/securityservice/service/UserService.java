@@ -1,6 +1,7 @@
 package tech.torbay.securityservice.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,7 +39,6 @@ public class UserService {
 	public User findByEmail(String email) {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUsername(email);
-		System.out.println(user.toString());
 		return user;
 	}
 
@@ -49,18 +49,18 @@ public class UserService {
 	
 	
 	
-	public User resetPassword(User user) {
+	public User resetPassword(Map<String, Object> user, String password) {
 		// TODO Auto-generated method stub
 		
 		// New User used to reset password after accept invite
 		
-		User userObj = userRepository.findByUserIdAndUserType(user.getUserId(), user.getUserType());
+		User userObj = userRepository.findByUserIdAndUserType(Integer.parseInt(String.valueOf(user.get("userId"))), Integer.parseInt(String.valueOf(user.get("userType"))));
 		if( userObj == null) 
 		{
-			new ResourceNotFoundException("User", "userId", user.getUserId());
+			new ResourceNotFoundException("User", "userId", user.get("userId"));
 		}
-		user.setPassword(/* SecurityAES.encrypt( */user.getPassword()/* ) */);
-		userObj.setPassword(user.getPassword());
+//		user.setPassword(/* SecurityAES.encrypt( */user.get("password")/* ) */);
+		userObj.setPassword(password);
 		return userRepository.save(userObj);
 	}
 

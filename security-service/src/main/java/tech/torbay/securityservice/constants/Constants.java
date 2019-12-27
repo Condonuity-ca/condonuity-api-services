@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
-
+	
+	public static final Integer MAX_USER_COUNT = 12;
 
 	public enum UserType {
 	    CLIENT(1),

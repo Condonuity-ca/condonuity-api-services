@@ -4,6 +4,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.NaturalId;
+
 import tech.torbay.securityservice.constants.Constants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -24,6 +26,7 @@ public class VendorUser {
     private String firstName = "";
     private String lastName = "";
     
+    @NaturalId
     @NotEmpty(message = "Email must not be empty")
     @Email(message = "Email must be a valid email address")
     private String email = "";
