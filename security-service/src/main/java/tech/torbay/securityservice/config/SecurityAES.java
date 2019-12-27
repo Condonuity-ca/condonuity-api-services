@@ -34,7 +34,7 @@ public class SecurityAES {
 	         
 	        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 	        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-	        return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+	        return Base64.getUrlEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
 	    }
 	    catch (Exception e)
 	    {
@@ -56,7 +56,7 @@ public class SecurityAES {
 	         
 	        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
 	        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
-	        return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+	        return new String(cipher.doFinal(Base64.getUrlDecoder().decode(strToDecrypt)));
 	    }
 	    catch (Exception e) {
 	        System.out.println("Error while decrypting: " + e.toString());

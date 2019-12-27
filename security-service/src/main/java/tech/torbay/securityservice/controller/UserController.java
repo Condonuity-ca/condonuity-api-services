@@ -371,6 +371,8 @@ public class UserController {
 			
 			String decryptedUser = SecurityAES.decrypt(hash);
 
+			System.out.println("decrypt hash :"+hash);
+			
 			Map<String, Object> userData =  convertJsonToHashMap(decryptedUser);
 			
 			if (userService.resetPassword(userData, password) == null) {
@@ -563,6 +565,8 @@ public class UserController {
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		
 		String encryptUser = SecurityAES.encrypt(responseJsonString);
+		
+		System.out.println("encrypt hash :"+encryptUser);
 		
 		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password/450?"+ "email="+email+"&hash="+encryptUser; // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
