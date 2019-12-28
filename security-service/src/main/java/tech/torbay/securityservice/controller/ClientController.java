@@ -3,6 +3,7 @@ package tech.torbay.securityservice.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -191,7 +195,7 @@ public class ClientController {
 		String responseJsonString = Utils.ClasstoJsonString(clientUser);
 		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ encryptClientUser; // AES algorithm
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+clientUser.getEmail()+"&hash="+ encryptClientUser; // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
 //		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
 		
@@ -330,15 +334,33 @@ public class ClientController {
     )
 	@PostMapping("/client/org/register")
 	public ResponseEntity<Object> addClientCompany(
-			@RequestParam("clientId") Integer clientId,
+			@RequestParam("hash") String hash,
 			@RequestBody ClientOrganisation organisation ,
 			UriComponentsBuilder builder) {
-		ClientOrganisation clientorganisation = clientService.addClientOrganisation(clientId, organisation);
+		
+		String decryptedUser = SecurityAES.decrypt(hash);
+
+		System.out.println("decrypt hash :"+hash);
+		
+		Map<String, Object> userData;
+		try {
+			userData = Utils.convertJsonToHashMap(decryptedUser);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			"Failed",
+        			"Failed to Parse Request - Bad Request");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		
+		ClientOrganisation clientorganisation = clientService.addClientOrganisation(Integer.parseInt(String.valueOf(userData.get("clientId"))), organisation);
         if (clientorganisation == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
         			"Failed",
-        			"Failed to  Register Client Organisation");
+        			"Failed to Register Client Organisation");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
         	HttpHeaders headers = new HttpHeaders();

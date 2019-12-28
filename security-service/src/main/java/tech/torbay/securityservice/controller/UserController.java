@@ -373,7 +373,7 @@ public class UserController {
 
 			System.out.println("decrypt hash :"+hash);
 			
-			Map<String, Object> userData =  convertJsonToHashMap(decryptedUser);
+			Map<String, Object> userData =  Utils.convertJsonToHashMap(decryptedUser);
 			
 			if (userService.resetPassword(userData, password) == null) {
 		    	ResponseMessage responseMessage = new ResponseMessage(
@@ -399,21 +399,6 @@ public class UserController {
 		}
 	}
 	
-	private Map<String, Object> convertJsonToHashMap(String jsonData) throws JsonParseException, JsonMappingException, IOException {
-		// TODO Auto-generated method stub
-		ObjectMapper mapper = new ObjectMapper();
-
-		Map<String, Object> map = new HashMap<String, Object>();
-
-		// convert JSON string to Map
-		map = mapper.readValue(jsonData, new TypeReference<Map<String, String>>(){});
-
-		System.out.println(map);
-		
-		return map;
-	}
-
-
 	@ApiOperation(value = "Send Sample Welcome Email")
 	@ApiResponses(
 			value = {
@@ -568,7 +553,7 @@ public class UserController {
 		
 		System.out.println("encrypt hash :"+encryptUser);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password/450?"+ "email="+email+"&hash="+encryptUser; // AES algorithm
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password/450?email="+email+"&hash="+encryptUser; // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
 //		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
 		

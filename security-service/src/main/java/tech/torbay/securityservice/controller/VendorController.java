@@ -4,6 +4,7 @@ package tech.torbay.securityservice.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 
@@ -60,12 +61,27 @@ public class VendorController {
     )
 	@PostMapping("/vendor/organisation/register")
 	public ResponseEntity<Object> addVendorOrganisation(
-			@RequestParam("vendorUserId") Integer vendorUserId, 
+			@RequestParam("hash") String hash, 
 			@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
 		
-		// org_id
+		String decryptedUser = SecurityAES.decrypt(hash);
+
+		System.out.println("decrypt hash :"+hash);
 		
-        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(vendorUserId, vendorOrganisation);
+		Map<String, Object> userData;
+		try {
+			userData = Utils.convertJsonToHashMap(decryptedUser);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			"Failed",
+        			"Failed to Parse Request - Bad Request");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		
+        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(Integer.parseInt(String.valueOf(userData.get("userId"))), vendorOrganisation);
         if (vendorOrg == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -138,7 +154,7 @@ public class VendorController {
 		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
 		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ encryptVendorUser; // AES algorithm
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+vendorUser.getEmail()+"&hash="+ encryptVendorUser; // AES algorithm
 		
 		
 		System.out.println("Sending Email...");
