@@ -47,6 +47,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.constants.Token;
 import tech.torbay.securityservice.email.SpringBootEmail;
@@ -368,26 +369,46 @@ public class UserController {
 		try {
 			String hash = String.valueOf(requestData.get("hash"));
 			String password = String.valueOf(requestData.get("password"));
+			Boolean isFirstTimeUser = Boolean.parseBoolean(String.valueOf(requestData.get("isNewUser")));
 			
 			String decryptedUser = SecurityAES.decrypt(hash);
-
-			System.out.println("decrypt hash :"+hash);
-			
 			Map<String, Object> userData =  Utils.convertJsonToHashMap(decryptedUser);
 			
-			if (userService.resetPassword(userData, password) == null) {
-		    	ResponseMessage responseMessage = new ResponseMessage(
-		    			APIStatusCode.REQUEST_FAILED.getValue(),
-		        		"Failed",
-		        		"Failed to reset password");
-		    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-		    } else {
-		    	ResponseMessage responseMessage = new ResponseMessage(
-		    			APIStatusCode.REQUEST_SUCCESS.getValue(),
-		        		"Success",
-		        		"Password reset successfully");
-		    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-		    }
+			Integer userType = Integer.parseInt(String.valueOf(userData.get("userType")));
+			Integer userId = Integer.parseInt(String.valueOf(userData.get("userId")));
+			if(isFirstTimeUser) {
+				// store terms and condition datetime
+				
+				if (userService.resetPassword(userId, userType, password) == null) {
+			    	ResponseMessage responseMessage = new ResponseMessage(
+			    			APIStatusCode.REQUEST_FAILED.getValue(),
+			        		"Failed",
+			        		"Failed to reset password");
+			    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			    } else {
+			    	
+			    	try {
+			    		userService.updateTermsAcceptedTimestamp(userId, userType);
+			    	} catch(Exception exp) {
+			    		exp.printStackTrace();
+			    	}
+			    	
+			    	HashMap<String, Object> response = new HashMap();
+					
+					response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+					response.put("statusMessage", "Success");
+					response.put("responseMessage", "Password reset successfully");
+					response.put("userId", userId);
+					response.put("userType", userType);
+					//return userId, userType
+					return new ResponseEntity<Object>(response, HttpStatus.OK);
+			    }
+				//return userId, userType
+			} else {
+				System.out.println("decrypt hash :"+hash);
+				
+				return ResetPassword(userId, userType, password);
+			} 
 			
 		} catch(Exception exp) {
 			exp.printStackTrace();
@@ -395,10 +416,28 @@ public class UserController {
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Failed to reset password");
-	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 	}
 	
+	private ResponseEntity<Object> ResetPassword(Integer userId, Integer userType, String password) {
+		// TODO Auto-generated method stub
+		if (userService.resetPassword(userId, userType, password) == null) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to reset password");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Password reset successfully");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    }
+	}
+
+
 	@ApiOperation(value = "Send Sample Welcome Email")
 	@ApiResponses(
 			value = {

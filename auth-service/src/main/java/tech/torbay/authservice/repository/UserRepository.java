@@ -8,15 +8,5 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<LoginUser, Integer> {
-
-    List<LoginUser> findAll();
-
-//	LoginUser findByUsername(String email);
-//	
-//	LoginUser findByUserIdAndUserType(Integer id, Integer userType);
-//
-//	LoginUser findByUsernameAndPassword(String username, String password);
-//
-//	LoginUser save(LoginUser user);
-	
+	LoginUser findByUsername(String email);
 }

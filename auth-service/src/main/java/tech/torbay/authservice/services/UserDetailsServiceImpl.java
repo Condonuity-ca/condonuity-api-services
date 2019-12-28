@@ -32,26 +32,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         // hard coding the users. All passwords must be encoded.
-        final List<AppUser> users = new ArrayList();
 
-        final List<LoginUser> app_users = userRepository.findAll();
+        final LoginUser app_user = userRepository.findByUsername(username);
         
-        for (LoginUser user : app_users) {
-        	users.add(new AppUser(1, user.getUsername(), encoder.encode(user.getPassword()), "ADMIN"));
-        }
+        if(app_user != null) {
+        	AppUser appUser = new AppUser(1, app_user.getUsername(), encoder.encode(app_user.getPassword()), "ADMIN");
 
-        for(AppUser appUser: users) {
-            if(appUser.getUsername().equals(username)) {
+            // Remember that Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
+            // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN")).
+            List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                    .commaSeparatedStringToAuthorityList("ROLE_" + appUser.getRole());
 
-                // Remember that Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
-                // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN")).
-                List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                        .commaSeparatedStringToAuthorityList("ROLE_" + appUser.getRole());
-
-                // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
-                // And used by auth manager to verify and check user authentication.
-				return new User(appUser.getUsername(), appUser.getPassword(), grantedAuthorities);
-            }
+            // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
+            // And used by auth manager to verify and check user authentication.
+			return new User(appUser.getUsername(), appUser.getPassword(), grantedAuthorities);
         }
 
         // If user not found. Throw this exception.

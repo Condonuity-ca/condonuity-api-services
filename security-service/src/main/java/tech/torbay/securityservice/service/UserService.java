@@ -1,7 +1,11 @@
 package tech.torbay.securityservice.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,15 +53,15 @@ public class UserService {
 	
 	
 	
-	public User resetPassword(Map<String, Object> user, String password) {
+	public User resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
 		
 		// New User used to reset password after accept invite
 		
-		User userObj = userRepository.findByUserIdAndUserType(Integer.parseInt(String.valueOf(user.get("userId"))), Integer.parseInt(String.valueOf(user.get("userType"))));
+		User userObj = userRepository.findByUserIdAndUserType(userId, userType);
 		if( userObj == null) 
 		{
-			new ResourceNotFoundException("User", "userId", user.get("userId"));
+			new ResourceNotFoundException("User", "userId", userId);
 		}
 //		user.setPassword(/* SecurityAES.encrypt( */user.get("password")/* ) */);
 		userObj.setPassword(password);
@@ -72,6 +76,25 @@ public class UserService {
 	public List<ServiceCities> findAllServiceCities() {
 		// TODO Auto-generated method stub
 		return serviceCitiesRepository.findAll();
+	}
+
+	public void updateTermsAcceptedTimestamp(Integer userId, Integer userType) {
+		// TODO Auto-generated method stub
+		User userObj = userRepository.findByUserIdAndUserType(userId, userType);
+		if( userObj != null) {
+			
+			Date date = new Date();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			// Use Madrid's time zone to format the date in
+			df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+
+			String termsAcceptedDate = df.format(date);
+			
+			userObj.setTermsAcceptedDate(termsAcceptedDate);
+		}
+		
+		userRepository.save(userObj);
 	}
 }
 

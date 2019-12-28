@@ -2,6 +2,7 @@ package tech.torbay.securityservice.controller;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -192,7 +193,13 @@ public class ClientController {
 //		String content = securityAES.getRegisterEncodedURL(clientUser.getEmail(), clientUser.getClientId(), Constants.UserType.CLIENT.getValue()); // query format request with Base64 Encryption
 //		System.out.println("content->"+content);
 		
-		String responseJsonString = Utils.ClasstoJsonString(clientUser);
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", clientUser.getEmail());
+		userObj.put("userId", clientUser.getClientId());
+		userObj.put("userType", clientUser.getUserType());
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
 		
 		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+clientUser.getEmail()+"&hash="+ encryptClientUser; // AES algorithm
@@ -355,7 +362,7 @@ public class ClientController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
-		ClientOrganisation clientorganisation = clientService.addClientOrganisation(Integer.parseInt(String.valueOf(userData.get("clientId"))), organisation);
+		ClientOrganisation clientorganisation = clientService.addClientOrganisation(Integer.parseInt(String.valueOf(userData.get("userId"))), organisation);
         if (clientorganisation == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),

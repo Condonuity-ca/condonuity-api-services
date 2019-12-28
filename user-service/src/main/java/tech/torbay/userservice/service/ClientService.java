@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientOrganisation;
@@ -283,6 +284,16 @@ public class ClientService {
         clientObj.put("userAccountStatus", clientAssociate.getUserAccountStatus());
 
         return clientObj;
+	}
+
+	public Object deleteClientUserById(Integer id, Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		
+		ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(id, clientOrgId);
+//		clientAssociate.setAccountVerificationStatus(); --> Need to check , is it has changes?
+		clientAssociate.setUserAccountStatus(UserAccountStatus.INACTIVE.getValue());
+		
+		return clientAssociationRepository.save(clientAssociate);
 	}
 }
 

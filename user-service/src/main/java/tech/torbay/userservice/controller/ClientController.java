@@ -27,6 +27,7 @@ import tech.torbay.userservice.statusmessage.ResponseMessage;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -75,8 +76,6 @@ public class ClientController {
 	public ResponseEntity<Object> getClientUserById(@PathVariable("id") Integer id) {
     	Object client = clientService.getClientUserById(id);
 		
-		System.out.println(client);
-		
 		List<Object> orgs = clientService.getAllCorporateAccounts(id);
 //		NotificationSettings notifications = clientService.getNotificationSettings();
 		
@@ -95,6 +94,38 @@ public class ClientController {
 //			clientInfo.put("client", client);
 
 //			list.put("notificationSettings", notifications);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+    
+    @ApiOperation(value = "Update Client As Inactive")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A client details updated successfully")
+            }
+    )
+	@PutMapping("/client/user/inactive")
+	public ResponseEntity<Object> deletetClientUserById(@RequestBody Map<String, Object> requestData) {
+    	
+    	Integer clientUserId = Integer.parseInt(String.valueOf(requestData.get("clientUserId")));
+    	Integer clientOrgId = Integer.parseInt(String.valueOf(requestData.get("clientOrgId")));
+    	
+    	
+    	Object client = clientService.deleteClientUserById(clientUserId, clientOrgId);
+		
+		HashMap<String, Object> list = new HashMap();
+		if(client != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client User deleted successfully");
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {

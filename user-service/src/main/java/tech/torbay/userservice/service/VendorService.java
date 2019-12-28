@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
@@ -383,6 +384,13 @@ public class VendorService {
 		List paymentDetails = new ArrayList();
 		paymentDetails.add(new OrganisationPayment());
 		return paymentDetails;
+	}
+
+	public VendorUser deleteVendorUserById(Integer id) {
+		// TODO Auto-generated method stub
+		VendorUser vendorUser = vendorUserRepository.findByUserId(id);
+		vendorUser.setAccountStatus(UserAccountStatus.INACTIVE.getValue());
+		return vendorUserRepository.save(vendorUser);
 	}
 
 }

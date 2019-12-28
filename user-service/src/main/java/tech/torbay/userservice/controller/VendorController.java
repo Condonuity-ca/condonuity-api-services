@@ -161,6 +161,32 @@ public class VendorController {
 		}
 	}
 	
+	@ApiOperation(value = "Fetch A Vendor User Details Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A vendor user details fetched successfully")
+            }
+    )
+	@GetMapping("/vendor/user/inactive")
+	public ResponseEntity<Object> deleteVendorUserById(@PathVariable("id") Integer id) {
+		VendorUser vendorUser = vendorService.deleteVendorUserById(id);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(vendorUser != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor User deleted successfully");
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
 	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
     @ApiResponses(
             value = {

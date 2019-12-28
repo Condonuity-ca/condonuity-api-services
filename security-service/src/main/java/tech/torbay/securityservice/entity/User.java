@@ -29,6 +29,15 @@ public class User {
     private String password = "";
     private Integer userId = 0;
     private Integer userType = 0;
+    private String termsAcceptedDate = "";
+    
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private String createdAt;
+    
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
+    private String modifiedDate;
     
     public Integer getId() {
         return id;
@@ -70,9 +79,35 @@ public class User {
         this.userType = userType;
     }
     
-    @Override
-    public String toString() {
-        return "User [id=" + id + ", username=" + username + ", password=" + password + ", userId=" + userId + 
-        		", userType=" + userType +"]";
-    }
+    public String getTermsAcceptedDate() {
+		return termsAcceptedDate;
+	}
+
+	public void setTermsAcceptedDate(String termsAcceptedDate) {
+		this.termsAcceptedDate = termsAcceptedDate;
+	}
+
+	public String getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public String getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(String modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", userId=" + userId
+				+ ", userType=" + userType + ", termsAcceptedDate=" + termsAcceptedDate + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
+	}
+
 }
