@@ -208,37 +208,58 @@ public class VendorController {
             }
     )
 	@PostMapping("/vendor/user/invite/accept")
-	public ResponseEntity<Object> VendorUserVerified(@RequestParam("vendorUserId") Integer vendorUserId) {
+	public ResponseEntity<Object> VendorUserVerified(@RequestBody Map<String, Object> requestData) {
 		
-		VendorUser vendorUser = vendorService.findByVendorUserId(vendorUserId);
-		
-		if(vendorUser != null ) {
+		try {
+			String hash = String.valueOf(requestData.get("hash"));
 			
-			vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+			String decryptedUser = SecurityAES.decrypt(hash);
+			Map<String, Object> userData =  Utils.convertJsonToHashMap(decryptedUser);
 			
-			vendorUser = vendorService.saveVendorUser(vendorUser);
+			Integer vendorUserId = Integer.parseInt(String.valueOf(userData.get("userId")));
+			String email = String.valueOf(userData.get("email"));
+			Integer organisationId = Integer.parseInt(String.valueOf(userData.get("organisationId")));
+			
+			VendorUser vendorUser = vendorService.findByVendorUserId(vendorUserId);
 			
 			if(vendorUser != null ) {
-				ResponseMessage responseMessage = new ResponseMessage(
-						APIStatusCode.REQUEST_SUCCESS.getValue(),
-		        		"Success",
-		        		"Vendor User Account Verified Successfully");
-				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				
+				vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+				vendorUser.setAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+				
+				vendorUser = vendorService.saveVendorUser(vendorUser);
+				
+				if(vendorUser != null ) {
+					ResponseMessage responseMessage = new ResponseMessage(
+							APIStatusCode.REQUEST_SUCCESS.getValue(),
+			        		"Success",
+			        		"Vendor User Account Verified Successfully");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(
+							APIStatusCode.REQUEST_FAILED.getValue(),
+			        		"Failed",
+			        		"Vendor User Account Verification Failed");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				}
+				
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(
-						APIStatusCode.REQUEST_FAILED.getValue(),
-		        		"Failed",
-		        		"Vendor User Account Verification Failed");
+						APIStatusCode.NOT_FOUND.getValue(),
+		        		"RESOURCE_NOT_FOUND",
+		        		"Vendor User Account does not Exist");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			}
-			
-		} else {
+		} catch(Exception exp) {
+			exp.printStackTrace();
 			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.NOT_FOUND.getValue(),
-	        		"RESOURCE_NOT_FOUND",
-	        		"Vendor User Account does not Exist");
+					APIStatusCode.BAD_REQUEST.getValue(),
+					"Request Failed",
+					"Invalid Request Error");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
+		
+		
 	}
 	
 	@ApiOperation(value = "New Organisation Vendor user email invitation")
@@ -294,8 +315,19 @@ public class VendorController {
 	// Need to change as Registration flow
 	private void sendNewVendorUserInviteEmail(VendorUser vendorUser, Integer organisationId) {
 		// TODO Auto-generated method stub
-		QueryStringCreator queryStringCreator = new QueryStringCreator();
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ queryStringCreator.getVendorUserInviteEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), organisationId);
+
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", vendorUser.getEmail());
+		userObj.put("userId", vendorUser.getUserId());
+		userObj.put("userType", Constants.UserType.VENDOR.getValue());
+		userObj.put("organisationId", organisationId);
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		
+		String encryptUser = SecurityAES.encrypt(responseJsonString);
+		
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+vendorUser.getEmail()+"&userType="+Constants.UserType.VENDOR.getValue()+"&hash="+ encryptUser;
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();

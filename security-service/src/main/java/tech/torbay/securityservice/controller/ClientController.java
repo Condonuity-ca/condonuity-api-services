@@ -89,27 +89,39 @@ public class ClientController {
             }
     )
 	@PostMapping("/client/user/invite/accept")
-	public ResponseEntity<Object> acceptInvite(
-			@RequestParam("organisationId") Integer organisationId, 
-			@RequestBody ClientUser client) {
-		
-		// accept invite requires
-		// 1. Already have an client account
-		// 2. userId
-		// 3. new Org Id differ from previous one --- NEED TO ACCEPT TERMS AND CONDITION
-		
-		System.out.println(client.toString());
-		
-		if(clientService.findByEmail(client.getEmail()) != null) {
-			// Already have an client account
-			int userId = client.getClientId();
-			if (userId != 0 /* && client.getOrganisationId() > 0 - check org parameter */) {
-				if(clientService.updateClientUserVerificationStatus(organisationId, client.getClientId()) != null) {
-					ResponseMessage responseMessage = new ResponseMessage(
-							APIStatusCode.REQUEST_SUCCESS.getValue(),
-							"Success",
-							"Client User Account Verified for an Organisation");
-					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+	public ResponseEntity<Object> acceptInvite(@RequestBody Map<String, Object> requestData) {
+		try {
+			
+			String hash = String.valueOf(requestData.get("hash"));
+			
+			String decryptedUser = SecurityAES.decrypt(hash);
+			Map<String, Object> userData =  Utils.convertJsonToHashMap(decryptedUser);
+			
+			Integer clientId = Integer.parseInt(String.valueOf(userData.get("userId")));
+			String email = String.valueOf(userData.get("email"));
+			Integer organisationId = Integer.parseInt(String.valueOf(userData.get("organisationId")));
+			
+			// accept invite requires
+			// 1. Already have an client account
+			// 2. userId
+			// 3. new Org Id differ from previous one --- NEED TO ACCEPT TERMS AND CONDITION
+			
+			if(clientService.findByEmail(email) != null) {
+				// Already have an client account
+				if (clientId != 0 /* && client.getOrganisationId() > 0 - check org parameter */) {
+					if(clientService.updateClientUserVerificationStatus(organisationId, clientId) != null) {
+						ResponseMessage responseMessage = new ResponseMessage(
+								APIStatusCode.REQUEST_SUCCESS.getValue(),
+								"Success",
+								"Client User Account Verified for an Organisation");
+						return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+					} else {
+						ResponseMessage responseMessage = new ResponseMessage(
+								APIStatusCode.NOT_FOUND.getValue(),
+								"Resource not found error",
+								"Client Record Not Found");
+						return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+					}
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(
 							APIStatusCode.NOT_FOUND.getValue(),
@@ -118,21 +130,22 @@ public class ClientController {
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				}
 			} else {
+				// Invite Error
 				ResponseMessage responseMessage = new ResponseMessage(
 						APIStatusCode.NOT_FOUND.getValue(),
 						"Resource not found error",
 						"Client Record Not Found");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			}
-		} else {
-			// Invite Error
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
 			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.NOT_FOUND.getValue(),
-					"Resource not found error",
-					"Client Record Not Found");
+					APIStatusCode.BAD_REQUEST.getValue(),
+					"Request Failed",
+					"Invalid Request Error");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
-		
 	}
 	
 	@ApiOperation(value = "New Client User Registration")
@@ -197,7 +210,7 @@ public class ClientController {
 		
 		userObj.put("email", clientUser.getEmail());
 		userObj.put("userId", clientUser.getClientId());
-		userObj.put("userType", clientUser.getUserType());
+		userObj.put("userType", Constants.UserType.CLIENT.getValue());
 		
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
@@ -231,16 +244,25 @@ public class ClientController {
             }
     )
 	@PostMapping("/client/user/create")
-	public ResponseEntity<Object> addClientUser(
-			@RequestParam("organisationId") Integer organisationId,
-			@RequestParam("clientUserType") Integer clientUserType, 
-			@RequestParam("userRole") Integer userRole,
-			@RequestBody ClientUser clientUserObj, UriComponentsBuilder builder) {
-		
-        // check already exist or not 
+	public ResponseEntity<Object> addClientUser(@RequestBody Map<String, Object> requestData, UriComponentsBuilder builder) {
 		// if exist send email invite only
 		// else create user and send email invite
-		ClientUser existClient = clientService.findByEmail(clientUserObj.getEmail());
+		
+		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
+		String email = String.valueOf(requestData.get("email"));
+		String firstName =String.valueOf(requestData.get("firstName"));
+		String lastName = String.valueOf(requestData.get("lastName"));
+		Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
+		Integer clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
+		
+		ClientUser clientUserObj = new ClientUser();
+		clientUserObj.setEmail(email);
+		clientUserObj.setFirstName(firstName);
+		clientUserObj.setLastName(lastName);;
+		clientUserObj.setUserType(Constants.UserType.CLIENT.getValue());
+		
+		
+		ClientUser existClient = clientService.findByEmail(email);
 		if(existClient != null) {
 			try {
 //				if Association Not-found/association-verification-pending/user-not-active  Send Invite
@@ -312,8 +334,20 @@ public class ClientController {
 	private void sendNewClientUserInviteEmail(ClientUser clientUser, Integer organisationId, Integer clientUserType,
 			Integer userRole) {
 		// TODO Auto-generated method stub
-		QueryStringCreator queryStringCreator = new QueryStringCreator();
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?"+ queryStringCreator.getClientUserInviteEncodedURL(clientUser.getEmail(), clientUser.getClientId(), organisationId, clientUserType, userRole);
+		
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", clientUser.getEmail());
+		userObj.put("userId", clientUser.getClientId());
+		userObj.put("userType", Constants.UserType.CLIENT.getValue());
+		userObj.put("organisationId", organisationId);
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		
+		String encryptUser = SecurityAES.encrypt(responseJsonString);
+		
+		
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+clientUser.getEmail()+"&userType="+Constants.UserType.CLIENT.getValue()+"&hash="+ encryptUser;
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
@@ -376,8 +410,6 @@ public class ClientController {
             		APIStatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Client Organisation Registered for verification");
-            
-            
             
             return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
         }

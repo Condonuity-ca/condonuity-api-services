@@ -19,5 +19,5 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
     
 	VendorUser save(VendorUser vendorUser);
 
-	List<VendorUser> findByVendorOrganisationId(Integer id);
+	List<VendorUser> findByVendorOrganisationIdAndAccountStatus(Integer id, Integer accountStatus);
 }

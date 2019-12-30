@@ -339,7 +339,7 @@ public class ProjectController {
             }
     )
 	@GetMapping("/projects/{id}")
-	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer id) {
+	public ResponseEntity<Object> getProjectById(@PathVariable("id") Integer id) {
 
 		Project project = projectService.findByProjectId(id);
 		List<VendorBid> projectAllBids = projectService.getAllBidsByProjectId(id);

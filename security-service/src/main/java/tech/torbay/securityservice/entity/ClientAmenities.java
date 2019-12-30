@@ -22,9 +22,9 @@ public class ClientAmenities {
 	private ClientOrganisation clientOrganisation;
 	
 //	private int clientOrganisationId = 0; // one to many
-	private String amenitiesName;
-	private String amenitiesType;
-	private Integer amenitiesCount;
+	private String amenitiesName = "";
+	private Integer amenitiesType = 0;
+	private Integer amenitiesCount = 0;
 	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
@@ -53,10 +53,10 @@ public class ClientAmenities {
 	public void setAmenitiesName(String amenitiesName) {
 		this.amenitiesName = amenitiesName;
 	}
-	public String getAmenitiesType() {
+	public Integer getAmenitiesType() {
 		return amenitiesType;
 	}
-	public void setAmenitiesType(String amenitiesType) {
+	public void setAmenitiesType(Integer amenitiesType) {
 		this.amenitiesType = amenitiesType;
 	}
 	public Integer getAmenitiesCount() {

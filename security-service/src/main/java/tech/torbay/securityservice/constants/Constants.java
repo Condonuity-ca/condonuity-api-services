@@ -37,7 +37,7 @@ public class Constants {
 	
 	public enum ClientUserType {
 		MANAGER(1),
-	    ASSISTANT_MANAGER(3),
+	    ASSISTANT_MANAGER(2),
 	    BOARD_MEMBER(3);
 		
 		private int value;
@@ -89,24 +89,6 @@ public class Constants {
 	    }
 	}
 	
-	// 001 - initiated
-	// 002 - verified
-	// 003 - failed_to_verify
-	// 004 - document_verified
-	// 005 - document_rejected
-	// 006 - bids_won
-	// 007 - bids_failed
-	// 008 - tag_created_and_submitted_for_approval
-	// 009 - tag_approved_by_support_user
-	// 010 - tag_rejected_by_support_user
-	// 011 - not_subscribed
-	// 012 - subscribed
-	// 013 - project_created
-	// 014 - project_active
-	// 015 - project_inactive
-	// 016 - task_created
-	// 017 - task_assigned/task_opened
-	// 018 - task_closed
 	/*RESET_PASSWORD(6),
 	    
 	    //User Registration
@@ -178,9 +160,9 @@ public class Constants {
 	}
 	
 	public enum VerificationStatus {
-		NOT_VERIFIED(1),
-	    VERIFIED(2),
-		REJECTED(3);
+		NOT_VERIFIED(0),
+	    VERIFIED(1),
+		REJECTED(2);
 
 	    private int value;
 	    private static Map map = new HashMap<>();
@@ -233,6 +215,36 @@ public class Constants {
 	    public int getValue() {
 	        return value;
 	    }
+	}
+	
+	public enum AmenitiesType { // for Reference
+		YES(1),
+	    NO(2),
+	    INDOOR(3),
+	    OUTDOOR(4),
+	    GROUND_LEVEL(5),
+	    UNDER_GROUND(6);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private AmenitiesType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (AmenitiesType pageType : AmenitiesType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static AmenitiesType valueOf(int pageType) {
+			return (AmenitiesType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
 	}
 	
 }

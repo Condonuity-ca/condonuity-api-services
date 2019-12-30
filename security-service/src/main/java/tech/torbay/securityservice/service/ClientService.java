@@ -43,7 +43,7 @@ public class ClientService {
 		return clientUserRepository.findByEmail(email);
 	}
 
-	public ClientUser addClientOrgAccountAssociation(Integer organisationId, Integer clientUserType, Integer userRole, ClientUser clientUser) {
+	public ClientUser addClientOrgAccountAssociation(Integer organisationId, Integer clientUserType, Integer userRole, ClientUser clientUser, Integer userAccountStatus, Integer userVerificationStatus) {
 		// TODO Auto-generated method stub
 		
 		//steps
@@ -55,8 +55,8 @@ public class ClientService {
 		clientAssociation.setClientId(clientUser.getClientId());
 		clientAssociation.setClientUserType(clientUserType);
 		clientAssociation.setUserRole(userRole);
-		clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.NOT_VERIFIED.getValue());
-		clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		clientAssociation.setAccountVerificationStatus(userVerificationStatus/* Constants.VerificationStatus.NOT_VERIFIED.getValue() */);
+		clientAssociation.setUserAccountStatus(userAccountStatus/* Constants.UserAccountStatus.ACTIVE.getValue() */);
 		
 		//2.1.3
 		if(clientAssociationRepository.save(clientAssociation) != null) {
@@ -107,7 +107,7 @@ public class ClientService {
 					//2.1.2
 					if(userRepository.save(user) != null) {
 						
-						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser) != null) {
+						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INACTIVE.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue()) != null) {
 							return clientUser;
 						} else {
 //							clientUserRepository.deleteById(clientUser.getClientId());
@@ -127,7 +127,7 @@ public class ClientService {
 				return null;
 			}
 		} else {
-			return addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser);
+			return addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INACTIVE.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue());
 		}
 		
 		return clientUser;
@@ -146,7 +146,7 @@ public class ClientService {
 				// Update client User - account activation status verified with account association
 				addClientOrgAccountAssociation(clientOrganisation.getClientOrganisationId(), 
 						Constants.ClientUserType.BOARD_MEMBER.getValue(),
-						Constants.UserRole.ADMIN.getValue(), clientUserRepository.findByClientId(clientId));
+						Constants.UserRole.ADMIN.getValue(), clientUserRepository.findByClientId(clientId), Constants.UserAccountStatus.ACTIVE.getValue(), Constants.VerificationStatus.VERIFIED.getValue());
 				
 				return clientOrganisation;
 				

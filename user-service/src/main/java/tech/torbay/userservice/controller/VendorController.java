@@ -3,6 +3,7 @@ package tech.torbay.userservice.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -167,9 +168,12 @@ public class VendorController {
                     @ApiResponse(code = 200, message = "A vendor user details fetched successfully")
             }
     )
-	@GetMapping("/vendor/user/inactive")
-	public ResponseEntity<Object> deleteVendorUserById(@PathVariable("id") Integer id) {
-		VendorUser vendorUser = vendorService.deleteVendorUserById(id);
+	@PutMapping("/vendor/user/inactive")
+	public ResponseEntity<Object> deleteVendorUserById(@RequestBody Map<String, Object> requestData) {
+		
+		Integer vendorId = Integer.parseInt(String.valueOf(requestData.get("vendorId")));
+		
+		VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorUser != null) {

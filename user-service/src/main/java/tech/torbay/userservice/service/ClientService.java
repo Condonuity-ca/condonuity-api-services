@@ -163,11 +163,13 @@ public class ClientService {
 		        
 		        ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientObj.getClientId(), clientOrgId);
 		        
-		        map.put("clientUserType", clientAssociate.getClientUserType());
-		        map.put("userRole", clientAssociate.getUserRole());
-		        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+		        if(clientAssociate.getUserAccountStatus() == Constants.UserAccountStatus.ACTIVE.getValue()) {
+			        map.put("clientUserType", clientAssociate.getClientUserType());
+			        map.put("userRole", clientAssociate.getUserRole());
+			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+			        clientList.add(map);
+		        }
 		        
-		        clientList.add(map);
 			}
 			
 			return clientList;
