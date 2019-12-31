@@ -234,5 +234,20 @@ public class ClientService {
 		
 		return false;
 	}
+	
+	public Integer getAllOrganisationsForClientUser(Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		
+		// check Active clients count
+		
+		return clientAssociations.size();
+	}
+
+	public ClientOrganisation getClientOrganisationById(Integer organisationId) {
+		// TODO Auto-generated method stub
+		return clientOrganisationRepository.findByClientOrganisationId(organisationId);
+	}
 }
 

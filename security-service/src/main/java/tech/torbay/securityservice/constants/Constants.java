@@ -218,12 +218,11 @@ public class Constants {
 	}
 	
 	public enum AmenitiesType { // for Reference
-		YES(1),
-	    NO(2),
-	    INDOOR(3),
-	    OUTDOOR(4),
-	    GROUND_LEVEL(5),
-	    UNDER_GROUND(6);
+		/*
+		 * YES(1), NO(2), INDOOR(3), OUTDOOR(4), GROUND_LEVEL(5), UNDER_GROUND(6);
+		 */
+		
+		INDOOR_POOL(1), OUTDOOR_POOL(2), UNDER_GROUND(3), GROUND_LEVEL(4);
 		
 		private int value;
 		private static Map map = new HashMap<>();

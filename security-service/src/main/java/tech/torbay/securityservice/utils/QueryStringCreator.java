@@ -58,14 +58,14 @@ public class QueryStringCreator {
 	}
 	
 	//reset password
-		public String getResetPasswordEncodedURL(User user) {
-			
-			String query = UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:8762/api/condonuity/user/resetPassword")
-					.queryParam(encode("username"), encode(user.getUsername()))
-					.queryParam(encode("userId"), encode(String.valueOf(user.getUserId())))
-					.queryParam(encode("userType"), encode(String.valueOf(user.getUserType())))
-					.toUriString(); 
-			return query;
-		}
+	public String getResetPasswordEncodedURL(User user) {
+		
+		String query = UriComponentsBuilder.fromHttpUrl("http://127.0.0.1:8762/api/condonuity/user/resetPassword")
+				.queryParam(encode("username"), encode(user.getUsername()))
+				.queryParam(encode("userId"), encode(String.valueOf(user.getUserId())))
+				.queryParam(encode("userType"), encode(String.valueOf(user.getUserType())))
+				.toUriString(); 
+		return query;
+	}
 		
 }

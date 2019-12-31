@@ -136,5 +136,10 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		return vendorUserRepository.findAllByVendorOrganisationId(vendorOrganisationId);
 	}
+
+	public VendorOrganisation getVendorOrganisationById(Integer id) {
+		// TODO Auto-generated method stub
+		return vendorOrganisationRepository.findByVendorOrganisationId(id);
+	}
 }
 

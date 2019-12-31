@@ -147,35 +147,6 @@ public class VendorController {
         
 	}
 	
-	private void sendVendorEmailVerification(VendorUser vendorUser) {
-		// TODO Auto-generated method stub
-//		String content = securityAES.getRegisterEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
-		
-		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
-		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
-		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+vendorUser.getEmail()+"&hash="+ encryptVendorUser; // AES algorithm
-		
-		
-		System.out.println("Sending Email...");
-		SpringBootEmail springBootEmail = new SpringBootEmail();
-//		springBootEmail.sendEmail(email);
-		try {
-			springBootEmail.sendWelcomeEmailWithAttachment(vendorUser.getEmail(), content);
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			
-		} catch (IOException e) { 
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("Done");
-	}
-
-	
 	@ApiOperation(value = "Vendor existance check with Email")
     @ApiResponses(
             value = {
@@ -285,6 +256,7 @@ public class VendorController {
 			if(vendorUsers.size() < Constants.MAX_USER_COUNT) {
 				vendorUser.setUserType(Constants.UserType.VENDOR.getValue());
 				VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
+				VendorOrganisation vendorOrg = vendorService.getVendorOrganisationById(vendorUser.getVendorOrganisationId());
 				
 				if(vendor_user != null ) {
 					ResponseMessage responseMessage = new ResponseMessage(
@@ -292,7 +264,7 @@ public class VendorController {
 			        		"Success",
 			        		"Vendor User Account Created Successfully");
 					// Invite Sent
-					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId());
+					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
 					
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				} else {
@@ -312,22 +284,26 @@ public class VendorController {
 		}
 	}
 	
-	// Need to change as Registration flow
-	private void sendNewVendorUserInviteEmail(VendorUser vendorUser, Integer organisationId) {
+//	@ApiOperation(value = "Fetching All vendor users details")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(code = 200, message = "Successful All Vendor Details")
+//            }
+//    )
+//    @GetMapping("/vendor/users")
+//    public List<VendorUser> getAllVendorUsers() {
+//
+//       return vendorService.findAll();   }
+	
+	private void sendVendorEmailVerification(VendorUser vendorUser) {
 		// TODO Auto-generated method stub
-
-		HashMap<String, Object> userObj = new HashMap();
+//		String content = securityAES.getRegisterEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
 		
-		userObj.put("email", vendorUser.getEmail());
-		userObj.put("userId", vendorUser.getUserId());
-		userObj.put("userType", Constants.UserType.VENDOR.getValue());
-		userObj.put("organisationId", organisationId);
+		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
+		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
 		
-		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()+"&hash="+ encryptVendorUser; // AES algorithm
 		
-		String encryptUser = SecurityAES.encrypt(responseJsonString);
-		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+vendorUser.getEmail()+"&userType="+Constants.UserType.VENDOR.getValue()+"&hash="+ encryptUser;
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
@@ -346,15 +322,39 @@ public class VendorController {
 		System.out.println("Done");
 	}
 	
-//	@ApiOperation(value = "Fetching All vendor users details")
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(code = 200, message = "Successful All Vendor Details")
-//            }
-//    )
-//    @GetMapping("/vendor/users")
-//    public List<VendorUser> getAllVendorUsers() {
-//
-//       return vendorService.findAll();   }
-	
+	// Need to change as Registration flow
+	private void sendNewVendorUserInviteEmail(VendorUser vendorUser, Integer organisationId, String organisationName) {
+		// TODO Auto-generated method stub
+
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", vendorUser.getEmail());
+		userObj.put("userId", vendorUser.getUserId());
+		userObj.put("userType", Constants.UserType.VENDOR.getValue());
+		userObj.put("organisationId", organisationId);
+		userObj.put("organisationName", organisationName);
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		
+		String encryptUser = SecurityAES.encrypt(responseJsonString);
+		
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()+"&userType="+Constants.UserType.VENDOR.getValue()+"&hash="+ encryptUser;
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//			springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendInviteAcceptEmailWithAttachment(vendorUser.getEmail(), vendorUser.getFirstName()+" "+vendorUser.getLastName(),organisationName,content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+
 } 

@@ -110,11 +110,17 @@ public class ClientController {
 				// Already have an client account
 				if (clientId != 0 /* && client.getOrganisationId() > 0 - check org parameter */) {
 					if(clientService.updateClientUserVerificationStatus(organisationId, clientId) != null) {
-						ResponseMessage responseMessage = new ResponseMessage(
-								APIStatusCode.REQUEST_SUCCESS.getValue(),
-								"Success",
-								"Client User Account Verified for an Organisation");
+						
+						/*
+						 * if(clientService.getAllOrganisationsForClientUser(clientId) > 1) {
+						 * Exist
+						 * } else {
+						 * New
+						 * }
+						 */
+						ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Client User Account Verified for an Organisation");
 						return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+						
 					} else {
 						ResponseMessage responseMessage = new ResponseMessage(
 								APIStatusCode.NOT_FOUND.getValue(),
@@ -201,41 +207,6 @@ public class ClientController {
 		}
 	}
 	
-	private void sendClientEmailVerification(ClientUser clientUser) {
-		// TODO Auto-generated method stub
-//		String content = securityAES.getRegisterEncodedURL(clientUser.getEmail(), clientUser.getClientId(), Constants.UserType.CLIENT.getValue()); // query format request with Base64 Encryption
-//		System.out.println("content->"+content);
-		
-		HashMap<String, Object> userObj = new HashMap();
-		
-		userObj.put("email", clientUser.getEmail());
-		userObj.put("userId", clientUser.getClientId());
-		userObj.put("userType", Constants.UserType.CLIENT.getValue());
-		
-		String responseJsonString = Utils.ClasstoJsonString(userObj);
-		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
-		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+clientUser.getEmail()+"&hash="+ encryptClientUser; // AES algorithm
-//		System.out.println("contentAES Encrypt->"+content);
-//		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
-		
-		System.out.println("Sending Email...");
-		SpringBootEmail springBootEmail = new SpringBootEmail();
-//		springBootEmail.sendEmail(email);
-		try {
-			springBootEmail.sendWelcomeEmailWithAttachment(clientUser.getEmail(), content);
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) { 
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("Done");
-	}
-
 	@ApiOperation(value = "Add new Client in an Organisation")
     @ApiResponses(
             value = {
@@ -261,6 +232,7 @@ public class ClientController {
 		clientUserObj.setLastName(lastName);;
 		clientUserObj.setUserType(Constants.UserType.CLIENT.getValue());
 		
+		ClientOrganisation clientOrg = clientService.getClientOrganisationById(organisationId);
 		
 		ClientUser existClient = clientService.findByEmail(email);
 		if(existClient != null) {
@@ -283,7 +255,7 @@ public class ClientController {
 //				}
 				
 //				 Invite Sent
-				sendNewClientUserInviteEmail(existClient , organisationId, clientUserType, userRole);
+				sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
 				
 				HttpHeaders headers = new HttpHeaders();
 		        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
@@ -309,7 +281,7 @@ public class ClientController {
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(clientUser.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
 				        // Invite Sent
-				        sendNewClientUserInviteEmail(clientUser , organisationId, clientUserType, userRole);
+				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), clientUser , organisationId, clientUserType, userRole);
 				        
 				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
 		        	} catch(Exception exp) {
@@ -330,42 +302,6 @@ public class ClientController {
 			
 	}
 	
-	//Need to change like Registration flow
-	private void sendNewClientUserInviteEmail(ClientUser clientUser, Integer organisationId, Integer clientUserType,
-			Integer userRole) {
-		// TODO Auto-generated method stub
-		
-		HashMap<String, Object> userObj = new HashMap();
-		
-		userObj.put("email", clientUser.getEmail());
-		userObj.put("userId", clientUser.getClientId());
-		userObj.put("userType", Constants.UserType.CLIENT.getValue());
-		userObj.put("organisationId", organisationId);
-		
-		String responseJsonString = Utils.ClasstoJsonString(userObj);
-		
-		String encryptUser = SecurityAES.encrypt(responseJsonString);
-		
-		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite/450?email="+clientUser.getEmail()+"&userType="+Constants.UserType.CLIENT.getValue()+"&hash="+ encryptUser;
-		
-		System.out.println("Sending Email...");
-		SpringBootEmail springBootEmail = new SpringBootEmail();
-//		springBootEmail.sendEmail(email);
-		try {
-			springBootEmail.sendWelcomeEmailWithAttachment(clientUser.getEmail(), content);
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) { 
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("Done");
-	}
-
 	// Register a company
 	@ApiOperation(value = "New Client Organisation Registration")
     @ApiResponses(
@@ -416,5 +352,112 @@ public class ClientController {
         
 	}
 	
-    
+	private void sendClientEmailVerification(ClientUser clientUser) {
+		// TODO Auto-generated method stub
+//		String content = securityAES.getRegisterEncodedURL(clientUser.getEmail(), clientUser.getClientId(), Constants.UserType.CLIENT.getValue()); // query format request with Base64 Encryption
+//		System.out.println("content->"+content);
+		
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", clientUser.getEmail());
+		userObj.put("userId", clientUser.getClientId());
+		userObj.put("userType", Constants.UserType.CLIENT.getValue());
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
+		
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+clientUser.getEmail()+"&hash="+ encryptClientUser; // AES algorithm
+//		System.out.println("contentAES Encrypt->"+content);
+//		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendWelcomeEmailWithAttachment(clientUser.getEmail(), content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+
+	private void sendExistClientUserInviteEmail(String organisationName, ClientUser clientUser, Integer organisationId, Integer clientUserType,
+			Integer userRole) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", clientUser.getEmail());
+		userObj.put("userId", clientUser.getClientId());
+		userObj.put("userType", Constants.UserType.CLIENT.getValue());
+		userObj.put("organisationId", organisationId);
+		userObj.put("organisationName", organisationName);
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		
+		String encryptUser = SecurityAES.encrypt(responseJsonString);
+		
+		
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()+"&userType="+Constants.UserType.CLIENT.getValue()+"&hash="+ encryptUser;
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//		springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendInviteAcceptEmailWithAttachment(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), organisationName , content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+
+	//Need to change like Registration flow
+	private void sendNewClientUserInviteEmail(String organisationName, ClientUser clientUser, Integer organisationId, Integer clientUserType,
+			Integer userRole) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", clientUser.getEmail());
+		userObj.put("userId", clientUser.getClientId());
+		userObj.put("userType", Constants.UserType.CLIENT.getValue());
+		userObj.put("organisationId", organisationId);
+		userObj.put("organisationName", organisationName);
+		
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
+		
+		String encryptUser = SecurityAES.encrypt(responseJsonString);
+		
+		
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()+"&userType="+Constants.UserType.CLIENT.getValue()+"&hash="+ encryptUser;
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+//			springBootEmail.sendEmail(email);
+		try {
+			springBootEmail.sendInviteAcceptEmailWithAttachment(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), organisationName , content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+		
 }

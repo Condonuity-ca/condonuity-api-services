@@ -18,6 +18,8 @@ public interface ClientAssociationRepository extends JpaRepository<ClientAssocia
     ClientAssociation save(ClientAssociation clientAssociation);
 	
     List<ClientAssociation> findAllByClientOrganisationId(Integer clientOrganisationId);
+    
+    List<ClientAssociation> findAllByClientId(Integer clientId);
 
 	ClientAssociation findByClientIdAndClientOrganisationId(Integer clientId, Integer clientOrganisationId);
 }
