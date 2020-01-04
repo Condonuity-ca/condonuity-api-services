@@ -62,7 +62,7 @@ public class VendorController {
 	@PostMapping("/vendor/organisation/register")
 	public ResponseEntity<Object> addVendorOrganisation(
 			@RequestParam("hash") String hash, 
-			@RequestBody VendorOrganisation vendorOrganisation, UriComponentsBuilder builder) {
+			@RequestBody Map<String, Object> vendorOrganisationData, UriComponentsBuilder builder) {
 		
 		String decryptedUser = SecurityAES.decrypt(hash);
 
@@ -81,7 +81,7 @@ public class VendorController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
-        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(Integer.parseInt(String.valueOf(userData.get("userId"))), vendorOrganisation);
+        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(Integer.parseInt(String.valueOf(userData.get("userId"))), vendorOrganisationData);
         if (vendorOrg == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -276,7 +276,7 @@ public class VendorController {
 				}
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(
-						APIStatusCode.REQUEST_SUCCESS.getValue(),
+						APIStatusCode.REQUEST_FAILED.getValue(),
 		        		"Success",
 		        		"Maximum of "+Constants.MAX_USER_COUNT+" Vendor User Added in this Organisation");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);

@@ -47,9 +47,9 @@ public class ProjectService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
-	public List<Project> findAll() {
+	public List<Project> findAllProjects() {
 //		// TODO Auto-generated method stub
-		return Lists.newArrayList(projectRepository.findAll());
+		return projectRepository.findAll();
 	}
 
 	public Project findByProjectId(Integer projectId) {
@@ -218,5 +218,6 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		return predefinedTagsRepository.findAll();
 	}
+
 }
 

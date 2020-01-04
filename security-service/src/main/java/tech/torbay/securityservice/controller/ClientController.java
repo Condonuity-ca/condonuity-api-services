@@ -292,7 +292,7 @@ public class ClientController {
 		        }
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(
-						APIStatusCode.REQUEST_SUCCESS.getValue(),
+						APIStatusCode.REQUEST_FAILED.getValue(),
 		        		"Success",
 		        		"Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);

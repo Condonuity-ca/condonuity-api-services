@@ -1,6 +1,7 @@
 package tech.torbay.userservice.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,20 +20,32 @@ import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.UserWishList;
+import tech.torbay.userservice.entity.VendorBrands;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorInsurance;
+import tech.torbay.userservice.entity.VendorLicenses;
+import tech.torbay.userservice.entity.VendorMemberships;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorPortfolio;
+import tech.torbay.userservice.entity.VendorProducts;
+import tech.torbay.userservice.entity.VendorServices;
+import tech.torbay.userservice.entity.VendorServicesCities;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
+import tech.torbay.userservice.repository.VendorBrandsRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorInsuranceRepository;
+import tech.torbay.userservice.repository.VendorLicensesRepository;
+import tech.torbay.userservice.repository.VendorMembershipsRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
 import tech.torbay.userservice.repository.VendorPortfolioRepository;
+import tech.torbay.userservice.repository.VendorProductsRepository;
+import tech.torbay.userservice.repository.VendorServicesCitiesRepository;
+import tech.torbay.userservice.repository.VendorServicesRepository;
 import tech.torbay.userservice.repository.VendorUserRepository;
 
 @Component
@@ -56,6 +69,18 @@ public class VendorService {
 	ProjectReviewRatingRepository projectReviewRatingRepository;
 	@Autowired
 	ClientUserRepository clientUserRepository;
+	@Autowired
+	VendorBrandsRepository vendorBrandsRepository;
+	@Autowired
+	VendorServicesRepository vendorServicesRepository;
+	@Autowired
+	VendorServicesCitiesRepository vendorServicesCitiesRepository;
+	@Autowired
+	VendorProductsRepository vendorProductsRepository;
+	@Autowired
+	VendorLicensesRepository vendorLicensesRepository;
+	@Autowired
+	VendorMembershipsRepository vendorMembershipsRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -98,9 +123,18 @@ public class VendorService {
 	        } else {
 	        	mappedObj.put("vendorTags","");
 	        }
-	        mappedObj.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
-	        mappedObj.put("detailedRating",getVendorDetailedRatings(vendorOrg.getVendorOrganisationId()));
-	        mappedObj.put("reviewsRatings",getVendorReviewsRatings(vendorOrg.getVendorOrganisationId()));
+	        mappedObj.put("rating",getVendorCategoryRatings(vendorOrganisationId));
+	        mappedObj.put("detailedRating",getVendorDetailedRatings(vendorOrganisationId));
+	        mappedObj.put("reviewsRatings",getVendorReviewsRatings(vendorOrganisationId));
+	        
+	        
+	        
+	        mappedObj.put("vendorServicesCities",vendorServicesCitiesRepository.getServiceCities(vendorOrganisationId));
+	        mappedObj.put("services",vendorServicesRepository.getVendorServices(vendorOrganisationId));
+	        mappedObj.put("products",vendorProductsRepository.getVendorProducts(vendorOrganisationId));
+	        mappedObj.put("brands",vendorBrandsRepository.getVendorBrands(vendorOrganisationId));
+	        mappedObj.put("licenses",vendorLicensesRepository.getVendorLicenses(vendorOrganisationId));
+	        mappedObj.put("memberships",vendorMembershipsRepository.getVendorMemberships(vendorOrganisationId));
 	        
 			return mappedObj;
 			
@@ -237,14 +271,99 @@ public class VendorService {
 		return vendorUserRepository.save(vendorUser);
 	}
 
-	public VendorOrganisation updateVendorOrganisation(VendorOrganisation vendorOrganisation) {
+	public Object updateVendorOrganisation(Map<String, Object> vendorOrganisationData) {
 		// TODO Auto-generated method stub
-		return vendorOrganisationRepository.save(vendorOrganisation);
+		try {
+			
+			
+			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
+			VendorInsurance vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
+			
+			String serviceCities = String.valueOf(vendorOrganisationData.get("serviceCities")); // ids - 1,2,3
+			String services = String.valueOf(vendorOrganisationData.get("services")); // string - abc,abc,acbc
+			String licenses = String.valueOf(vendorOrganisationData.get("licenses")); // string - abc,abc,acbc
+			String products = String.valueOf(vendorOrganisationData.get("products")); // string - abc,abc,acbc
+			String brands = String.valueOf(vendorOrganisationData.get("brands")); // string - abc,abc,acbc
+			String memberships = String.valueOf(vendorOrganisationData.get("memberships")); // string - abc,abc,acbc
+			
+			vendorOrganisation = vendorOrganisationRepository.save(vendorOrganisation);
+			
+			
+			if(vendorOrganisation != null) {
+				
+				// remove old records
+				// 1 delete service cities
+				// 2 delete services
+				// 3 delete licenses
+				// 4 delete products
+				// 5 delete brands
+				// 6 delete memberships
+//				vendorServicesCitiesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+//				vendorServicesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+//				vendorProductsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+//				vendorBrandsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+//				vendorLicensesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+//				vendorMembershipsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				
+				// 0 add insurance
+				// 1 add service cities
+				// 2 add services
+				// 3 add licenses
+				// 4 add products
+				// 5 add brands
+				// 6 add memberships
+				
+				vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorInsuranceRepository.save(vendorInsurance);
+				
+				//1
+				
+			    List<String> cities = Arrays.asList(serviceCities.split(","));
+			    for(String city: cities) {
+			    	vendorServicesCitiesRepository.save(new VendorServicesCities(vendorOrganisation.getVendorOrganisationId(),Integer.parseInt(city)));
+			    }
+			    
+			    List<String> vservices = Arrays.asList(services.split(","));
+			    for(String service: vservices) {
+			    	vendorServicesRepository.save(new VendorServices(vendorOrganisation.getVendorOrganisationId(),service));
+			    }
+			    
+			    List<String> vproducts = Arrays.asList(products.split(","));
+			    for(String product: vproducts) {
+			    	vendorProductsRepository.save(new VendorProducts(vendorOrganisation.getVendorOrganisationId(),product));
+			    }
+			    
+			    List<String> vbrands = Arrays.asList(brands.split(","));
+			    for(String brand: vbrands) {
+			    	vendorBrandsRepository.save(new VendorBrands(vendorOrganisation.getVendorOrganisationId(),brand));
+			    }
+			    
+			    List<String> vlicenses = Arrays.asList(licenses.split(","));
+			    for(String license: vlicenses) {
+			    	vendorLicensesRepository.save(new VendorLicenses(vendorOrganisation.getVendorOrganisationId(),license,"",""));
+			    }
+			    
+			    List<String> vmemberships = Arrays.asList(memberships.split(","));
+			    for(String membership: vmemberships) {
+			    	vendorMembershipsRepository.save(new VendorMemberships(vendorOrganisation.getVendorOrganisationId(),membership,""));
+			    }
+			    
+				return vendorOrganisation;
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+		
+		
+		return vendorOrganisationData;
 	}
 
 	public List<VendorUser> getVendorOrganisationUsersById(Integer id) {
 		// TODO Auto-generated method stub
-		return vendorUserRepository.findByVendorOrganisationIdAndAccountStatus(id, Constants.UserAccountStatus.ACTIVE.getValue());
+//		return vendorUserRepository.findByVendorOrganisationIdAndAccountStatus(id, Constants.UserAccountStatus.ACTIVE.getValue());
+		return vendorUserRepository.findByVendorOrganisationId(id);
 	}
 
 	public List<VendorPortfolio> getVendorPortfolio(Integer vendorOrganisationId) {

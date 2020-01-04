@@ -47,6 +47,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.constants.Token;
@@ -129,14 +130,24 @@ public class UserController {
 				logger.info("clientInfo : "+clientInfo);
 				if(clientInfo != null) { 
 					//
-					HashMap<String, Object> list = new HashMap();
-					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-					list.put("statusMessage", "Success");
-					list.put("responseMessage", "Client details fetched successfully");
-					list.put("userDetails", clientInfo);
-					list.put("authToken", Token);
 					
-					return new ResponseEntity<>(list, HttpStatus.OK);
+					if(clientService.getAllOrganisationsForClientUser(clientInfo.getClientId()) > 0) {
+						
+						HashMap<String, Object> list = new HashMap();
+						list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+						list.put("statusMessage", "Success");
+						list.put("responseMessage", "Client details fetched successfully");
+						list.put("userDetails", clientInfo);
+						list.put("authToken", Token);
+						
+						return new ResponseEntity<>(list, HttpStatus.OK);
+					} else {
+						ResponseMessage responseMessage = new ResponseMessage(
+								APIStatusCode.REQUEST_FAILED.getValue(),
+				        		"Failed",
+				        		"Client Organisation Not registered for this User");
+						return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+					}
 					
 					} /*
 						 * else if(clientInfo.getPassword().toString() == null ||
@@ -163,21 +174,27 @@ public class UserController {
 				logger.info("vendorOrgInfo"+vendorOrgInfo);
 				}
 				
-					if (vendorUserInfo != null /*
-												 * && vendorUserInfo.getAccountStatus() ==
-												 * UserAccountStatus.ACTIVE.getValue()
-												 */) {
+					if (vendorUserInfo != null ) {
 					
-					HashMap<String, Object> list = new HashMap();
-					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-					list.put("statusMessage", "Success");
-					list.put("responseMessage", "Vendor User details fetched successfully");
-					list.put("userDetails", vendorUserInfo);
-					list.put("authToken", Token);
+						if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+							HashMap<String, Object> list = new HashMap();
+							list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+							list.put("statusMessage", "Success");
+							list.put("responseMessage", "Vendor User details fetched successfully");
+							list.put("userDetails", vendorUserInfo);
+							list.put("authToken", Token);
+							return new ResponseEntity<>(list, HttpStatus.OK);
+						} else {
+							ResponseMessage responseMessage = new ResponseMessage(
+									APIStatusCode.REQUEST_FAILED.getValue(),
+					        		"Failed",
+					        		"Inactive User Information");
+							return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+						}
+					
 					
 //					list.put("vendorOrgDetails",vendorOrgInfo);
 					
-					return new ResponseEntity<>(list, HttpStatus.OK);
 				} 
 //					else if(vendorUserInfo != null && vendorUserInfo.getAccountStatus() ==  VerificationStatus.NOT_VERIFIED.getValue()) {
 //					HashMap<String, Object> list = new HashMap();

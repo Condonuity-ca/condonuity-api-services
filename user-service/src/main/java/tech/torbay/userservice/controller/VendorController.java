@@ -335,8 +335,8 @@ public class VendorController {
             }
     )
 	@PutMapping("/vendor/org")
-	public ResponseEntity<Object> updateVendorOrganisation(@RequestBody VendorOrganisation vendorOrganisation) {
-		if(vendorService.updateVendorOrganisation(vendorOrganisation) != null) {
+	public ResponseEntity<Object> updateVendorOrganisation(@RequestBody Map<String, Object> vendorOrganisationData) {
+		if(vendorService.updateVendorOrganisation(vendorOrganisationData) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
