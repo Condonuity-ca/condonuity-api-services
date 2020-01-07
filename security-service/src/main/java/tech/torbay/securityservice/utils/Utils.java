@@ -1,8 +1,14 @@
 package tech.torbay.securityservice.utils;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -11,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import springfox.documentation.spring.web.json.Json;
+import tech.torbay.securityservice.constants.Constants;
 
 public class Utils {
 	
@@ -45,6 +52,21 @@ public class Utils {
 		System.out.println(map);
 		
 		return map;
+	}
+	
+	public static String getLinkValidityTime() {
+		
+		Date date = new Date();
+		
+		long apiExpiryDateTime = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusHours(Constants.EXPIRY_DURATION).toInstant().toEpochMilli();
+		
+//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		df.setTimeZone(TimeZone.getTimeZone(Constants.TIME_ZONE));
+//		String apiExpiryDateTime = df.format(localDateTime);
+		
+		System.out.println("apiExpiryDateTime :"+ apiExpiryDateTime);
+		
+		return String.valueOf(apiExpiryDateTime);
 	}
 
 }

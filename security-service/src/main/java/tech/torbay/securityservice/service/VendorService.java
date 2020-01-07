@@ -1,11 +1,8 @@
 package tech.torbay.securityservice.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,14 +23,14 @@ import tech.torbay.securityservice.entity.VendorServices;
 import tech.torbay.securityservice.entity.VendorServicesCities;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.repository.UserRepository;
-import tech.torbay.securityservice.repository.VendorOrganisationRepository;
-import tech.torbay.securityservice.repository.VendorUserRepository;
 import tech.torbay.securityservice.repository.VendorBrandsRepository;
 import tech.torbay.securityservice.repository.VendorLicensesRepository;
 import tech.torbay.securityservice.repository.VendorMembershipsRepository;
+import tech.torbay.securityservice.repository.VendorOrganisationRepository;
 import tech.torbay.securityservice.repository.VendorProductsRepository;
 import tech.torbay.securityservice.repository.VendorServicesCitiesRepository;
 import tech.torbay.securityservice.repository.VendorServicesRepository;
+import tech.torbay.securityservice.repository.VendorUserRepository;
 
 @Component
 public class VendorService {

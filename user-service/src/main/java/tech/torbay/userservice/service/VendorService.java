@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,6 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
-import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.UserWishList;
@@ -268,7 +266,12 @@ public class VendorService {
 
 	public VendorUser updateVendorUser(VendorUser vendorUser) {
 		// TODO Auto-generated method stub
-		return vendorUserRepository.save(vendorUser);
+		
+		VendorUser vendorUserObj = vendorUserRepository.findByUserId(vendorUser.getUserId());
+		
+		vendorUserObj.setFirstName(vendorUser.getFirstName());
+		vendorUserObj.setLastName(vendorUser.getLastName());
+		return vendorUserRepository.save(vendorUserObj);
 	}
 
 	public Object updateVendorOrganisation(Map<String, Object> vendorOrganisationData) {
@@ -509,6 +512,19 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		VendorUser vendorUser = vendorUserRepository.findByUserId(id);
 		vendorUser.setAccountStatus(UserAccountStatus.INACTIVE.getValue());
+		return vendorUserRepository.save(vendorUser);
+	}
+
+	public Object updateVendorUserRole(Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		Integer vendorUserId = Integer.parseInt(String.valueOf(requestData.get("userId")));
+    	Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
+    	
+    	VendorUser vendorUser = vendorUserRepository.findByUserId(vendorUserId);
+    	
+    	vendorUser.setUserRole(userRole);
+    	
 		return vendorUserRepository.save(vendorUser);
 	}
 

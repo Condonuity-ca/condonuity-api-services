@@ -12,12 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,13 +29,11 @@ import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.email.SpringBootEmail;
-import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
-import tech.torbay.securityservice.utils.QueryStringCreator;
 import tech.torbay.securityservice.utils.Utils;
 
 
@@ -302,7 +297,9 @@ public class VendorController {
 		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
 		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()+"&hash="+ encryptVendorUser; // AES algorithm
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()
+		+"&hash="+ encryptVendorUser
+		+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 		
 		
 		System.out.println("Sending Email...");
@@ -338,7 +335,10 @@ public class VendorController {
 		
 		String encryptUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()+"&userType="+Constants.UserType.VENDOR.getValue()+"&hash="+ encryptUser;
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
+		+"&userType="+Constants.UserType.VENDOR.getValue()
+		+"&hash="+ encryptUser
+		+"&expiry="+Utils.getLinkValidityTime();
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();

@@ -1,33 +1,34 @@
 package tech.torbay.userservice.controller;
 
-import com.google.common.collect.Lists;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientOrganisation;
-import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
-import tech.torbay.userservice.exception.ResourceNotFoundException;
-import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.service.ClientService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
-
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -170,33 +171,6 @@ public class ClientController {
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		}
 	}
-    
-//	@ApiOperation(value = "Fetching All clients details with in Condonuity Application")
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(code = 200, message = "Successful All Client Details")
-//            }
-//    )
-//	@GetMapping("/client/users")
-//	public ResponseEntity<Object> getAllClients() {
-//		List<ClientUser> list = clientService.getAllClientUsers();
-//		
-//		HashMap<String, Object> response = new HashMap();
-//		if(list != null) {
-//			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-//			response.put("statusMessage", "Success");
-//			response.put("responseMessage", "Client details fetched successfully");
-//			response.put("clients", list);
-//			
-//			return new ResponseEntity<Object>(response, HttpStatus.OK);
-//		} else {
-//			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
-//			response.put("statusMessage", "Failed");
-//			response.put("responseMessage", "Database Error");
-//
-//			return new ResponseEntity<Object>(response, HttpStatus.OK);
-//		}
-//	}
 	
 	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
     @ApiResponses(
@@ -261,6 +235,32 @@ public class ClientController {
 	@PutMapping("/client/user")
 	public ResponseEntity<Object> updateClientUser(@RequestBody ClientUser client) {
 		if(clientService.saveClient(client) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Client details updated successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+            		"Failed",
+            		"Client details failed to update");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Client details Update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "client details updated successfully")
+            }
+    )
+	@PutMapping("/client/user/role")
+	public ResponseEntity<Object> updateUserRoleAndPosition(@RequestBody Map<String, Object> requestData) {
+		
+		
+		
+		if(clientService.saveClientUserRole(requestData) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",

@@ -7,6 +7,8 @@ import java.util.Map;
 public class Constants {
 	
 	public static final Integer MAX_USER_COUNT = 12;
+	public static final String TIME_ZONE = "Europe/London";
+	public static final long EXPIRY_DURATION = 24;
 
 	public enum UserType {
 	    CLIENT(1),

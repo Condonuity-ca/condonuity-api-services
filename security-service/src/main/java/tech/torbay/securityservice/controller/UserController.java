@@ -468,7 +468,7 @@ public class UserController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendWelcomeEmailWithAttachment(email,"Sample Welcome Email");
+			springBootEmail.sendWelcomeEmailWithAttachment(email,"Sample_Welcome_Email"+Utils.getLinkValidityTime());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -609,7 +609,9 @@ public class UserController {
 		
 		System.out.println("encrypt hash :"+encryptUser);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password?email="+email+"&hash="+encryptUser; // AES algorithm
+		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password?email="+email
+				+"&hash="+encryptUser
+				+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
 //		System.out.println("contentAES Decrypt->"+SecurityAES.decrypt(encryptClientUser));
 		

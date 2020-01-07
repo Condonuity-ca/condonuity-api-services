@@ -1,13 +1,11 @@
 package tech.torbay.userservice.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,15 +16,15 @@ import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientOrganisation;
-import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
-import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
+import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 
@@ -122,7 +120,17 @@ public class ClientService {
 
 	public ClientUser saveClient(ClientUser client) {
 		// TODO Auto-generated method stub
-		return clientUserRepository.save(client);
+		
+		ClientUser clientObj = clientUserRepository.findByClientId(client.getClientId());
+		
+		clientObj.setCity(client.getCity());
+		clientObj.setPhone(client.getPhone());
+		clientObj.setFirstName(client.getFirstName());
+		clientObj.setLastName(client.getLastName());
+		clientObj.setLegalName(client.getLegalName());
+		clientObj.setCountryCode(client.getCountryCode());
+		
+		return clientUserRepository.save(clientObj);
 	}
 
 	public ClientOrganisation updateOrganisation(ClientOrganisation clientOrg) {
@@ -163,12 +171,15 @@ public class ClientService {
 		        
 		        ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientObj.getClientId(), clientOrgId);
 		        
-//		        if(clientAssociate.getUserAccountStatus() == Constants.UserAccountStatus.ACTIVE.getValue()) {
-			        map.put("clientUserType", clientAssociate.getClientUserType());
+		        if(clientAssociate.getUserAccountStatus() == Constants.UserAccountStatus.INACTIVE.getValue() 
+		        		&& clientAssociate.getAccountVerificationStatus() == Constants.VerificationStatus.VERIFIED.getValue() ) {
+			        // No need to add - user account deleted
+		        } else {
+		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
 			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
 			        clientList.add(map);
-//		        }
+		        } // Need to check this flow
 		        
 			}
 			
@@ -296,6 +307,35 @@ public class ClientService {
 		clientAssociate.setUserAccountStatus(UserAccountStatus.INACTIVE.getValue());
 		
 		return clientAssociationRepository.save(clientAssociate);
+	}
+
+	public Object saveClientUserRole(Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		Integer clientUserId = Integer.parseInt(String.valueOf(requestData.get("clientUserId")));
+//		String email = String.valueOf(requestData.get("email"));
+    	Integer clientOrgId = Integer.parseInt(String.valueOf(requestData.get("clientOrgId")));
+    	Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
+    	Integer clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
+    	
+    	ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUserId, clientOrgId);
+    	
+    	if(clientAssociate != null) {
+    	clientAssociate.setClientUserType(clientUserType);
+    	clientAssociate.setUserRole(userRole);
+    	
+    	clientAssociationRepository.save(clientAssociate);
+    	
+//    	ClientUser client = clientUserRepository.findByClientId(clientUserId);
+    	
+//    	client.setEmail(email);
+    	
+//    	clientUserRepository.save(client);
+    	
+    	return clientAssociate;
+    	
+    	} else 
+    		return null;
+    	
 	}
 }
 
