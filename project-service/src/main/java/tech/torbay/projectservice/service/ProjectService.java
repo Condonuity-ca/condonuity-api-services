@@ -1,27 +1,51 @@
 package tech.torbay.projectservice.service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
+import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
+import tech.torbay.projectservice.entity.ClientOrganisation;
 import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
+import tech.torbay.projectservice.entity.ProjectProducts;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
+import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.PredefinedTagsRepository;
 import tech.torbay.projectservice.repository.ProjectProductsRepository;
 import tech.torbay.projectservice.repository.ProjectQARepository;
@@ -44,12 +68,65 @@ public class ProjectService {
 	ProjectReviewRatingRepository projectReviewRatingRepository;
 	@Autowired
 	PredefinedTagsRepository predefinedTagsRepository;
+	@Autowired
+	ClientOrganisationRepository clientOrganisationRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
-	public List<Project> findAllProjects() {
+	public List<Project>  findAllProjects() {
 //		// TODO Auto-generated method stub
-		return projectRepository.findAll();
+		
+		List<Project> projects = projectRepository.findAllProjectsForMarketPlace();
+		
+//		 projects.stream().forEach((record) -> {
+//	        Integer projectId = (Integer) record[0];
+//	        Integer clientOrganisationId = (Integer) record[1];
+//	        Integer clientId = (Integer) record[2];
+//	        Integer projectModifiedBy = (Integer) record[3];
+//	        String projectName = (String) record[4];
+//	        String tags = (String) record[5];
+//	        String bidEndDate = (String) record[6];
+//	        String projectStartDate = (String) record[7];
+//	        String projectCompletionDeadline = (String) record[8];
+//	        String estimatedBudget = (String) record[9];
+//	        String duration = (String) record[10];
+//	        String description = (String) record[11];
+//	        String specialConditions = (String) record[12];
+//	        String city = (String) record[13];
+//	        Integer contractType = (Integer) record[14];
+//	        Integer insuranceRequired = (Integer) record[15];
+//	        Integer postType = (Integer) record[16];
+//	        Integer status = (Integer) record[17];
+//	        Integer awardedBidId = (Integer) record[18];
+//	        String createdAt = String.valueOf(record[19]);
+//	        String modifiedDate = String.valueOf(record[20]);
+//	        String managementCompany = (String) record[21];
+//	        String firstName = (String) record[22];
+//	        String lastName = (String) record[23];
+////	        ProjectProducts projectProducts = (ProjectProducts) record[5];
+//		 });
+		 
+		 
+		 
+//		 for (Object[] obj : projects) {
+//			 try {
+//				 
+//				Map<String, Object>  map = Utils.convertJsonToHashMap(Utils.ClasstoJsonString(obj));
+//				
+//				System.out.println(map);
+//			} catch (JsonParseException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (JsonMappingException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			 
+//		 }
+		return projects;
 	}
 
 	public Project findByProjectId(Integer projectId) {

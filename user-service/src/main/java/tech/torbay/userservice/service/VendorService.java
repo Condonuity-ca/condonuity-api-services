@@ -520,10 +520,14 @@ public class VendorService {
 		
 		Integer vendorUserId = Integer.parseInt(String.valueOf(requestData.get("userId")));
     	Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
+    	String firstName = String.valueOf(requestData.get("firstName"));
+    	String lastName = String.valueOf(requestData.get("lastName"));
     	
     	VendorUser vendorUser = vendorUserRepository.findByUserId(vendorUserId);
     	
     	vendorUser.setUserRole(userRole);
+    	vendorUser.setFirstName(firstName);
+    	vendorUser.setLastName(lastName);;
     	
 		return vendorUserRepository.save(vendorUser);
 	}

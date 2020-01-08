@@ -312,7 +312,8 @@ public class ClientService {
 	public Object saveClientUserRole(Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
 		Integer clientUserId = Integer.parseInt(String.valueOf(requestData.get("clientUserId")));
-//		String email = String.valueOf(requestData.get("email"));
+		String firstName = String.valueOf(requestData.get("firstName"));
+		String lastName = String.valueOf(requestData.get("lastName"));
     	Integer clientOrgId = Integer.parseInt(String.valueOf(requestData.get("clientOrgId")));
     	Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
     	Integer clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
@@ -325,11 +326,12 @@ public class ClientService {
     	
     	clientAssociationRepository.save(clientAssociate);
     	
-//    	ClientUser client = clientUserRepository.findByClientId(clientUserId);
+    	ClientUser client = clientUserRepository.findByClientId(clientUserId);
     	
-//    	client.setEmail(email);
+    	client.setFirstName(firstName);
+    	client.setLastName(lastName);
     	
-//    	clientUserRepository.save(client);
+    	clientUserRepository.save(client);
     	
     	return clientAssociate;
     	
