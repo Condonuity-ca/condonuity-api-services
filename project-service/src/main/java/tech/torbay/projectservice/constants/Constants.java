@@ -306,5 +306,29 @@ public class Constants {
 	    }
 	}
 	
-	
+	public enum ProjectInterestStatus {
+		UN_LIKE(0),
+		LIKE(1);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private ProjectInterestStatus(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (ProjectInterestStatus pageType : ProjectInterestStatus.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static ProjectInterestStatus valueOf(int pageType) {
+	        return (ProjectInterestStatus) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
 }

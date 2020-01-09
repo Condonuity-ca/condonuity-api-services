@@ -6,13 +6,18 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -25,6 +30,26 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @Entity
 //@JsonInclude(value = Include.NON_NULL)
 @Table(name = "projects")
+
+@SqlResultSetMappings({
+	  @SqlResultSetMapping(
+	      name="marketPlace",
+	      entities={
+	    		  @EntityResult(entityClass=Project.class)
+	    		  },
+	      columns={
+	    		  @ColumnResult(name="management_company"),
+	    		  @ColumnResult(name="first_name"),
+	    		  @ColumnResult(name="last_name")
+	    		  }
+	  )
+	})
+@NamedNativeQuery(
+	    name="Project.MarketPlace", 
+	    query="SELECT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id;", 
+	    resultSetMapping="marketPlace")
 public class Project {
 
     public Project() {

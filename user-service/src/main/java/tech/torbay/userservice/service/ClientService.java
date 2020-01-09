@@ -171,16 +171,19 @@ public class ClientService {
 		        
 		        ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientObj.getClientId(), clientOrgId);
 		        
-		        if(clientAssociate.getUserAccountStatus() == Constants.UserAccountStatus.INACTIVE.getValue() 
-		        		&& clientAssociate.getAccountVerificationStatus() == Constants.VerificationStatus.VERIFIED.getValue() ) {
-			        // No need to add - user account deleted
-		        } else {
+//		        if(clientAssociate.getUserAccountStatus() == Constants.UserAccountStatus.INACTIVE.getValue() 
+//		        		&& clientAssociate.getAccountVerificationStatus() == Constants.VerificationStatus.VERIFIED.getValue() ) {
+//			        // No need to add - user account deleted
+//		        } else {
+//		        	
+//		        } // Need to check this flow
+		        
+		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) {
 		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
 			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
 			        clientList.add(map);
-		        } // Need to check this flow
-		        
+		        }
 			}
 			
 			return clientList;

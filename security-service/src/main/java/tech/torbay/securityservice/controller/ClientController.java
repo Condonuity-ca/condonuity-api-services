@@ -255,11 +255,18 @@ public class ClientController {
 //				}
 				
 //				 Invite Sent
-				sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
+				List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
+				if(clientUsers.size() < Constants.MAX_USER_COUNT) {
+					sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
+					
+					HttpHeaders headers = new HttpHeaders();
+			        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
+			        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+				}
 				
-				HttpHeaders headers = new HttpHeaders();
-		        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
-		        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
 				
 			} catch(Exception exp) {
 				exp.printStackTrace();
@@ -293,7 +300,7 @@ public class ClientController {
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(
 						APIStatusCode.REQUEST_FAILED.getValue(),
-		        		"Success",
+		        		"Failed",
 		        		"Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			}

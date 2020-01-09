@@ -377,5 +377,12 @@ public class Constants {
 	        return value;
 	    }
 	}
+	
+//	1. yes
+//	2. no
+//	3. indoor
+//	4. outdoor
+//	5. ground level
+//	6. underground
 
 }

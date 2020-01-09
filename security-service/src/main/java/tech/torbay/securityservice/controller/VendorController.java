@@ -242,7 +242,7 @@ public class VendorController {
 		
 		if(existVendorUserObj != null ) {
 			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.REQUEST_SUCCESS.getValue(),
+					APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Success",
 	        		"Vendor User Already Exists");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);

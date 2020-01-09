@@ -1,6 +1,7 @@
 package tech.torbay.projectservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import tech.torbay.projectservice.entity.Project;
@@ -17,5 +18,8 @@ public interface VendorBidRepository extends JpaRepository<VendorBid, Integer> {
 	VendorBid findOneById (Integer vendorBidId);
 
 	List<VendorBid> findVendorBidByProjectId(Integer id);
+	
+	@Query(value="SELECT COUNT(b.project_id) FROM condonuitydev.bids b WHERE project_id = (?1)", nativeQuery = true)
+	Integer getProjectBidsCount(Integer projectId);
 
 }

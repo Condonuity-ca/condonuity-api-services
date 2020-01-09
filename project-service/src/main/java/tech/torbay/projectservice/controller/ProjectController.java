@@ -3,17 +3,15 @@ package tech.torbay.projectservice.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +32,7 @@ import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
+import tech.torbay.projectservice.entity.VendorProjectInterests;
 import tech.torbay.projectservice.exception.BadRequestException;
 import tech.torbay.projectservice.service.ProjectService;
 import tech.torbay.projectservice.statusmessage.ResponseMessage;
@@ -85,7 +83,7 @@ public class ProjectController {
     )
 	@GetMapping("/projects/current/client/organisation/{orgId}")
 	public ResponseEntity<Object> getCurrentProjects(@PathVariable("orgId") Integer id) {
-		List<Project> list = projectService.getAllProjects(ProjectSortBy.Current,id);
+		List<Map<String,Object>> list = projectService.getAllProjects(ProjectSortBy.Current,id);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -112,7 +110,7 @@ public class ProjectController {
     )
 	@GetMapping("/projects/history/client/organisation/{orgId}")
 	public ResponseEntity<Object> getHistoryProjects(@PathVariable("orgId") Integer id) {
-		List<Project> list = projectService.getAllProjects(ProjectSortBy.Past,id);
+		List<Map<String,Object>> list = projectService.getAllProjects(ProjectSortBy.Past,id);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -374,7 +372,7 @@ public class ProjectController {
 	@GetMapping("/projects")
 	public ResponseEntity<Object> getAllProjectForMarketPlace() {
 
-		List<Project> projects = projectService.findAllProjects();
+		List<Map<String,Object>> projects = projectService.findAllProjects();
 		
 		HashMap<String, Object> list = new HashMap();
 		
@@ -578,6 +576,34 @@ public class ProjectController {
 			list.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
 			list.put("statusMessage", "Failed");
 			list.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Create Project Interest Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Interest Updated successfully")
+            }
+    )
+	@PostMapping("/project/interest")
+	public ResponseEntity<Object> createProjectInterest(@RequestBody Map<String, Object> requestData) {
+
+		VendorProjectInterests vendorProjectInterest = projectService.updateVendorProjectInterest(requestData);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (vendorProjectInterest != null) {
+			list.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Project Interest Updated successfully");
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to Update Project Interest");
 
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		}
