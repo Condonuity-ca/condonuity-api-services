@@ -14,11 +14,13 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.config.SecurityAES;
+import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
+import tech.torbay.securityservice.repository.PredefinedTagsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorOrganisationRepository;
@@ -31,6 +33,8 @@ public class UserService {
 	UserRepository userRepository;
 	@Autowired
 	ServiceCitiesRepository serviceCitiesRepository;
+	@Autowired
+	PredefinedTagsRepository predefinedTagsRepository;
 	
 	@Autowired
     private BCryptPasswordEncoder encoder;
@@ -95,6 +99,11 @@ public class UserService {
 		}
 		
 		userRepository.save(userObj);
+	}
+
+	public List<PredefinedTags> findAllPredefinedTags() {
+		// TODO Auto-generated method stub
+		return predefinedTagsRepository.findAll();
 	}
 }
 

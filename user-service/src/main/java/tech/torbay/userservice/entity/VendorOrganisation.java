@@ -24,7 +24,6 @@ public class VendorOrganisation {
     private String legalName = "";
     private String companyName = "";
     private String establishedDate = "";
-    private String searchTerms = "";
     private Integer employeesCount = 0;
 	private String annualRevenue = "";
     private String description = "";
@@ -93,14 +92,6 @@ public class VendorOrganisation {
 
 	public void setEstablishedDate(String establishedDate) {
 		this.establishedDate = establishedDate;
-	}
-
-	public String getSearchTerms() {
-		return searchTerms;
-	}
-
-	public void setSearchTerms(String searchTerms) {
-		this.searchTerms = searchTerms;
 	}
 
 	public Integer getEmployeesCount() {
@@ -267,7 +258,7 @@ public class VendorOrganisation {
 	public String toString() {
 		return "VendorOrganisation [vendorOrganisationId=" + vendorOrganisationId + ", userType=" + userType
 				+ ", legalName=" + legalName + ", companyName=" + companyName + ", establishedDate=" + establishedDate
-				+ ", searchTerms=" + searchTerms + ", employeesCount=" + employeesCount + ", annualRevenue="
+				+ ", employeesCount=" + employeesCount + ", annualRevenue="
 				+ annualRevenue + ", description=" + description + ", contactPerson=" + contactPerson
 				+ ", contactPersonEmail=" + contactPersonEmail + ", contactPersonPhone=" + contactPersonPhone
 				+ ", email=" + email + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber + ", website="

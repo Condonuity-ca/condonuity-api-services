@@ -1,6 +1,7 @@
 package tech.torbay.userservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.torbay.userservice.entity.ClientUser;
@@ -12,6 +13,8 @@ import tech.torbay.userservice.entity.VendorUser;
 
 import java.util.HashMap;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 @Repository
 public interface VendorServicesCitiesRepository extends JpaRepository<VendorServicesCities, Integer> {
@@ -29,6 +32,8 @@ public interface VendorServicesCitiesRepository extends JpaRepository<VendorServ
 			"WHERE vsc.vendor_organisation_id = (?1)", nativeQuery = true)
 	List<String> getServiceCities(Integer vendorOrganisationId);
 
-	@Query(value ="DELETE FROM vendor_services_cities WHERE vendor_organisation_id = (?1)", nativeQuery = true)
+	@Modifying
+	@Transactional 
+	@Query(value ="delete from condonuitydev.vendor_services_cities WHERE vendor_organisation_id = (?1)", nativeQuery = true)
 	void deleteByVendorOrganisationId(Integer vendorOrganisationId);
 }

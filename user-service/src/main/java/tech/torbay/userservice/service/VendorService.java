@@ -117,9 +117,9 @@ public class VendorService {
 	        Map<String, Object> mappedObj = objMapper.convertValue(vendorOrg, Map.class);
 	        
 	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
-	        	mappedObj.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
+	        	mappedObj.put("vendorTags",getVendorTagsWithId(vendorOrg.getVendorTags()));
 	        } else {
-	        	mappedObj.put("vendorTags","");
+	        	mappedObj.put("vendorTags","[]");
 	        }
 	        mappedObj.put("rating",getVendorCategoryRatings(vendorOrganisationId));
 	        mappedObj.put("detailedRating",getVendorDetailedRatings(vendorOrganisationId));
@@ -302,12 +302,12 @@ public class VendorService {
 				// 4 delete products
 				// 5 delete brands
 				// 6 delete memberships
-//				vendorServicesCitiesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-//				vendorServicesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-//				vendorProductsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-//				vendorBrandsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-//				vendorLicensesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-//				vendorMembershipsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorServicesCitiesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorServicesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorProductsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorBrandsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorLicensesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorMembershipsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 				
 				// 0 add insurance
 				// 1 add service cities
@@ -474,6 +474,37 @@ public class VendorService {
 		
     			
 		return vendorOrganisations;
+	}
+
+	private Object getVendorTagsWithId(List<VendorTags> vendorTags) {
+		// TODO Auto-generated method stub
+		try {
+			
+			List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
+			
+	        
+	        List<Object[]> tags = predefinedTagsRepository.findTagsByTagId(ids);
+			List<Map<String,Object>> allTags = new ArrayList();
+			
+			tags.stream().forEach((record) -> {
+				Integer tagId = (Integer) record[0];
+				String tagName = (String) record[1];
+				
+				
+				Map<String,Object> map = new HashMap<>();
+		        map.put("tagId", tagId);
+		        map.put("tagName", tagName);
+		        
+		        
+		        allTags.add(map);
+		        });
+			
+			return allTags;
+			
+		} catch(Exception exp){
+			exp.printStackTrace();
+			return null;
+		}
 	}
 
 	public UserWishList addClientAsFavourite(UserWishList userWishList) {

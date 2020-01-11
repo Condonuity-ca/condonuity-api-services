@@ -107,7 +107,24 @@ public class ClientService {
 				} else {
 					map.put("isPrimary","false");
 				}
-				clientOrgs.add(map);
+				
+				ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUserId, clientOrg.getClientOrganisationId());
+		        
+//		        if(clientAssociate.getUserAccountStatus() == Constants.UserAccountStatus.INACTIVE.getValue() 
+//		        		&& clientAssociate.getAccountVerificationStatus() == Constants.VerificationStatus.VERIFIED.getValue() ) {
+//			        // No need to add - user account deleted
+//		        } else {
+//		        	
+//		        } // Need to check this flow
+		        
+		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) {
+		        	map.put("clientUserType", clientAssociate.getClientUserType());
+			        map.put("userRole", clientAssociate.getUserRole());
+			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+			        clientOrgs.add(map);
+		        }
+		        
+				
 			}
 			
 			return clientOrgs;

@@ -332,12 +332,13 @@ public class ProjectService {
 			vendorBids.stream().forEach((record) -> {
 		        VendorBid vendorBid = (VendorBid) record[0]; 
 		        Project project = (Project) record[1];
+		        String companyName = (String) record[2];
 		        
 		        
-//		        List<Integer> ids = Stream.of(project.getTags().trim().split(","))
-//				        .map(Integer::parseInt)
-//				        .collect(Collectors.toList());
-//		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		        List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+				        .map(Integer::parseInt)
+				        .collect(Collectors.toList());
+		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
 		       
 		        Map<String,Object> projectMap = new HashMap<>();
 		        Map<String,Object> vendorBidMap = new HashMap<>();
@@ -349,12 +350,12 @@ public class ProjectService {
 				
 				
 				try {
-//					projectMap.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-//				projectMap.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
+					projectMap.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+					projectMap.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
 				} catch(Exception exp) {
 					exp.printStackTrace();
 				}
-//				projectMap.put("condoName", condoName);
+				projectMap.put("condoName", companyName);
 //				projectMap.put("projectCreatedBy", firstName+" "+lastName);
 				projectMap.put("vendorBid", vendorBid);
 				

@@ -301,10 +301,10 @@ public class ProjectController {
         
 	}
 	
-	@ApiOperation(value = "Fetching All Past Projects details with in a Organisation")
+	@ApiOperation(value = "Fetching All Current Projects details with in a vendor Organisation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "Success with All Past Projects Details")
+                    @ApiResponse(code = 200, message = "All Current Projects Details fetched successfully")
             }
     )
 	@GetMapping("/projects/current/vendor/organisation/{orgId}")

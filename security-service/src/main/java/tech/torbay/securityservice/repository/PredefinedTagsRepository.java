@@ -1,4 +1,4 @@
-package tech.torbay.userservice.repository;
+package tech.torbay.securityservice.repository;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import tech.torbay.userservice.entity.PredefinedTags;
+import tech.torbay.securityservice.entity.PredefinedTags;
 
 @Repository
 public interface PredefinedTagsRepository extends JpaRepository<PredefinedTags, Integer> {

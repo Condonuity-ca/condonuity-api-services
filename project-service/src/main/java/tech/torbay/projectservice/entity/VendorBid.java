@@ -29,13 +29,17 @@ import javax.persistence.Table;
 	      entities={
 	    		  @EntityResult(entityClass=VendorBid.class),
 	    		  @EntityResult(entityClass=Project.class)
+	    		  },
+	      columns={
+	    		  @ColumnResult(name="management_company")
 	    		  }
 	  )
 	})
 @NamedNativeQuery(
 	    name="VendorBid.Project", 
-	    query="SELECT vb.*, pro.* FROM condonuitydev.bids vb " + 
+	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
 	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
+	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"WHERE vb.vendor_org_id = (?1)", 
 	    resultSetMapping="vendorCurrentProjects")
 

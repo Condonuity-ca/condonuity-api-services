@@ -53,6 +53,7 @@ import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.constants.Token;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.SupportUser;
 import tech.torbay.securityservice.entity.User;
@@ -632,14 +633,14 @@ public class UserController {
 		System.out.println("Done");
 	}
 
-	 @ApiOperation(value = "Fetching A Client Details In an Organisation")
+	 @ApiOperation(value = "Fetching All Service cities implementation")
 	    @ApiResponses(
 	            value = {
-	                    @ApiResponse(code = 200, message = "A client details fetched successfully")
+	                    @ApiResponse(code = 200, message = "All Service cities fetched successfully")
 	            }
 	    )
 		@GetMapping("/service/cities")
-		public ResponseEntity<Object> getClientUserByIdAndOrgId() {
+		public ResponseEntity<Object> getAllServiceCities() {
 		
 		 List<ServiceCities> serviceCities = userService.findAllServiceCities();
 		 
@@ -649,6 +650,38 @@ public class UserController {
 		 	list.put("statusMessage", "Success");
 		 	list.put("responseMessage", "List of All Service Cities fetched successfully");
 		 	list.put("serviceCities",serviceCities);
+		 	
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 } else {
+		 	
+		 	list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+		 	list.put("statusMessage", "Failed");
+		 	list.put("responseMessage", "Database Error");
+
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 }
+
+		}
+	 
+	 @ApiOperation(value = "Fetching App Data Implementation")
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(code = 200, message = "App Data fetched successfully")
+	            }
+	    )
+		@GetMapping("/app/data")
+		public ResponseEntity<Object> getAppData() {
+		
+		 List<ServiceCities> serviceCities = userService.findAllServiceCities();
+		 List<PredefinedTags> predefinedTags = userService.findAllPredefinedTags();
+		 
+		 HashMap<String, Object> list = new HashMap();
+		 if(serviceCities != null) {
+		 	list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+		 	list.put("statusMessage", "Success");
+		 	list.put("responseMessage", "List of All App Data fetched successfully");
+		 	list.put("serviceCities",serviceCities);
+		 	list.put("predefinedTags",predefinedTags);
 		 	
 		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
 		 } else {
