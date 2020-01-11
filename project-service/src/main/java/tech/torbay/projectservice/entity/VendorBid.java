@@ -5,18 +5,40 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "bids")
+
+@SqlResultSetMappings({
+	  @SqlResultSetMapping(
+	      name="vendorCurrentProjects",
+	      entities={
+	    		  @EntityResult(entityClass=VendorBid.class),
+	    		  @EntityResult(entityClass=Project.class)
+	    		  }
+	  )
+	})
+@NamedNativeQuery(
+	    name="VendorBid.Project", 
+	    query="SELECT vb.*, pro.* FROM condonuitydev.bids vb " + 
+	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
+	    		"WHERE vb.vendor_org_id = (?1)", 
+	    resultSetMapping="vendorCurrentProjects")
+
 public class VendorBid {
 	
 	public VendorBid() {

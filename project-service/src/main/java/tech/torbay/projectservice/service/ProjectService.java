@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.entity.PredefinedTags;
@@ -93,7 +94,7 @@ public class ProjectService {
 		return allProjects;
 	}
 
-	public Project findByProjectId(Integer projectId) {
+	public Map<String,Object> findByProjectId(Integer projectId) {
 		// TODO Auto-generated method stub
 		
 		Project project = projectRepository.findByProjectId(projectId); 
@@ -102,9 +103,31 @@ public class ProjectService {
 		        .map(Integer::parseInt)
 		        .collect(Collectors.toList());
 		
-		project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		List<Object[]> tags = predefinedTagsRepository.findTagsByTagId(ids);
+		List<Map<String,Object>> allTags = new ArrayList();
 		
-		return project;
+		tags.stream().forEach((record) -> {
+			Integer tagId = (Integer) record[0];
+			String tagName = (String) record[1];
+			
+			
+			Map<String,Object> map = new HashMap<>();
+	        map.put("tagId", tagId);
+	        map.put("tagName", tagName);
+	        
+	        
+	        allTags.add(map);
+	        });
+		
+		Map<String,Object> map = new HashMap<>();
+		
+		ObjectMapper oMapper = new ObjectMapper();
+		
+		map = oMapper.convertValue(project, Map.class);
+		
+		map.put("tags",allTags);
+		
+		return map;
 	}
 
 	public Project createProject(Project project) {
@@ -131,7 +154,7 @@ public class ProjectService {
 			LocalDate startDate = LocalDate.parse(startingDate);
 			LocalDate endDate = LocalDate.parse(endingDate);
 			Period period = Period.between(startDate, endDate); 
-			String projectDuration = period.toString().replace("P", "").replace("Y", " Year ").replace("M", " Months ").replace("D", " Days ");
+			String projectDuration = period.toString().replace("P", "").replace("Y", " Year ").replace("M", " Months ").replace("D", " Days");
 			return projectDuration;
 		} catch(Exception exp) {
 			logger.error("Exception :"+exp);
@@ -181,7 +204,7 @@ public class ProjectService {
 			
 			
 			map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-//			map.put("interestCount", ) add interest to project
+			map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
 			
 					
 			allProjects.add(map);
@@ -295,6 +318,60 @@ public class ProjectService {
     		interest.setInterestStatus(interestStatus);
     		return vendorProjectInterestsRepository.save(interest);
     	}
+		
+	}
+
+	public List<Map<String, Object>> getVendorCurrentProjects(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		
+		try {
+			List<Object[]> vendorBids = vendorBidRepository.findByVendorOrgId(vendorOrganisationId);
+			
+			List<Map<String,Object>> allProjects = new ArrayList();
+			
+			vendorBids.stream().forEach((record) -> {
+		        VendorBid vendorBid = (VendorBid) record[0]; 
+		        Project project = (Project) record[1];
+		        
+		        
+//		        List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+//				        .map(Integer::parseInt)
+//				        .collect(Collectors.toList());
+//		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		       
+		        Map<String,Object> projectMap = new HashMap<>();
+		        Map<String,Object> vendorBidMap = new HashMap<>();
+				
+				ObjectMapper oMapper = new ObjectMapper();
+				
+				projectMap = oMapper.convertValue(project, Map.class);
+				
+				
+				
+				try {
+//					projectMap.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+//				projectMap.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
+				} catch(Exception exp) {
+					exp.printStackTrace();
+				}
+//				projectMap.put("condoName", condoName);
+//				projectMap.put("projectCreatedBy", firstName+" "+lastName);
+				projectMap.put("vendorBid", vendorBid);
+				
+				
+						
+				allProjects.add(projectMap);
+			 });
+			
+			return allProjects;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			
+			return null;
+		}
+		
+		
 		
 	}
 

@@ -301,6 +301,33 @@ public class ProjectController {
         
 	}
 	
+	@ApiOperation(value = "Fetching All Past Projects details with in a Organisation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Success with All Past Projects Details")
+            }
+    )
+	@GetMapping("/projects/current/vendor/organisation/{orgId}")
+	public ResponseEntity<Object> getVendorCurrentProjects(@PathVariable("orgId") Integer id) {
+		List<Map<String,Object>> list = projectService.getVendorCurrentProjects(id);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Current Projects from Vendor fetched successfully");
+			response.put("projects", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
 	@ApiOperation(value = "Client Project Publish Implementation")
     @ApiResponses(
             value = {
@@ -339,7 +366,7 @@ public class ProjectController {
 	@GetMapping("/projects/{id}")
 	public ResponseEntity<Object> getProjectById(@PathVariable("id") Integer id) {
 
-		Project project = projectService.findByProjectId(id);
+		Map<String,Object> project = projectService.findByProjectId(id);
 		List<VendorBid> projectAllBids = projectService.getAllBidsByProjectId(id);
 		List<ProjectQuestionAnswer> projectAllQA = projectService.getAllQAByProjectId(id);
 		

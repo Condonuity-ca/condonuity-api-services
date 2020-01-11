@@ -243,7 +243,7 @@ public class VendorController {
 		if(existVendorUserObj != null ) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_FAILED.getValue(),
-	        		"Success",
+	        		"Failed",
 	        		"Vendor User Already Exists");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		} else {
@@ -272,7 +272,7 @@ public class VendorController {
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(
 						APIStatusCode.REQUEST_FAILED.getValue(),
-		        		"Success",
+		        		"Failed",
 		        		"Maximum of "+Constants.MAX_USER_COUNT+" Vendor User Added in this Organisation");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			}
