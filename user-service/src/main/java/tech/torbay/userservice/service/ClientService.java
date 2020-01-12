@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
+import tech.torbay.userservice.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
@@ -117,12 +118,15 @@ public class ClientService {
 //		        	
 //		        } // Need to check this flow
 		        
-		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) {
+//		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) { 
+				// Front end need to handle inactive organisation in list
 		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
 			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+			        map.put("userActiveFrom", clientAssociate.getCreatedAt());
+			        map.put("userActiveTo", clientAssociate.getUserInactiveDate());
 			        clientOrgs.add(map);
-		        }
+//		        }
 		        
 				
 			}
@@ -325,6 +329,10 @@ public class ClientService {
 		ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(id, clientOrgId);
 //		clientAssociate.setAccountVerificationStatus(); --> Need to check , is it has changes?
 		clientAssociate.setUserAccountStatus(UserAccountStatus.INACTIVE.getValue());
+		
+		String userInactiveDate = Utils.getDateTime();
+		
+		clientAssociate.setUserInactiveDate(userInactiveDate);
 		
 		return clientAssociationRepository.save(clientAssociate);
 	}

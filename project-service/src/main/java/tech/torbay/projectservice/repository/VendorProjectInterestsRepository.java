@@ -21,5 +21,7 @@ public interface VendorProjectInterestsRepository extends JpaRepository<VendorPr
 	Integer getProjectInterestCount(Integer projectId);
 
 	VendorProjectInterests findByProjectIdAndVendorId(Integer projectId, Integer vendorId);
+
+	List<VendorProjectInterests> findByVendorId(Integer id);
 	
 }

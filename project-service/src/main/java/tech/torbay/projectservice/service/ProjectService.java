@@ -69,25 +69,29 @@ public class ProjectService {
 	        String firstName = (String) record[2];
 	        String lastName = (String) record[3];
 	        
-	        List<Integer> ids = Stream.of(project.getTags().trim().split(","))
-			        .map(Integer::parseInt)
-			        .collect(Collectors.toList());
-	        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
-	       
-	        Map<String,Object> map = new HashMap<>();
-			
-			ObjectMapper oMapper = new ObjectMapper();
-			
-			map = oMapper.convertValue(project, Map.class);
-			
-			
-			map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-			map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
-			map.put("condoName", condoName);
-			map.put("projectCreatedBy", firstName+" "+lastName);
-			
-					
-			allProjects.add(map);
+	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+				        .map(Integer::parseInt)
+				        .collect(Collectors.toList());
+		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		       
+		        Map<String,Object> map = new HashMap<>();
+				
+				ObjectMapper oMapper = new ObjectMapper();
+				
+				map = oMapper.convertValue(project, Map.class);
+				
+				
+				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("condoName", condoName);
+				map.put("projectCreatedBy", firstName+" "+lastName);
+				
+						
+				allProjects.add(map);
+	        }
+	        
+	        
 		 });
 		 
 		 
@@ -325,7 +329,7 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		
 		try {
-			List<Object[]> vendorBids = vendorBidRepository.findByVendorOrgId(vendorOrganisationId);
+			List<Object[]> vendorBids = vendorBidRepository.findCurrentProjectsByVendorOrgId(vendorOrganisationId);
 			
 			List<Map<String,Object>> allProjects = new ArrayList();
 			
@@ -334,34 +338,33 @@ public class ProjectService {
 		        Project project = (Project) record[1];
 		        String companyName = (String) record[2];
 		        
-		        
-		        List<Integer> ids = Stream.of(project.getTags().trim().split(","))
-				        .map(Integer::parseInt)
-				        .collect(Collectors.toList());
-		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
-		       
 		        Map<String,Object> projectMap = new HashMap<>();
 		        Map<String,Object> vendorBidMap = new HashMap<>();
 				
 				ObjectMapper oMapper = new ObjectMapper();
 				
-				projectMap = oMapper.convertValue(project, Map.class);
-				
-				
-				
-				try {
-					projectMap.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-					projectMap.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
-				} catch(Exception exp) {
-					exp.printStackTrace();
+				if (project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() /* && check project bid end date, start, completion date */) {
+					
+					List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+					        .map(Integer::parseInt)
+					        .collect(Collectors.toList());
+			        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+					
+					projectMap = oMapper.convertValue(project, Map.class);
+					
+					try {
+//						projectMap.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+//						projectMap.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
+					} catch(Exception exp) {
+						exp.printStackTrace();
+					}
+					projectMap.put("condoName", companyName);
+//					projectMap.put("projectCreatedBy", firstName+" "+lastName);
+					projectMap.put("vendorBid", vendorBid);
+							
+					allProjects.add(projectMap);
 				}
-				projectMap.put("condoName", companyName);
-//				projectMap.put("projectCreatedBy", firstName+" "+lastName);
-				projectMap.put("vendorBid", vendorBid);
 				
-				
-						
-				allProjects.add(projectMap);
 			 });
 			
 			return allProjects;
@@ -372,8 +375,144 @@ public class ProjectService {
 			return null;
 		}
 		
+	}
+	
+	public List<Map<String, Object>> getVendorHistoryProjects(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		
+		try {
+			List<Object[]> vendorBids = vendorBidRepository.findHistoryProjectsByVendorOrgId(vendorOrganisationId);
+			
+			List<Map<String,Object>> allProjects = new ArrayList();
+			
+			vendorBids.stream().forEach((record) -> {
+		        VendorBid vendorBid = (VendorBid) record[0]; 
+		        Project project = (Project) record[1];
+		        String companyName = (String) record[2];
+		        
+		        Map<String,Object> projectMap = new HashMap<>();
+		        Map<String,Object> vendorBidMap = new HashMap<>();
+				
+				ObjectMapper oMapper = new ObjectMapper();
+				
+				
+				if (project.getStatus() == Constants.ProjectPostType.COMPLETED.getValue() || project.getStatus() == Constants.ProjectPostType.TERMINATED.getValue() /* && check project bid end date, start, completion date */) {
+					
+					List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+					        .map(Integer::parseInt)
+					        .collect(Collectors.toList());
+			        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+					
+					projectMap = oMapper.convertValue(project, Map.class);
+					
+					try {
+//						projectMap.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+//						projectMap.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
+					} catch(Exception exp) {
+						exp.printStackTrace();
+					}
+					projectMap.put("condoName", companyName);
+//					projectMap.put("projectCreatedBy", firstName+" "+lastName);
+					projectMap.put("vendorBid", vendorBid);
+							
+					allProjects.add(projectMap);
+				}
+					
+				
+				
+				
+			 });
+			
+			return allProjects;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			
+			return null;
+		}
+		
+	}
+
+	public List<Map<String, Object>> getVendorFavoriteProjects(Integer id) {
+		// TODO Auto-generated method stub
+		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorId(id);
+		
+		List<Integer> projectIds = vendorProjectInterests.stream()
+                .map(VendorProjectInterests::getProjectId).collect(Collectors.toList());
+		
+		List<Project> allInterestedProjects = projectRepository.getAllVendorProjects(projectIds);
+		
+		List<Map<String,Object>> favoriteProjects = new ArrayList();
+		
+		for(Project project : allInterestedProjects) {
+			
+			if (project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue()) {
+				
+				ObjectMapper oMapper = new ObjectMapper();
+		        // object -> Map
+		        Map<String, Object> map = oMapper.convertValue(project, Map.class);
+		        
+		        List<VendorBid> vendorBid = vendorBidRepository.findVendorBidByProjectId(project.getProjectId());
+		        
+				if(vendorBid == null || vendorBid.size() == 0) {
+					favoriteProjects.add(map);
+				}
+			}// only vendor bided projects comes under history favorite projects only in favorite list once bided then only comes for future reference
+			
+		}
+		
+		return favoriteProjects;
+	}
+
+	public List<Map<String, Object>> findAllProjectsForVendorMarketplace(Integer vendorId) {
+		// TODO Auto-generated method stub
+		List<Object[]> projects = projectRepository.findAllProjectsForMarketPlace();
+//		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorId(vendorId);
 		
 		
+		List<Map<String,Object>> allProjects = new ArrayList();
+		
+		 projects.stream().forEach((record) -> {
+	        Project project = (Project) record[0];
+	        String condoName = (String) record[1];
+	        String firstName = (String) record[2];
+	        String lastName = (String) record[3];
+	        
+	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+				        .map(Integer::parseInt)
+				        .collect(Collectors.toList());
+		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		       
+		        Map<String,Object> map = new HashMap<>();
+				
+				ObjectMapper oMapper = new ObjectMapper();
+				
+				map = oMapper.convertValue(project, Map.class);
+				
+				
+				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("condoName", condoName);
+				map.put("projectCreatedBy", firstName+" "+lastName);
+				
+				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( project.getProjectId(), vendorId);
+				
+				if(vendorProjectInterests != null) {
+					map.put("isInterested", true);
+				} else {
+					map.put("isInterested", false);
+				}
+				
+						
+				allProjects.add(map);
+	        }
+	        
+	        
+		 });
+		 
+		 
+		return allProjects;
 	}
 
 }

@@ -20,6 +20,8 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 
+import tech.torbay.projectservice.constants.Constants;
+
 @Entity
 @Table(name = "bids")
 
@@ -33,15 +35,34 @@ import javax.persistence.Table;
 	      columns={
 	    		  @ColumnResult(name="management_company")
 	    		  }
-	  )
+	  ),
+	  @SqlResultSetMapping(
+		      name="vendorHistoryProjects",
+		      entities={
+		    		  @EntityResult(entityClass=VendorBid.class),
+		    		  @EntityResult(entityClass=Project.class)
+		    		  },
+		      columns={
+		    		  @ColumnResult(name="management_company")
+		    		  }
+		  )
 	})
 @NamedNativeQuery(
-	    name="VendorBid.Project", 
+	    name="VendorBid.CurrentProject", 
 	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
 	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"WHERE vb.vendor_org_id = (?1)", 
+	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 2"/*Constants.ProjectPostType.PUBLISHED.getValue()*/, 
 	    resultSetMapping="vendorCurrentProjects")
+
+
+@NamedNativeQuery(
+	    name="VendorBid.HistoryProject", 
+	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
+	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
+	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 3 OR pro.status = 4", 
+	    resultSetMapping="vendorHistoryProjects")
 
 public class VendorBid {
 	

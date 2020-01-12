@@ -26,6 +26,7 @@ public class ClientAssociation {
     private Integer userRole = 0;
     private Integer accountVerificationStatus = 0;
     private Integer userAccountStatus = 0;
+    private String userInactiveDate = "";
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -87,6 +88,12 @@ public class ClientAssociation {
 	public void setUserAccountStatus(Integer userAccountStatus) {
 		this.userAccountStatus = userAccountStatus;
 	}
+	public String getUserInactiveDate() {
+		return userInactiveDate;
+	}
+	public void setUserInactiveDate(String userInactiveDate) {
+		this.userInactiveDate = userInactiveDate;
+	}
 	public String getCreatedAt() {
 		return createdAt;
 	}
@@ -100,25 +107,13 @@ public class ClientAssociation {
 		this.modifiedDate = modifiedDate;
 	}
 	
-//	public ClientUser getClientUser() {
-//		return clientUser;
-//	}
-//	public void setClientUser(ClientUser clientUser) {
-//		this.clientUser = clientUser;
-//	}
-//	public ClientOrganisation getClientOrganisation() {
-//		return clientOrganisation;
-//	}
-//	public void setClientOrganisation(ClientOrganisation clientOrganisation) {
-//		this.clientOrganisation = clientOrganisation;
-//	}
 	@Override
 	public String toString() {
 		return "ClientAssociation [id=" + id + ", clientOrganisationId=" + clientOrganisationId + ", clientId="
 				+ clientId + ", clientUserType=" + clientUserType + ", userRole=" + userRole
 				+ ", accountVerificationStatus=" + accountVerificationStatus + ", userAccountStatus="
-				+ userAccountStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", clientUser="
-				+ /* clientUser +*/ ", clientOrganisation=" + /* clientOrganisation + */  "]";
+				+ userAccountStatus + ", userInactiveDate=" + userInactiveDate + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
     
 	

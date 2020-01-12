@@ -23,5 +23,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	List<Project> findAllByClientOrganisationIdAndStatus(Integer id, int value);
 	
 	Project findOneByProjectId(Integer projectId);
+
+	@Query("select pro from Project pro where pro.projectId IN (?1)")
+	List<Project> getAllVendorProjects(List<Integer> ids);
 	
 }

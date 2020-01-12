@@ -128,6 +128,8 @@ public class VendorService {
 				// update vendor user - organisation Id update
 				VendorUser vendorUser = vendorUserRepository.findByUserId(vendorUserId);
 				vendorUser.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+				vendorUser.setAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
 				
 				vendorUserRepository.save(vendorUser);
 				

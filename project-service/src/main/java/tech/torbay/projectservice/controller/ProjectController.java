@@ -24,6 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.ProjectPostType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.StatusCode;
@@ -328,6 +329,60 @@ public class ProjectController {
 		}
 	}
 	
+	@ApiOperation(value = "Fetching All Favorite Projects details with in a vendor Organisation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Favorite Projects Details fetched successfully")
+            }
+    )
+	@GetMapping("/projects/favorite/vendor/organisation/{orgId}")
+	public ResponseEntity<Object> getVendorFavoriteProjects(@PathVariable("orgId") Integer id) {
+		List<Map<String,Object>> list = projectService.getVendorFavoriteProjects(id);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Favorite Projects from Vendor fetched successfully");
+			response.put("projects", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All History Projects details with in a vendor Organisation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All History Projects Details fetched successfully")
+            }
+    )
+	@GetMapping("/projects/history/vendor/organisation/{orgId}")
+	public ResponseEntity<Object> getVendorHistoryProjects(@PathVariable("orgId") Integer id) {
+		List<Map<String,Object>> list = projectService.getVendorHistoryProjects(id);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "History Projects from Vendor fetched successfully");
+			response.put("projects", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
 	@ApiOperation(value = "Client Project Publish Implementation")
     @ApiResponses(
             value = {
@@ -406,7 +461,36 @@ public class ProjectController {
 		if(projects != null) {
 			list.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
 			list.put("statusMessage", "Success");
-			list.put("responseMessage", "A Project details fetched successfully");
+			list.put("responseMessage", "All Marketplace Project details fetched successfully");
+			list.put("projects", projects);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All Projects for Vendor Marketplace")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Projects for Vendor Marketplace fetched successfully")
+            }
+    )
+	@GetMapping("/projects/marketplace/{vendorId}")
+	public ResponseEntity<Object> getAllProjectForVendorMarketPlace(@PathVariable("vendorId") Integer vendorId) {
+
+		List<Map<String,Object>> projects = projectService.findAllProjectsForVendorMarketplace(vendorId);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if(projects != null) {
+			list.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "All Vendor Marketplace Project details fetched successfully");
 			list.put("projects", projects);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);

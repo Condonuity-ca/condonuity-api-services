@@ -48,7 +48,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 	    name="Project.MarketPlace", 
 	    query="SELECT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id;", 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
 	    resultSetMapping="marketPlace")
 public class Project {
 
