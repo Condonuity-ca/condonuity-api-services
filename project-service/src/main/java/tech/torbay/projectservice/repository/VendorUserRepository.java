@@ -1,11 +1,11 @@
-package tech.torbay.userservice.repository;
-
-import java.util.List;
+package tech.torbay.projectservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.torbay.userservice.entity.VendorUser;
+import tech.torbay.projectservice.entity.VendorUser;
+
+import java.util.List;
 
 @Repository
 public interface VendorUserRepository extends JpaRepository<VendorUser, Integer> {

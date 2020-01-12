@@ -25,6 +25,7 @@ import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
+import tech.torbay.projectservice.entity.VendorUser;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.PredefinedTagsRepository;
 import tech.torbay.projectservice.repository.ProjectProductsRepository;
@@ -33,6 +34,7 @@ import tech.torbay.projectservice.repository.ProjectRepository;
 import tech.torbay.projectservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.projectservice.repository.VendorBidRepository;
 import tech.torbay.projectservice.repository.VendorProjectInterestsRepository;
+import tech.torbay.projectservice.repository.VendorUserRepository;
 
 @Component
 public class ProjectService {
@@ -53,6 +55,8 @@ public class ProjectService {
 	ClientOrganisationRepository clientOrganisationRepository;
 	@Autowired
 	VendorProjectInterestsRepository vendorProjectInterestsRepository;
+	@Autowired
+	VendorUserRepository vendorUserRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -513,6 +517,52 @@ public class ProjectService {
 		 
 		 
 		return allProjects;
+	}
+
+	public Map<String, Object> getProjectForVendor(Integer projectId, Integer vendorId) {
+		// TODO Auto-generated method stub
+		
+		Project project = projectRepository.findByProjectId(projectId); 
+		VendorUser vendorUser = vendorUserRepository.findByUserId(vendorId); 
+		
+		List<Integer> ids = Stream.of(project.getTags().split(","))
+		        .map(Integer::parseInt)
+		        .collect(Collectors.toList());
+		
+		List<Object[]> tags = predefinedTagsRepository.findTagsByTagId(ids);
+		List<Map<String,Object>> allTags = new ArrayList();
+		
+		tags.stream().forEach((record) -> {
+			Integer tagId = (Integer) record[0];
+			String tagName = (String) record[1];
+			
+			
+			Map<String,Object> map = new HashMap<>();
+	        map.put("tagId", tagId);
+	        map.put("tagName", tagName);
+	        
+	        
+	        allTags.add(map);
+	        });
+		
+		Map<String,Object> map = new HashMap<>();
+		
+		ObjectMapper oMapper = new ObjectMapper();
+		
+		map = oMapper.convertValue(project, Map.class);
+		
+		map.put("tags",allTags);
+		map.put("vendorBid",vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(projectId, vendorUser.getVendorOrganisationId()));
+		map.put("questionAnswers",projectQARepository.findProjectQuestionAnswerByProjectId(projectId));
+		VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( projectId, vendorId);
+		
+		if(vendorProjectInterests != null) {
+			map.put("isInterested", true);
+		} else {
+			map.put("isInterested", false);
+		}
+		
+		return map;
 	}
 
 }
