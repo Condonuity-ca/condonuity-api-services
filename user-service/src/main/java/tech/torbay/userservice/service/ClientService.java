@@ -282,12 +282,28 @@ public class ClientService {
 		
 		try {
 			for(VendorCategoryRatings vendorRating : vendorCategoryRatings) {
-			    
-				VendorCategoryRatings rate = vendorCategoryRatingsRepository.save(vendorRating);
+				Integer clientId = vendorRating.getClientId();
+				Integer projectId = vendorRating.getProjectId();
+				Integer ratingCategory = vendorRating.getRatingCategory();
 				
-				if(rate == null) {
-					return false;
+				System.out.println(vendorRating.toString());
+				
+				VendorCategoryRatings rating = vendorCategoryRatingsRepository.findByClientIdAndProjectIdAndRatingCategory(clientId, projectId, ratingCategory);
+				
+				
+				if(rating != null) {
+					
+					vendorRating.setId(rating.getId());;
+					VendorCategoryRatings rate = vendorCategoryRatingsRepository.save(vendorRating);
+					
+				} else {
+					
+					VendorCategoryRatings rate = vendorCategoryRatingsRepository.save(vendorRating);
+					if(rate == null) {
+						return false;
+					}
 				}
+				
 			}
 		} catch(Exception exp) {
 			exp.printStackTrace();
@@ -367,5 +383,6 @@ public class ClientService {
     		return null;
     	
 	}
+
 }
 

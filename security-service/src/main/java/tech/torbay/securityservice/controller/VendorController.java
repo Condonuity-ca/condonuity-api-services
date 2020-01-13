@@ -250,6 +250,7 @@ public class VendorController {
 			List<VendorUser> vendorUsers = vendorService.getAllVendorUsersInOrganisation(vendorUser.getVendorOrganisationId());
 			if(vendorUsers.size() < Constants.MAX_USER_COUNT) {
 				vendorUser.setUserType(Constants.UserType.VENDOR.getValue());
+				vendorUser.setAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
 				VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
 				VendorOrganisation vendorOrg = vendorService.getVendorOrganisationById(vendorUser.getVendorOrganisationId());
 				

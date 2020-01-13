@@ -29,5 +29,5 @@ public interface VendorBidRepository extends JpaRepository<VendorBid, Integer> {
 	List<Object[]> findHistoryProjectsByVendorOrgId(Integer vendorOrganisationId);
 	
 	VendorBid findVendorBidByProjectIdAndVendorOrgId(Integer projectId, Integer vendorOrgId);
-
+	
 }

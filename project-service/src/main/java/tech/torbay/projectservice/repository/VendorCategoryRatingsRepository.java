@@ -1,11 +1,9 @@
-package tech.torbay.userservice.repository;
+package tech.torbay.projectservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import tech.torbay.userservice.entity.ClientUser;
-import tech.torbay.userservice.entity.VendorCategoryRatings;
-import tech.torbay.userservice.entity.VendorOrganisation;
-import tech.torbay.userservice.entity.VendorUser;
+
+import tech.torbay.projectservice.entity.VendorCategoryRatings;
 
 import java.util.List;
 
@@ -21,6 +19,4 @@ public interface VendorCategoryRatingsRepository extends JpaRepository<VendorCat
     VendorCategoryRatings save(VendorCategoryRatings vendorCategoryRatings);
 
 	List<VendorCategoryRatings> findByProjectId(Integer projectId);
-
-	VendorCategoryRatings findByClientIdAndProjectIdAndRatingCategory(Integer clientId, Integer projectId, Integer ratingCategory);
 }

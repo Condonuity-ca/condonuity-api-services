@@ -257,6 +257,15 @@ public class ProjectController {
     )
 	@PostMapping("/vendor/project/bid/create")
 	public ResponseEntity<Object> createProjectBid(@RequestBody VendorBid vendorBid) {
+		
+		if(projectService.findvendorBidByVendorIdAndProjectId(vendorBid) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_FAILED.getValue(),
+            		"Failed",
+        			"Vendor Already placed a Bid for this Project");
+			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		
 		VendorBid vendorBidObj = projectService.createProjectBid(vendorBid);
         if (vendorBidObj == null) {
      
@@ -264,12 +273,12 @@ public class ProjectController {
         	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
             
         		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
+                		StatusCode.REQUEST_FAILED.getValue(),
                 		"Failed",
             			"Failed to Create Project Bid");
         	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
         		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
+                		StatusCode.REQUEST_FAILED.getValue(),
                 		"Failed",
             			"Failed to Post Project Bid");
         		
@@ -335,8 +344,8 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "All Favorite Projects Details fetched successfully")
             }
     )
-	@GetMapping("/projects/favorite/vendor/organisation/{orgId}")
-	public ResponseEntity<Object> getVendorFavoriteProjects(@PathVariable("orgId") Integer id) {
+	@GetMapping("/projects/favorite/vendor/organisation/{vendorId}")
+	public ResponseEntity<Object> getVendorFavoriteProjects(@PathVariable("vendorId") Integer id) {
 		List<Map<String,Object>> list = projectService.getVendorFavoriteProjects(id);
 		
 		HashMap<String, Object> response = new HashMap();
@@ -422,7 +431,7 @@ public class ProjectController {
 	public ResponseEntity<Object> getProjectById(@PathVariable("id") Integer id) {
 
 		Map<String,Object> project = projectService.findByProjectId(id);
-		List<VendorBid> projectAllBids = projectService.getAllBidsByProjectId(id);
+		List<Map<String,Object>> projectAllBids = projectService.getAllBidsByProjectId(id);
 		List<ProjectQuestionAnswer> projectAllQA = projectService.getAllQAByProjectId(id);
 		
 		HashMap<String, Object> list = new HashMap();
@@ -542,7 +551,6 @@ public class ProjectController {
 	public ResponseEntity<Object> getProjectBidById(@PathVariable("id") Integer id) {
 
 		VendorBid vendorBid = projectService.findByBidId(id);
-//		List<VendorBid> projectAllBids = projectService.getAllBidsByProjectId(id);
 //		List<ProjectQuestionAnswer> projectAllQA = projectService.getAllQAByProjectId(id);
 		
 		HashMap<String, Object> list = new HashMap();
@@ -552,7 +560,6 @@ public class ProjectController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "A Project Bid details fetched successfully");
 			list.put("vendorBid", vendorBid);
-//			list.put("allBids",projectAllBids);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {

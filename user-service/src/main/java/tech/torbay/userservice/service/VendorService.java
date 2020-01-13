@@ -366,6 +366,9 @@ public class VendorService {
 	public List<VendorUser> getVendorOrganisationUsersById(Integer id) {
 		// TODO Auto-generated method stub
 //		return vendorUserRepository.findByVendorOrganisationIdAndAccountStatus(id, Constants.UserAccountStatus.ACTIVE.getValue());
+		
+		
+		
 		return vendorUserRepository.findByVendorOrganisationId(id);
 	}
 

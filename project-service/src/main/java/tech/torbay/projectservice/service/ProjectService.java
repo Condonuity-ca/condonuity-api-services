@@ -24,6 +24,7 @@ import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
+import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
 import tech.torbay.projectservice.entity.VendorUser;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
@@ -33,6 +34,7 @@ import tech.torbay.projectservice.repository.ProjectQARepository;
 import tech.torbay.projectservice.repository.ProjectRepository;
 import tech.torbay.projectservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.projectservice.repository.VendorBidRepository;
+import tech.torbay.projectservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.projectservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.projectservice.repository.VendorUserRepository;
 
@@ -57,6 +59,8 @@ public class ProjectService {
 	VendorProjectInterestsRepository vendorProjectInterestsRepository;
 	@Autowired
 	VendorUserRepository vendorUserRepository;
+	@Autowired
+	VendorCategoryRatingsRepository vendorCategoryRatingsRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -226,9 +230,79 @@ public class ProjectService {
 		return projectQARepository.save(projectQA);
 	}
 
-	public List<VendorBid> getAllBidsByProjectId(Integer id) {
+	public List<Map<String,Object>> getAllBidsByProjectId(Integer id) {
 		// TODO Auto-generated method stub
-		return vendorBidRepository.findVendorBidByProjectId(id);
+		
+		List<VendorBid> vendorBids = vendorBidRepository.findVendorBidByProjectId(id);
+		
+		List<Map<String,Object>> allBids = new ArrayList();
+		
+		for(VendorBid vendorBid : vendorBids) {
+			
+			Map<String,Object> map = new HashMap<>();
+			
+			ObjectMapper oMapper = new ObjectMapper();
+			
+			map = oMapper.convertValue(vendorBid, Map.class);
+			
+			
+			map.put("rating",getVendorCategoryRatings(vendorBid.getVendorOrgId()));
+			
+					
+			allBids.add(map);
+		}
+		
+		return allBids;
+	}
+	
+	private Double getVendorCategoryRatings(Integer vendorOrgId) {
+		// TODO Auto-generated method stub
+		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrgId);
+		
+        try {
+        	// Case1
+//        	-- Common Over all Rating
+//        	double sum = vendorRatings.stream().filter(o -> o.getRating() > 0).mapToDouble(VendorCategoryRatings::getRating).sum();
+//	        
+//	        if(sum >0) {
+//	        	double rating = sum/vendorRatings.size();
+//		       
+//	        	return rating; 
+//	        }
+        	
+        	if(vendorRatings == null) {
+        		return 0d;
+        	}
+        	
+        	//Case2
+//        	Overall Rating By Category Percentage
+        	double sumCategoryResponsiveness = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryProfessionalism = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryAccuracy = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryQuality = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	
+        	System.out.print("sumCategoryResponsiveness "+ sumCategoryResponsiveness);
+        	System.out.print("sumCategoryProfessionalism "+ sumCategoryProfessionalism);
+        	System.out.print("sumCategoryAccuracy "+ sumCategoryAccuracy);
+        	System.out.print("sumCategoryQuality "+ sumCategoryQuality);
+        	
+        	double overAllRating = (sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
+        			(sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
+        			(sumCategoryAccuracy * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
+        			(sumCategoryQuality * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue() "+ sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue() "+ sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.ACCURACY.getValue() "+ sumCategoryAccuracy *Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.QUALITY.getValue() "+ sumCategoryQuality *Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	
+        	return overAllRating;
+        	
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return 0d;
+        }
 	}
 
 	public List<ProjectQuestionAnswer> getAllQAByProjectId(Integer id) {
@@ -552,7 +626,10 @@ public class ProjectService {
 		map = oMapper.convertValue(project, Map.class);
 		
 		map.put("tags",allTags);
-		map.put("vendorBid",vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(projectId, vendorUser.getVendorOrganisationId()));
+		
+		VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(projectId, vendorUser.getVendorOrganisationId());
+		
+		map.put("vendorBid",vendorBid); // null if not placed a bid
 		map.put("questionAnswers",projectQARepository.findProjectQuestionAnswerByProjectId(projectId));
 		VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( projectId, vendorId);
 		
@@ -563,6 +640,11 @@ public class ProjectService {
 		}
 		
 		return map;
+	}
+
+	public VendorBid findvendorBidByVendorIdAndProjectId(VendorBid vendorBid) {
+		// TODO Auto-generated method stub
+		return vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(vendorBid.getProjectId(), vendorBid.getVendorOrgId());
 	}
 
 }

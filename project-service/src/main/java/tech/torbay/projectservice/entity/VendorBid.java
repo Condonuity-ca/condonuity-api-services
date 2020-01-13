@@ -266,7 +266,4 @@ public class VendorBid {
 				+ ", bidStatus=" + bidStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
 				+ ", biddingProducts=" + biddingProducts + "]";
 	}
-    
-    
-    
 }

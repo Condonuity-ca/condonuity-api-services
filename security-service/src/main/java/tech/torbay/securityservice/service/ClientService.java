@@ -107,7 +107,7 @@ public class ClientService {
 					//2.1.2
 					if(userRepository.save(user) != null) {
 						
-						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INACTIVE.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue()) != null) {
+						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue()) != null) {
 							return clientUser;
 						} else {
 //							clientUserRepository.deleteById(clientUser.getClientId());

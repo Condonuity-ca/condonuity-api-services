@@ -136,6 +136,7 @@ public class Constants {
 	}
 	
 	public enum UserAccountStatus {
+	    INVITED(0),
 	    ACTIVE(1),
 	    INACTIVE(2);
 

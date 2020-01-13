@@ -332,4 +332,59 @@ public class Constants {
 	    }
 	}
 	
+	public enum VendorRatingCategory {
+	    RESPONSIVENESS(1),
+	    PROFESSIONALISM(2),
+		ACCURACY(3),
+		QUALITY(4);
+		
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private VendorRatingCategory(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (VendorRatingCategory pageType : VendorRatingCategory.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static VendorRatingCategory valueOf(int pageType) {
+	        return (VendorRatingCategory) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+
+	public enum VendorRatingCategoryPercentage {
+	    RESPONSIVENESS(10),
+	    PROFESSIONALISM(30),
+		ACCURACY(30),
+		QUALITY(30);
+		
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private VendorRatingCategoryPercentage(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (VendorRatingCategoryPercentage pageType : VendorRatingCategoryPercentage.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static VendorRatingCategoryPercentage valueOf(int pageType) {
+	        return (VendorRatingCategoryPercentage) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
 }
