@@ -75,6 +75,7 @@ public class VendorService {
 	public VendorUser addVendorUser(VendorUser vendorUser) {
 		// TODO Auto-generated method stub
 		try {
+			vendorUser.setUserRole(Constants.UserRole.ADMIN.getValue());
 		
 		if(vendorUserRepository.save(vendorUser) != null){
 			

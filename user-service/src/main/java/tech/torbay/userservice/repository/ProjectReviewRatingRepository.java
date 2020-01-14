@@ -28,5 +28,7 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
     ProjectReviewRating setReplyComments(@Param("id") Integer id, @Param("reply_comments") String replyComments);
     
     List<ProjectReviewRating> findAllByVendorOrganisationId(Integer vendorOrganisationId);
+    
+    List<ProjectReviewRating> findAllByClientId(Integer clientId);
 
 }

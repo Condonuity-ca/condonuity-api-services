@@ -430,9 +430,9 @@ public class ClientController {
     )
 	@PostMapping("/client/rate/vendor")
 	public ResponseEntity<Object> rateVendorByCategory(
-			@RequestBody List<VendorCategoryRatings> vendorCategoryRatings) {
+			@RequestBody Map<String, Object> requestData) {
 		
-		boolean isRated = clientService.rateVendorByCategory(vendorCategoryRatings);
+		boolean isRated = clientService.rateVendorByCategory(requestData);
         if (!isRated) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -440,13 +440,40 @@ public class ClientController {
 	        		"Failed to Rate Vendor");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
-	        HttpHeaders headers = new HttpHeaders();
-//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
 	        ResponseMessage responseMessage = new ResponseMessage(
 	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
 	        		"Vendor Rated Successfully");
-			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Fetching Client All Submitted Reviews Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client All submitted reviews fetched Successfully"),
+            }
+    )
+	@GetMapping("/client/reviews/{clientId}")
+	public ResponseEntity<Object> getClientAllMyReviews(
+			@PathVariable Integer clientId) {
+		
+		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId);
+        if (clientAllReviews == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Fetch Client Reviews");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        
+	        HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "All Client Reviews Fetched Successfully");
+			list.put("reviews", clientAllReviews);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
         }
 	}
 	
@@ -465,11 +492,6 @@ public class ClientController {
         			"Failed to Update Client User Primary Organisation");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
-		/*
-		 * HttpHeaders headers = new HttpHeaders();
-		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
-		 * organisation.getOrganisationId()).toUri());
-		 */
             ResponseMessage responseMessage = new ResponseMessage(
             		APIStatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",

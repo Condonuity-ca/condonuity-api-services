@@ -1,6 +1,7 @@
 package tech.torbay.userservice.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,15 +20,22 @@ import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
+import tech.torbay.userservice.entity.Project;
+import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
+import tech.torbay.userservice.entity.VendorInsurance;
+import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
+import tech.torbay.userservice.repository.ProjectRepository;
+import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
+import tech.torbay.userservice.repository.VendorOrganisationRepository;
 
 @Component
 public class ClientService {
@@ -48,6 +56,12 @@ public class ClientService {
 	UserWishListRepository userWishListRepository;
 	@Autowired
 	VendorCategoryRatingsRepository vendorCategoryRatingsRepository;
+	@Autowired
+	ProjectReviewRatingRepository projectReviewRatingRepository;
+	@Autowired
+	VendorOrganisationRepository vendorOrganisationRepository;
+	@Autowired
+	ProjectRepository projectRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -277,27 +291,38 @@ public class ClientService {
 		return userWishListRepository.save(userWishList);
 	}
 
-	public boolean rateVendorByCategory(List<VendorCategoryRatings> vendorCategoryRatings) {
+	public boolean rateVendorByCategory(Map<String, Object> ratings) {
 		// TODO Auto-generated method stub
 		
 		try {
-			for(VendorCategoryRatings vendorRating : vendorCategoryRatings) {
-				Integer clientId = vendorRating.getClientId();
-				Integer projectId = vendorRating.getProjectId();
-				Integer ratingCategory = vendorRating.getRatingCategory();
+			
+			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			List vendorCategoryRatingsObj = mapper.convertValue(ratings.get("categoryRatings"), List.class);
+			
+			List<Map<String,Object>> vendorCategoryRatings = (List<Map<String,Object>>) vendorCategoryRatingsObj;
+			Integer clientId = (Integer) ratings.get("clientId");
+			Integer projectId = (Integer) ratings.get("projectId");
+			Integer vendorOrganisationId = (Integer) ratings.get("vendorOrganisationId");
+			
+			for(Map<String,Object> rating : vendorCategoryRatings) {
 				
-				System.out.println(vendorRating.toString());
+				VendorCategoryRatings vendorRating = new VendorCategoryRatings();
 				
-				VendorCategoryRatings rating = vendorCategoryRatingsRepository.findByClientIdAndProjectIdAndRatingCategory(clientId, projectId, ratingCategory);
+				Integer ratingCategory = (Integer) rating.get("ratingCategory");
+				Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
 				
+				vendorRating.setClientId(clientId);
+				vendorRating.setProjectId(projectId);				
+				vendorRating.setVendorOrganisationId(vendorOrganisationId);
+				vendorRating.setRatingCategory(ratingCategory);
+				vendorRating.setRating(ratingValue);
 				
-				if(rating != null) {
-					
-					vendorRating.setId(rating.getId());;
+				VendorCategoryRatings vendorRate = vendorCategoryRatingsRepository.findByClientIdAndProjectIdAndRatingCategory(clientId, projectId, ratingCategory);
+				
+				if(vendorRate != null) {
+					vendorRating.setId(vendorRate.getId());
 					VendorCategoryRatings rate = vendorCategoryRatingsRepository.save(vendorRating);
-					
 				} else {
-					
 					VendorCategoryRatings rate = vendorCategoryRatingsRepository.save(vendorRating);
 					if(rate == null) {
 						return false;
@@ -383,6 +408,70 @@ public class ClientService {
     		return null;
     	
 	}
+
+	public List<Map<String, Object>> getAllClientReviews(Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientId(clientId);
+		
+		List<Map<String, Object>> clientReviews = new ArrayList();
+		
+		for(ProjectReviewRating projectReviewRating : projectReviewsForVendors) {
+			
+			Integer vendorOrganisationId = projectReviewRating.getVendorOrganisationId();
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
+			Project project = projectRepository.findByProjectId(projectReviewRating.getProjectId());
+			
+			Map<String,Object> projectReview = new HashMap();
+			
+			projectReview.put("rating", getVendorCategoryRatingsByClientId(vendorOrganisationId, clientId, projectReviewRating.getProjectId()));
+			projectReview.put("reviewDate", projectReviewRating.getCreatedAt());
+			projectReview.put("vendorOrganisation", vendorOrganisation);
+			projectReview.put("project", project);
+			
+			clientReviews.add(projectReview);
+		}
+		
+		return clientReviews;
+	}
+	
+	private Double getVendorCategoryRatingsByClientId(Integer vendorOrgId, Integer clientId, Integer projectId) {
+		// TODO Auto-generated method stub
+		
+		List<VendorCategoryRatings> vendorRatings = new ArrayList();
+		
+		if(projectId == null || projectId == 0) {
+			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientId(vendorOrgId, clientId);
+		} else {
+			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientIdAndProjectId(vendorOrgId, clientId, projectId);
+		}
+		
+        try {
+        	double sumCategoryResponsiveness = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryProfessionalism = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryAccuracy = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryQuality = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+
+        	long responsivenessCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).count();
+        	long professionalismCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).count();
+        	long accuracyCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).count();
+        	long qualityCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).count();
+        	
+        	
+        	double overAllRating = (sumCategoryResponsiveness/responsivenessCount * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
+        			(sumCategoryProfessionalism/responsivenessCount * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
+        			(sumCategoryAccuracy/accuracyCount * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
+        			(sumCategoryQuality/qualityCount * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	return overAllRating;
+        	
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return 0d;
+        }
+	}
+
 
 }
 

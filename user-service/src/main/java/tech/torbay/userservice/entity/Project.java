@@ -1,4 +1,4 @@
-package tech.torbay.projectservice.entity;
+package tech.torbay.userservice.entity;
 
 import java.util.ArrayList;
 import java.util.List;

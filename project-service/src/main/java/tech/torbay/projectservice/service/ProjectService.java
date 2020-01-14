@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
+import tech.torbay.projectservice.entity.ClientUser;
 import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
@@ -28,6 +29,7 @@ import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
 import tech.torbay.projectservice.entity.VendorUser;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
+import tech.torbay.projectservice.repository.ClientUserRepository;
 import tech.torbay.projectservice.repository.PredefinedTagsRepository;
 import tech.torbay.projectservice.repository.ProjectProductsRepository;
 import tech.torbay.projectservice.repository.ProjectQARepository;
@@ -59,6 +61,8 @@ public class ProjectService {
 	VendorProjectInterestsRepository vendorProjectInterestsRepository;
 	@Autowired
 	VendorUserRepository vendorUserRepository;
+	@Autowired
+	ClientUserRepository clientUserRepository;
 	@Autowired
 	VendorCategoryRatingsRepository vendorCategoryRatingsRepository;
 	
@@ -138,6 +142,22 @@ public class ProjectService {
 		map = oMapper.convertValue(project, Map.class);
 		
 		map.put("tags",allTags);
+		
+		List<Integer> openByIds = new ArrayList(); 
+		
+		openByIds.add(project.getClientId());
+		openByIds.add(project.getProjectModifiedBy());
+		
+		List<ClientUser> projectModifiedByClients = clientUserRepository.findByClientId(openByIds); 
+		
+		List<String> names = new ArrayList();
+		
+		for(ClientUser user : projectModifiedByClients) {
+			
+			names.add(user.getFirstName()+" "+user.getLastName());
+		}
+		
+		map.put("openBy",String.join(",",names));
 		
 		return map;
 	}
@@ -286,15 +306,21 @@ public class ProjectService {
         	System.out.print("sumCategoryAccuracy "+ sumCategoryAccuracy);
         	System.out.print("sumCategoryQuality "+ sumCategoryQuality);
         	
-        	double overAllRating = (sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
-        			(sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
-        			(sumCategoryAccuracy * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
-        			(sumCategoryQuality * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	long responsivenessCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).count();
+        	long professionalismCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).count();
+        	long accuracyCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).count();
+        	long qualityCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).count();
         	
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue() "+ sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue() "+ sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.ACCURACY.getValue() "+ sumCategoryAccuracy *Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.QUALITY.getValue() "+ sumCategoryQuality *Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	double overAllRating = (sumCategoryResponsiveness/responsivenessCount * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
+        			(sumCategoryProfessionalism/responsivenessCount * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
+        			(sumCategoryAccuracy/accuracyCount * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
+        			(sumCategoryQuality/qualityCount * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue() "+ sumCategoryResponsiveness/responsivenessCount * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue() "+ sumCategoryProfessionalism/responsivenessCount * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.ACCURACY.getValue() "+ sumCategoryAccuracy/accuracyCount *Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.QUALITY.getValue() "+ sumCategoryQuality/qualityCount *Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
         	
         	
         	return overAllRating;
@@ -526,6 +552,11 @@ public class ProjectService {
 			
 			if (project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue()) {
 				
+				List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+				        .map(Integer::parseInt)
+				        .collect(Collectors.toList());
+		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		       
 				ObjectMapper oMapper = new ObjectMapper();
 		        // object -> Map
 		        Map<String, Object> map = oMapper.convertValue(project, Map.class);
