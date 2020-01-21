@@ -62,7 +62,7 @@ public class SpringBootEmail {
 //        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
 //        		"</div>\r\n" + 
 //        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
-//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Wecome to Condonuity</div>\r\n" + 
+//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" + 
 //        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
 //        		"</div>"+
 //        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify email to continue Registration\n"
@@ -72,7 +72,7 @@ public class SpringBootEmail {
         		"<div style=\"text-align: center;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
-        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Wecome to Condonuity</div>\r\n" +
+        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
         		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Thank you for Registering in Condonuity Application</div>\r\n" +
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please verify email to continue Registration" +"</div>\r\n" +
         		
@@ -193,7 +193,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 //        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
 //        		"</div>\r\n" + 
 //        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
-//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Wecome to Condonuity</div>\r\n" + 
+//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" + 
 //        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
 //        		"</div>"+
 //        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify email to continue Registration\n"
@@ -203,7 +203,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
         		"<div style=\"text-align: center;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
-        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Wecome to Condonuity</div>\r\n" +
+        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
         		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+username+"</div>\r\n" +
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">You have received an invitation from "+organisationName +"</div>\r\n" +
         		

@@ -27,6 +27,7 @@
         <module>auth-service</module>
         <module>security-service</module>
         <module>project-service</module>
+        <module>file-service</module>
     </modules>
 
     <dependencyManagement>
