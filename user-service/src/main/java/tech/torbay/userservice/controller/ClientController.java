@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientRegistrationFiles;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.UserWishList;
@@ -309,6 +310,7 @@ public class ClientController {
 		ClientOrganisation organisation = clientService.getOrganisationById(id);
 		System.out.println("organisation : "+organisation.toString());
 		List<ClientAmenities> amenitiesInfo = clientService.getAmenitiesByOrgId(id);
+		List<Map<String,Object>> clientRegistrationFiles = clientService.getClientRegistrationFiles(id);
 //		System.out.println("amenitiesInfo : "+amenitiesInfo.toString());
 //		//IF admin get All other users details
 //		Clients allUsers = clientService;
@@ -320,6 +322,7 @@ public class ClientController {
 			list.put("responseMessage", "Client Organisation details fetched successfully");
 			list.put("organisation", organisation);
 			list.put("clientAmenities",amenitiesInfo);
+			list.put("registrationFiles",clientRegistrationFiles);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {

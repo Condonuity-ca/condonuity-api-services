@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.io.Files;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobContainerPermissions;
 import com.microsoft.azure.storage.blob.BlobContainerPublicAccessType;
@@ -26,9 +28,13 @@ import com.microsoft.azure.storage.blob.ListBlobItem;
 import tech.torbay.fileservice.entity.BidFiles;
 import tech.torbay.fileservice.entity.ClientRegistrationFiles;
 import tech.torbay.fileservice.entity.ProjectFiles;
+import tech.torbay.fileservice.entity.UserProfileImages;
+import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.fileservice.repository.BidFilesRepository;
 import tech.torbay.fileservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.fileservice.repository.ProjectFilesRepository;
+import tech.torbay.fileservice.repository.UserProfileImagesRepository;
+import tech.torbay.fileservice.repository.VendorOrganisationProfileImagesRepository;
 
 @Component
 public class AzureBlobService {
@@ -44,6 +50,10 @@ public class AzureBlobService {
 	ProjectFilesRepository projectFilesRepository;
 	@Autowired
 	BidFilesRepository bidFilesRepository;
+	@Autowired
+	UserProfileImagesRepository userProfileImagesRepository;
+	@Autowired
+	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
 
 	public boolean createContainer(String containerName) {
 
@@ -81,7 +91,7 @@ public class AzureBlobService {
 		return null;
 	}
 
-	public URI uploads(String containerName, MultipartFile multipartFile) {
+	public URI uploads(String containerName, MultipartFile multipartFile, String blobName) {
 		URI uri = null;
 		CloudBlobContainer container = null;
 		CloudBlockBlob blob = null;
@@ -99,7 +109,7 @@ public class AzureBlobService {
 		}
 
 		try {
-			blob = container.getBlockBlobReference(multipartFile.getOriginalFilename());
+			blob = container.getBlockBlobReference(blobName);
 			blob.upload(multipartFile.getInputStream(), -1);
 			uri = blob.getUri();
 		} catch (URISyntaxException e) {
@@ -133,7 +143,11 @@ public class AzureBlobService {
 		try {
 			CloudBlobContainer container = cloudBlobClient.getContainerReference(containerName);
 			CloudBlockBlob blob = container.getBlockBlobReference(blobName);
-			blobUri = blob.getUri();
+			if(blob.exists()) {
+				blobUri = blob.getUri();
+			} else {
+				return null;
+			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (StorageException e) {
@@ -147,7 +161,12 @@ public class AzureBlobService {
 		try {
 			CloudBlobContainer container = cloudBlobClient.getContainerReference(containerName);
 			CloudBlockBlob blobToBeDeleted = container.getBlockBlobReference(blobName);
-			return blobToBeDeleted.deleteIfExists();
+			if(blobToBeDeleted.deleteIfExists()) {
+				// file inactive state need to be store or else restrict file delete before this step ?
+				return true;
+			} else {
+				return false;
+			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (StorageException e) {
@@ -198,32 +217,20 @@ public class AzureBlobService {
 		return false;
 	}
 
-	public List<URI> uploads(String containerName, List<MultipartFile> multipartFiles) {
-		// TODO Auto-generated method stub
-		
-		List<URI> uris = new ArrayList();
-		
-		for(MultipartFile multiPartFile : multipartFiles) {
-			
-			
-			uris.add(uploads(containerName, multiPartFile));
-		}
-		
-		return uris;
-	}
-
 	
 	// client organisation registration multiple file upload
 	public List<URI> uploads(Integer clientId, Integer clientOrganisationId, String containerName, List<MultipartFile> multipartFiles) {
 		// TODO Auto-generated method stub
 		List<URI> uris = new ArrayList();
 		
-		for(MultipartFile multiPartFile : multipartFiles) {
-			URI uri = uploads(containerName, multiPartFile);
+		for(MultipartFile multipartFile : multipartFiles) {
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
 			uris.add(uri);
 			
-			String blobName = multiPartFile.getOriginalFilename();
-			String fileType = multiPartFile.getContentType();
+			String blobName = multipartFile.getOriginalFilename();
+			String fileType = multipartFile.getContentType();
 			
 			ClientRegistrationFiles clientRegistrationFile = new ClientRegistrationFiles();
 			clientRegistrationFile.setClientUserId(clientId);
@@ -244,10 +251,12 @@ public class AzureBlobService {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
 			
-			URI uri = uploads(containerName, multipartFile);
-			
-			String blobName = multipartFile.getOriginalFilename();
+			String blobName = uuid.toString();
+			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
 			ClientRegistrationFiles clientRegistrationFile = new ClientRegistrationFiles();
@@ -255,6 +264,7 @@ public class AzureBlobService {
 			clientRegistrationFile.setClientOrganisationId(clientOrganisationId);
 			clientRegistrationFile.setContainerName(containerName);
 			clientRegistrationFile.setBlobName(blobName);
+			clientRegistrationFile.setFileName(fileName);
 			clientRegistrationFile.setFileType(fileType);
 			clientRegistrationFile.setFileUrl(uri.toString());
 			
@@ -278,20 +288,23 @@ public class AzureBlobService {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
 			
-			URI uri = uploads(containerName, multipartFile);
-			
-			String blobName = multipartFile.getOriginalFilename();
+			String blobName = uuid.toString();
+			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
 			ProjectFiles projectFiles = new ProjectFiles();
 			projectFiles.setProjectId(projectId);
 			projectFiles.setContainerName(containerName);
 			projectFiles.setBlobName(blobName);
+			projectFiles.setFileName(fileName);
 			projectFiles.setFileType(fileType);
 			projectFiles.setFileUrl(uri.toString());
 			
-			projectFilesRepository.save(projectFiles);
+			projectFiles = projectFilesRepository.save(projectFiles);
 			if(projectFiles != null) {
 				return uri;
 			} else {
@@ -309,21 +322,130 @@ public class AzureBlobService {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
 			
-			URI uri = uploads(containerName, multipartFile);
-			
-			String blobName = multipartFile.getOriginalFilename();
+			String blobName = uuid.toString();
+			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
 			BidFiles bidFiles = new BidFiles();
 			bidFiles.setBidId(bidId);
 			bidFiles.setContainerName(containerName);
 			bidFiles.setBlobName(blobName);
+			bidFiles.setFileName(fileName);
 			bidFiles.setFileType(fileType);
 			bidFiles.setFileUrl(uri.toString());
 			
-			bidFilesRepository.save(bidFiles);
+			bidFiles = bidFilesRepository.save(bidFiles);
 			if(bidFiles != null) {
+				return uri;
+			} else {
+				return null;
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public boolean isBlobExists(String containerName, String blobName) {
+		// TODO Auto-generated method stub
+		try {
+			CloudBlobContainer container = cloudBlobClient.getContainerReference(containerName);
+			CloudBlockBlob blob = container.getBlockBlobReference(blobName);
+			return blob.exists();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public URI uploadProfileImage(Integer userId, Integer userType, String containerName, MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+		try {
+			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
+			
+			String blobName = uuid.toString();
+			String fileName = multipartFile.getOriginalFilename();
+			String fileType = multipartFile.getContentType();
+			
+			UserProfileImages userProfileImages = userProfileImagesRepository.findByUserIdAndUserType(userId, userType);
+			
+			if(userProfileImages != null) {
+				userProfileImages.setContainerName(containerName);
+				userProfileImages.setBlobName(blobName);
+				userProfileImages.setFileName(fileName);
+				userProfileImages.setFileType(fileType);
+				userProfileImages.setFileUrl(uri.toString());
+			} else {
+				userProfileImages = new UserProfileImages();
+				userProfileImages.setUserType(userType);;
+				userProfileImages.setUserId(userId);;
+				userProfileImages.setContainerName(containerName);
+				userProfileImages.setBlobName(blobName);
+				userProfileImages.setFileName(fileName);
+				userProfileImages.setFileType(fileType);
+				userProfileImages.setFileUrl(uri.toString());
+			}
+			
+			
+			userProfileImages = userProfileImagesRepository.save(userProfileImages);
+			if(userProfileImages != null) {
+				return uri;
+			} else {
+				return null;
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public URI uploadVendorOrganisationProfileImage(Integer organisationId, String containerName, MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+		try {
+			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
+			
+			String blobName = uuid.toString();
+			String fileName = multipartFile.getOriginalFilename();
+			String fileType = multipartFile.getContentType();
+			
+			VendorOrganisationProfileImages vendorOrganisationProfileImages = vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(organisationId);
+			
+			if(vendorOrganisationProfileImages != null) {
+				vendorOrganisationProfileImages.setContainerName(containerName);
+				vendorOrganisationProfileImages.setBlobName(blobName);
+				vendorOrganisationProfileImages.setFileName(fileName);
+				vendorOrganisationProfileImages.setFileType(fileType);
+				vendorOrganisationProfileImages.setFileUrl(uri.toString());
+			} else {
+				vendorOrganisationProfileImages = new VendorOrganisationProfileImages();
+				vendorOrganisationProfileImages.setVendorOrganisationId(organisationId);;
+				vendorOrganisationProfileImages.setContainerName(containerName);
+				vendorOrganisationProfileImages.setBlobName(blobName);
+				vendorOrganisationProfileImages.setFileName(fileName);
+				vendorOrganisationProfileImages.setFileType(fileType);
+				vendorOrganisationProfileImages.setFileUrl(uri.toString());
+			}
+			
+			vendorOrganisationProfileImages = vendorOrganisationProfileImagesRepository.save(vendorOrganisationProfileImages);
+			if(vendorOrganisationProfileImages != null) {
 				return uri;
 			} else {
 				return null;

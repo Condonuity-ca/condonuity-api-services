@@ -1,4 +1,4 @@
-package tech.torbay.fileservice.entity;
+package tech.torbay.userservice.entity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -9,16 +9,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "bid_files")
-public class BidFiles {
+@Table(name = "client_registration_files")
+public class ClientRegistrationFiles {
 
-    public BidFiles() {
+    public ClientRegistrationFiles() {
 
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
-    private Integer bidId = 0;
+    private Integer clientUserId = 0;
+    private Integer clientOrganisationId = 0;
     private String containerName = "";
     private String blobName = "";
     private String fileName = "";
@@ -41,12 +42,20 @@ public class BidFiles {
 		this.id = id;
 	}
 
-	public Integer getBidId() {
-		return bidId;
+	public Integer getClientUserId() {
+		return clientUserId;
 	}
 
-	public void setBidId(Integer bidId) {
-		this.bidId = bidId;
+	public void setClientUserId(Integer clientUserId) {
+		this.clientUserId = clientUserId;
+	}
+
+	public Integer getClientOrganisationId() {
+		return clientOrganisationId;
+	}
+
+	public void setClientOrganisationId(Integer clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId;
 	}
 
 	public String getContainerName() {
@@ -107,9 +116,10 @@ public class BidFiles {
 
 	@Override
 	public String toString() {
-		return "BidFiles [id=" + id + ", bidId=" + bidId + ", containerName=" + containerName + ", blobName=" + blobName
-				+ ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "ClientRegistrationFiles [id=" + id + ", clientUserId=" + clientUserId + ", clientOrganisationId="
+				+ clientOrganisationId + ", containerName=" + containerName + ", blobName=" + blobName + ", fileName="
+				+ fileName + ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

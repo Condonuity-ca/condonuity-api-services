@@ -21,6 +21,7 @@ public class ProjectFiles {
     private Integer projectId = 0;
     private String containerName = "";
     private String blobName = "";
+    private String fileName = "";
     private String fileType = "";
     private String fileUrl = "";
     
@@ -64,6 +65,14 @@ public class ProjectFiles {
 		this.blobName = blobName;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	public String getFileType() {
 		return fileType;
 	}
@@ -99,8 +108,8 @@ public class ProjectFiles {
 	@Override
 	public String toString() {
 		return "ProjectFiles [id=" + id + ", projectId=" + projectId + ", containerName=" + containerName
-				+ ", blobName=" + blobName + ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl="
+				+ fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 

@@ -9,16 +9,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "bid_files")
-public class BidFiles {
+@Table(name = "user_profile_images")
+public class UserProfileImages {
 
-    public BidFiles() {
+    public UserProfileImages() {
 
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
-    private Integer bidId = 0;
+    private Integer userType = 0;
+    private Integer userId = 0;
     private String containerName = "";
     private String blobName = "";
     private String fileName = "";
@@ -41,12 +42,20 @@ public class BidFiles {
 		this.id = id;
 	}
 
-	public Integer getBidId() {
-		return bidId;
+	public Integer getUserType() {
+		return userType;
 	}
 
-	public void setBidId(Integer bidId) {
-		this.bidId = bidId;
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public String getContainerName() {
@@ -107,9 +116,9 @@ public class BidFiles {
 
 	@Override
 	public String toString() {
-		return "BidFiles [id=" + id + ", bidId=" + bidId + ", containerName=" + containerName + ", blobName=" + blobName
-				+ ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "UserProfileImages [id=" + id + ", userType=" + userType + ", userId=" + userId + ", containerName="
+				+ containerName + ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType
+				+ ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

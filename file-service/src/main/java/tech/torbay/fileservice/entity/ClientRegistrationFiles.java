@@ -22,6 +22,7 @@ public class ClientRegistrationFiles {
     private Integer clientOrganisationId = 0;
     private String containerName = "";
     private String blobName = "";
+    private String fileName = "";
     private String fileType = "";
     private String fileUrl = "";
     
@@ -73,6 +74,14 @@ public class ClientRegistrationFiles {
 		this.blobName = blobName;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	public String getFileType() {
 		return fileType;
 	}
@@ -108,9 +117,9 @@ public class ClientRegistrationFiles {
 	@Override
 	public String toString() {
 		return "ClientRegistrationFiles [id=" + id + ", clientUserId=" + clientUserId + ", clientOrganisationId="
-				+ clientOrganisationId + ", containerName=" + containerName + ", blobName=" + blobName + ", fileType="
-				+ fileType + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
-				+ "]";
+				+ clientOrganisationId + ", containerName=" + containerName + ", blobName=" + blobName + ", fileName="
+				+ fileName + ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

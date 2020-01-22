@@ -9,16 +9,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "bid_files")
-public class BidFiles {
+@Table(name = "vendor_organisation_profile_images")
+public class VendorOrganisationProfileImages {
 
-    public BidFiles() {
+    public VendorOrganisationProfileImages() {
 
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
-    private Integer bidId = 0;
+    private Integer vendorOrganisationId = 0;
     private String containerName = "";
     private String blobName = "";
     private String fileName = "";
@@ -41,12 +41,12 @@ public class BidFiles {
 		this.id = id;
 	}
 
-	public Integer getBidId() {
-		return bidId;
+	public Integer getVendorOrganisationId() {
+		return vendorOrganisationId;
 	}
 
-	public void setBidId(Integer bidId) {
-		this.bidId = bidId;
+	public void setVendorOrganisationId(Integer vendorOrganisationId) {
+		this.vendorOrganisationId = vendorOrganisationId;
 	}
 
 	public String getContainerName() {
@@ -107,9 +107,10 @@ public class BidFiles {
 
 	@Override
 	public String toString() {
-		return "BidFiles [id=" + id + ", bidId=" + bidId + ", containerName=" + containerName + ", blobName=" + blobName
-				+ ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "VendorOrganisationProfileImages [id=" + id + ", vendorOrganisationId=" + vendorOrganisationId
+				+ ", containerName=" + containerName + ", blobName=" + blobName + ", fileName=" + fileName
+				+ ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate="
+				+ modifiedDate + "]";
 	}
 
 }

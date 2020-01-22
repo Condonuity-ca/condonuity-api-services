@@ -89,53 +89,6 @@ public class FilesController {
 		
 	}
 
-	@PostMapping("/upload/file/{containerName}")
-	public ResponseEntity<Map<String, Object>> uploadFile(@PathVariable("containerName") String containerName,
-			@RequestParam("multipartFile") MultipartFile multipartFile, HttpServletRequest request) {
-
-		URI url = azureBlobService.uploads(containerName, multipartFile);
-		Map<String, Object> map = new HashMap<>();
-		
-		if(url != null) {
-			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
-			map.put("statusMessage", "Success");
-			map.put("responseMessage", "File Uploaded Successfully");
-			map.put("containerName", containerName);
-			map.put("fileName", multipartFile.getOriginalFilename());
-			map.put("resource", url);
-			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-		} else {
-			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
-			map.put("statusMessage", "Failed");
-			map.put("responseMessage", "Failed to upload file");
-			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-		}
-		
-		
-	}
-	
-	@PostMapping("/upload/files/{containerName}")
-	public ResponseEntity<Map<String, Object>> uploadFiles(@PathVariable("containerName") String containerName,
-			@RequestParam("multipartFile") List<MultipartFile> multipartFiles, HttpServletRequest request) {
-
-		List<URI> urls = azureBlobService.uploads(containerName, multipartFiles);
-		Map<String, Object> map = new HashMap<>();
-		if(urls != null) {
-			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
-			map.put("statusMessage", "Success");
-			map.put("responseMessage", "Files Uploaded Successfully");
-			map.put("containerName", containerName);
-			map.put("resource", urls);
-			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-		} else {
-			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
-			map.put("statusMessage", "Failed");
-			map.put("responseMessage", "Failed to upload files");
-			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-		}
-		
-	}
-
 	@GetMapping("/container/blobs/{containerName}")
 	public ResponseEntity<Map<String, Object>> getAllBlobsInContainer(@PathVariable("containerName") String containerName) {
 		List<URI> uris = azureBlobService.listBlobs(containerName);
@@ -158,6 +111,15 @@ public class FilesController {
 
 	@GetMapping("/container/blob/uri/{containerName}/{blobName}")
 	public ResponseEntity<Map<String, Object>> getBlobURI(@PathVariable("containerName") String containerName, @PathVariable("blobName") String blobName) {
+		
+		if(!azureBlobService.isBlobExists(containerName, blobName)) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "File not available at specified Container "+containerName+" and Blob location "+blobName);
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
 		URI uri = azureBlobService.getBlob(containerName, blobName);
 		
 		if(uri != null) {
@@ -176,26 +138,27 @@ public class FilesController {
 		}
 	}
 
-	@DeleteMapping("/container/bolb/delete/{containerName}/{blobName}")
-	public ResponseEntity<Map<String, Object>> delete(@PathVariable("containerName") String containerName,
-			@PathVariable("blobName") String blobName) {
-		if(azureBlobService.deleteBlob(containerName, blobName)) {
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
-			map.put("statusMessage", "Success");
-			map.put("responseMessage", "Deleted SuccessFully");
-			map.put("containerName", containerName);
-			map.put("blobName", blobName);
-			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-		} else {
-			Map<String, Object> map = new HashMap<>();
-			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
-			map.put("statusMessage", "Failed");
-			map.put("responseMessage", "Failed to delete the blob");
-			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
-		}
-		
-	}
+	// Need to discuss - with Nagaraj
+//	@DeleteMapping("/container/bolb/delete/{containerName}/{blobName}")
+//	public ResponseEntity<Map<String, Object>> delete(@PathVariable("containerName") String containerName,
+//			@PathVariable("blobName") String blobName) {
+//		if(azureBlobService.deleteBlob(containerName, blobName)) {
+//			Map<String, Object> map = new HashMap<String, Object>();
+//			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+//			map.put("statusMessage", "Success");
+//			map.put("responseMessage", "Deleted SuccessFully");
+//			map.put("containerName", containerName);
+//			map.put("blobName", blobName);
+//			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+//		} else {
+//			Map<String, Object> map = new HashMap<>();
+//			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+//			map.put("statusMessage", "Failed");
+//			map.put("responseMessage", "Failed to delete the blob");
+//			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+//		}
+//		
+//	}
 	
 	
 	// Client Registration Document Upload
@@ -224,6 +187,7 @@ public class FilesController {
 		
 	}
 	
+	// Project file Upload
 	@PostMapping("/upload/client/project/{projectId}")
 	public ResponseEntity<Map<String, Object>> uploadProjectFiles(@PathVariable("projectId") Integer projectId,
 			@RequestParam("multipartFile") MultipartFile multipartFile, HttpServletRequest request) {
@@ -247,6 +211,7 @@ public class FilesController {
 		
 	}
 	
+	//Bid file Upload
 	@PostMapping("/upload/vendor/bid/{bidId}")
 	public ResponseEntity<Map<String, Object>> uploadBidFiles(@PathVariable("bidId") Integer bidId,
 			@RequestParam("multipartFile") MultipartFile multipartFile, HttpServletRequest request) {
@@ -269,5 +234,54 @@ public class FilesController {
 		}
 		
 	}
+	
+	//User Profile Image Upload
+	@PostMapping("/upload/user/profile/{userId}/{userType}")
+	public ResponseEntity<Map<String, Object>> uploadProfileImage(@PathVariable("userId") Integer userId,
+			@PathVariable("userType") Integer userType,
+			@RequestParam("multipartFile") MultipartFile multipartFile, HttpServletRequest request) {
+
+		URI url = azureBlobService.uploadProfileImage(userId, userType, Constants.Containers.PROFILE_IMAGES.getValue(), multipartFile);
+		
+		Map<String, Object> map = new HashMap<>();
+		if(url != null) {
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Profile Image Uploaded Successfully");
+			map.put("containerName", Constants.Containers.PROFILE_IMAGES.getValue());
+			map.put("resource", url);
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to upload image");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+	
+	//Vendor Organisation Profile Image Upload
+		@PostMapping("/upload/vendor/organisation/profile/{organisationId}")
+		public ResponseEntity<Map<String, Object>> uploadVendorOrganisationProfileImage(@PathVariable("organisationId") Integer organisationId,
+				@RequestParam("multipartFile") MultipartFile multipartFile, HttpServletRequest request) {
+
+			URI url = azureBlobService.uploadVendorOrganisationProfileImage(organisationId, Constants.Containers.PROFILE_IMAGES.getValue(), multipartFile);
+			
+			Map<String, Object> map = new HashMap<>();
+			if(url != null) {
+				map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+				map.put("statusMessage", "Success");
+				map.put("responseMessage", "Vendor Organisation Profile Image Uploaded Successfully");
+				map.put("containerName", Constants.Containers.PROFILE_IMAGES.getValue());
+				map.put("resource", url);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			} else {
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to upload image");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+		}
 	
 }

@@ -18,6 +18,7 @@ import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientRegistrationFiles;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
@@ -29,6 +30,7 @@ import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
+import tech.torbay.userservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
@@ -62,6 +64,8 @@ public class ClientService {
 	VendorOrganisationRepository vendorOrganisationRepository;
 	@Autowired
 	ProjectRepository projectRepository;
+	@Autowired
+	ClientRegistrationFilesRepository clientRegistrationFilesRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -470,6 +474,26 @@ public class ClientService {
         	exp.printStackTrace();
         	return 0d;
         }
+	}
+
+	public List<Map<String, Object>> getClientRegistrationFiles(Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		List<ClientRegistrationFiles> clientRegistrationFiles = clientRegistrationFilesRepository.findAllByClientOrganisationId(clientOrganisationId);
+		
+		List<Map<String, Object>> files = new ArrayList();
+		for(ClientRegistrationFiles registrationFile : clientRegistrationFiles) {
+			Map<String, Object> obj = new HashMap<>();
+			
+			obj.put("id", registrationFile.getId());
+			obj.put("fileName", registrationFile.getFileName());
+			obj.put("fileType", registrationFile.getFileType());
+			obj.put("fileUrl", registrationFile.getFileUrl());
+			obj.put("createdAt", registrationFile.getCreatedAt());
+			
+			files.add(obj);
+		}
+		
+		return files;
 	}
 
 
