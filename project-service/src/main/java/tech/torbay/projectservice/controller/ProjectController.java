@@ -550,7 +550,7 @@ public class ProjectController {
 	@GetMapping("/projects/bid/{id}")
 	public ResponseEntity<Object> getProjectBidById(@PathVariable("id") Integer id) {
 
-		VendorBid vendorBid = projectService.findByBidId(id);
+		Object vendorBid = projectService.findByBidId(id);
 //		List<ProjectQuestionAnswer> projectAllQA = projectService.getAllQAByProjectId(id);
 		
 		HashMap<String, Object> list = new HashMap();

@@ -23,6 +23,7 @@ import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorInsurance;
@@ -35,6 +36,7 @@ import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
@@ -66,6 +68,8 @@ public class ClientService {
 	ProjectRepository projectRepository;
 	@Autowired
 	ClientRegistrationFilesRepository clientRegistrationFilesRepository;
+	@Autowired
+	UserProfileImagesRepository userProfileImagesRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -93,9 +97,20 @@ public class ClientService {
 		return clientOrganisationRepository.save(clientorganisation);
 	}
 
-	public ClientUser getClientUserById(Integer userId) {
+	public Object getClientUserById(Integer userId) {
 		// TODO Auto-generated method stub
-		return clientUserRepository.findByClientId(userId);
+		ClientUser clientUser = clientUserRepository.findByClientId(userId);
+		
+		ObjectMapper oMapper = new ObjectMapper();
+        // object -> Map
+        Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
+        
+        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
+        
+        map.put("profileImageURL",userProfileImage.getFileUrl());
+//        map.put("",""); blobName
+        
+        return map;
 	}
 
 	public List<Object> getAllCorporateAccounts(Integer clientUserId) {

@@ -19,18 +19,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
+import tech.torbay.projectservice.entity.BidFiles;
 import tech.torbay.projectservice.entity.ClientUser;
 import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
+import tech.torbay.projectservice.entity.ProjectFiles;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
 import tech.torbay.projectservice.entity.VendorUser;
+import tech.torbay.projectservice.repository.BidFilesRepository;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.ClientUserRepository;
 import tech.torbay.projectservice.repository.PredefinedTagsRepository;
+import tech.torbay.projectservice.repository.ProjectFilesRepository;
 import tech.torbay.projectservice.repository.ProjectProductsRepository;
 import tech.torbay.projectservice.repository.ProjectQARepository;
 import tech.torbay.projectservice.repository.ProjectRepository;
@@ -65,6 +69,10 @@ public class ProjectService {
 	ClientUserRepository clientUserRepository;
 	@Autowired
 	VendorCategoryRatingsRepository vendorCategoryRatingsRepository;
+	@Autowired
+	ProjectFilesRepository projectFilesRepository;
+	@Autowired
+	BidFilesRepository bidFilesRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -126,11 +134,9 @@ public class ProjectService {
 			Integer tagId = (Integer) record[0];
 			String tagName = (String) record[1];
 			
-			
 			Map<String,Object> map = new HashMap<>();
 	        map.put("tagId", tagId);
 	        map.put("tagName", tagName);
-	        
 	        
 	        allTags.add(map);
 	        });
@@ -158,6 +164,8 @@ public class ProjectService {
 		}
 		
 		map.put("openBy",String.join(",",names));
+
+		map.put("projectFiles",GetProjectFiles(projectId));
 		
 		return map;
 	}
@@ -208,9 +216,17 @@ public class ProjectService {
 		
 	}
 	
-	public VendorBid findByBidId(Integer vendorBidId) {
+	public Object findByBidId(Integer vendorBidId) {
 		// TODO Auto-generated method stub
-		return vendorBidRepository.findOneById(vendorBidId);
+		
+		VendorBid vendorBid = vendorBidRepository.findOneById(vendorBidId);
+		
+		ObjectMapper oMapper = new ObjectMapper();
+		Map<String, Object> map = oMapper.convertValue(vendorBid, Map.class);
+		
+		map.put("bidFiles", GetVendorBidFiles(vendorBid.getId()));
+		
+		return map;
 	}
 
 	public List<Map<String,Object>> getAllProjects(ProjectSortBy past, Integer id) {
@@ -658,7 +674,7 @@ public class ProjectService {
 		
 		map.put("tags",allTags);
 		
-		VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(projectId, vendorUser.getVendorOrganisationId());
+		Map<String,Object> vendorBid = GetVendorBidForProject(projectId, vendorUser.getVendorOrganisationId());
 		
 		map.put("vendorBid",vendorBid); // null if not placed a bid
 		map.put("questionAnswers",projectQARepository.findProjectQuestionAnswerByProjectId(projectId));
@@ -670,7 +686,61 @@ public class ProjectService {
 			map.put("isInterested", false);
 		}
 		
+		map.put("projectFiles",GetProjectFiles(projectId));
+		
 		return map;
+	}
+
+	private List<Map<String, Object>> GetProjectFiles(Integer projectId) {
+		// TODO Auto-generated method stub
+		List<ProjectFiles> projectFiles = projectFilesRepository.findAllByProjectId(projectId);
+		
+		List<Map<String, Object>> files = new ArrayList();
+		for(ProjectFiles projectFile : projectFiles) {
+			Map<String, Object> obj = new HashMap<>();
+			
+			obj.put("id", projectFile.getId());
+			obj.put("fileName", projectFile.getFileName());
+			obj.put("fileType", projectFile.getFileType());
+			obj.put("fileUrl", projectFile.getFileUrl());
+			obj.put("createdAt", projectFile.getCreatedAt());
+			
+			files.add(obj);
+		}
+		
+		return files;
+	}
+
+	private Map<String, Object> GetVendorBidForProject(Integer projectId, Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(projectId, vendorOrganisationId);
+		
+		ObjectMapper oMapper = new ObjectMapper();
+		Map<String, Object> map = oMapper.convertValue(vendorBid, Map.class);
+		
+		map.put("bidFiles", GetVendorBidFiles(vendorBid.getId()));
+		
+		return map;
+	}
+
+	private Object GetVendorBidFiles(Integer bidId) {
+		// TODO Auto-generated method stub
+		List<BidFiles> bidFiles = bidFilesRepository.findAllByBidId(bidId);
+		
+		List<Map<String, Object>> files = new ArrayList();
+		for(BidFiles bidFile : bidFiles) {
+			Map<String, Object> obj = new HashMap<>();
+			
+			obj.put("id", bidFile.getId());
+			obj.put("fileName", bidFile.getFileName());
+			obj.put("fileType", bidFile.getFileType());
+			obj.put("fileUrl", bidFile.getFileUrl());
+			obj.put("createdAt", bidFile.getCreatedAt());
+			
+			files.add(obj);
+		}
+		
+		return files;
 	}
 
 	public VendorBid findvendorBidByVendorIdAndProjectId(VendorBid vendorBid) {

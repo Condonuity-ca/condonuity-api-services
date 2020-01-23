@@ -1,11 +1,11 @@
-package tech.torbay.fileservice.repository;
+package tech.torbay.projectservice.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.torbay.fileservice.entity.ProjectFiles;
+import tech.torbay.projectservice.entity.ProjectFiles;
 
 @Repository
 public interface ProjectFilesRepository extends JpaRepository<ProjectFiles, Integer> {

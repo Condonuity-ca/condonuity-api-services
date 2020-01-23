@@ -137,7 +137,7 @@ public class VendorController {
     )
 	@GetMapping("/vendor/user/{id}")
 	public ResponseEntity<Object> getVendorUserById(@PathVariable("id") Integer id) {
-		VendorUser vendorUser = vendorService.getVendorUserById(id);
+		Object vendorUser = vendorService.getVendorUserById(id);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorUser != null) {

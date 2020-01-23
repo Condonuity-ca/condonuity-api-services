@@ -15,8 +15,10 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
+import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorBrands;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
@@ -24,6 +26,7 @@ import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorLicenses;
 import tech.torbay.userservice.entity.VendorMemberships;
 import tech.torbay.userservice.entity.VendorOrganisation;
+import tech.torbay.userservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.userservice.entity.VendorPortfolio;
 import tech.torbay.userservice.entity.VendorProducts;
 import tech.torbay.userservice.entity.VendorServices;
@@ -33,12 +36,14 @@ import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorBrandsRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorInsuranceRepository;
 import tech.torbay.userservice.repository.VendorLicensesRepository;
 import tech.torbay.userservice.repository.VendorMembershipsRepository;
+import tech.torbay.userservice.repository.VendorOrganisationProfileImagesRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
 import tech.torbay.userservice.repository.VendorPortfolioRepository;
 import tech.torbay.userservice.repository.VendorProductsRepository;
@@ -79,6 +84,10 @@ public class VendorService {
 	VendorLicensesRepository vendorLicensesRepository;
 	@Autowired
 	VendorMembershipsRepository vendorMembershipsRepository;
+	@Autowired
+	UserProfileImagesRepository userProfileImagesRepository;
+	@Autowired
+	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -101,9 +110,20 @@ public class VendorService {
 		return vendorOrganisationRepository.save(vendorOrganisation);
 	}
 
-	public VendorUser getVendorUserById(Integer userId) {
+	public Object getVendorUserById(Integer userId) {
 		// TODO Auto-generated method stub
-		return vendorUserRepository.findByUserId(userId);
+		VendorUser vendorUser = vendorUserRepository.findByUserId(userId);
+		
+		ObjectMapper oMapper = new ObjectMapper();
+        // object -> Map
+        Map<String, Object> map = oMapper.convertValue(vendorUser, Map.class);
+        
+        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
+        
+        map.put("profileImageURL",userProfileImage.getFileUrl());
+//        map.put("",""); blobName
+        
+        return map;
 	}
 
 	public Object getVendorOrganisationById(Integer vendorOrganisationId) {
@@ -133,6 +153,9 @@ public class VendorService {
 	        mappedObj.put("brands",vendorBrandsRepository.getVendorBrands(vendorOrganisationId));
 	        mappedObj.put("licenses",vendorLicensesRepository.getVendorLicenses(vendorOrganisationId));
 	        mappedObj.put("memberships",vendorMembershipsRepository.getVendorMemberships(vendorOrganisationId));
+	        
+	        VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
+	        mappedObj.put("vendorProfileImageUrl",vendorOrgProfileImage.getFileUrl());
 	        
 			return mappedObj;
 			

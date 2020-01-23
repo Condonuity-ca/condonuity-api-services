@@ -217,45 +217,17 @@ public class AzureBlobService {
 		return false;
 	}
 
-	
-	// client organisation registration multiple file upload
-	public List<URI> uploads(Integer clientId, Integer clientOrganisationId, String containerName, List<MultipartFile> multipartFiles) {
-		// TODO Auto-generated method stub
-		List<URI> uris = new ArrayList();
-		
-		for(MultipartFile multipartFile : multipartFiles) {
-			UUID uuid = UUID.randomUUID();
-			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
-			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
-			uris.add(uri);
-			
-			String blobName = multipartFile.getOriginalFilename();
-			String fileType = multipartFile.getContentType();
-			
-			ClientRegistrationFiles clientRegistrationFile = new ClientRegistrationFiles();
-			clientRegistrationFile.setClientUserId(clientId);
-			clientRegistrationFile.setClientOrganisationId(clientOrganisationId);
-			clientRegistrationFile.setContainerName(containerName);
-			clientRegistrationFile.setBlobName(blobName);
-			clientRegistrationFile.setFileType(fileType);
-			clientRegistrationFile.setFileUrl(uri.toString());
-			
-			clientRegistrationFilesRepository.save(clientRegistrationFile);
-			
-		}
-		
-		return uris;
-	}
-	
-	public URI uploadClientRegistrationFiles(Integer clientId, Integer clientOrganisationId, String containerName, MultipartFile multipartFile) {
+	// upload client registration single file	
+	public URI uploadClientRegistrationFile(Integer clientId, Integer clientOrganisationId, String containerName, MultipartFile multipartFile) {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
 			UUID uuid = UUID.randomUUID();
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
-			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
+			String blobName = uuid.toString()+"."+extension;
+
+			URI uri = uploads(containerName, multipartFile, blobName);
 			
-			String blobName = uuid.toString();
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
@@ -283,16 +255,29 @@ public class AzureBlobService {
 		return null;
 	}
 	
+	// client organisation registration multiple file upload
+	public List<URI> uploadClientRegistrationFiles(Integer clientId, Integer clientOrganisationId, String containerName, MultipartFile[] multipartFiles) {
+		// TODO Auto-generated method stub
+		List<URI> uris = new ArrayList();
+		
+		for(MultipartFile multipartFile : multipartFiles) {
+			uris.add(uploadClientRegistrationFile(clientId, clientOrganisationId, containerName, multipartFile));
+		}
+		
+		return uris;
+	}
 	
+	// single file upload
 	public URI uploadProjectFiles(Integer projectId, String containerName, MultipartFile multipartFile) {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
 			UUID uuid = UUID.randomUUID();
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
-			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
+			String blobName = uuid.toString()+"."+extension;
+
+			URI uri = uploads(containerName, multipartFile, blobName);
 			
-			String blobName = uuid.toString();
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
@@ -317,16 +302,37 @@ public class AzureBlobService {
 		
 		return null;
 	}
+	
+	// multiple file upload
+	public List<URI> uploadProjectFiles(Integer projectId, String containerName, MultipartFile[] multipartFiles) {
+		// TODO Auto-generated method stub
+		try {
+			List<URI> uris = new ArrayList();
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				uris.add(uploadProjectFiles(projectId, containerName, multipartFile));
+			}
+			
+			
+			return uris;
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
 
+	// single file upload
 	public URI uploadBidFiles(Integer bidId, String containerName, MultipartFile multipartFile) {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
 			UUID uuid = UUID.randomUUID();
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
-			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
+			String blobName = uuid.toString()+"."+extension;
 			
-			String blobName = uuid.toString();
+			URI uri = uploads(containerName, multipartFile, blobName);
+			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
@@ -344,6 +350,25 @@ public class AzureBlobService {
 			} else {
 				return null;
 			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	//multiple file upload
+	public List<URI> uploadBidFiles(Integer bidId, String containerName, MultipartFile[] multipartFiles) {
+		// TODO Auto-generated method stub
+		try {
+			
+			List<URI> uris = new ArrayList();
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				uris.add(uploadBidFiles(bidId, containerName, multipartFile));
+			}
+			return uris;
 			
 		} catch(Exception exp) {
 			exp.printStackTrace();
@@ -374,9 +399,10 @@ public class AzureBlobService {
 			createContainer(containerName);
 			UUID uuid = UUID.randomUUID();
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
-			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
+			String blobName = uuid.toString()+"."+extension;
 			
-			String blobName = uuid.toString();
+			URI uri = uploads(containerName, multipartFile, blobName);
+			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
@@ -420,9 +446,10 @@ public class AzureBlobService {
 			createContainer(containerName);
 			UUID uuid = UUID.randomUUID();
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
-			URI uri = uploads(containerName, multipartFile, uuid.toString()+"."+extension);
+			String blobName = uuid.toString()+"."+extension;
 			
-			String blobName = uuid.toString();
+			URI uri = uploads(containerName, multipartFile, blobName);
+			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			
