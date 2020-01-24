@@ -1,4 +1,4 @@
-package tech.torbay.fileservice.entity;
+package tech.torbay.userservice.entity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -9,17 +9,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "thread_files")
-public class ThreadFiles {
+@Table(name = "comment_files")
+public class CommentFiles {
 
-    public ThreadFiles() {
+    public CommentFiles() {
 
     }
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
-    private Integer threadId = 0;
+    private Integer commentId = 0;
     private String containerName = "";
     private String blobName = "";
     private String fileName = "";
@@ -42,12 +42,12 @@ public class ThreadFiles {
 		this.id = id;
 	}
 
-	public Integer getThreadId() {
-		return threadId;
+	public Integer getCommentId() {
+		return commentId;
 	}
 
-	public void setThreadId(Integer threadId) {
-		this.threadId = threadId;
+	public void setCommentId(Integer commentId) {
+		this.commentId = commentId;
 	}
 
 	public String getContainerName() {
@@ -108,9 +108,9 @@ public class ThreadFiles {
 
 	@Override
 	public String toString() {
-		return "ThreadFiles [id=" + id + ", threadId=" + threadId + ", containerName=" + containerName + ", blobName="
-				+ blobName + ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl=" + fileUrl
-				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "CommentFiles [id=" + id + ", commentId=" + commentId + ", containerName=" + containerName
+				+ ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl="
+				+ fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
     
 }

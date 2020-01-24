@@ -96,7 +96,9 @@ public class Constants {
 	    PROJECT_FILES("projectfiles"),
 	    BID_FILES("bidfiles"),
 	    PROFILE_IMAGES("profileimages"),
-	    MESSAGE_THREAD_FILES("threadfiles");
+	    MESSAGE_INTERNAL_THREAD_FILES("internalthreadfiles"),
+		MESSAGE_EXTERNALL_THREAD_FILES("externalthreadfiles"),
+		MESSAGE_COMMENT_FILES("commentfiles");
 
 	    private String value;
 	    private static Map map = new HashMap<>();

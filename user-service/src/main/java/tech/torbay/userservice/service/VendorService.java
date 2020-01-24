@@ -154,8 +154,12 @@ public class VendorService {
 	        mappedObj.put("licenses",vendorLicensesRepository.getVendorLicenses(vendorOrganisationId));
 	        mappedObj.put("memberships",vendorMembershipsRepository.getVendorMemberships(vendorOrganisationId));
 	        
-	        VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
+	        try {
+	        VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(100);
 	        mappedObj.put("vendorProfileImageUrl",vendorOrgProfileImage.getFileUrl());
+	        } catch(Exception exp) {
+	        	exp.printStackTrace();
+	        }
 	        
 			return mappedObj;
 			

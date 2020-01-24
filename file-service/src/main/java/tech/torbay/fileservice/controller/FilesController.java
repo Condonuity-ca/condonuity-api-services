@@ -240,9 +240,9 @@ public class FilesController {
 	// multiple project files upload
 	@PostMapping("/uploads/project/{projectId}")
 	public ResponseEntity<Map<String, Object>> uploadProjectFiles(@PathVariable("projectId") Integer projectId,
-			@RequestParam("multipartFiles") MultipartFile[] multipartFile, HttpServletRequest request) {
+			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
 
-		List<URI> url = azureBlobService.uploadProjectFiles(projectId, Constants.Containers.PROJECT_FILES.getValue(), multipartFile);
+		List<URI> url = azureBlobService.uploadProjectFiles(projectId, Constants.Containers.PROJECT_FILES.getValue(), multipartFiles);
 		
 		Map<String, Object> map = new HashMap<>();
 		if(url != null) {
@@ -288,9 +288,9 @@ public class FilesController {
 	//multiple bid files upload
 	@PostMapping("/uploads/bid/{bidId}")
 	public ResponseEntity<Map<String, Object>> uploadBidFiles(@PathVariable("bidId") Integer bidId,
-			@RequestParam("multipartFiles") MultipartFile[] multipartFile, HttpServletRequest request) {
+			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
 
-		List<URI> url = azureBlobService.uploadBidFiles(bidId, Constants.Containers.BID_FILES.getValue(), multipartFile);
+		List<URI> url = azureBlobService.uploadBidFiles(bidId, Constants.Containers.BID_FILES.getValue(), multipartFiles);
 		
 		Map<String, Object> map = new HashMap<>();
 		if(url != null) {
@@ -358,5 +358,118 @@ public class FilesController {
 		
 	}
 	
+	//upload thread files
+	@PostMapping("/uploads/thread/{threadId}")
+	public ResponseEntity<Map<String, Object>> uploadThreadFiles(@PathVariable("threadId") Integer threadId,
+			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
+
+		List<URI> url = azureBlobService.uploadThreadFiles(threadId, Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue(), multipartFiles);
+		
+		Map<String, Object> map = new HashMap<>();
+		if(url != null) {
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Message Internal Thread Files Uploaded Successfully");
+			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue());
+			map.put("resource", url);
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to upload files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
 	
+	//upload thread files
+	@PostMapping("/uploads/thread/comment/{commentId}")
+	public ResponseEntity<Map<String, Object>> uploadCommentFiles(@PathVariable("commentId") Integer commentId,
+			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
+
+		List<URI> url = azureBlobService.uploadCommentFiles(commentId, Constants.Containers.MESSAGE_COMMENT_FILES.getValue(), multipartFiles);
+		
+		Map<String, Object> map = new HashMap<>();
+		if(url != null) {
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Message Comment Files Uploaded Successfully");
+			map.put("containerName", Constants.Containers.MESSAGE_COMMENT_FILES.getValue());
+			map.put("resource", url);
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to upload files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+		
+//	delete APIs
+	
+	@DeleteMapping("/delete/client/registration/files}")
+	public ResponseEntity<Map<String, Object>> deleteRegistrationFiles(@RequestBody List<Integer> fileIds) {
+		
+		boolean isDeleted = azureBlobService.deleteRegistrationFiles(fileIds);
+		
+		if(isDeleted) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Registration Files Deleted SuccessFully");
+			
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			Map<String, Object> map = new HashMap<>();
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to delete the registration files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+	
+	@DeleteMapping("/delete/project/files")
+	public ResponseEntity<Map<String, Object>> deleteProjectFiles(@RequestBody List<Integer> fileIds) {
+		
+		boolean isDeleted = azureBlobService.deleteProjectFiles(fileIds);
+		
+		if(isDeleted) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Project Files Deleted SuccessFully");
+			
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			Map<String, Object> map = new HashMap<>();
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to delete the project files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+	
+	@DeleteMapping("/delete/bid/files")
+	public ResponseEntity<Map<String, Object>> deleteBidFiles(@RequestBody List<Integer> fileIds) {
+		
+		boolean isDeleted = azureBlobService.deleteBidFiles(fileIds);
+		
+		if(isDeleted) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Bid Files Deleted SuccessFully");
+			
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			Map<String, Object> map = new HashMap<>();
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to delete the bid files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+	}
 }

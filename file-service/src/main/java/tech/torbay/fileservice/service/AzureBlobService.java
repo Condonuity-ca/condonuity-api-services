@@ -27,12 +27,16 @@ import com.microsoft.azure.storage.blob.ListBlobItem;
 
 import tech.torbay.fileservice.entity.BidFiles;
 import tech.torbay.fileservice.entity.ClientRegistrationFiles;
+import tech.torbay.fileservice.entity.CommentFiles;
 import tech.torbay.fileservice.entity.ProjectFiles;
+import tech.torbay.fileservice.entity.ThreadFiles;
 import tech.torbay.fileservice.entity.UserProfileImages;
 import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.fileservice.repository.BidFilesRepository;
 import tech.torbay.fileservice.repository.ClientRegistrationFilesRepository;
+import tech.torbay.fileservice.repository.CommentFilesRepository;
 import tech.torbay.fileservice.repository.ProjectFilesRepository;
+import tech.torbay.fileservice.repository.ThreadFilesRepository;
 import tech.torbay.fileservice.repository.UserProfileImagesRepository;
 import tech.torbay.fileservice.repository.VendorOrganisationProfileImagesRepository;
 
@@ -54,6 +58,10 @@ public class AzureBlobService {
 	UserProfileImagesRepository userProfileImagesRepository;
 	@Autowired
 	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
+	@Autowired
+	ThreadFilesRepository threadFilesRepository;
+	@Autowired
+	CommentFilesRepository commentFilesRepository;
 
 	public boolean createContainer(String containerName) {
 
@@ -485,4 +493,182 @@ public class AzureBlobService {
 		return null;
 	}
 
+	public boolean deleteRegistrationFiles(List<Integer> fileIds) {
+		// TODO Auto-generated method stub
+		try {
+			for(Integer fileId : fileIds) {
+				
+				ClientRegistrationFiles clientRegistrationFile = clientRegistrationFilesRepository.findOneById(fileId);
+				
+				String containerName = clientRegistrationFile.getContainerName();
+				String blobName = clientRegistrationFile.getBlobName();
+				
+				if(deleteBlob(containerName, blobName)) {
+					// azure file delete 
+					clientRegistrationFilesRepository.deleteById(fileId);
+				}
+			}
+			
+			return true;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean deleteProjectFiles(List<Integer> fileIds) {
+		// TODO Auto-generated method stub
+		try {
+			for(Integer fileId : fileIds) {
+				
+				ProjectFiles projectFile = projectFilesRepository.findOneById(fileId);
+				
+				String containerName = projectFile.getContainerName();
+				String blobName = projectFile.getBlobName();
+				
+				if(deleteBlob(containerName, blobName)) {
+					projectFilesRepository.deleteById(fileId);
+				}
+				
+			}
+			
+			return true;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean deleteBidFiles(List<Integer> fileIds) {
+		// TODO Auto-generated method stub
+		try {
+			for(Integer fileId : fileIds) {
+				
+				BidFiles bidFile = bidFilesRepository.findOneById(fileId);
+				
+				String containerName = bidFile.getContainerName();
+				String blobName = bidFile.getBlobName();
+				
+				if(deleteBlob(containerName, blobName)) {
+					bidFilesRepository.deleteById(fileId);
+				}
+				
+			}
+			
+			return true;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+	}
+	
+	// single file upload
+	public URI uploadThreadFiles(Integer threadId, String containerName, MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+		try {
+			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			String blobName = uuid.toString()+"."+extension;
+			
+			URI uri = uploads(containerName, multipartFile, blobName);
+			
+			String fileName = multipartFile.getOriginalFilename();
+			String fileType = multipartFile.getContentType();
+			
+			ThreadFiles threadFiles = new ThreadFiles();
+			threadFiles.setThreadId(threadId);
+			threadFiles.setContainerName(containerName);
+			threadFiles.setBlobName(blobName);
+			threadFiles.setFileName(fileName);
+			threadFiles.setFileType(fileType);
+			threadFiles.setFileUrl(uri.toString());
+			
+			threadFiles = threadFilesRepository.save(threadFiles);
+			if(threadFiles != null) {
+				return uri;
+			} else {
+				return null;
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public List<URI> uploadThreadFiles(Integer bidId, String containerName, MultipartFile[] multipartFiles) {
+		// TODO Auto-generated method stub
+		try {
+			
+			List<URI> uris = new ArrayList();
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				uris.add(uploadThreadFiles(bidId, containerName, multipartFile));
+			}
+			return uris;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public URI uploadCommentFiles(Integer commentId, String containerName, MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+		try {
+			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			String blobName = uuid.toString()+"."+extension;
+			
+			URI uri = uploads(containerName, multipartFile, blobName);
+			
+			String fileName = multipartFile.getOriginalFilename();
+			String fileType = multipartFile.getContentType();
+			
+			CommentFiles commentFiles = new CommentFiles();
+			commentFiles.setCommentId(commentId);
+			commentFiles.setContainerName(containerName);
+			commentFiles.setBlobName(blobName);
+			commentFiles.setFileName(fileName);
+			commentFiles.setFileType(fileType);
+			commentFiles.setFileUrl(uri.toString());
+			
+			commentFiles = commentFilesRepository.save(commentFiles);
+			if(commentFiles != null) {
+				return uri;
+			} else {
+				return null;
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public List<URI> uploadCommentFiles(Integer commentId, String containerName, MultipartFile[] multipartFiles) {
+		// TODO Auto-generated method stub
+		try {
+			
+			List<URI> uris = new ArrayList();
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				uris.add(uploadCommentFiles(commentId, containerName, multipartFile));
+			}
+			return uris;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
 }
