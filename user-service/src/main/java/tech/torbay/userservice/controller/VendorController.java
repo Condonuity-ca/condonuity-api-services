@@ -370,6 +370,30 @@ public class VendorController {
 		
 	}
 	
+	@ApiOperation(value = "Vendor Company Details Update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor organisation Company details updated successfully")
+            }
+    )
+	@PutMapping("/vendor/org/update/company")
+	public ResponseEntity<Object> updateVendorOrganisationCompanyDetails(@RequestBody Map<String, Object> vendorOrganisationData) {
+		if(vendorService.updateVendorOrganisationCompany(vendorOrganisationData) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Company Details Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Vendor Company Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
+	
 	@ApiOperation(value = "Vendor Portfolio Creation")
     @ApiResponses(
             value = {

@@ -134,14 +134,24 @@ public class UserController {
 					
 					if(clientService.getAllOrganisationsForClientUser(clientInfo.getClientId()) > 0) {
 						
-						HashMap<String, Object> list = new HashMap();
-						list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-						list.put("statusMessage", "Success");
-						list.put("responseMessage", "Client details fetched successfully");
-						list.put("userDetails", clientInfo);
-						list.put("authToken", Token);
+						if(clientService.checkIsClientActiveAtlestOneAccount(clientInfo.getClientId())) {
+							HashMap<String, Object> list = new HashMap();
+							list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+							list.put("statusMessage", "Success");
+							list.put("responseMessage", "Client details fetched successfully");
+							list.put("userDetails", clientInfo);
+							list.put("authToken", Token);
+							
+							return new ResponseEntity<>(list, HttpStatus.OK);
+						} else {
+							ResponseMessage responseMessage = new ResponseMessage(
+									APIStatusCode.REQUEST_FAILED.getValue(),
+					        		"Failed",
+					        		"There is no active Organisation for this Client");
+							return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+						}
 						
-						return new ResponseEntity<>(list, HttpStatus.OK);
+						
 					} else {
 						ResponseMessage responseMessage = new ResponseMessage(
 								APIStatusCode.REQUEST_FAILED.getValue(),

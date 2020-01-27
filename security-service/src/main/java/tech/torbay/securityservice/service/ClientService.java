@@ -92,18 +92,15 @@ public class ClientService {
 			//2.1.1
 			if(clientUserRepository.save(clientUser) != null){
 				
-				if(clientUserRepository.findByEmail(clientUser.getEmail()) != null) {
-					
-					clientUser = clientUserRepository.findByEmail(clientUser.getEmail());
-					
-					System.out.println(clientUser.toString());
+				clientUser = clientUserRepository.findByEmail(clientUser.getEmail());
+				
+				if(clientUser != null) {
 					
 					User user = new User();
 					user.setUserId(clientUser.getClientId());
 					user.setUsername(clientUser.getEmail());
 					user.setUserType(Constants.UserType.CLIENT.getValue());
 					
-					System.out.println(user.toString());
 					//2.1.2
 					if(userRepository.save(user) != null) {
 						
@@ -248,6 +245,19 @@ public class ClientService {
 	public ClientOrganisation getClientOrganisationById(Integer organisationId) {
 		// TODO Auto-generated method stub
 		return clientOrganisationRepository.findByClientOrganisationId(organisationId);
+	}
+
+	public boolean checkIsClientActiveAtlestOneAccount(Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		
+		for (ClientAssociation clientAssociation : clientAssociations) {
+			if(clientAssociation.getUserAccountStatus() == Constants.UserAccountStatus.ACTIVE.getValue()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

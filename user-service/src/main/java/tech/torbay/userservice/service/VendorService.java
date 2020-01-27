@@ -599,5 +599,47 @@ public class VendorService {
 		return vendorUserRepository.save(vendorUser);
 	}
 
+	public Object updateVendorOrganisationCompany(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		try {
+			Integer vendorOrganisationId = Integer.parseInt(String.valueOf(vendorOrganisationData.get("vendorOrganisationId"))); 
+			String companyName = String.valueOf(vendorOrganisationData.get("companyName")); 
+			String description = String.valueOf(vendorOrganisationData.get("description")); 
+			String serviceCities = String.valueOf(vendorOrganisationData.get("serviceCities")); 
+			String tags = String.valueOf(vendorOrganisationData.get("tags"));
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
+
+			List<String> tagsList = Arrays.asList(serviceCities.split(","));
+			List<VendorTags> vendorTags = new ArrayList();
+			
+			for(String tag: tagsList) {
+				VendorTags tagId = new VendorTags();
+				tagId.setId(Integer.parseInt(tag));
+				vendorTags.add(tagId);
+		    }
+			
+			
+			
+			vendorOrganisation.setCompanyName(companyName);
+			vendorOrganisation.setDescription(description);
+			vendorOrganisation.setVendorTags(vendorTags);
+			
+			vendorOrganisationRepository.save(vendorOrganisation);
+			
+			List<String> cities = Arrays.asList(serviceCities.split(","));
+		    for(String city: cities) {
+		    	vendorServicesCitiesRepository.save(new VendorServicesCities(vendorOrganisationId,Integer.parseInt(city)));
+		    }
+		    
+		    return vendorOrganisation;
+		    
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
 }
 

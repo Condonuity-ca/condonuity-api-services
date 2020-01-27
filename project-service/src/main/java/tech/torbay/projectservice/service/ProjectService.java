@@ -579,9 +579,9 @@ public class ProjectService {
 		        
 		        List<VendorBid> vendorBid = vendorBidRepository.findVendorBidByProjectId(project.getProjectId());
 		        
-				if(vendorBid == null || vendorBid.size() == 0) {
+//				if(vendorBid == null || vendorBid.size() == 0) {// once bidded its moved to current projects
 					favoriteProjects.add(map);
-				}
+//				}
 			}// only vendor bided projects comes under history favorite projects only in favorite list once bided then only comes for future reference
 			
 		}

@@ -235,6 +235,7 @@ public class ClientController {
 		ClientOrganisation clientOrg = clientService.getClientOrganisationById(organisationId);
 		
 		ClientUser existClient = clientService.findByEmail(email);
+		List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
 		if(existClient != null) {
 			try {
 //				if Association Not-found/association-verification-pending/user-not-active  Send Invite
@@ -255,8 +256,12 @@ public class ClientController {
 //				}
 				
 //				 Invite Sent
-				List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
+				
 				if(clientUsers.size() < Constants.MAX_USER_COUNT) {
+					
+					//add- new client org associate with invite status
+					clientService.addClientOrgAccountAssociation(organisationId, clientUserType, userRole, existClient, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue());
+					
 					sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
 					
 					HttpHeaders headers = new HttpHeaders();
@@ -274,7 +279,6 @@ public class ClientController {
 	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 			}
 		} else {
-			List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
 			if(clientUsers.size() < Constants.MAX_USER_COUNT) {
 				// Add Client and user-org Association 
 				ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, clientUserObj);

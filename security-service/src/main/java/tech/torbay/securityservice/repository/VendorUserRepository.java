@@ -1,6 +1,7 @@
 package tech.torbay.securityservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.VendorOrganisation;
@@ -20,5 +21,6 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 
 	VendorUser findByUserId(Integer userId);
 
+	@Query(value = "select vu from condonuitydev.vendor_user vu where vendor_organisation_id = (?1)  AND account_status = 1 AND account_status = 0", nativeQuery = true)//only active users
 	List<VendorUser> findAllByVendorOrganisationId(Integer vendorOrganisationId);
 }

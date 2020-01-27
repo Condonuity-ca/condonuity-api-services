@@ -101,13 +101,18 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		ClientUser clientUser = clientUserRepository.findByClientId(userId);
 		
+		
 		ObjectMapper oMapper = new ObjectMapper();
         // object -> Map
         Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
         
         UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
         
+        try {
         map.put("profileImageURL",userProfileImage.getFileUrl());
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        }
 //        map.put("",""); blobName
         
         return map;
