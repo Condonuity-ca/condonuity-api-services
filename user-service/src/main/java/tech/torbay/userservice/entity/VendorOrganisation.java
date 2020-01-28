@@ -251,7 +251,11 @@ public class VendorOrganisation {
 	}
 
 	public void setVendorTags(List<VendorTags> vendorTags) {
-		this.vendorTags = vendorTags;
+//		this.vendorTags = vendorTags;
+		this.vendorTags.clear();
+	    if (vendorTags != null) {
+	        this.vendorTags.addAll(vendorTags);
+	    }
 	}
 
 	@Override

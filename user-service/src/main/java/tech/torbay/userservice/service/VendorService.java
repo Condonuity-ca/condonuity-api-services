@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
-import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.UserProfileImages;
@@ -610,27 +609,30 @@ public class VendorService {
 			
 			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
 
-			List<String> tagsList = Arrays.asList(serviceCities.split(","));
+			List<String> tagsList = Arrays.asList(tags.split(","));
 			List<VendorTags> vendorTags = new ArrayList();
-			
 			for(String tag: tagsList) {
 				VendorTags tagId = new VendorTags();
-				tagId.setId(Integer.parseInt(tag));
+				tagId.setTagId(Integer.parseInt(tag));
 				vendorTags.add(tagId);
+				
+				System.out.print(vendorTags);
 		    }
-			
-			
-			
 			vendorOrganisation.setCompanyName(companyName);
 			vendorOrganisation.setDescription(description);
 			vendorOrganisation.setVendorTags(vendorTags);
 			
 			vendorOrganisationRepository.save(vendorOrganisation);
 			
-			List<String> cities = Arrays.asList(serviceCities.split(","));
-		    for(String city: cities) {
-		    	vendorServicesCitiesRepository.save(new VendorServicesCities(vendorOrganisationId,Integer.parseInt(city)));
-		    }
+			try {
+				vendorServicesCitiesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				List<String> cities = Arrays.asList(serviceCities.split(","));
+			    for(String city: cities) {
+			    	vendorServicesCitiesRepository.save(new VendorServicesCities(vendorOrganisationId,Integer.parseInt(city)));
+			    }
+			} catch(Exception exp) {
+				exp.printStackTrace();
+			}
 		    
 		    return vendorOrganisation;
 		    
@@ -640,6 +642,158 @@ public class VendorService {
 		
 		return null;
 	}
+	
+	public Object updateVendorOrganisationCompanySale(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		try {
+			Integer vendorOrganisationId = Integer.parseInt(String.valueOf(vendorOrganisationData.get("vendorOrganisationId"))); 
+			String employeesCount = String.valueOf(vendorOrganisationData.get("employeesCount")); 
+			String establishedDate = String.valueOf(vendorOrganisationData.get("establishedDate")); 
+			String annualRevenue = String.valueOf(vendorOrganisationData.get("annualRevenue")); 
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
 
+			vendorOrganisation.setEmployeesCount(Integer.parseInt(employeesCount));
+			vendorOrganisation.setEstablishedDate(establishedDate);
+			vendorOrganisation.setAnnualRevenue(annualRevenue);
+			
+			vendorOrganisationRepository.save(vendorOrganisation);
+			
+		    return vendorOrganisation;
+		    
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public Object updateVendorOrganisationCompanyContact(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		try {
+			Integer vendorOrganisationId = Integer.parseInt(String.valueOf(vendorOrganisationData.get("vendorOrganisationId"))); 
+			String legalName = String.valueOf(vendorOrganisationData.get("legalName")); 
+			String address = String.valueOf(vendorOrganisationData.get("address")); 
+			String province = String.valueOf(vendorOrganisationData.get("province")); 
+			String city = String.valueOf(vendorOrganisationData.get("city")); 
+			String postalCode = String.valueOf(vendorOrganisationData.get("postalCode")); 
+			String phoneNumber = String.valueOf(vendorOrganisationData.get("phoneNumber")); 
+			String email = String.valueOf(vendorOrganisationData.get("email")); 
+			String faxNumber = String.valueOf(vendorOrganisationData.get("faxNumber")); 
+			String website = String.valueOf(vendorOrganisationData.get("website")); 
+			String contactPerson = String.valueOf(vendorOrganisationData.get("contactPerson")); 
+			String contactPersonPhone = String.valueOf(vendorOrganisationData.get("contactPersonPhone")); 
+			String contactPersonEmail = String.valueOf(vendorOrganisationData.get("contactPersonEmail")); 
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
+
+			vendorOrganisation.setLegalName(legalName);
+			vendorOrganisation.setAddress(address);
+			vendorOrganisation.setProvince(province);
+			vendorOrganisation.setCity(city);
+			vendorOrganisation.setPostalCode(postalCode);
+			vendorOrganisation.setPhoneNumber(phoneNumber);
+			vendorOrganisation.setEmail(email);
+			vendorOrganisation.setFaxNumber(faxNumber);
+			vendorOrganisation.setWebsite(website);
+			vendorOrganisation.setContactPerson(contactPerson);
+			vendorOrganisation.setContactPersonPhone(contactPersonPhone);
+			vendorOrganisation.setContactPersonEmail(contactPersonEmail);
+			
+			vendorOrganisationRepository.save(vendorOrganisation);
+			
+		    return vendorOrganisation;
+		    
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public Object updateVendorInsuranceAndAllServices(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		try {
+			Integer vendorOrganisationId = Integer.parseInt(String.valueOf(vendorOrganisationData.get("vendorOrganisationId"))); 
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
+
+			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			VendorInsurance vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
+			
+			String services = String.valueOf(vendorOrganisationData.get("services")); // string - abc,abc,acbc
+			String licenses = String.valueOf(vendorOrganisationData.get("licenses")); // string - abc,abc,acbc
+			String products = String.valueOf(vendorOrganisationData.get("products")); // string - abc,abc,acbc
+			String brands = String.valueOf(vendorOrganisationData.get("brands")); // string - abc,abc,acbc
+			String memberships = String.valueOf(vendorOrganisationData.get("memberships")); // string - abc,abc,acbc
+			
+			if(vendorOrganisation != null) {
+				
+				// remove old records
+				// 1 delete service cities -NA
+				// 2 delete services
+				// 3 delete licenses
+				// 4 delete products
+				// 5 delete brands
+				// 6 delete memberships
+				vendorServicesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorProductsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorBrandsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorLicensesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorMembershipsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				
+				// 0 add insurance
+				// 1 add service cities - NA
+				// 2 add services
+				// 3 add licenses
+				// 4 add products
+				// 5 add brands
+				// 6 add memberships
+				
+				vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				vendorInsuranceRepository.save(vendorInsurance);
+				
+				//1
+				
+//			    List<String> cities = Arrays.asList(serviceCities.split(","));
+//			    for(String city: cities) {
+//			    	vendorServicesCitiesRepository.save(new VendorServicesCities(vendorOrganisation.getVendorOrganisationId(),Integer.parseInt(city)));
+//			    }
+			    
+			    List<String> vservices = Arrays.asList(services.split(","));
+			    for(String service: vservices) {
+			    	vendorServicesRepository.save(new VendorServices(vendorOrganisation.getVendorOrganisationId(),service));
+			    }
+			    
+			    List<String> vproducts = Arrays.asList(products.split(","));
+			    for(String product: vproducts) {
+			    	vendorProductsRepository.save(new VendorProducts(vendorOrganisation.getVendorOrganisationId(),product));
+			    }
+			    
+			    List<String> vbrands = Arrays.asList(brands.split(","));
+			    for(String brand: vbrands) {
+			    	vendorBrandsRepository.save(new VendorBrands(vendorOrganisation.getVendorOrganisationId(),brand));
+			    }
+			    
+			    List<String> vlicenses = Arrays.asList(licenses.split(","));
+			    for(String license: vlicenses) {
+			    	vendorLicensesRepository.save(new VendorLicenses(vendorOrganisation.getVendorOrganisationId(),license,"",""));
+			    }
+			    
+			    List<String> vmemberships = Arrays.asList(memberships.split(","));
+			    for(String membership: vmemberships) {
+			    	vendorMembershipsRepository.save(new VendorMemberships(vendorOrganisation.getVendorOrganisationId(),membership,""));
+			    }
+			    
+				return vendorOrganisation;
+			} else {
+				return null;
+			}
+
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
 }
 

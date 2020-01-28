@@ -394,6 +394,78 @@ public class VendorController {
 		
 	}
 	
+	@ApiOperation(value = "Vendor Company Sale Update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor organisation Company sale updated successfully")
+            }
+    )
+	@PutMapping("/vendor/org/update/company/sale")
+	public ResponseEntity<Object> updateVendorOrganisationCompanySale(@RequestBody Map<String, Object> vendorOrganisationData) {
+		if(vendorService.updateVendorOrganisationCompanySale(vendorOrganisationData) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Company Sale Details Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Vendor Company Sale Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
+	
+	@ApiOperation(value = "Vendor Company Contact Update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor organisation Company Contact updated successfully")
+            }
+    )
+	@PutMapping("/vendor/org/update/company/contact")
+	public ResponseEntity<Object> updateVendorOrganisationCompanyContact(@RequestBody Map<String, Object> vendorOrganisationData) {
+		if(vendorService.updateVendorOrganisationCompanyContact(vendorOrganisationData) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Company Contact Details Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Vendor Company Contact Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
+	
+	@ApiOperation(value = "Vendor Insurances and All Services Update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor organisation Insurances and All Services updated successfully")
+            }
+    )
+	@PutMapping("/vendor/org/update/company/services")
+	public ResponseEntity<Object> updateVendorInsuranceAndAllServices(@RequestBody Map<String, Object> vendorOrganisationData) {
+		if(vendorService.updateVendorInsuranceAndAllServices(vendorOrganisationData) != null) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Insurances and All Services Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Vendor Insurances and All Services Details");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
+	
 	@ApiOperation(value = "Vendor Portfolio Creation")
     @ApiResponses(
             value = {

@@ -35,11 +35,11 @@ public class VendorTags {
     private String modifiedDate;
 
 	public Integer getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Integer id) {
-		id = id;
+		this.id = id;
 	}
 
 	public Integer getTagId() {
