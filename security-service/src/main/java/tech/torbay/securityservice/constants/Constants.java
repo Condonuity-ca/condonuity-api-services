@@ -111,7 +111,12 @@ public class Constants {
 	    SERVER_ERROR(2),
 	    BAD_REQUEST(3),
 	    NOT_FOUND(4),
-	    AUTHENTICATION_FAILED(5);
+	    AUTHENTICATION_FAILED(5),
+	    CONFLICT(6),
+		INACTIVE_USER(7),
+		CLIENT_ORGANISATION_NOT_FOUND(8),
+		NO_ACTIVE_ORGANISATION_FOUND(9), 
+		MAX_USERS_COUNT_ERROR(7);
 	    
 	    private int value;
 	    private static Map map = new HashMap<>();

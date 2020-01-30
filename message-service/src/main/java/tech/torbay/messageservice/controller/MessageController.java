@@ -1,4 +1,4 @@
-package tech.torbay.userservice.messages.controller;
+package tech.torbay.messageservice.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import tech.torbay.userservice.constants.Constants.APIStatusCode;
-import tech.torbay.userservice.messages.entity.ClientInternalMessage;
-import tech.torbay.userservice.messages.entity.ClientInternalMessageComment;
-import tech.torbay.userservice.messages.service.MessageService;
-import tech.torbay.userservice.statusmessage.ResponseMessage;
+import tech.torbay.messageservice.constants.Constants.APIStatusCode;
+import tech.torbay.messageservice.entity.ClientInternalMessage;
+import tech.torbay.messageservice.entity.ClientInternalMessageComment;
+import tech.torbay.messageservice.service.MessageService;
+import tech.torbay.messageservice.statusmessage.ResponseMessage;
 
 @RestController
 @RequestMapping("/api")

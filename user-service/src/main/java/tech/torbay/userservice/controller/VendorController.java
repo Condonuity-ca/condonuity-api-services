@@ -68,7 +68,6 @@ public class VendorController {
 		}
 	}
 	
-	
 	@ApiOperation(value = "Fetch A Vendor Details Implementation")
     @ApiResponses(
             value = {
@@ -156,10 +155,10 @@ public class VendorController {
 		}
 	}
 	
-	@ApiOperation(value = "Fetch A Vendor User Details Implementation")
+	@ApiOperation(value = "Update Vendor User Inactive state Implementation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "A vendor user details fetched successfully")
+                    @ApiResponse(code = 200, message = "A vendor user state changed to inactive successfully")
             }
     )
 	@PutMapping("/vendor/user/inactive")

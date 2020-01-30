@@ -1,11 +1,11 @@
-package tech.torbay.userservice.messages.repository;
+package tech.torbay.messageservice.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.torbay.userservice.messages.entity.ClientInternalMessageComment;
+import tech.torbay.messageservice.entity.ClientInternalMessageComment;
 
 @Repository
 public interface ClientInternalMessageCommentRepository extends JpaRepository<ClientInternalMessageComment, Integer> {

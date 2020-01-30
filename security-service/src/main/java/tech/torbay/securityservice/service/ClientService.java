@@ -259,5 +259,15 @@ public class ClientService {
 		}
 		return false;
 	}
+
+	public boolean checkOrganisationNameAvailable(String organisationName) {
+		// TODO Auto-generated method stub
+		
+		if(clientOrganisationRepository.findByOrganisationName(organisationName) != null) {
+			return false;
+		}
+		
+		return true;
+	}
 }
 

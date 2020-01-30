@@ -148,12 +148,12 @@ public class ProjectController {
 	        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
 	            
 	        		responseMessage = new ResponseMessage(
-	                		StatusCode.REQUEST_SUCCESS.getValue(),
+	                		StatusCode.REQUEST_FAILED.getValue(),
 	                		"Failed",
 	            			"Failed to Create Project");
 	        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
 	        		responseMessage = new ResponseMessage(
-	                		StatusCode.REQUEST_SUCCESS.getValue(),
+	                		StatusCode.REQUEST_FAILED.getValue(),
 	                		"Failed",
 	            			"Failed to Post Project");
 	        		

@@ -28,6 +28,7 @@
         <module>security-service</module>
         <module>project-service</module>
         <module>file-service</module>
+		<module>message-service</module>
     </modules>
 
     <dependencyManagement>

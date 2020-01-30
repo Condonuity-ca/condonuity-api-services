@@ -59,6 +59,7 @@ import tech.torbay.securityservice.entity.SupportUser;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
+import tech.torbay.securityservice.exception.BadRequestException;
 import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.service.SupportService;
 import tech.torbay.securityservice.service.UserService;
@@ -115,76 +116,55 @@ public class UserController {
     )
 	@PostMapping("/user/login")
 	public ResponseEntity<Object> getUserByLogin(@RequestBody User user, UriComponentsBuilder builder) {
+		
+		if(user == null) {
+			new BadRequestException("Bad Request", "Failed", "Request Format Error");
+		}
+		
 		User userInfo = userService.Login(user.getUsername(), user.getPassword());
-		
 		try {
-//		String loginInfo = "";
-		logger.info("userInfo : "+userInfo);
-		
-		if(userInfo != null) {
-			
-			String Token = getAuthToken(user.getUsername(), user.getPassword());
-			
-			if(userInfo.getUserType() == 1) {
-				
-				ClientUser clientInfo = clientService.findById(userInfo.getUserId());
-				logger.info("clientInfo : "+clientInfo);
-				if(clientInfo != null) { 
-					//
+			if(userInfo != null) {
+				String Token = getAuthToken(user.getUsername(), user.getPassword());
+				if(userInfo.getUserType() == 1) {
 					
-					if(clientService.getAllOrganisationsForClientUser(clientInfo.getClientId()) > 0) {
-						
-						if(clientService.checkIsClientActiveAtlestOneAccount(clientInfo.getClientId())) {
-							HashMap<String, Object> list = new HashMap();
-							list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-							list.put("statusMessage", "Success");
-							list.put("responseMessage", "Client details fetched successfully");
-							list.put("userDetails", clientInfo);
-							list.put("authToken", Token);
-							
-							return new ResponseEntity<>(list, HttpStatus.OK);
+					ClientUser clientInfo = clientService.findById(userInfo.getUserId());
+					logger.info("clientInfo : "+clientInfo);
+					if(clientInfo != null) { 
+						if(clientService.getAllOrganisationsForClientUser(clientInfo.getClientId()) > 0) {
+								
+								if(clientService.checkIsClientActiveAtlestOneAccount(clientInfo.getClientId())) {
+									HashMap<String, Object> list = new HashMap();
+									list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+									list.put("statusMessage", "Success");
+									list.put("responseMessage", "Client details fetched successfully");
+									list.put("userDetails", clientInfo);
+									list.put("authToken", Token);
+									
+									return new ResponseEntity<>(list, HttpStatus.OK);
+								} else {
+									ResponseMessage responseMessage = new ResponseMessage(
+											APIStatusCode.NO_ACTIVE_ORGANISATION_FOUND.getValue(),
+							        		"Failed",
+							        		"There is no active Organisation for this Client");
+									return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+								}
 						} else {
-							ResponseMessage responseMessage = new ResponseMessage(
-									APIStatusCode.REQUEST_FAILED.getValue(),
-					        		"Failed",
-					        		"There is no active Organisation for this Client");
-							return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+								ResponseMessage responseMessage = new ResponseMessage(
+										APIStatusCode.CLIENT_ORGANISATION_NOT_FOUND.getValue(),
+						        		"Failed",
+						        		"Client Organisation Not registered for this User");
+								return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 						}
-						
-						
 					} else {
 						ResponseMessage responseMessage = new ResponseMessage(
-								APIStatusCode.REQUEST_FAILED.getValue(),
+								APIStatusCode.NOT_FOUND.getValue(),
 				        		"Failed",
-				        		"Client Organisation Not registered for this User");
+				        		"User Record Not Found");
 						return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 					}
-					
-					} /*
-						 * else if(clientInfo.getPassword().toString() == null ||
-						 * clientInfo.getPassword().trim().length() == 0) {
-						 * clientInfo.setPassword(null); HashMap<String, Object> list = new HashMap();
-						 * list.put("statusCode", StatusCode.RESET_PASSWORD.getValue());
-						 * list.put("statusMessage", "User need to set New Password");
-						 * list.put("responseMessage", "Please reset your password");
-						 * list.put("userDetails", clientInfo); return new ResponseEntity<>(list,
-						 * HttpStatus.OK); }
-						 */ /*
-							 * else if(registrationStatus == UserAccountStatus.INACTIVE.getValue()) {
-							 * ResponseMessage responseMessage = new ResponseMessage(
-							 * APIStatusCode.REQUEST_FAILED.getValue(), "Failed", "Invalid Credentials");
-							 * return new ResponseEntity<>(responseMessage, HttpStatus.OK); }
-							 */
-				
-			} else if(userInfo.getUserType() == 2) {
-				
-				VendorUser vendorUserInfo = vendorService.findByVendorUserId(userInfo.getUserId());
-				VendorOrganisation vendorOrgInfo = new VendorOrganisation();
-				if(vendorUserInfo.getVendorOrganisationId() != 0) {
-				vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
-				logger.info("vendorOrgInfo"+vendorOrgInfo);
-				}
-				
+				} else if(userInfo.getUserType() == 2) {
+					VendorUser vendorUserInfo = vendorService.findByVendorUserId(userInfo.getUserId());
+					VendorOrganisation vendorOrgInfo = new VendorOrganisation();
 					if (vendorUserInfo != null ) {
 					
 						if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
@@ -197,67 +177,76 @@ public class UserController {
 							return new ResponseEntity<>(list, HttpStatus.OK);
 						} else {
 							ResponseMessage responseMessage = new ResponseMessage(
-									APIStatusCode.REQUEST_FAILED.getValue(),
+									APIStatusCode.INACTIVE_USER.getValue(),
 					        		"Failed",
 					        		"Inactive User Information");
 							return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 						}
+	//					list.put("vendorOrgDetails",vendorOrgInfo);
+					} else {
+						ResponseMessage responseMessage = new ResponseMessage(
+								APIStatusCode.NOT_FOUND.getValue(),
+				        		"Failed",
+				        		"User Record Not Found");
+						return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+					}
+	//					else if(vendorUserInfo != null && vendorUserInfo.getAccountStatus() ==  VerificationStatus.NOT_VERIFIED.getValue()) {
+	//					HashMap<String, Object> list = new HashMap();
+	//					list.put("statusMessage", "User need to set New Password");
+	//					list.put("responseMessage", "Please reset your password");
+	//					list.put("userDetails", vendorUserInfo);
+	////					list.put("vendorOrgDetails",vendorOrgInfo);
+	//					
+	//					if(vendorUserInfo.getVendorOrganisationId() != 0) {
+	//						list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+	////						list.put("vendorOrgDetails",vendorOrgInfo);
+	//					} else {
+	//						list.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+	//					}
+	//					
+	//					return new ResponseEntity<>(list, HttpStatus.OK);
+	//				}
+				} else if(userInfo.getUserType() == 3) {
 					
-					
-//					list.put("vendorOrgDetails",vendorOrgInfo);
-					
-				} 
-//					else if(vendorUserInfo != null && vendorUserInfo.getAccountStatus() ==  VerificationStatus.NOT_VERIFIED.getValue()) {
-//					HashMap<String, Object> list = new HashMap();
-//					list.put("statusMessage", "User need to set New Password");
-//					list.put("responseMessage", "Please reset your password");
-//					list.put("userDetails", vendorUserInfo);
-////					list.put("vendorOrgDetails",vendorOrgInfo);
-//					
-//					if(vendorUserInfo.getVendorOrganisationId() != 0) {
-//						list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-////						list.put("vendorOrgDetails",vendorOrgInfo);
-//					} else {
-//						list.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
-//					}
-//					
-//					return new ResponseEntity<>(list, HttpStatus.OK);
-//				}
-			} else if(userInfo.getUserType() == 3) {
-				
-				SupportUser supportUserInfo = supportService.findBySupportUserId(userInfo.getUserId());
-					if (supportUserInfo != null) {
-					
-					HashMap<String, Object> list = new HashMap();
-					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-					list.put("statusMessage", "Success");
-					list.put("responseMessage", "Support User details fetched successfully");
-					list.put("userDetails", supportUserInfo);
-					list.put("authToken", Token);
-					
-					return new ResponseEntity<>(list, HttpStatus.OK);
-				} 
+					SupportUser supportUserInfo = supportService.findBySupportUserId(userInfo.getUserId());
+						if (supportUserInfo != null) {
+						
+						HashMap<String, Object> list = new HashMap();
+						list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+						list.put("statusMessage", "Success");
+						list.put("responseMessage", "Support User details fetched successfully");
+						list.put("userDetails", supportUserInfo);
+						list.put("authToken", Token);
+						
+						return new ResponseEntity<>(list, HttpStatus.OK);
+					} else {
+						ResponseMessage responseMessage = new ResponseMessage(
+								APIStatusCode.NOT_FOUND.getValue(),
+				        		"Failed",
+				        		"User Record Not Found");
+						return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+					}
+				}
+			} else {
+				ResponseMessage responseMessage = new ResponseMessage(
+						APIStatusCode.AUTHENTICATION_FAILED.getValue(),
+		        		"Failed",
+		        		"Invalid Credentials");
+				return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 			}
-		} else {
-			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.REQUEST_FAILED.getValue(),
-	        		"Failed",
-	        		"Invalid Credentials");
-			return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-		}
-		ResponseMessage responseMessage = new ResponseMessage(
-				APIStatusCode.REQUEST_FAILED.getValue(),
-        		"Failed",
-        		"Invalid Credentials");
-		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 		} catch(Exception exp) {
 			exp.printStackTrace();
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.SERVER_ERROR.getValue(),
 	        		"Failed",
-	        		"Invalid Credentials");
+	        		"Server Error");
 			return new ResponseEntity<>(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		ResponseMessage responseMessage = new ResponseMessage(
+				APIStatusCode.SERVER_ERROR.getValue(),
+        		"Failed",
+        		"Server Error");
+		return new ResponseEntity<>(responseMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {
@@ -331,9 +320,16 @@ public class UserController {
 						response.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
 						response.put("statusMessage", "User need to set New Password");
 						response.put("responseMessage", "Please reset your password");
-						response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
+//						response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
+//						Action
+						try {
+							sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());
+						} catch(Exception exp) {
+							exp.printStackTrace();
+						}
 						
 						return new ResponseEntity<Object>(response, HttpStatus.OK);
+						
 					}
 //					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","User Already Exists");
 					HashMap<String, Object> response = new HashMap();
@@ -400,7 +396,18 @@ public class UserController {
 			Boolean isFirstTimeUser = Boolean.parseBoolean(String.valueOf(requestData.get("isNewUser")));
 			
 			String decryptedUser = SecurityAES.decrypt(hash);
-			Map<String, Object> userData =  Utils.convertJsonToHashMap(decryptedUser);
+			Map<String, Object> userData;
+			try {
+				userData = Utils.convertJsonToHashMap(decryptedUser);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.BAD_REQUEST.getValue(),
+	        			"Failed",
+	        			"Failed to Parse Request - Bad Request");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
 			
 			Integer userType = Integer.parseInt(String.valueOf(userData.get("userType")));
 			Integer userId = Integer.parseInt(String.valueOf(userData.get("userId")));
@@ -532,7 +539,7 @@ public class UserController {
         }
     }
 	
-	 private static class AppUser {
+	private static class AppUser {
 	        private String username, password;
 
 	        public AppUser(String username, String password) {
@@ -565,7 +572,7 @@ public class UserController {
 	            }
 	    )
 		@GetMapping("/user/forgotpwd/{email}")
-		public ResponseEntity<Object> forgotPassword(@Valid @PathVariable("email") @Email(message = "Email must be a valid email address") String email) {
+	public ResponseEntity<Object> forgotPassword(@Valid @PathVariable("email") @Email(message = "Email must be a valid email address") String email) {
 			try {
 				if(isValid(email)) {
 					User user = userService.findByEmail(email);
@@ -604,7 +611,6 @@ public class UserController {
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			}
 		}
-
 
 	private void sendForgotPasswordResetLink(String email, Integer userId, Integer userType) {
 		// TODO Auto-generated method stub

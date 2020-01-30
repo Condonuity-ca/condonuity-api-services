@@ -1,10 +1,9 @@
-package tech.torbay.userservice.messages.repository;
+package tech.torbay.messageservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.torbay.userservice.entity.User;
-import tech.torbay.userservice.messages.entity.ClientInternalMessage;
+import tech.torbay.messageservice.entity.ClientInternalMessage;
 
 import java.util.List;
 

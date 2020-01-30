@@ -39,8 +39,8 @@ public class Constants {
 	    SERVER_ERROR(2),
 	    BAD_REQUEST(3),
 	    NOT_FOUND(4),
-	    AUTHENTICATION_FAILED(5);
-		/* RESET_PASSWORD(6) */;
+	    AUTHENTICATION_FAILED(5),
+		CONFLICT(6);
 		
 	    private int value;
 	    private static Map map = new HashMap<>();

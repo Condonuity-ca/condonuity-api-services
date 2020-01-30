@@ -1,4 +1,4 @@
-package tech.torbay.userservice.messages.service;
+package tech.torbay.messageservice.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tech.torbay.userservice.messages.entity.ClientInternalMessage;
-import tech.torbay.userservice.messages.entity.ClientInternalMessageComment;
-import tech.torbay.userservice.messages.repository.ClientInternalMessageCommentRepository;
-import tech.torbay.userservice.messages.repository.ClientInternalMessageRepository;
-import tech.torbay.userservice.repository.CommentFilesRepository;
-import tech.torbay.userservice.repository.ThreadFilesRepository;
+import tech.torbay.messageservice.entity.ClientInternalMessage;
+import tech.torbay.messageservice.entity.ClientInternalMessageComment;
+import tech.torbay.messageservice.repository.ClientInternalMessageCommentRepository;
+import tech.torbay.messageservice.repository.ClientInternalMessageRepository;
+import tech.torbay.messageservice.repository.CommentFilesRepository;
+import tech.torbay.messageservice.repository.ThreadFilesRepository;
 
 @Component
 public class MessageService {

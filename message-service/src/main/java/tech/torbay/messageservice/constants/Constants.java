@@ -1,4 +1,4 @@
-package tech.torbay.userservice.constants;
+package tech.torbay.messageservice.constants;
 
 import java.util.HashMap;
 import java.util.Map;

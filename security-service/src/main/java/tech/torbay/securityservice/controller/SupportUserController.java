@@ -64,7 +64,7 @@ public class SupportUserController {
 		
 		if(supportService.findByEmail(supportUser.getEmail()) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			APIStatusCode.CONFLICT.getValue(),
 	        		"Failed",
 	        		"Support User Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);

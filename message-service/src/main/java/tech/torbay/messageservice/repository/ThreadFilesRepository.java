@@ -1,11 +1,11 @@
-package tech.torbay.userservice.repository;
+package tech.torbay.messageservice.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.torbay.userservice.entity.ThreadFiles;
+import tech.torbay.messageservice.entity.ThreadFiles;
 
 @Repository
 public interface ThreadFilesRepository extends JpaRepository<ThreadFiles, Integer> {

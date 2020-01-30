@@ -95,7 +95,19 @@ public class ClientController {
 			String hash = String.valueOf(requestData.get("hash"));
 			
 			String decryptedUser = SecurityAES.decrypt(hash);
-			Map<String, Object> userData =  Utils.convertJsonToHashMap(decryptedUser);
+			
+			Map<String, Object> userData;
+			try {
+				userData = Utils.convertJsonToHashMap(decryptedUser);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.BAD_REQUEST.getValue(),
+	        			"Failed",
+	        			"Failed to Parse Request - Bad Request");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
 			
 			Integer clientId = Integer.parseInt(String.valueOf(userData.get("userId")));
 			String email = String.valueOf(userData.get("email"));
@@ -147,9 +159,9 @@ public class ClientController {
 		} catch(Exception exp) {
 			exp.printStackTrace();
 			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.BAD_REQUEST.getValue(),
+					APIStatusCode.REQUEST_FAILED.getValue(),
 					"Request Failed",
-					"Invalid Request Error");
+					"Failed to accept invite");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 	}
@@ -168,10 +180,10 @@ public class ClientController {
 		
 		if(clientService.findByEmail(client.getEmail()) != null ) {
 			ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			APIStatusCode.CONFLICT.getValue(),
         			"Failed",
         			"User Record Already Exists");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		} else {
 			ClientUser clientUser;
 			try {
@@ -188,7 +200,7 @@ public class ClientController {
 	        			APIStatusCode.REQUEST_FAILED.getValue(),
 	        			"Failed",
 	        			"New Client Registration Failed");
-	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.CONFLICT);
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	        } else {
 		        HttpHeaders headers = new HttpHeaders();
 		        headers.setLocation(builder.path("/client/user/{id}").buildAndExpand(client.getClientId()).toUri());
@@ -268,7 +280,7 @@ public class ClientController {
 			        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
 			        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
 				} else {
-					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
+					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.MAX_USERS_COUNT_ERROR.getValue(),"Failed","Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 				}
 				
@@ -303,7 +315,7 @@ public class ClientController {
 		        }
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(
-						APIStatusCode.REQUEST_FAILED.getValue(),
+						APIStatusCode.MAX_USERS_COUNT_ERROR.getValue(),
 		        		"Failed",
 		        		"Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
@@ -337,9 +349,17 @@ public class ClientController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			APIStatusCode.BAD_REQUEST.getValue(),
         			"Failed",
         			"Failed to Parse Request - Bad Request");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		
+		if(clientService.checkOrganisationNameAvailable(organisation.getOrganisationName())) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.CONFLICT.getValue(),
+        			"Failed",
+        			"Client Organisation Name Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		

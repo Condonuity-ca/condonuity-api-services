@@ -235,5 +235,17 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		return vendorOrganisationRepository.findByVendorOrganisationId(id);
 	}
+
+	public boolean checkOrganisationNameAvailable(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
+		
+		if(vendorOrganisationRepository.findByCompanyName(vendorOrganisation.getCompanyName()) != null) {
+			return false;
+		}
+		
+		return true;
+	}
 }
 

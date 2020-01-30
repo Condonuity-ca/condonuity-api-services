@@ -259,8 +259,6 @@ public class ClientController {
 	@PutMapping("/client/user/role")
 	public ResponseEntity<Object> updateUserRoleAndPosition(@RequestBody Map<String, Object> requestData) {
 		
-		
-		
 		if(clientService.saveClientUserRole(requestData) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),

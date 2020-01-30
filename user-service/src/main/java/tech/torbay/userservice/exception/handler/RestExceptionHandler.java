@@ -1,4 +1,4 @@
-package tech.torbay.projectservice.exception.handler;
+package tech.torbay.userservice.exception.handler;
 
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
@@ -24,8 +24,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import tech.torbay.projectservice.constants.Constants.StatusCode;
-import tech.torbay.projectservice.statusmessage.ResponseMessage;
+import tech.torbay.userservice.constants.Constants.APIStatusCode;
+import tech.torbay.userservice.statusmessage.ResponseMessage;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -34,7 +34,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    @Override
    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 	   ResponseMessage responseMessage = new ResponseMessage(
-       		StatusCode.NOT_FOUND.getValue(),
+			   APIStatusCode.NOT_FOUND.getValue(),
        		"Bad Request Error - handleHttpMessageNotReadable",
        		ex.getLocalizedMessage());
        logger.info("BAD_REQUEST");
@@ -47,7 +47,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
           String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
           
           ResponseMessage responseMessage = new ResponseMessage(
-  	       		StatusCode.BAD_REQUEST.getValue(),
+        		  APIStatusCode.BAD_REQUEST.getValue(),
   	       		"Bad Request Error - handleMethodArgumentNotValid",
   	       	errorMessage);
           logger.info("BAD_REQUEST");
@@ -60,7 +60,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    	// TODO Auto-generated method stub
        
        ResponseMessage responseMessage = new ResponseMessage(
-	       		StatusCode.NOT_FOUND.getValue(),
+    		   APIStatusCode.NOT_FOUND.getValue(),
 	       		"Page Not Found - handleHttpRequestMethodNotSupported",
 	       	ex.getLocalizedMessage());
        logger.info("NOT_FOUND");
@@ -86,7 +86,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    		HttpStatus status, WebRequest request) {
    	// TODO Auto-generated method stub
 	   ResponseMessage responseMessage = new ResponseMessage(
-	       		StatusCode.BAD_REQUEST.getValue(),
+			   APIStatusCode.BAD_REQUEST.getValue(),
 	       		"Bad Request Error - handleMissingPathVariable",
 	       	ex.getLocalizedMessage());
       logger.info("BAD_REQUEST");
@@ -98,7 +98,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    		HttpHeaders headers, HttpStatus status, WebRequest request) {
    	// TODO Auto-generated method stub
 	   ResponseMessage responseMessage = new ResponseMessage(
-	       		StatusCode.BAD_REQUEST.getValue(),
+			   APIStatusCode.BAD_REQUEST.getValue(),
 	       		"Bad Request Error - handleMissingServletRequestParameter",
 	       	ex.getLocalizedMessage());
       logger.info("BAD_REQUEST");
@@ -110,7 +110,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    		HttpHeaders headers, HttpStatus status, WebRequest request) {
    	// TODO Auto-generated method stub
 	   ResponseMessage responseMessage = new ResponseMessage(
-	       		StatusCode.BAD_REQUEST.getValue(),
+			   APIStatusCode.BAD_REQUEST.getValue(),
 	       		"Bad Request Error - handleServletRequestBindingException",
 	       	ex.getLocalizedMessage());
       logger.info("BAD_REQUEST");
@@ -136,7 +136,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    		HttpStatus status, WebRequest request) {
    	// TODO Auto-generated method stub
 	   ResponseMessage responseMessage = new ResponseMessage(
-	       		StatusCode.BAD_REQUEST.getValue(),
+			   APIStatusCode.BAD_REQUEST.getValue(),
 	       		"Bad Request Error - handleHttpMessageNotWritable",
 	       	ex.getLocalizedMessage());
      logger.info("BAD_REQUEST");
@@ -155,7 +155,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    		WebRequest request) {
    	// TODO Auto-generated method stub
 	   ResponseMessage responseMessage = new ResponseMessage(
-	       		StatusCode.BAD_REQUEST.getValue(),
+			   APIStatusCode.BAD_REQUEST.getValue(),
 	       		"Bad Request Error - handleBindException",
 	       	ex.getLocalizedMessage());
     logger.info("BAD_REQUEST");

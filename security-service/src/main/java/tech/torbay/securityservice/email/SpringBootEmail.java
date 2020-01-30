@@ -73,11 +73,12 @@ public class SpringBootEmail {
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
-        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Thank you for Registering in Condonuity Application</div>\r\n" +
+        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Thank you for you registration request</div>\r\n" +
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please verify email to continue Registration" +"</div>\r\n" +
         		
          "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">VERIFY EMAIL</a>" +"</div>\r\n" +
-        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+//        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+        "<div style=\"font-size: 16px;color:#97a3b4;\">*This request will expire after 7 days \n</div>\r\n" +
         "</div>\r\n" +				
 				"</div>", true);
         
@@ -161,11 +162,12 @@ public class SpringBootEmail {
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Reset your password</div>\r\n" +
-        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">You requested to reset the password to your Condonuity application with the email address (<a style=\"color:#d84d34;\">"+ toEmail +"</a>) </div>\r\n" +
+        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">We've received your request to reset your password related to the email address: (<a style=\"color:#d84d34;\">"+ toEmail +"</a>) </div>\r\n" +
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please click the button to reset your password" +"</div>\r\n" +
         		
          "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">RESET PASSWORD</a>" +"</div>\r\n" +
-        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+//        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+        "<div style=\"font-size: 16px;color:#97a3b4;\">*This request will expire after 7 days \n</div>\r\n" +
         "</div>\r\n" +				
 				"</div>", true);
 
@@ -208,7 +210,8 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">You have received an invitation from "+organisationName +"</div>\r\n" +
         		
          "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">ACCEPT INVITE</a>" +"</div>\r\n" +
-        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+//        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+        "<div style=\"font-size: 16px;color:#97a3b4;\">This request will expire after 7 days \n</div>\r\n" +
         "</div>\r\n" +				
 				"</div>", true);
         

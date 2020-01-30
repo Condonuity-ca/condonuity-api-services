@@ -70,9 +70,16 @@ public class VendorController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			APIStatusCode.BAD_REQUEST.getValue(),
         			"Failed",
         			"Failed to Parse Request - Bad Request");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		if(vendorService.checkOrganisationNameAvailable(vendorOrganisationData)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.CONFLICT.getValue(),
+        			"Failed",
+        			"Vendor Organisation Name Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
@@ -108,7 +115,7 @@ public class VendorController {
 		
 		if(vendorService.findByEmail(vendorUser.getEmail()) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
+        			APIStatusCode.CONFLICT.getValue(),
 	        		"Failed",
 	        		"Vendor User Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
@@ -180,7 +187,19 @@ public class VendorController {
 			String hash = String.valueOf(requestData.get("hash"));
 			
 			String decryptedUser = SecurityAES.decrypt(hash);
-			Map<String, Object> userData =  Utils.convertJsonToHashMap(decryptedUser);
+			Map<String, Object> userData;
+			try {
+				userData = Utils.convertJsonToHashMap(decryptedUser);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.BAD_REQUEST.getValue(),
+	        			"Failed",
+	        			"Failed to Parse Request - Bad Request");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+			
 			
 			Integer vendorUserId = Integer.parseInt(String.valueOf(userData.get("userId")));
 			String email = String.valueOf(userData.get("email"));
@@ -219,9 +238,9 @@ public class VendorController {
 		} catch(Exception exp) {
 			exp.printStackTrace();
 			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.BAD_REQUEST.getValue(),
+					APIStatusCode.REQUEST_FAILED.getValue(),
 					"Request Failed",
-					"Invalid Request Error");
+					"Vendor User Account Verification Failed");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 		
@@ -242,7 +261,7 @@ public class VendorController {
 		
 		if(existVendorUserObj != null ) {
 			ResponseMessage responseMessage = new ResponseMessage(
-					APIStatusCode.REQUEST_FAILED.getValue(),
+					APIStatusCode.CONFLICT.getValue(),
 	        		"Failed",
 	        		"Vendor User Already Exists");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
@@ -265,14 +284,14 @@ public class VendorController {
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(
-							APIStatusCode.NOT_FOUND.getValue(),
-			        		"RESOURCE_NOT_FOUND",
+							APIStatusCode.REQUEST_FAILED.getValue(),
+			        		"Failed",
 			        		"Vendor User Account Creation Failed");
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				}
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(
-						APIStatusCode.REQUEST_FAILED.getValue(),
+						APIStatusCode.MAX_USERS_COUNT_ERROR.getValue(),
 		        		"Failed",
 		        		"Maximum of "+Constants.MAX_USER_COUNT+" Vendor User Added in this Organisation");
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);

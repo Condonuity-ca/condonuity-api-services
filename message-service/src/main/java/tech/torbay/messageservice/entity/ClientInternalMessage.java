@@ -1,4 +1,4 @@
-package tech.torbay.userservice.messages.entity;
+package tech.torbay.messageservice.entity;
 
 import javax.persistence.*;
 
@@ -6,19 +6,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@Table(name = "client_internal_message_comment")
-public class ClientInternalMessageComment {
+@Table(name = "client_internal_message")
+public class ClientInternalMessage {
 
-    public ClientInternalMessageComment() {
+    public ClientInternalMessage() {
 
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
+    private Integer clientOrganisationId = 0;
     private Integer clientUserId = 0;
-    private Integer threadId = 0;
-    private String comment = "";
+    private String threadSubject = "";
+    private String threadDescription = "";
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -36,6 +37,14 @@ public class ClientInternalMessageComment {
 		this.id = id;
 	}
 
+	public Integer getClientOrganisationId() {
+		return clientOrganisationId;
+	}
+
+	public void setClientOrganisationId(Integer clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId;
+	}
+
 	public Integer getClientUserId() {
 		return clientUserId;
 	}
@@ -44,20 +53,20 @@ public class ClientInternalMessageComment {
 		this.clientUserId = clientUserId;
 	}
 
-	public Integer getThreadId() {
-		return threadId;
+	public String getThreadSubject() {
+		return threadSubject;
 	}
 
-	public void setThreadId(Integer threadId) {
-		this.threadId = threadId;
+	public void setThreadSubject(String threadSubject) {
+		this.threadSubject = threadSubject;
 	}
 
-	public String getComment() {
-		return comment;
+	public String getThreadDescription() {
+		return threadDescription;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setThreadDescription(String threadDescription) {
+		this.threadDescription = threadDescription;
 	}
 
 	public String getCreatedAt() {
@@ -78,7 +87,9 @@ public class ClientInternalMessageComment {
 
 	@Override
 	public String toString() {
-		return "ClientInternalMessageComment [id=" + id + ", clientUserId=" + clientUserId + ", threadId=" + threadId
-				+ ", comment=" + comment + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "ClientInternalMessage [id=" + id + ", clientOrganisationId=" + clientOrganisationId + ", clientUserId="
+				+ clientUserId + ", threadSubject=" + threadSubject + ", threadDescription=" + threadDescription
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
+
 }
