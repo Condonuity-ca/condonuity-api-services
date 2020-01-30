@@ -1,5 +1,6 @@
 package tech.torbay.messageservice.config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -34,7 +35,7 @@ public class SwaggerConfig {
 
         ApiInfo apiInfo = new ApiInfo(
                 "Condonuity Service Application",
-                "Condonuity Service Application for Message",
+                "Condonuity Service Application for Project",
                 "1.0",
                 "Terms of Service",
                 new Contact("Condonuity", "https://www.torbay.condonuity/",

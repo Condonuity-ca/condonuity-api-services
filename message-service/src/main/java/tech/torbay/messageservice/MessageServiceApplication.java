@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
-@SpringBootApplication(scanBasePackages = {"tech.torbay.userservice"})
+@SpringBootApplication(scanBasePackages = {"tech.torbay.messageservice"})
 @EnableEurekaClient
 public class MessageServiceApplication {
 

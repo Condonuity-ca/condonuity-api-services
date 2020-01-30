@@ -6,18 +6,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@Table(name = "client_internal_message")
-public class ClientInternalMessage {
+@Table(name = "internal_message")
+public class InternalMessage {
 
-    public ClientInternalMessage() {
+    public InternalMessage() {
 
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
-    private Integer clientOrganisationId = 0;
-    private Integer clientUserId = 0;
+    private Integer organisationId = 0;
+    private Integer userId = 0;
+    private Integer userType = 0;
     private String threadSubject = "";
     private String threadDescription = "";
     
@@ -37,20 +38,28 @@ public class ClientInternalMessage {
 		this.id = id;
 	}
 
-	public Integer getClientOrganisationId() {
-		return clientOrganisationId;
+	public Integer getOrganisationId() {
+		return organisationId;
 	}
 
-	public void setClientOrganisationId(Integer clientOrganisationId) {
-		this.clientOrganisationId = clientOrganisationId;
+	public void setOrganisationId(Integer organisationId) {
+		this.organisationId = organisationId;
 	}
 
-	public Integer getClientUserId() {
-		return clientUserId;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setClientUserId(Integer clientUserId) {
-		this.clientUserId = clientUserId;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
 	}
 
 	public String getThreadSubject() {
@@ -87,8 +96,8 @@ public class ClientInternalMessage {
 
 	@Override
 	public String toString() {
-		return "ClientInternalMessage [id=" + id + ", clientOrganisationId=" + clientOrganisationId + ", clientUserId="
-				+ clientUserId + ", threadSubject=" + threadSubject + ", threadDescription=" + threadDescription
+		return "InternalMessage [id=" + id + ", organisationId=" + organisationId + ", userId=" + userId + ", userType="
+				+ userType + ", threadSubject=" + threadSubject + ", threadDescription=" + threadDescription
 				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 

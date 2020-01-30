@@ -16,19 +16,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.messageservice.constants.Constants.APIStatusCode;
-import tech.torbay.messageservice.entity.ClientInternalMessage;
-import tech.torbay.messageservice.entity.ClientInternalMessageComment;
+import tech.torbay.messageservice.entity.InternalMessage;
+import tech.torbay.messageservice.entity.InternalMessageComment;
 import tech.torbay.messageservice.service.MessageService;
 import tech.torbay.messageservice.statusmessage.ResponseMessage;
 
 @RestController
 @RequestMapping("/api")
+@Api(value = "Message Resource REST Endpoint", description = "Shows the Message Implementation")
 public class MessageController {
-	private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 	
 	@Autowired
 	private MessageService messageService;
@@ -39,22 +40,24 @@ public class MessageController {
                     @ApiResponse(code = 200, message = "Thread Created successfully")
             }
     )
-	@PostMapping("/thread/create/internal")
-	private ResponseEntity<Object> createThread(@RequestBody ClientInternalMessage clientInternalMessage) {
+	@PostMapping("/internal/message/create")
+	private ResponseEntity<Object> createThread(@RequestBody InternalMessage internalMessage) {
 		// TODO Auto-generated method stub
 		
-		if (messageService.createThread(clientInternalMessage) == null) {
+		InternalMessage internalMessageObj = messageService.createThread(internalMessage);
+		if (internalMessageObj == null) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Failed to create message thread");
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    } else {
-	    	ResponseMessage responseMessage = new ResponseMessage(
-	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"Message Thread Created Successfully");
-	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    	HashMap<String, Object> response = new HashMap();
+	    	response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Message Thread Created Successfully");
+			response.put("threadId", String.valueOf(internalMessageObj.getId()));
+	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
 	    }
 	}
 	
@@ -64,19 +67,19 @@ public class MessageController {
                     @ApiResponse(code = 200, message = "Threads fetched successfully")
             }
     )
-	@GetMapping("/thread/create/internal/{clientOrganisationId}")
-	private ResponseEntity<Object> createThread(@PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+	@GetMapping("/internal/messages/{userType}/{clientOrganisationId}")
+	private ResponseEntity<Object> createThread(@PathVariable("userType") Integer userType, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		
-		List<Map<String,Object>> clientInternalMessages = messageService.getClientInternalMessages(clientOrganisationId);
+		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(clientOrganisationId, userType);
 		
 		HashMap<String, Object> list = new HashMap();
 		
-		if (clientInternalMessages != null) {
+		if (internalMessages != null) {
 			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			list.put("statusMessage", "Success");
-			list.put("responseMessage", "Client Internal Message Threads Fetched Successfully");
-			list.put("clientInternalMessages", clientInternalMessages);
+			list.put("responseMessage", "Internal Message Threads Fetched Successfully");
+			list.put("internalMessages", internalMessages);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {
@@ -88,28 +91,30 @@ public class MessageController {
 		}
 	}
 	
-	@ApiOperation(value = "Create Thread Comment in Client Internal Message Board implementation")
+	@ApiOperation(value = "Create Thread Comment in Internal Message Board implementation")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "Thread Comment Posted successfully")
             }
     )
-	@PostMapping("/thread/create/internal/comment")
-	private ResponseEntity<Object> createThreadComment(@RequestBody ClientInternalMessageComment clientInternalMessageComment) {
+	@PostMapping("/internal/message/comment/create")
+	private ResponseEntity<Object> createThreadComment(@RequestBody InternalMessageComment internalMessageComment) {
 		// TODO Auto-generated method stub
 		
-		if (messageService.createThreadComment(clientInternalMessageComment) == null) {
+		InternalMessageComment internalMessageCommentObj = messageService.createThreadComment(internalMessageComment);
+		if (internalMessageCommentObj == null) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Failed to create message thread");
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    } else {
-	    	ResponseMessage responseMessage = new ResponseMessage(
-	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"Message Thread Comment Created Successfully");
-	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    	HashMap<String, Object> response = new HashMap();
+	    	response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Message Thread Comment Created Successfully");
+			response.put("threadCommentId", String.valueOf(internalMessageCommentObj.getId()));
+	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
 	    }
 	}
 }

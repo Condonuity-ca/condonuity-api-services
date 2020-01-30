@@ -232,7 +232,22 @@ public class ProjectService {
 	public List<Map<String,Object>> getAllProjects(ProjectSortBy past, Integer id) {
 		// TODO Auto-generated method stub
 		
-		List<Project> projects = projectRepository.findAllByClientOrganisationIdAndStatus(id, past.getValue());
+		List<Project> projects = new ArrayList();
+		
+		switch(past.getValue()) {
+			case 0: {
+//				All - 0
+			}
+			case 1:{
+//				Current - 1-unpublished and 2-published
+				projects = projectRepository.findAllCurrentProjects(id);
+			}
+			case 2:{
+//				Past - 
+				projects = projectRepository.findAllAwardedProjects(id);
+			}
+		}
+		
 		
 		List<Map<String,Object>> allProjects = new ArrayList();
 		

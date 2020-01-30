@@ -22,6 +22,12 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	List<Project> findAllByClientOrganisationIdAndStatus(Integer id, int value);
 	
+	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and status = 1 or status = 2", nativeQuery = true )
+	List<Project> findAllCurrentProjects(Integer id);
+	
+	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and status = 3", nativeQuery = true )
+	List<Project> findAllAwardedProjects(Integer id);
+	
 	Project findOneByProjectId(Integer projectId);
 
 	@Query("select pro from Project pro where pro.projectId IN (?1)")

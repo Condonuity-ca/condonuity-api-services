@@ -6,17 +6,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
-@Table(name = "client_internal_message_comment")
-public class ClientInternalMessageComment {
+@Table(name = "internal_message_comment")
+public class InternalMessageComment {
 
-    public ClientInternalMessageComment() {
+    public InternalMessageComment() {
 
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
-    private Integer clientUserId = 0;
+    private Integer userId = 0;
+    private Integer userType = 0;
     private Integer threadId = 0;
     private String comment = "";
     
@@ -36,12 +37,20 @@ public class ClientInternalMessageComment {
 		this.id = id;
 	}
 
-	public Integer getClientUserId() {
-		return clientUserId;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setClientUserId(Integer clientUserId) {
-		this.clientUserId = clientUserId;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
 	}
 
 	public Integer getThreadId() {
@@ -78,7 +87,9 @@ public class ClientInternalMessageComment {
 
 	@Override
 	public String toString() {
-		return "ClientInternalMessageComment [id=" + id + ", clientUserId=" + clientUserId + ", threadId=" + threadId
-				+ ", comment=" + comment + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "InternalMessageComment [id=" + id + ", userId=" + userId + ", userType=" + userType + ", threadId="
+				+ threadId + ", comment=" + comment + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
+				+ "]";
 	}
+
 }
