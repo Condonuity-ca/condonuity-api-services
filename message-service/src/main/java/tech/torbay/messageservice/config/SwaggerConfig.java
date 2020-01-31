@@ -35,7 +35,7 @@ public class SwaggerConfig {
 
         ApiInfo apiInfo = new ApiInfo(
                 "Condonuity Service Application",
-                "Condonuity Service Application for Project",
+                "Condonuity Service Application for Messages",
                 "1.0",
                 "Terms of Service",
                 new Contact("Condonuity", "https://www.torbay.condonuity/",

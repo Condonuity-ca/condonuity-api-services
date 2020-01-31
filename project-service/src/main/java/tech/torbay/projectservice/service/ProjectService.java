@@ -237,14 +237,17 @@ public class ProjectService {
 		switch(past.getValue()) {
 			case 0: {
 //				All - 0
+//				break;
 			}
 			case 1:{
 //				Current - 1-unpublished and 2-published
 				projects = projectRepository.findAllCurrentProjects(id);
+				break;
 			}
 			case 2:{
 //				Past - 
 				projects = projectRepository.findAllAwardedProjects(id);
+				break;
 			}
 		}
 		

@@ -90,7 +90,7 @@ public class ProjectController {
 		if(list != null) {
 			response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
 			response.put("statusMessage", "Success");
-			response.put("responseMessage", "All Projects from Client fetched successfully");
+			response.put("responseMessage", "All Current Projects from Client fetched successfully");
 			response.put("projects", list);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
