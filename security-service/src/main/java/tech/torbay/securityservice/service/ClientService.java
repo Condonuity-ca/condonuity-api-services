@@ -262,12 +262,12 @@ public class ClientService {
 
 	public boolean checkOrganisationNameAvailable(String organisationName) {
 		// TODO Auto-generated method stub
-		
-		if(clientOrganisationRepository.findByOrganisationName(organisationName) != null) {
-			return false;
+		List<ClientOrganisation> clientOrgs = clientOrganisationRepository.findByOrganisationName(organisationName);
+		if( clientOrgs != null && clientOrgs.size() > 0) {
+			return true;
 		}
 		
-		return true;
+		return false;
 	}
 }
 

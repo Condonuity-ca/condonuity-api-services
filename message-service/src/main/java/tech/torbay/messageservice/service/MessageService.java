@@ -11,12 +11,16 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.messageservice.entity.CommentFiles;
+import tech.torbay.messageservice.entity.ExternalMessage;
+import tech.torbay.messageservice.entity.ExternalMessageComment;
 import tech.torbay.messageservice.entity.InternalMessage;
 import tech.torbay.messageservice.entity.InternalMessageComment;
 import tech.torbay.messageservice.entity.ThreadFiles;
 import tech.torbay.messageservice.repository.InternalMessageCommentRepository;
 import tech.torbay.messageservice.repository.InternalMessageRepository;
 import tech.torbay.messageservice.repository.CommentFilesRepository;
+import tech.torbay.messageservice.repository.ExternalMessageCommentRepository;
+import tech.torbay.messageservice.repository.ExternalMessageRepository;
 import tech.torbay.messageservice.repository.ThreadFilesRepository;
 
 @Component
@@ -30,6 +34,15 @@ public class MessageService {
 	ThreadFilesRepository threadFilesRepository;
 	@Autowired
 	CommentFilesRepository commentFilesRepository;
+	
+	@Autowired
+	ExternalMessageRepository externalMessageRepository;
+	@Autowired
+	ExternalMessageCommentRepository externalMessageCommentRepository;
+//	@Autowired
+//	ExternalThreadFilesRepository externalThreadFilesRepository;
+//	@Autowired
+//	ExternalThreadCommentFilesRepository externalThreadcommentFilesRepository;
 
 	public InternalMessage createThread(InternalMessage internalMessage) {
 		// TODO Auto-generated method stub
@@ -101,6 +114,82 @@ public class MessageService {
 				allFiles.add(file);
 			}
 			map.put("files",allFiles);
+			allComments.add(map);
+		}
+		return allComments;
+	}
+	
+	
+	public ExternalMessage createExternalThread(ExternalMessage internalMessage) {
+		// TODO Auto-generated method stub
+		return externalMessageRepository.save(internalMessage);
+	}
+
+	public ExternalMessageComment createThreadComment(ExternalMessageComment internalMessageComment) {
+		// TODO Auto-generated method stub
+		return externalMessageCommentRepository.save(internalMessageComment);
+	}
+
+	public List<Map<String,Object>> getExternalMessages(Integer organisationId, Integer userType) {
+		// TODO Auto-generated method stub
+
+		List<ExternalMessage> externalMessages = externalMessageRepository.findAllBySourceOrganisationIdAndSourceUserType(organisationId, userType);
+		
+		List<Map<String,Object>> allMessages = new ArrayList();
+		
+		for(ExternalMessage externalMessage : externalMessages) {
+			
+			Map<String,Object> map = new HashMap<>();
+			ObjectMapper oMapper = new ObjectMapper();
+			map = oMapper.convertValue(externalMessage, Map.class);
+			
+//			List<ExternalThreadFiles> threadFiles = externalThreadFilesRepository.findAllByThreadId(externalMessage.getId());
+//			List<Map<String,Object>> allFiles = new ArrayList();
+//			for(ExternalThreadFiles threadFile : threadFiles) {
+//				Map<String,Object> file = new HashMap<>();
+//				file.put("id", threadFile.getId());
+//				file.put("fileName", threadFile.getFileName());
+//				file.put("fileType", threadFile.getFileType());
+//				file.put("fileUrl", threadFile.getFileUrl());
+//				file.put("createdAt", threadFile.getCreatedAt());
+//				file.put("modifiedDate", threadFile.getModifiedDate());
+//				allFiles.add(file);
+//			}
+			
+			map.put("files","[]"/*allFiles*/);
+			map.put("comments",getExternalThreadComments(externalMessage.getId()));
+			
+			allMessages.add(map);
+		}
+		
+		return allMessages;
+	}
+
+	private List<Map<String,Object>> getExternalThreadComments(Integer threadId) {
+		// TODO Auto-generated method stub
+		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(threadId);
+		
+		List<Map<String,Object>> allComments = new ArrayList();
+		
+		for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+			
+			Map<String,Object> map = new HashMap<>();
+			ObjectMapper oMapper = new ObjectMapper();
+			map = oMapper.convertValue(externalMessageComment, Map.class);
+			
+//			List<ExternalThreadCommentFiles> commentFiles = externalThreadcommentFilesRepository.findAllByCommentId(internalMessageComment.getId());
+//			List<Map<String,Object>> allFiles = new ArrayList();
+//			for(ExternalThreadCommentFiles commentFile : commentFiles) {
+//				Map<String,Object> file = new HashMap<>();
+//				file.put("id", commentFile.getId());
+//				file.put("fileName", commentFile.getFileName());
+//				file.put("fileType", commentFile.getFileType());
+//				file.put("fileUrl", commentFile.getFileUrl());
+//				file.put("createdAt", commentFile.getCreatedAt());
+//				file.put("modifiedDate", commentFile.getModifiedDate());
+//				allFiles.add(file);
+//			}
+			map.put("files","[]"/*allFiles*/);
 			allComments.add(map);
 		}
 		return allComments;

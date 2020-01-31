@@ -12,7 +12,7 @@ public interface InternalMessageCommentRepository extends JpaRepository<Internal
 
     List<InternalMessageComment> findAll();
 
-    InternalMessageComment save(InternalMessageComment user);
+    InternalMessageComment save(InternalMessageComment internalMessageComment);
     
     InternalMessageComment findOneById(Integer id);
 

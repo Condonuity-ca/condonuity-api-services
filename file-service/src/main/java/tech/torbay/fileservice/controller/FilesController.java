@@ -1,6 +1,7 @@
 package tech.torbay.fileservice.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -139,6 +142,28 @@ public class FilesController {
 		}
 	}
 
+	@GetMapping("/container/blob/uri/{containerName}/{blobName}")
+	public @ResponseBody Object getBlobFile(@PathVariable("containerName") String containerName, @PathVariable("blobName") String blobName) {
+	    try {
+	    	if(!azureBlobService.isBlobExists(containerName, blobName)) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File not available at specified Container "+containerName+" and Blob location "+blobName);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+	    	
+	    	InputStream in = getClass()
+				      .getResourceAsStream("file/path/image.jpg");
+			return IOUtils.toByteArray(in);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    return null;
+	}
+	
 	// Need to discuss - with Nagaraj
 //	@DeleteMapping("/container/bolb/delete/{containerName}/{blobName}")
 //	public ResponseEntity<Map<String, Object>> delete(@PathVariable("containerName") String containerName,

@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.messageservice.constants.Constants.APIStatusCode;
+import tech.torbay.messageservice.entity.ExternalMessage;
 import tech.torbay.messageservice.entity.InternalMessage;
 import tech.torbay.messageservice.entity.InternalMessageComment;
 import tech.torbay.messageservice.service.MessageService;
@@ -99,6 +100,90 @@ public class MessageController {
     )
 	@PostMapping("/internal/message/comment/create")
 	private ResponseEntity<Object> createThreadComment(@RequestBody InternalMessageComment internalMessageComment) {
+		// TODO Auto-generated method stub
+		
+		InternalMessageComment internalMessageCommentObj = messageService.createThreadComment(internalMessageComment);
+		if (internalMessageCommentObj == null) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to create message thread");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	HashMap<String, Object> response = new HashMap();
+	    	response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Message Thread Comment Created Successfully");
+			response.put("threadCommentId", String.valueOf(internalMessageCommentObj.getId()));
+	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
+	    }
+	}
+	
+	@ApiOperation(value = "Create Thread in Client External Message Board implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Thread Created successfully")
+            }
+    )
+	@PostMapping("/external/message/create")
+	private ResponseEntity<Object> createExternalThread(@RequestBody ExternalMessage externalMessage) {
+		// TODO Auto-generated method stub
+		
+		ExternalMessage externalMessageObj = messageService.createExternalThread(externalMessage);
+		if (externalMessageObj == null) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to create message thread");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	HashMap<String, Object> response = new HashMap();
+	    	response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Message Thread Created Successfully");
+			response.put("threadId", String.valueOf(externalMessageObj.getId()));
+	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
+	    }
+	}
+	
+	@ApiOperation(value = "Get Threads from External Message Board implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Threads fetched successfully")
+            }
+    )
+	@GetMapping("/external/messages/{userType}/{organisationId}")
+	private ResponseEntity<Object> createExternalThread(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+		// TODO Auto-generated method stub
+		
+		List<Map<String,Object>> externalMessages = messageService.getExternalMessages(organisationId, userType);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (externalMessages != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "External Message Threads Fetched Successfully");
+			list.put("externalMessages", externalMessages);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message threads");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Create Thread Comment in External Message Board implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Thread Comment Posted successfully")
+            }
+    )
+	@PostMapping("/external/message/comment/create")
+	private ResponseEntity<Object> createExternalThreadComment(@RequestBody InternalMessageComment internalMessageComment) {
 		// TODO Auto-generated method stub
 		
 		InternalMessageComment internalMessageCommentObj = messageService.createThreadComment(internalMessageComment);

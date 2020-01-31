@@ -241,11 +241,13 @@ public class VendorService {
 		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
 		
-		if(vendorOrganisationRepository.findByCompanyName(vendorOrganisation.getCompanyName()) != null) {
-			return false;
+		List<VendorOrganisation> org = vendorOrganisationRepository.findByCompanyName(vendorOrganisation.getCompanyName());
+		
+		if( org != null && org.size() > 0) {
+			return true;
 		}
 		
-		return true;
+		return false;
 	}
 }
 

@@ -709,36 +709,43 @@ public class ProjectService {
 		return map;
 	}
 
-	private List<Map<String, Object>> GetProjectFiles(Integer projectId) {
+	private Object/*List<Map<String, Object>>*/ GetProjectFiles(Integer projectId) {
 		// TODO Auto-generated method stub
 		List<ProjectFiles> projectFiles = projectFilesRepository.findAllByProjectId(projectId);
 		
-		List<Map<String, Object>> files = new ArrayList();
-		for(ProjectFiles projectFile : projectFiles) {
-			Map<String, Object> obj = new HashMap<>();
-			
-			obj.put("id", projectFile.getId());
-			obj.put("fileName", projectFile.getFileName());
-			obj.put("fileType", projectFile.getFileType());
-			obj.put("fileUrl", projectFile.getFileUrl());
-			obj.put("createdAt", projectFile.getCreatedAt());
-			
-			files.add(obj);
-		}
+//		List<Map<String, Object>> files = new ArrayList();
+//		for(ProjectFiles projectFile : projectFiles) {
+//			Map<String, Object> obj = new HashMap<>();
+//			
+//			obj.put("id", projectFile.getId());
+//			obj.put("fileName", projectFile.getFileName());
+//			obj.put("fileType", projectFile.getFileType());
+//			obj.put("fileUrl", projectFile.getFileUrl());
+//			obj.put("createdAt", projectFile.getCreatedAt());
+//			
+//			files.add(obj);
+//		}
+//		
+//		return files;
 		
-		return files;
+		return projectFiles;
 	}
 
 	private Map<String, Object> GetVendorBidForProject(Integer projectId, Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(projectId, vendorOrganisationId);
 		
-		ObjectMapper oMapper = new ObjectMapper();
-		Map<String, Object> map = oMapper.convertValue(vendorBid, Map.class);
+		if(vendorBid != null) {
+			ObjectMapper oMapper = new ObjectMapper();
+			Map<String, Object> map = oMapper.convertValue(vendorBid, Map.class);
+			
+			map.put("bidFiles", GetVendorBidFiles(vendorBid.getId()));
+			
+			return map;
+		} else {
+			return null;
+		}
 		
-		map.put("bidFiles", GetVendorBidFiles(vendorBid.getId()));
-		
-		return map;
 	}
 
 	private Object GetVendorBidFiles(Integer bidId) {

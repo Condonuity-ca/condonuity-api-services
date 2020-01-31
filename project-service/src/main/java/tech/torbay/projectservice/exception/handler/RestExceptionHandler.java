@@ -158,8 +158,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	       		StatusCode.BAD_REQUEST.getValue(),
 	       		"Bad Request Error - handleBindException",
 	       	ex.getLocalizedMessage());
-    logger.info("BAD_REQUEST");
-    return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+	   logger.info("BAD_REQUEST");
+	   return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
    }
 
    @Override
@@ -180,7 +180,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
    		HttpStatus status, WebRequest request) {
    	// TODO Auto-generated method stub
-   	return super.handleExceptionInternal(ex, body, headers, status, request);
+//   	return super.handleExceptionInternal(ex, body, headers, status, request);
+	   ResponseMessage responseMessage = new ResponseMessage(
+	       		StatusCode.SERVER_ERROR.getValue(),
+	       		"Internal Server Error",
+	       	ex.getLocalizedMessage());
+	   logger.info("SERVER_ERROR");
+	   return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
    }
    
    
