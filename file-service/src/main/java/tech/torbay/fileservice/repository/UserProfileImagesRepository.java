@@ -15,5 +15,7 @@ public interface UserProfileImagesRepository extends JpaRepository<UserProfileIm
     UserProfileImages findOneById(Integer Id);
 
 	UserProfileImages findByUserIdAndUserType(Integer userId, Integer userType);
+
+	UserProfileImages findByBlobName(String blobName);
 	
 }

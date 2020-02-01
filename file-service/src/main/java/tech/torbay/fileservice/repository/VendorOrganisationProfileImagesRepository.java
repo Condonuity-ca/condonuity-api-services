@@ -15,5 +15,7 @@ public interface VendorOrganisationProfileImagesRepository extends JpaRepository
     VendorOrganisationProfileImages findOneById(Integer Id);
 
 	VendorOrganisationProfileImages findByVendorOrganisationId(Integer organisationId);
+
+	VendorOrganisationProfileImages findByBlobName(String blobName);
 	
 }

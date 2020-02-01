@@ -24,6 +24,7 @@ public class CommentFiles {
     private String blobName = "";
     private String fileName = "";
     private String fileType = "";
+    private String fileSize = "";
     private String fileUrl = "";
     
 	@Basic(optional = false)
@@ -82,6 +83,14 @@ public class CommentFiles {
 		this.fileType = fileType;
 	}
 
+	public String getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(String fileSize) {
+		this.fileSize = fileSize;
+	}
+
 	public String getFileUrl() {
 		return fileUrl;
 	}
@@ -109,8 +118,9 @@ public class CommentFiles {
 	@Override
 	public String toString() {
 		return "CommentFiles [id=" + id + ", commentId=" + commentId + ", containerName=" + containerName
-				+ ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl="
-				+ fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType + ", fileSize="
+				+ fileSize + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
+				+ "]";
 	}
-    
+
 }

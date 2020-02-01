@@ -40,7 +40,8 @@ public class Constants {
 	    BAD_REQUEST(3),
 	    NOT_FOUND(4),
 	    AUTHENTICATION_FAILED(5),
-		CONFLICT(6);
+		CONFLICT(6),
+		FILE_NOT_FOUND(7);
 		
 	    private int value;
 	    private static Map map = new HashMap<>();
@@ -96,9 +97,11 @@ public class Constants {
 	    PROJECT_FILES("projectfiles"),
 	    BID_FILES("bidfiles"),
 	    PROFILE_IMAGES("profileimages"),
+	    ORGANISATION_PROFILE_IMAGES("organisationprofileimages"),
 	    MESSAGE_INTERNAL_THREAD_FILES("internalthreadfiles"),
 		MESSAGE_EXTERNALL_THREAD_FILES("externalthreadfiles"),
-		MESSAGE_COMMENT_FILES("commentfiles");
+		MESSAGE_INTERNAL_COMMENT_FILES("internalCommentfiles"),
+		MESSAGE_EXTERNAL_COMMENT_FILES("externalCommentfiles");
 
 	    private String value;
 	    private static Map map = new HashMap<>();

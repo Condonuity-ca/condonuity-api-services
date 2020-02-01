@@ -15,5 +15,7 @@ public interface ThreadFilesRepository extends JpaRepository<ThreadFiles, Intege
     ThreadFiles findOneById(Integer Id);
 
 	List<ThreadFiles> findAllByThreadId(Integer threadId);
+
+	ThreadFiles findByBlobName(String blobName);
 	
 }

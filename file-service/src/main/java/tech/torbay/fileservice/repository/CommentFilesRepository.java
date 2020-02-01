@@ -16,5 +16,7 @@ public interface CommentFilesRepository extends JpaRepository<CommentFiles, Inte
     CommentFiles findOneById(Integer Id);
 
 	List<CommentFiles> findAllByCommentId(Integer commentId);
+
+	CommentFiles findByBlobName(String blobName);
 	
 }

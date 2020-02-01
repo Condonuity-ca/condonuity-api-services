@@ -15,5 +15,7 @@ public interface ClientRegistrationFilesRepository extends JpaRepository<ClientR
     ClientRegistrationFiles findOneById(Integer Id);
 
 	List<ClientRegistrationFiles> findAllByClientOrganisationId(Integer clientOrganisationId);
+
+	ClientRegistrationFiles findByBlobName(String BlobName);
 	
 }

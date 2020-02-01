@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -25,6 +27,7 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 
+import tech.torbay.fileservice.constants.Constants.Containers;
 import tech.torbay.fileservice.entity.BidFiles;
 import tech.torbay.fileservice.entity.ClientRegistrationFiles;
 import tech.torbay.fileservice.entity.CommentFiles;
@@ -164,6 +167,26 @@ public class AzureBlobService {
 
 		return blobUri;
 	}
+	
+	public CloudBlockBlob getBlobFile(String containerName, String blobName) {
+
+		URI blobUri = null;
+		try {
+			CloudBlobContainer container = cloudBlobClient.getContainerReference(containerName);
+			CloudBlockBlob blob = container.getBlockBlobReference(blobName);
+			if(blob.exists()) {
+				return blob;
+			} else {
+				return null;
+			}
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (StorageException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 
 	public boolean deleteBlob(String containerName, String blobName) {
 		try {
@@ -238,6 +261,7 @@ public class AzureBlobService {
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
 			
 			ClientRegistrationFiles clientRegistrationFile = new ClientRegistrationFiles();
 			clientRegistrationFile.setClientUserId(clientId);
@@ -246,6 +270,7 @@ public class AzureBlobService {
 			clientRegistrationFile.setBlobName(blobName);
 			clientRegistrationFile.setFileName(fileName);
 			clientRegistrationFile.setFileType(fileType);
+			clientRegistrationFile.setFileSize(fileSize);
 			clientRegistrationFile.setFileUrl(uri.toString());
 			
 			clientRegistrationFile = clientRegistrationFilesRepository.save(clientRegistrationFile);
@@ -288,6 +313,7 @@ public class AzureBlobService {
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
 			
 			ProjectFiles projectFiles = new ProjectFiles();
 			projectFiles.setProjectId(projectId);
@@ -295,6 +321,7 @@ public class AzureBlobService {
 			projectFiles.setBlobName(blobName);
 			projectFiles.setFileName(fileName);
 			projectFiles.setFileType(fileType);
+			projectFiles.setFileSize(fileSize);
 			projectFiles.setFileUrl(uri.toString());
 			
 			projectFiles = projectFilesRepository.save(projectFiles);
@@ -343,6 +370,7 @@ public class AzureBlobService {
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
 			
 			BidFiles bidFiles = new BidFiles();
 			bidFiles.setBidId(bidId);
@@ -350,6 +378,7 @@ public class AzureBlobService {
 			bidFiles.setBlobName(blobName);
 			bidFiles.setFileName(fileName);
 			bidFiles.setFileType(fileType);
+			bidFiles.setFileSize(fileSize);
 			bidFiles.setFileUrl(uri.toString());
 			
 			bidFiles = bidFilesRepository.save(bidFiles);
@@ -413,6 +442,7 @@ public class AzureBlobService {
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
 			
 			UserProfileImages userProfileImages = userProfileImagesRepository.findByUserIdAndUserType(userId, userType);
 			
@@ -421,6 +451,7 @@ public class AzureBlobService {
 				userProfileImages.setBlobName(blobName);
 				userProfileImages.setFileName(fileName);
 				userProfileImages.setFileType(fileType);
+				userProfileImages.setFileSize(fileSize);
 				userProfileImages.setFileUrl(uri.toString());
 			} else {
 				userProfileImages = new UserProfileImages();
@@ -430,6 +461,7 @@ public class AzureBlobService {
 				userProfileImages.setBlobName(blobName);
 				userProfileImages.setFileName(fileName);
 				userProfileImages.setFileType(fileType);
+				userProfileImages.setFileSize(fileSize);
 				userProfileImages.setFileUrl(uri.toString());
 			}
 			
@@ -460,6 +492,7 @@ public class AzureBlobService {
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
 			
 			VendorOrganisationProfileImages vendorOrganisationProfileImages = vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(organisationId);
 			
@@ -468,6 +501,7 @@ public class AzureBlobService {
 				vendorOrganisationProfileImages.setBlobName(blobName);
 				vendorOrganisationProfileImages.setFileName(fileName);
 				vendorOrganisationProfileImages.setFileType(fileType);
+				vendorOrganisationProfileImages.setFileSize(fileSize);
 				vendorOrganisationProfileImages.setFileUrl(uri.toString());
 			} else {
 				vendorOrganisationProfileImages = new VendorOrganisationProfileImages();
@@ -476,6 +510,7 @@ public class AzureBlobService {
 				vendorOrganisationProfileImages.setBlobName(blobName);
 				vendorOrganisationProfileImages.setFileName(fileName);
 				vendorOrganisationProfileImages.setFileType(fileType);
+				vendorOrganisationProfileImages.setFileSize(fileSize);
 				vendorOrganisationProfileImages.setFileUrl(uri.toString());
 			}
 			
@@ -578,6 +613,7 @@ public class AzureBlobService {
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
 			
 			ThreadFiles threadFiles = new ThreadFiles();
 			threadFiles.setThreadId(threadId);
@@ -585,6 +621,7 @@ public class AzureBlobService {
 			threadFiles.setBlobName(blobName);
 			threadFiles.setFileName(fileName);
 			threadFiles.setFileType(fileType);
+			threadFiles.setFileSize(fileSize);
 			threadFiles.setFileUrl(uri.toString());
 			
 			threadFiles = threadFilesRepository.save(threadFiles);
@@ -631,6 +668,7 @@ public class AzureBlobService {
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
 			
 			CommentFiles commentFiles = new CommentFiles();
 			commentFiles.setCommentId(commentId);
@@ -638,6 +676,7 @@ public class AzureBlobService {
 			commentFiles.setBlobName(blobName);
 			commentFiles.setFileName(fileName);
 			commentFiles.setFileType(fileType);
+			commentFiles.setFileSize(fileSize);
 			commentFiles.setFileUrl(uri.toString());
 			
 			commentFiles = commentFilesRepository.save(commentFiles);
@@ -670,5 +709,70 @@ public class AzureBlobService {
 		}
 		
 		return null;
+	}
+
+	public Map<String, String> getFileInformation(String containerName, String blobName) {
+		// TODO Auto-generated method stub
+		
+		switch(containerName) {
+			case "clientregistrationfiles":{
+				ClientRegistrationFiles clientRegistrationFiles =  clientRegistrationFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", clientRegistrationFiles.getFileName());
+				map.put("fileType", clientRegistrationFiles.getFileType());
+				return map;
+			}
+			case "projectfiles":{
+				ProjectFiles projectFiles = projectFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", projectFiles.getFileName());
+				map.put("fileType", projectFiles.getFileType());
+				return map;
+			}
+			case "bidfiles":{
+				BidFiles bidFiles = bidFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", bidFiles.getFileName());
+				map.put("fileType", bidFiles.getFileType());
+				return map;
+			}
+			case "profileimages":{
+				UserProfileImages userProfileImages = userProfileImagesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", userProfileImages.getFileName());
+				map.put("fileType", userProfileImages.getFileType());
+				return map;
+			}
+			case "organisationprofileimages":{
+				VendorOrganisationProfileImages vendorOrganisationProfileImages = vendorOrganisationProfileImagesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", vendorOrganisationProfileImages.getFileName());
+				map.put("fileType", vendorOrganisationProfileImages.getFileType());
+				return map;
+			}
+			case "internalthreadfiles":{
+				ThreadFiles threadFiles = threadFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", threadFiles.getFileName());
+				map.put("fileType", threadFiles.getFileType());
+				return map;
+			}
+			case "externalthreadfiles":{
+				return null;
+			}
+			case "internalCommentfiles":{
+				CommentFiles commentFiles = commentFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", commentFiles.getFileName());
+				map.put("fileType", commentFiles.getFileType());
+				return map;
+			}
+			case "externalCommentfiles":{
+				return null;
+			}
+		}
+		return null;
+		
+		
 	}
 }

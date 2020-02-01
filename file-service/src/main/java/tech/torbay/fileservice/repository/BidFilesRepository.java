@@ -15,5 +15,7 @@ public interface BidFilesRepository extends JpaRepository<BidFiles, Integer> {
     BidFiles findOneById(Integer Id);
 
 	List<BidFiles> findAllByBidId(Integer bidId);
+
+	BidFiles findByBlobName(String blobName);
 	
 }

@@ -24,6 +24,7 @@ public class UserProfileImages {
     private String blobName = "";
     private String fileName = "";
     private String fileType = "";
+    private String fileSize = "";
     private String fileUrl = "";
     
 	@Basic(optional = false)
@@ -90,6 +91,14 @@ public class UserProfileImages {
 		this.fileType = fileType;
 	}
 
+	public String getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(String fileSize) {
+		this.fileSize = fileSize;
+	}
+
 	public String getFileUrl() {
 		return fileUrl;
 	}
@@ -118,7 +127,8 @@ public class UserProfileImages {
 	public String toString() {
 		return "UserProfileImages [id=" + id + ", userType=" + userType + ", userId=" + userId + ", containerName="
 				+ containerName + ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType
-				+ ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ ", fileSize=" + fileSize + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate="
+				+ modifiedDate + "]";
 	}
 
 }

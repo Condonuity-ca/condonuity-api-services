@@ -15,5 +15,7 @@ public interface ProjectFilesRepository extends JpaRepository<ProjectFiles, Inte
     ProjectFiles findOneById(Integer Id);
 
 	List<ProjectFiles> findAllByProjectId(Integer projectId);
+
+	ProjectFiles findByBlobName(String blobName);
 	
 }

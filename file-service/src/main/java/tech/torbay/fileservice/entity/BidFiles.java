@@ -23,6 +23,7 @@ public class BidFiles {
     private String blobName = "";
     private String fileName = "";
     private String fileType = "";
+    private String fileSize = "";
     private String fileUrl = "";
     
 	@Basic(optional = false)
@@ -81,6 +82,14 @@ public class BidFiles {
 		this.fileType = fileType;
 	}
 
+	public String getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(String fileSize) {
+		this.fileSize = fileSize;
+	}
+
 	public String getFileUrl() {
 		return fileUrl;
 	}
@@ -108,8 +117,10 @@ public class BidFiles {
 	@Override
 	public String toString() {
 		return "BidFiles [id=" + id + ", bidId=" + bidId + ", containerName=" + containerName + ", blobName=" + blobName
-				+ ", fileName=" + fileName + ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ ", fileName=" + fileName + ", fileType=" + fileType + ", fileSize=" + fileSize + ", fileUrl="
+				+ fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
+
+	
 
 }
