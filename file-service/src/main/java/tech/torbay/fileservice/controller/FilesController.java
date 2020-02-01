@@ -142,7 +142,7 @@ public class FilesController {
 		}
 	}
 
-	@GetMapping("/container/blob/uri/{containerName}/{blobName}")
+	@GetMapping("/container/blob/{containerName}/{blobName}")
 	public @ResponseBody Object getBlobFile(@PathVariable("containerName") String containerName, @PathVariable("blobName") String blobName) {
 	    try {
 	    	if(!azureBlobService.isBlobExists(containerName, blobName)) {
