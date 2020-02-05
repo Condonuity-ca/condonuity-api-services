@@ -386,4 +386,29 @@ public class Constants {
 //	5. ground level
 //	6. underground
 
+	public enum ThreadType {
+	    INTERNAL(1),
+	    EXTERNAL(2);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private ThreadType(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (ThreadType pageType : ThreadType.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static ThreadType valueOf(int pageType) {
+	        return (ThreadType) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
 }

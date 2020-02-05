@@ -58,7 +58,8 @@ public class Utils {
 		
 		Date date = new Date();
 		
-		long apiExpiryDateTime = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusHours(Constants.EXPIRY_DURATION).toInstant().toEpochMilli();
+		long apiExpiryDateTime = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE))
+				/* .plusHours(Constants.EXPIRY_DURATION) */.toInstant().toEpochMilli();
 		
 //		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		df.setTimeZone(TimeZone.getTimeZone(Constants.TIME_ZONE));

@@ -1,5 +1,6 @@
 package tech.torbay.projectservice.service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -175,11 +176,11 @@ public class ProjectService {
 		try {
 		
 			project.setDuration(calculateDuration(project.getDuration(), project.getProjectStartDate(), project.getProjectCompletionDeadline()));
-			project = projectRepository.save(project);
-//			int id = project.getProjectId();
+			Project projectObj = projectRepository.save(project);
+//			int id = projectObj.getProjectId();
 //			logger.info("project id" + id);
 			
-			return project;
+			return projectObj;
 			
 		} catch (Exception exp) {
 			exp.printStackTrace();
@@ -709,28 +710,31 @@ public class ProjectService {
 		return map;
 	}
 
-	private Object/*List<Map<String, Object>>*/ GetProjectFiles(Integer projectId) {
+	private List<Map<String, Object>> GetProjectFiles(Integer projectId) {
 		// TODO Auto-generated method stub
 		List<ProjectFiles> projectFiles = projectFilesRepository.findAllByProjectId(projectId);
 		
-//		List<Map<String, Object>> files = new ArrayList();
-//		for(ProjectFiles projectFile : projectFiles) {
-//			Map<String, Object> obj = new HashMap<>();
-//			
-//			obj.put("id", projectFile.getId());
-//			obj.put("fileName", projectFile.getFileName());
-//			obj.put("fileType", projectFile.getFileType());
+		List<Map<String, Object>> files = new ArrayList();
+		for(ProjectFiles projectFile : projectFiles) {
+			Map<String, Object> obj = new HashMap<>();
+			
+			obj.put("id", projectFile.getId());
+			obj.put("fileName", projectFile.getFileName());
+			obj.put("fileType", projectFile.getFileType());
+			obj.put("fileSize", Utils.formatFileSize(Long.parseLong(projectFile.getFileSize())));
+			obj.put("blobName", projectFile.getBlobName());
+			obj.put("containerName", projectFile.getContainerName());
 //			obj.put("fileUrl", projectFile.getFileUrl());
-//			obj.put("createdAt", projectFile.getCreatedAt());
-//			
-//			files.add(obj);
-//		}
-//		
-//		return files;
+			obj.put("createdAt", projectFile.getCreatedAt());
+			
+			files.add(obj);
+		}
 		
-		return projectFiles;
+		return files;
+		
+//		return projectFiles;
 	}
-
+	
 	private Map<String, Object> GetVendorBidForProject(Integer projectId, Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(projectId, vendorOrganisationId);
@@ -759,7 +763,10 @@ public class ProjectService {
 			obj.put("id", bidFile.getId());
 			obj.put("fileName", bidFile.getFileName());
 			obj.put("fileType", bidFile.getFileType());
-			obj.put("fileUrl", bidFile.getFileUrl());
+			obj.put("fileSize", bidFile.getFileSize());
+			obj.put("blobName", bidFile.getBlobName());
+			obj.put("containerName", bidFile.getContainerName());
+//			obj.put("fileUrl", bidFile.getFileUrl());
 			obj.put("createdAt", bidFile.getCreatedAt());
 			
 			files.add(obj);

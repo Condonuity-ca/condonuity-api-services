@@ -166,22 +166,22 @@ public class ProjectController {
 			 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
 			 * organisation.getOrganisationId()).toUri());
 			 */
-	        	ResponseMessage responseMessage = null;
+	        	HashMap<String, Object> response = new HashMap();
 	        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
 	            
-	        		responseMessage = new ResponseMessage(
-	                		StatusCode.REQUEST_SUCCESS.getValue(),
-	                		"Success",
-	                		"Project created successfully");
+	        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+	    			response.put("statusMessage", "Success");
+	    			response.put("responseMessage", "Project created successfully");
+	    			response.put("projectId", projectObj.getProjectId());
+	    			
 	        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
-	        		responseMessage = new ResponseMessage(
-	                		StatusCode.REQUEST_SUCCESS.getValue(),
-	                		"Success",
-	                		"Project posted successfully");
-	        		
+	        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+	    			response.put("statusMessage", "Success");
+	    			response.put("responseMessage", "Project posted successfully");
+	    			response.put("projectId", projectObj.getProjectId());
 	        	}
 	        	
-	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	        	return new ResponseEntity<Object>(response, HttpStatus.OK);
 	        }
 		} catch(BadRequestException exp) {
 			new BadRequestException(exp.getMessage());
@@ -291,22 +291,22 @@ public class ProjectController {
 		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
 		 * organisation.getOrganisationId()).toUri());
 		 */
-        	ResponseMessage responseMessage = null;
+        	HashMap<String, Object> response = new HashMap();
         	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
-            
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Success",
-                		"Project Bid created successfully");
+        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+    			response.put("statusMessage", "Success");
+    			response.put("responseMessage", "Project Bid created successfully");
+    			response.put("bidId", vendorBid.getId());
+    			
         	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
-        		responseMessage = new ResponseMessage(
-                		StatusCode.REQUEST_SUCCESS.getValue(),
-                		"Success",
-                		"Project Bid posted successfully");
+        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+    			response.put("statusMessage", "Success");
+    			response.put("responseMessage", "Project Bid posted successfully");
+    			response.put("bidId", vendorBid.getId());
         		
         	}
         	
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        	return new ResponseEntity<Object>(response,HttpStatus.OK);
         }
         
 	}

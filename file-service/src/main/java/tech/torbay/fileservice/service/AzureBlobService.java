@@ -601,7 +601,7 @@ public class AzureBlobService {
 	}
 	
 	// single file upload
-	public URI uploadThreadFiles(Integer threadId, String containerName, MultipartFile multipartFile) {
+	public URI uploadThreadFiles(Integer threadId, String containerName, MultipartFile multipartFile, Integer threadType) {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
@@ -617,6 +617,7 @@ public class AzureBlobService {
 			
 			ThreadFiles threadFiles = new ThreadFiles();
 			threadFiles.setThreadId(threadId);
+			threadFiles.setThreadType(threadType);
 			threadFiles.setContainerName(containerName);
 			threadFiles.setBlobName(blobName);
 			threadFiles.setFileName(fileName);
@@ -638,14 +639,14 @@ public class AzureBlobService {
 		return null;
 	}
 
-	public List<URI> uploadThreadFiles(Integer bidId, String containerName, MultipartFile[] multipartFiles) {
+	public List<URI> uploadThreadFiles(Integer bidId, String containerName, MultipartFile[] multipartFiles, Integer threadType) {
 		// TODO Auto-generated method stub
 		try {
 			
 			List<URI> uris = new ArrayList();
 			
 			for(MultipartFile multipartFile : multipartFiles) {
-				uris.add(uploadThreadFiles(bidId, containerName, multipartFile));
+				uris.add(uploadThreadFiles(bidId, containerName, multipartFile, threadType));
 			}
 			return uris;
 			
@@ -656,7 +657,7 @@ public class AzureBlobService {
 		return null;
 	}
 	
-	public URI uploadCommentFiles(Integer commentId, String containerName, MultipartFile multipartFile) {
+	public URI uploadCommentFiles(Integer commentId, String containerName, MultipartFile multipartFile, Integer threadType) {
 		// TODO Auto-generated method stub
 		try {
 			createContainer(containerName);
@@ -672,6 +673,7 @@ public class AzureBlobService {
 			
 			CommentFiles commentFiles = new CommentFiles();
 			commentFiles.setCommentId(commentId);
+			commentFiles.setThreadType(threadType);
 			commentFiles.setContainerName(containerName);
 			commentFiles.setBlobName(blobName);
 			commentFiles.setFileName(fileName);
@@ -693,14 +695,14 @@ public class AzureBlobService {
 		return null;
 	}
 
-	public List<URI> uploadCommentFiles(Integer commentId, String containerName, MultipartFile[] multipartFiles) {
+	public List<URI> uploadCommentFiles(Integer commentId, String containerName, MultipartFile[] multipartFiles, Integer threadType) {
 		// TODO Auto-generated method stub
 		try {
 			
 			List<URI> uris = new ArrayList();
 			
 			for(MultipartFile multipartFile : multipartFiles) {
-				uris.add(uploadCommentFiles(commentId, containerName, multipartFile));
+				uris.add(uploadCommentFiles(commentId, containerName, multipartFile, threadType));
 			}
 			return uris;
 			
@@ -750,25 +752,21 @@ public class AzureBlobService {
 				map.put("fileType", vendorOrganisationProfileImages.getFileType());
 				return map;
 			}
-			case "internalthreadfiles":{
+			case "internalthreadfiles":
+			case "externalthreadfiles":{
 				ThreadFiles threadFiles = threadFilesRepository.findByBlobName(blobName);
 				Map<String, String> map = new HashMap();
 				map.put("fileName", threadFiles.getFileName());
 				map.put("fileType", threadFiles.getFileType());
 				return map;
 			}
-			case "externalthreadfiles":{
-				return null;
-			}
-			case "internalCommentfiles":{
+			case "internalCommentfiles":
+			case "externalCommentfiles":{
 				CommentFiles commentFiles = commentFilesRepository.findByBlobName(blobName);
 				Map<String, String> map = new HashMap();
 				map.put("fileName", commentFiles.getFileName());
 				map.put("fileType", commentFiles.getFileType());
 				return map;
-			}
-			case "externalCommentfiles":{
-				return null;
 			}
 		}
 		return null;

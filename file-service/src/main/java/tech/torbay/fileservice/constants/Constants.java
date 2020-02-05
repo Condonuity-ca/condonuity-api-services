@@ -99,7 +99,7 @@ public class Constants {
 	    PROFILE_IMAGES("profileimages"),
 	    ORGANISATION_PROFILE_IMAGES("organisationprofileimages"),
 	    MESSAGE_INTERNAL_THREAD_FILES("internalthreadfiles"),
-		MESSAGE_EXTERNALL_THREAD_FILES("externalthreadfiles"),
+		MESSAGE_EXTERNAL_THREAD_FILES("externalthreadfiles"),
 		MESSAGE_INTERNAL_COMMENT_FILES("internalCommentfiles"),
 		MESSAGE_EXTERNAL_COMMENT_FILES("externalCommentfiles");
 
@@ -121,6 +121,32 @@ public class Constants {
 	    }
 
 	    public String getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum ThreadType {
+	    INTERNAL(1),
+	    EXTERNAL(2);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private ThreadType(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (ThreadType pageType : ThreadType.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static ThreadType valueOf(int pageType) {
+	        return (ThreadType) map.get(pageType);
+	    }
+
+	    public int getValue() {
 	        return value;
 	    }
 	}

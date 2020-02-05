@@ -20,6 +20,7 @@ public class ThreadFiles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
     private Integer threadId = 0;
+    private Integer threadType = 0;
     private String containerName = "";
     private String blobName = "";
     private String fileName = "";
@@ -49,6 +50,14 @@ public class ThreadFiles {
 
 	public void setThreadId(Integer threadId) {
 		this.threadId = threadId;
+	}
+
+	public Integer getThreadType() {
+		return threadType;
+	}
+
+	public void setThreadType(Integer threadType) {
+		this.threadType = threadType;
 	}
 
 	public String getContainerName() {
@@ -117,9 +126,10 @@ public class ThreadFiles {
 
 	@Override
 	public String toString() {
-		return "ThreadFiles [id=" + id + ", threadId=" + threadId + ", containerName=" + containerName + ", blobName="
-				+ blobName + ", fileName=" + fileName + ", fileType=" + fileType + ", fileSize=" + fileSize
-				+ ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "ThreadFiles [id=" + id + ", threadId=" + threadId + ", threadType=" + threadType + ", containerName="
+				+ containerName + ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType
+				+ ", fileSize=" + fileSize + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate="
+				+ modifiedDate + "]";
 	}
 
 }

@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.catalina.manager.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tech.torbay.messageservice.Utils.Utils;
+import tech.torbay.messageservice.constants.Constants.ThreadType;
 import tech.torbay.messageservice.entity.CommentFiles;
 import tech.torbay.messageservice.entity.ExternalMessage;
 import tech.torbay.messageservice.entity.ExternalMessageComment;
@@ -67,7 +70,7 @@ public class MessageService {
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(internalMessage, Map.class);
 			
-			List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadId(internalMessage.getId());
+			List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
 			List<Map<String,Object>> allFiles = new ArrayList();
 			for(ThreadFiles threadFile : threadFiles) {
 				Map<String,Object> file = new HashMap<>();
@@ -81,7 +84,7 @@ public class MessageService {
 			}
 			
 			map.put("files",allFiles);
-			map.put("comments",getComments(internalMessage.getId()));
+			map.put("comments",getInternalThreadComments(internalMessage.getId()));
 			
 			allMessages.add(map);
 		}
@@ -89,7 +92,7 @@ public class MessageService {
 		return allMessages;
 	}
 
-	private List<Map<String,Object>> getComments(Integer threadId) {
+	private List<Map<String,Object>> getInternalThreadComments(Integer threadId) {
 		// TODO Auto-generated method stub
 		List<InternalMessageComment> internalMessageComments = internalMessageCommentRepository.findAllByThreadId(threadId);
 		
@@ -101,16 +104,19 @@ public class MessageService {
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(internalMessageComment, Map.class);
 			
-			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentId(internalMessageComment.getId());
+			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(internalMessageComment.getId(), ThreadType.INTERNAL.getValue());
 			List<Map<String,Object>> allFiles = new ArrayList();
 			for(CommentFiles commentFile : commentFiles) {
 				Map<String,Object> file = new HashMap<>();
 				file.put("id", commentFile.getId());
 				file.put("fileName", commentFile.getFileName());
 				file.put("fileType", commentFile.getFileType());
-				file.put("fileUrl", commentFile.getFileUrl());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(commentFile.getFileSize())));
+				file.put("blobName", commentFile.getBlobName());
+				file.put("containerName", commentFile.getContainerName());
+//				file.put("fileUrl", commentFile.getFileUrl());
 				file.put("createdAt", commentFile.getCreatedAt());
-				file.put("modifiedDate", commentFile.getModifiedDate());
+//				file.put("modifiedDate", commentFile.getModifiedDate());
 				allFiles.add(file);
 			}
 			map.put("files",allFiles);
@@ -143,20 +149,23 @@ public class MessageService {
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(externalMessage, Map.class);
 			
-//			List<ExternalThreadFiles> threadFiles = externalThreadFilesRepository.findAllByThreadId(externalMessage.getId());
-//			List<Map<String,Object>> allFiles = new ArrayList();
-//			for(ExternalThreadFiles threadFile : threadFiles) {
-//				Map<String,Object> file = new HashMap<>();
-//				file.put("id", threadFile.getId());
-//				file.put("fileName", threadFile.getFileName());
-//				file.put("fileType", threadFile.getFileType());
+			List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+			List<Map<String,Object>> allFiles = new ArrayList();
+			for(ThreadFiles threadFile : threadFiles) {
+				Map<String,Object> file = new HashMap<>();
+				file.put("id", threadFile.getId());
+				file.put("fileName", threadFile.getFileName());
+				file.put("fileType", threadFile.getFileType());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+				file.put("blobName", threadFile.getBlobName());
+				file.put("containerName", threadFile.getContainerName());
 //				file.put("fileUrl", threadFile.getFileUrl());
-//				file.put("createdAt", threadFile.getCreatedAt());
+				file.put("createdAt", threadFile.getCreatedAt());
 //				file.put("modifiedDate", threadFile.getModifiedDate());
-//				allFiles.add(file);
-//			}
+				allFiles.add(file);
+			}
 			
-			map.put("files","[]"/*allFiles*/);
+			map.put("files",allFiles);
 			map.put("comments",getExternalThreadComments(externalMessage.getId()));
 			
 			allMessages.add(map);
@@ -177,18 +186,21 @@ public class MessageService {
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(externalMessageComment, Map.class);
 			
-//			List<ExternalThreadCommentFiles> commentFiles = externalThreadcommentFilesRepository.findAllByCommentId(internalMessageComment.getId());
-//			List<Map<String,Object>> allFiles = new ArrayList();
-//			for(ExternalThreadCommentFiles commentFile : commentFiles) {
-//				Map<String,Object> file = new HashMap<>();
-//				file.put("id", commentFile.getId());
-//				file.put("fileName", commentFile.getFileName());
-//				file.put("fileType", commentFile.getFileType());
+			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(externalMessageComment.getId(), ThreadType.EXTERNAL.getValue());
+			List<Map<String,Object>> allFiles = new ArrayList();
+			for(CommentFiles commentFile : commentFiles) {
+				Map<String,Object> file = new HashMap<>();
+				file.put("id", commentFile.getId());
+				file.put("fileName", commentFile.getFileName());
+				file.put("fileType", commentFile.getFileType());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(commentFile.getFileSize())));
+				file.put("blobName", commentFile.getBlobName());
+				file.put("containerName", commentFile.getContainerName());
 //				file.put("fileUrl", commentFile.getFileUrl());
-//				file.put("createdAt", commentFile.getCreatedAt());
+				file.put("createdAt", commentFile.getCreatedAt());
 //				file.put("modifiedDate", commentFile.getModifiedDate());
-//				allFiles.add(file);
-//			}
+				allFiles.add(file);
+			}
 			map.put("files","[]"/*allFiles*/);
 			allComments.add(map);
 		}

@@ -154,7 +154,7 @@ public class VendorService {
 	        mappedObj.put("memberships",vendorMembershipsRepository.getVendorMemberships(vendorOrganisationId));
 	        
 	        try {
-	        VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(100);
+	        VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
 	        mappedObj.put("vendorProfileImageUrl",vendorOrgProfileImage.getFileUrl());
 	        } catch(Exception exp) {
 	        	exp.printStackTrace();
@@ -493,7 +493,7 @@ public class VendorService {
 	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
 	        map.put("isPreferred", "false");
 	        
-	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
+	        List<UserWishList> userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
 	        
 	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
 	        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
@@ -506,7 +506,6 @@ public class VendorService {
 	        }
 	        vendorOrganisations.add(map);
 		}
-		
     			
 		return vendorOrganisations;
 	}

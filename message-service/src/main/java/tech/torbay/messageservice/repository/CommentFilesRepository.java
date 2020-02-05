@@ -14,6 +14,6 @@ public interface CommentFilesRepository extends JpaRepository<CommentFiles, Inte
     
     CommentFiles findOneById(Integer Id);
 
-	List<CommentFiles> findAllByCommentId(Integer commentId);
+	List<CommentFiles> findAllByCommentIdAndThreadType(Integer commentId, Integer threadType);
 	
 }

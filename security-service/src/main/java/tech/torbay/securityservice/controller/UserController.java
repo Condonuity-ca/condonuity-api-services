@@ -116,7 +116,7 @@ public class UserController {
     )
 	@PostMapping("/user/login")
 	public ResponseEntity<Object> getUserByLogin(@RequestBody User user, UriComponentsBuilder builder) {
-		
+		Utils.getLinkValidityTime();
 		if(user == null) {
 			new BadRequestException("Bad Request", "Failed", "Request Format Error");
 		}

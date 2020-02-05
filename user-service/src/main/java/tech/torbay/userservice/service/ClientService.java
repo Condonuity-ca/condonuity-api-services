@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
-import tech.torbay.userservice.Utils;
+import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
@@ -292,7 +292,7 @@ public class ClientService {
 	        // object -> Map
 	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
 	        
-	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(vendorOrgId, Constants.UserType.VENDOR.getValue(), clientOrg.getClientOrganisationId(), Constants.UserType.CLIENT.getValue() );
+	        List<UserWishList> userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(vendorOrgId, Constants.UserType.VENDOR.getValue(), clientOrg.getClientOrganisationId(), Constants.UserType.CLIENT.getValue() );
 	        
 	        map.put("isPreferred", "false");
 	        
@@ -507,7 +507,10 @@ public class ClientService {
 			obj.put("id", registrationFile.getId());
 			obj.put("fileName", registrationFile.getFileName());
 			obj.put("fileType", registrationFile.getFileType());
-			obj.put("fileUrl", registrationFile.getFileUrl());
+			obj.put("fileSize", Utils.formatFileSize(Long.parseLong(registrationFile.getFileSize())));
+			obj.put("blobName", registrationFile.getBlobName());
+			obj.put("containerName", registrationFile.getContainerName());
+//			obj.put("fileUrl", registrationFile.getFileUrl());
 			obj.put("createdAt", registrationFile.getCreatedAt());
 			
 			files.add(obj);

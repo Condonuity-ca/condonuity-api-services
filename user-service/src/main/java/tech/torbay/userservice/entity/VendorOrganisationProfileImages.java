@@ -23,6 +23,7 @@ public class VendorOrganisationProfileImages {
     private String blobName = "";
     private String fileName = "";
     private String fileType = "";
+    private String fileSize = "";
     private String fileUrl = "";
     
 	@Basic(optional = false)
@@ -81,6 +82,14 @@ public class VendorOrganisationProfileImages {
 		this.fileType = fileType;
 	}
 
+	public String getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(String fileSize) {
+		this.fileSize = fileSize;
+	}
+
 	public String getFileUrl() {
 		return fileUrl;
 	}
@@ -109,8 +118,8 @@ public class VendorOrganisationProfileImages {
 	public String toString() {
 		return "VendorOrganisationProfileImages [id=" + id + ", vendorOrganisationId=" + vendorOrganisationId
 				+ ", containerName=" + containerName + ", blobName=" + blobName + ", fileName=" + fileName
-				+ ", fileType=" + fileType + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate="
-				+ modifiedDate + "]";
+				+ ", fileType=" + fileType + ", fileSize=" + fileSize + ", fileUrl=" + fileUrl + ", createdAt="
+				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

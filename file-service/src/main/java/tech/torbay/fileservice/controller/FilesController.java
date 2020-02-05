@@ -44,6 +44,7 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import tech.torbay.fileservice.Utils.RegisterFiles;
 import tech.torbay.fileservice.constants.Constants;
 import tech.torbay.fileservice.constants.Constants.StatusCode;
+import tech.torbay.fileservice.constants.Constants.ThreadType;
 import tech.torbay.fileservice.entity.UserProfileImages;
 import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.fileservice.service.AzureBlobService;
@@ -160,12 +161,11 @@ public class FilesController {
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
 	}
-	
+// Test start
 	@GetMapping("/container/blob/download")
 	public @ResponseBody String getBlobFile() {
 		return callURL("http://192.168.30.188:8205/api/container/blob/projectfiles/bf887957-8d54-424e-95a5-861397acb43c.jpg");
 	}
-	
 	public static String callSecondURL(String FILE_URL){
         
         System.out.println("Requested URL:" + FILE_URL);
@@ -226,8 +226,8 @@ public class FilesController {
  
 		return sb.toString();
 	}
-
-	@GetMapping("/container/blob/{containerName}/{blobName}")
+// Test end
+	@GetMapping("/download/container/{containerName}/blob/{blobName}")
 	public @ResponseBody ResponseEntity<ByteArrayResource> getBlobFile(@PathVariable("containerName") String containerName, @PathVariable("blobName") String blobName) {
 	    try {
 //	    	if(!azureBlobService.isBlobExists(containerName, blobName)) {
@@ -573,9 +573,9 @@ public class FilesController {
 		
 	}
 	
-	//upload thread files
-	@PostMapping("/uploads/thread/{threadId}")
-	public ResponseEntity<Map<String, Object>> uploadThreadFiles(@PathVariable("threadId") Integer threadId,
+	//upload internal thread files
+	@PostMapping("/uploads/internal/thread/{threadId}")
+	public ResponseEntity<Map<String, Object>> uploadInternalThreadFiles(@PathVariable("threadId") Integer threadId,
 			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
 
 		Map<String, Object> map = new HashMap<>();
@@ -585,7 +585,7 @@ public class FilesController {
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
-		List<URI> url = azureBlobService.uploadThreadFiles(threadId, Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue(), multipartFiles);
+		List<URI> url = azureBlobService.uploadThreadFiles(threadId, Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue(), multipartFiles, ThreadType.INTERNAL.getValue());
 		
 		if(url != null) {
 			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
@@ -603,9 +603,9 @@ public class FilesController {
 		
 	}
 	
-	//upload thread files
-	@PostMapping("/uploads/thread/comment/{commentId}")
-	public ResponseEntity<Map<String, Object>> uploadCommentFiles(@PathVariable("commentId") Integer commentId,
+	//upload internal thread comment files
+	@PostMapping("/uploads/internal/thread/comment/{commentId}")
+	public ResponseEntity<Map<String, Object>> uploadInternalThreadCommentFiles(@PathVariable("commentId") Integer commentId,
 			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
 
 		Map<String, Object> map = new HashMap<>();
@@ -615,7 +615,67 @@ public class FilesController {
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
-		List<URI> url = azureBlobService.uploadCommentFiles(commentId, Constants.Containers.MESSAGE_INTERNAL_COMMENT_FILES.getValue(), multipartFiles);
+		List<URI> url = azureBlobService.uploadCommentFiles(commentId, Constants.Containers.MESSAGE_INTERNAL_COMMENT_FILES.getValue(), multipartFiles, ThreadType.INTERNAL.getValue());
+		
+		if(url != null) {
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Message Comment Files Uploaded Successfully");
+			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_COMMENT_FILES.getValue());
+			map.put("resource", url);
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to upload files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+	
+	//upload external thread files
+	@PostMapping("/uploads/external/thread/{threadId}")
+	public ResponseEntity<Map<String, Object>> uploadExternalThreadFiles(@PathVariable("threadId") Integer threadId,
+			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
+
+		Map<String, Object> map = new HashMap<>();
+		if(!isValidFileSelected(multipartFiles)) {
+			map.put("statusCode", StatusCode.FILE_NOT_FOUND.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Please select any files to upload");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		List<URI> url = azureBlobService.uploadThreadFiles(threadId, Constants.Containers.MESSAGE_EXTERNAL_THREAD_FILES.getValue(), multipartFiles, ThreadType.EXTERNAL.getValue());
+		
+		if(url != null) {
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Message Internal Thread Files Uploaded Successfully");
+			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue());
+			map.put("resource", url);
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to upload files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+		
+	//upload internal thread comment files
+	@PostMapping("/uploads/external/thread/comment/{commentId}")
+	public ResponseEntity<Map<String, Object>> uploadExternalThreadCommentFiles(@PathVariable("commentId") Integer commentId,
+			@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
+
+		Map<String, Object> map = new HashMap<>();
+		if(multipartFiles == null || multipartFiles.length == 0 ) {
+			map.put("statusCode", StatusCode.FILE_NOT_FOUND.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Please select any files to upload");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		List<URI> url = azureBlobService.uploadCommentFiles(commentId, Constants.Containers.MESSAGE_EXTERNAL_COMMENT_FILES.getValue(), multipartFiles, ThreadType.EXTERNAL.getValue());
 		
 		if(url != null) {
 			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());

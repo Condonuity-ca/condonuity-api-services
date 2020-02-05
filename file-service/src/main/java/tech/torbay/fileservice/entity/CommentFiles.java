@@ -20,6 +20,7 @@ public class CommentFiles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
     private Integer commentId = 0;
+    private Integer threadType = 0;
     private String containerName = "";
     private String blobName = "";
     private String fileName = "";
@@ -49,6 +50,14 @@ public class CommentFiles {
 
 	public void setCommentId(Integer commentId) {
 		this.commentId = commentId;
+	}
+
+	public Integer getThreadType() {
+		return threadType;
+	}
+
+	public void setThreadType(Integer threadType) {
+		this.threadType = threadType;
 	}
 
 	public String getContainerName() {
@@ -117,10 +126,10 @@ public class CommentFiles {
 
 	@Override
 	public String toString() {
-		return "CommentFiles [id=" + id + ", commentId=" + commentId + ", containerName=" + containerName
-				+ ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType + ", fileSize="
-				+ fileSize + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
-				+ "]";
+		return "CommentFiles [id=" + id + ", commentId=" + commentId + ", threadType=" + threadType + ", containerName="
+				+ containerName + ", blobName=" + blobName + ", fileName=" + fileName + ", fileType=" + fileType
+				+ ", fileSize=" + fileSize + ", fileUrl=" + fileUrl + ", createdAt=" + createdAt + ", modifiedDate="
+				+ modifiedDate + "]";
 	}
 
 }
