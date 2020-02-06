@@ -17,6 +17,7 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
+import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientRegistrationFiles;
 import tech.torbay.userservice.entity.ClientUser;
@@ -30,6 +31,7 @@ import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
+import tech.torbay.userservice.repository.ClientContractRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
@@ -70,6 +72,8 @@ public class ClientService {
 	ClientRegistrationFilesRepository clientRegistrationFilesRepository;
 	@Autowired
 	UserProfileImagesRepository userProfileImagesRepository;
+	@Autowired
+	ClientContractRepository clientContractRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -519,6 +523,71 @@ public class ClientService {
 		return files;
 	}
 
+	public ClientContract addClientContract(ClientContract clientContract) {
+		// TODO Auto-generated method stub
+		
+		clientContract.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		return clientContractRepository.save(clientContract);
+	}
+
+	public ClientContract updateClientContract(ClientContract clientContract) {
+		// TODO Auto-generated method stub
+		try {
+			ClientContract clientContractObj = clientContractRepository.findOneById(clientContract.getId());
+			
+			if(clientContractObj != null) {
+				
+				clientContractObj.setVendorName(clientContract.getVendorName());
+				clientContractObj.setServices(clientContract.getServices());
+				clientContractObj.setTerm(clientContract.getTerm());
+				clientContractObj.setTermUnits(clientContract.getTermUnits());
+				clientContractObj.setSignedDate(clientContract.getSignedDate());
+				clientContractObj.setExpiryDate(clientContract.getExpiryDate());
+				clientContractObj.setRenewalType(clientContract.getRenewalType());
+				clientContractObj.setCost(clientContract.getCost());
+				clientContractObj.setCostTermUnits(clientContract.getCostTermUnits());
+				clientContractObj.setGstAvailablity(clientContract.getGstAvailablity());
+				clientContractObj.setCancellationTerm(clientContract.getCancellationTerm());
+				clientContractObj.setCancellationUnits(clientContract.getCancellationUnits());
+				clientContractObj.setExpectedIncrease(clientContract.getExpectedIncrease());
+				clientContractObj.setNotes(clientContract.getNotes());
+				
+				
+				return clientContractRepository.save(clientContractObj);
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public boolean deleteClientContract(Integer contractId) {
+		// TODO Auto-generated method stub
+		try {
+			ClientContract clientContract = clientContractRepository.findOneById(contractId);
+			
+			if(clientContract != null) {
+				clientContract.setStatus(Constants.UserAccountStatus.INACTIVE.getValue());
+				if(clientContractRepository.save(clientContract) != null) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return false;
+	}
+
+	public List<ClientContract> getClientContracts(Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		return clientContractRepository.findAllByClientOrganisationId(clientOrganisationId);
+	}
 
 }
 

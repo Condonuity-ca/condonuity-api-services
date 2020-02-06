@@ -385,5 +385,85 @@ public class Constants {
 //	4. outdoor
 //	5. ground level
 //	6. underground
+	
+	public enum TermUnits {
+		DAYS(1),
+	    MONTHS(2),
+	    YEARS(3);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private TermUnits(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (TermUnits pageType : TermUnits.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static TermUnits valueOf(int pageType) {
+			return (TermUnits) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	public enum CostTermUnits {
+		WEEKLY(1),
+	    MONTHLY(2),
+	    YEARLY(3);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private CostTermUnits(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (CostTermUnits pageType : CostTermUnits.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static CostTermUnits valueOf(int pageType) {
+			return (CostTermUnits) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	public enum RenewalType {
+		AUTO(1),
+	    MANUAL(2);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private RenewalType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (RenewalType pageType : RenewalType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static RenewalType valueOf(int pageType) {
+			return (RenewalType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
 
 }

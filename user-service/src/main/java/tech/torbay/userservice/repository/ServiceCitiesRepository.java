@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import tech.torbay.userservice.entity.ServiceCities;
-import tech.torbay.userservice.entity.VendorUser;
 
 @Repository
 public interface ServiceCitiesRepository extends JpaRepository<ServiceCities, Integer> {
@@ -15,6 +14,6 @@ public interface ServiceCitiesRepository extends JpaRepository<ServiceCities, In
     
     ServiceCities findOneById(Integer id);
     
-    ServiceCities save(ServiceCities vendorUser);
+    ServiceCities save(ServiceCities serviceCities);
 
 }

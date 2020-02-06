@@ -22,12 +22,11 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientAmenities;
+import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
-import tech.torbay.userservice.entity.ClientRegistrationFiles;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.UserWishList;
-import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.service.ClientService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
 
@@ -500,5 +499,112 @@ public class ClientController {
             return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
+	}
+	
+	@ApiOperation(value = "Adding Client Contract Information Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Contract Added Successfully"),
+                    @ApiResponse(code = 201, message = "Client Contract Created Successfully")
+            }
+    )
+	@PostMapping("/client/org/contract/add")
+	public ResponseEntity<Object> addClientContract(
+			@RequestBody ClientContract clientContract) {
+		
+		ClientContract clientContractObj = clientService.addClientContract(clientContract);
+        if (clientContractObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to add Client Contract");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Client Contract Added Successfully");
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Update Client Contract Information Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Contract Updated Successfully"),
+            }
+    )
+	@PutMapping("/client/org/contract")
+	public ResponseEntity<Object> updateClientContract(
+			@RequestBody ClientContract clientContract) {
+		
+		ClientContract clientContractObj = clientService.updateClientContract(clientContract);
+        if (clientContractObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to update Client Contract");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Client Contract Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Update Client Contract Information Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Contract Updated Successfully"),
+            }
+    )
+	@PutMapping("/client/org/contract/inactive/{contractId}")
+	public ResponseEntity<Object> deleteClientContract(@PathVariable("contractId") Integer contractId) {
+		
+		boolean isdeleted = clientService.deleteClientContract(contractId);
+        if (!isdeleted) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to delete Client Contract");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Client Contract Deleted Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Get Client Contracts Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Contracts Fetched Successfully"),
+            }
+    )
+	@GetMapping("/client/org/contracts/{clientOrgId}")
+	public ResponseEntity<Object> getClientContracts(@PathVariable("clientOrgId") Integer clientOrgId) {
+		
+		List<ClientContract> clientContracts= clientService.getClientContracts(clientOrgId);
+        if (clientContracts == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch Client Contracts");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Contracts Fetched Successfully");
+			list.put("clientContracts", clientContracts);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
 	}
 }
