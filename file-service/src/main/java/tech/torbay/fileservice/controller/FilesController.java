@@ -187,7 +187,6 @@ public class FilesController {
     }
 	public static String callURL(String myURL) {
 		System.out.println("Requeted URL:" + myURL);
-		StringBuilder sb = new StringBuilder();
 		URLConnection urlConn = null;
 		InputStreamReader in = null;
 		try {
@@ -224,7 +223,7 @@ public class FilesController {
 			throw new RuntimeException("Exception while calling URL:"+ myURL, e);
 		} 
  
-		return sb.toString();
+		return "Download Success";
 	}
 // Test end
 	@GetMapping("/download/container/{containerName}/blob/{blobName}")

@@ -1,6 +1,7 @@
 package tech.torbay.userservice.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,21 +21,26 @@ import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientRegistrationFiles;
+import tech.torbay.userservice.entity.ClientTask;
+import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.ClientUserTasks;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
-import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientRegistrationFilesRepository;
+import tech.torbay.userservice.repository.ClientTaskCommentsRepository;
+import tech.torbay.userservice.repository.ClientTaskRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
+import tech.torbay.userservice.repository.ClientUserTasksRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
@@ -74,6 +80,12 @@ public class ClientService {
 	UserProfileImagesRepository userProfileImagesRepository;
 	@Autowired
 	ClientContractRepository clientContractRepository;
+	@Autowired
+	ClientTaskRepository clientTaskRepository;
+	@Autowired
+	ClientTaskCommentsRepository clientTaskCommentsRepository;
+	@Autowired
+	ClientUserTasksRepository clientUserTasksRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -587,6 +599,200 @@ public class ClientService {
 	public List<ClientContract> getClientContracts(Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		return clientContractRepository.findAllByClientOrganisationId(clientOrganisationId);
+	}
+
+	public ClientTask addClientTask(Map<String, Object> clientTaskData) {
+		// TODO Auto-generated method stub
+		try {
+			
+			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			ClientTask clientTask = mapper.convertValue(clientTaskData.get("clientTask"), ClientTask.class);
+			ClientTaskComments clientTaskComments = mapper.convertValue(clientTaskData.get("comment"), ClientTaskComments.class);
+			String assignee = (String) clientTaskData.get("assignee");
+			
+			clientTask.setModifiedBy(clientTask.getCreatedBy());
+			clientTask.setStatus(UserAccountStatus.ACTIVE.getValue());
+			
+			ClientTask clientTaskObj = clientTaskRepository.save(clientTask); 
+			clientTaskComments.setTaskId(clientTaskObj.getId());
+			
+			if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+				// don't save assignee Ids records
+			} else {
+				// check and store client Ids assigned to
+				if(assignee != null && assignee.length() > 0) {
+					List<String> clientUsers = Arrays.asList(assignee.split(","));
+					for(String clientUser: clientUsers) {
+						ClientUserTasks clientUserTask = new ClientUserTasks();
+						clientUserTask.setClientId(Integer.parseInt(clientUser));
+						clientUserTask.setTaskId(clientTaskObj.getId());
+						
+						clientUserTasksRepository.save(clientUserTask);
+					}
+				}
+			}
+			
+			if(clientTaskComments != null) {
+				
+				addClientTaskComments(clientTaskComments);
+			}
+			
+			return clientTaskObj;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public ClientTaskComments addClientTaskComments(ClientTaskComments taskComment) {
+		// TODO Auto-generated method stub
+		return clientTaskCommentsRepository.save(taskComment);
+	}
+
+	public List<Map<String, Object>> getClientTasks(Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		 List<Map<String, Object>> allClientTasks = new ArrayList();
+		 
+		 // to get all tasks under all status
+		 List<ClientTask> clientTasks = clientTaskRepository.findAllByClientOrganisationId(clientOrganisationId);
+		 
+		 try {
+			 for(ClientTask clientTask : clientTasks) {
+					ObjectMapper oMapper = new ObjectMapper();
+			        Map<String, Object> map = oMapper.convertValue(clientTask, Map.class);
+			        
+			        if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+			        	// only other name available
+			        } else if(clientTask.getIsOther() == Constants.Availability.NOT_AVAILABLE.getValue()) {			        	
+			        	map.put("assignedTo", getClientUsers(clientTask.getId()));
+//			        	map.put("assignee",getClientUsers(clientTask.getId()));
+			        }
+			        
+			        map.put("comments",getTaskComments(clientTask.getId()));
+			        
+			        allClientTasks.add(map);
+				}
+			 
+			 return allClientTasks;
+			 
+		 } catch(Exception exp) {
+			 exp.printStackTrace();
+		 }
+		 
+		 return null;
+	}
+
+	private List<Map<String, Object>> getTaskComments(int taskId) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> allClientTaskComments = new ArrayList();
+		 
+		List<ClientTaskComments> clientTaskComments = clientTaskCommentsRepository.findAllByTaskId(taskId);
+		
+		for(ClientTaskComments clientTaskComment : clientTaskComments) {
+			ObjectMapper oMapper = new ObjectMapper();
+//	        Map<String, Object> map = oMapper.convertValue(clientTaskComment, Map.class);
+	        Map<String, Object> map = new HashMap();
+	        
+	        map.put("id", clientTaskComment.getId());
+	        map.put("clientId", clientTaskComment.getClientId());
+	        ClientUser clientUserObj = clientUserRepository.findByClientId(clientTaskComment.getClientId());
+			if(clientUserObj != null)
+	        map.put("clientName", clientUserObj.getFirstName() +" "+ clientUserObj.getLastName());
+			map.put("comment", clientTaskComment.getComment());
+			map.put("createdAt", clientTaskComment.getCreatedAt());
+			
+	        allClientTaskComments.add(map);
+		}
+		
+		return allClientTaskComments;
+	}
+
+	private List<String> getClientUsers(int taskId) {
+		// TODO Auto-generated method stub
+		
+		 List<String> allClientUsers = new ArrayList();
+		 
+		 List<ClientUserTasks> clientUserTasks = clientUserTasksRepository.findAllByTaskId(taskId);
+		
+		if(clientUserTasks != null && clientUserTasks.size() > 0) {
+			for(ClientUserTasks clientUser: clientUserTasks) {
+				ClientUser clientUserObj = clientUserRepository.findByClientId(clientUser.getClientId());
+				if(clientUserObj != null)
+				allClientUsers.add(clientUserObj.getFirstName() +" "+ clientUserObj.getLastName());
+			}
+		}
+		return allClientUsers;
+	}
+
+	public ClientTask updateClientTask(Map<String, Object> clientTaskData) {
+		// TODO Auto-generated method stub
+		try {
+			
+			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			ClientTask clientTask = mapper.convertValue(clientTaskData.get("clientTask"), ClientTask.class);
+			ClientTaskComments clientTaskComments = mapper.convertValue(clientTaskData.get("comment"), ClientTaskComments.class);
+			String assignee = (String) clientTaskData.get("assignee");
+			clientTaskComments.setTaskId(clientTask.getId());
+			
+			ClientTask clientTaskObj = clientTaskRepository.findOneById(clientTask.getId());
+			
+			clientTaskObj.setClosureDate(clientTask.getClosureDate());
+			clientTaskObj.setPriority(clientTask.getPriority());
+			clientTaskObj.setTaskDescription(clientTask.getTaskDescription());
+			clientTaskObj.setTaskStatus(clientTask.getTaskStatus());
+			clientTaskObj.setIsOther(clientTask.getIsOther());
+			clientTaskObj.setOthersName(clientTask.getOthersName());;
+			
+			clientTaskObj = clientTaskRepository.save(clientTaskObj); 
+			
+			if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+				// don't save assignee Ids records
+				clientUserTasksRepository.deleteByTaskId(clientTaskObj.getId());
+			} else {
+				// check and store client Ids assigned to
+				if(assignee != null && assignee.length() > 0) {
+					// delete old assignee and update new
+					clientUserTasksRepository.deleteByTaskId(clientTaskObj.getId());
+										
+					List<String> clientUsers = Arrays.asList(assignee.split(","));
+					for(String clientUser: clientUsers) {
+						ClientUserTasks clientUserTask = new ClientUserTasks();
+						clientUserTask.setClientId(Integer.parseInt(clientUser));
+						clientUserTask.setTaskId(clientTaskObj.getId());
+						
+						clientUserTasksRepository.save(clientUserTask);
+					}
+				}
+			}
+			
+			if(clientTaskComments != null) {
+				
+				addClientTaskComments(clientTaskComments);
+			}
+			
+			return clientTaskObj;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public ClientTask deleteClientTask(Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		Integer taskId = (Integer) requestData.get("id");
+		Integer clientUserId = (Integer) requestData.get("clientUserId");
+		
+		ClientTask clientTaskObj = clientTaskRepository.findOneById(taskId);
+		
+		clientTaskObj.setStatus(UserAccountStatus.INACTIVE.getValue());
+		clientTaskObj.setModifiedBy(clientUserId);
+		
+		return clientTaskRepository.save(clientTaskObj);
 	}
 
 }

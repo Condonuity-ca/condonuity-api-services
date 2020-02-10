@@ -24,6 +24,8 @@ import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientTask;
+import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.UserWishList;
@@ -522,11 +524,14 @@ public class ClientController {
         } else {
 	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
-	        ResponseMessage responseMessage = new ResponseMessage(
-	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"Client Contract Added Successfully");
-			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Contract Added Successfully");
+			list.put("contractId", clientContractObj.getId());
+			
+			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
 	}
 	
@@ -603,6 +608,158 @@ public class ClientController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Contracts Fetched Successfully");
 			list.put("clientContracts", clientContracts);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Adding Client Task Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Task Added Successfully"),
+                    @ApiResponse(code = 201, message = "Client Task Created Successfully")
+            }
+    )
+	@PostMapping("/client/org/task/add")
+	public ResponseEntity<Object> addClientTasks(
+			@RequestBody Map<String, Object> requestData ) {
+		
+		ClientTask clientTaskObj = clientService.addClientTask(requestData);
+        if (clientTaskObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to add Client Task");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Task Added Successfully");
+			list.put("taskId", clientTaskObj.getId());
+			
+			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Updating Client Task Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Task Updated Successfully")
+            }
+    )
+	@PutMapping("/client/org/task")
+	public ResponseEntity<Object> updateClientTask(
+			@RequestBody Map<String, Object> requestData ) {
+		
+		ClientTask clientTaskObj = clientService.updateClientTask(requestData);
+        if (clientTaskObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to update Client Task");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Task Updated Successfully");
+			list.put("taskId", clientTaskObj.getId());
+			
+			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Delete Client Task Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Task Deleted Successfully")
+            }
+    )
+	@PutMapping("/client/org/task/inactive")
+	public ResponseEntity<Object> deleteClientTask(
+			@RequestBody Map<String, Object> requestData ) {
+		
+		ClientTask clientTaskObj = clientService.deleteClientTask(requestData);
+        if (clientTaskObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to delete Client Task");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Task Deleted Successfully");
+			list.put("taskId", clientTaskObj.getId());
+			
+			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Adding Client Task Comment Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Task Comment Added Successfully"),
+                    @ApiResponse(code = 201, message = "Client Task Comment Created Successfully")
+            }
+    )
+	@PostMapping("/client/org/task/comment/add")
+	public ResponseEntity<Object> addClientTaskComments(@RequestBody ClientTaskComments clientTaskComments) {
+		
+		ClientTaskComments clientTaskComment = clientService.addClientTaskComments(clientTaskComments);
+		if (clientTaskComment == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to add Client Task Comment");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Task Comment Added Successfully");
+			list.put("commentId", clientTaskComment.getId());
+			
+			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Get Client Tasks Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Tasks Fetched Successfully"),
+            }
+    )
+	@GetMapping("/client/org/tasks/{clientOrgId}")
+	public ResponseEntity<Object> getClientTasks(@PathVariable("clientOrgId") Integer clientOrgId) {
+		
+		List<Map<String, Object>> clientTasks= clientService.getClientTasks(clientOrgId);
+        if (clientTasks == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch Client Tasks");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Tasks Fetched Successfully");
+			list.put("clientTasks", clientTasks);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
         }

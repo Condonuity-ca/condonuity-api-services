@@ -465,5 +465,90 @@ public class Constants {
 			return value;
 		}
 	}
+	
+	public enum Priority {
+		HIGHEST(1),
+	    HIGH(2),
+		MEDIUM(3),
+		LOW(4);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private Priority(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (Priority pageType : Priority.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static Priority valueOf(int pageType) {
+			return (Priority) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	public enum TaskPriority {
+		HIGHEST(1),
+	    HIGH(2),
+		MEDIUM(3),
+		LOW(4);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private TaskPriority(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (TaskPriority pageType : TaskPriority.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static TaskPriority valueOf(int pageType) {
+			return (TaskPriority) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
 
+	public enum TaskStatus {
+		OPEN(1),
+	    DEFERRED(2),
+		ON_HOLD(3),
+		IN_PROGRESS(4),
+		CLOSED(5),
+		RE_OPENED(6);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private TaskStatus(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (TaskStatus pageType : TaskStatus.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static TaskStatus valueOf(int pageType) {
+			return (TaskStatus) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
 }
