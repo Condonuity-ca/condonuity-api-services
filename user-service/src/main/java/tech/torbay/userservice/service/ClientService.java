@@ -18,6 +18,7 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
+import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientRegistrationFiles;
@@ -34,6 +35,7 @@ import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
+import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientRegistrationFilesRepository;
@@ -86,6 +88,8 @@ public class ClientService {
 	ClientTaskCommentsRepository clientTaskCommentsRepository;
 	@Autowired
 	ClientUserTasksRepository clientUserTasksRepository;
+	@Autowired
+	ClientBuildingRepoRepository clientBuildingRepoRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -795,5 +799,44 @@ public class ClientService {
 		return clientTaskRepository.save(clientTaskObj);
 	}
 
+	public ClientBuildingRepository addClientBuildingRepository(ClientBuildingRepository clientBuildingRepository) {
+		// TODO Auto-generated method stub
+		
+		clientBuildingRepository.setStatus(UserAccountStatus.ACTIVE.getValue());
+		clientBuildingRepository.setModifiedBy(clientBuildingRepository.getCreatedBy());
+		
+		return clientBuildingRepoRepository.save(clientBuildingRepository);
+	}
+
+	public ClientBuildingRepository deleteClientBuildingRepository(Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		Integer taskId = (Integer) requestData.get("id");
+		Integer clientUserId = (Integer) requestData.get("clientUserId");
+		
+		ClientBuildingRepository clientBuildingRepository = clientBuildingRepoRepository.findOneById(taskId);
+		
+		clientBuildingRepository.setStatus(UserAccountStatus.INACTIVE.getValue());
+		clientBuildingRepository.setModifiedBy(clientUserId);
+		
+		return clientBuildingRepoRepository.save(clientBuildingRepository);
+	}
+	
+	public ClientBuildingRepository updateClientBuildingRepository(ClientBuildingRepository clientBuildingRepository) {
+		// TODO Auto-generated method stub
+		
+		ClientBuildingRepository clientBuildingRepositoryObj = clientBuildingRepoRepository.findOneById(clientBuildingRepository.getId());
+		
+		clientBuildingRepository.setClientOrganisationId(clientBuildingRepositoryObj.getClientOrganisationId());
+		clientBuildingRepository.setCreatedBy(clientBuildingRepositoryObj.getCreatedBy());
+		clientBuildingRepository.setStatus(clientBuildingRepositoryObj.getStatus());
+		
+		return clientBuildingRepoRepository.save(clientBuildingRepository);
+	}
+
+	public List<ClientBuildingRepository> getClientBuildingRepositories(Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		return clientBuildingRepoRepository.findAllByClientOrganisationId(clientOrganisationId);
+	}
 }
 

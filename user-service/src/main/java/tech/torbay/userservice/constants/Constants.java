@@ -551,4 +551,90 @@ public class Constants {
 			return value;
 		}
 	}
+	
+	public enum UnitType {
+		LOCKER(1),
+	    RESIDENTIAL_UNIT(2),
+		PARKING_UNIT(3),
+		COMMERCIAL_UNIT(4),
+		COMMON_ELEMENT(5),
+		OTHER(6);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private UnitType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (UnitType pageType : UnitType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static UnitType valueOf(int pageType) {
+			return (UnitType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	public enum TenantStatus {
+		OWNER_OCCUPIED(1),
+	    LEASED(2),
+		VACANT(3),
+		OTHER(4);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private TenantStatus(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (TenantStatus pageType : TenantStatus.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static TenantStatus valueOf(int pageType) {
+			return (TenantStatus) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	public enum PersonTenantType {
+		OWNER(1),
+	    OCCUPANT(2),
+		TENANT(3),
+		OTHER(4);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private PersonTenantType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (PersonTenantType pageType : PersonTenantType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static PersonTenantType valueOf(int pageType) {
+			return (PersonTenantType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
 }

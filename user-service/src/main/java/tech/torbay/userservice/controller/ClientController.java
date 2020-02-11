@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.entity.ClientAmenities;
+import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientTask;
@@ -762,6 +763,124 @@ public class ClientController {
 			list.put("clientTasks", clientTasks);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Adding Client Building Repository Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Building Repository Added Successfully"),
+                    @ApiResponse(code = 201, message = "Client Building Repository Created Successfully")
+            }
+    )
+	@PostMapping("/client/org/building/repo/add")
+	public ResponseEntity<Object> addBuildingRepository(@RequestBody ClientBuildingRepository clientBuildingRepository) {
+		
+		ClientBuildingRepository clientBuildingRepositoryObj = clientService.addClientBuildingRepository(clientBuildingRepository);
+		if (clientBuildingRepositoryObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to add Client Building Repository");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Building Repository Added Successfully");
+			list.put("buildingRepositoryId", clientBuildingRepositoryObj.getId());
+			
+			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Updating Client Building Repository Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Building Repository Updated Successfully")
+            }
+    )
+	@PutMapping("/client/org/building/repo")
+	public ResponseEntity<Object> updateBuildingRepository(@RequestBody ClientBuildingRepository clientBuildingRepository) {
+		
+		ClientBuildingRepository clientBuildingRepositoryObj = clientService.updateClientBuildingRepository(clientBuildingRepository);
+		if (clientBuildingRepositoryObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to update Client Building Repository");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Building Repository Updated Successfully");
+			list.put("buildingRepositoryId", clientBuildingRepositoryObj.getId());
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Get Client Building Repositories Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Building Repositories Fetched Successfully"),
+            }
+    )
+	@GetMapping("/client/org/building/repo/{clientOrgId}")
+	public ResponseEntity<Object> getClientBuildingRepositories(@PathVariable("clientOrgId") Integer clientOrgId) {
+		
+		List<ClientBuildingRepository> clientTasks= clientService.getClientBuildingRepositories(clientOrgId);
+        if (clientTasks == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch Client Building Repositories");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Building Repositories Fetched Successfully");
+			list.put("buildingRepositories", clientTasks);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Delete Client Task Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Task Deleted Successfully")
+            }
+    )
+	@PutMapping("/client/org/building/repo/inactive")
+	public ResponseEntity<Object> deleteClientBuildingRepository(
+			@RequestBody Map<String, Object> requestData ) {
+		
+		ClientBuildingRepository clientBuildingRepository = clientService.deleteClientBuildingRepository(requestData);
+        if (clientBuildingRepository == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to delete Client Building Repository");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+			
+			HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Building Repository Deleted Successfully");
+			list.put("buildingRepositoryId", clientBuildingRepository.getId());
+			
+			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
 	}
 }
