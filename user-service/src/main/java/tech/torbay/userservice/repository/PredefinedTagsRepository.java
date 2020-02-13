@@ -15,6 +15,8 @@ public interface PredefinedTagsRepository extends JpaRepository<PredefinedTags, 
 
     PredefinedTags findByTagId(Integer Id);
     
+    List<PredefinedTags> findAllByTagName(String tagName);
+    
     @Query("select tagName from PredefinedTags co where co.tagId IN (?1)")
    	List<String> findByTagId(List<Integer> ids);
     

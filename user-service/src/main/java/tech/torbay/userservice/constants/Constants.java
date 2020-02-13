@@ -637,4 +637,64 @@ public class Constants {
 			return value;
 		}
 	}
+	
+	public enum LienType {
+		YES(1),
+	    NO(2),
+		OTHER(3);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private LienType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (LienType pageType : LienType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static LienType valueOf(int pageType) {
+			return (LienType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	public enum SearchType {
+		PROJECTS(1),
+	    MARKETPLACE_PROJECTS(2),
+		BROWSE_VENDORS(3),
+		BROWSE_CONDOS(4),
+		MESSAGES(5),
+		REVIEWS(6),
+		TASKS(7),
+		CONTRACTS(8),
+		BUILDING_REPOSITORY(9);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private SearchType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (SearchType pageType : SearchType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static SearchType valueOf(int pageType) {
+			return (SearchType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
 }

@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.TaskStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
@@ -748,6 +749,10 @@ public class ClientService {
 			clientTaskObj.setTaskStatus(clientTask.getTaskStatus());
 			clientTaskObj.setIsOther(clientTask.getIsOther());
 			clientTaskObj.setOthersName(clientTask.getOthersName());;
+			
+			if(clientTask.getTaskStatus() == TaskStatus.CLOSED.getValue()) {
+				clientTaskObj.setClosureDate(Utils.getDateTime());
+			}
 			
 			clientTaskObj = clientTaskRepository.save(clientTaskObj); 
 			

@@ -642,7 +642,7 @@ public class ProjectService {
 				
 				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( project.getProjectId(), vendorId);
 				
-				if(vendorProjectInterests != null) {
+				if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
 					map.put("isInterested", true);
 				} else {
 					map.put("isInterested", false);
@@ -699,7 +699,7 @@ public class ProjectService {
 		map.put("questionAnswers",projectQARepository.findProjectQuestionAnswerByProjectId(projectId));
 		VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( projectId, vendorId);
 		
-		if(vendorProjectInterests != null) {
+		if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
 			map.put("isInterested", true);
 		} else {
 			map.put("isInterested", false);

@@ -1,5 +1,7 @@
 package tech.torbay.userservice.controller;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -7,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +21,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.controller.UserController;
+import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.service.UserService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
 
@@ -56,5 +61,32 @@ public class UserController {
 	        		"Password reset successfully");
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
+	}
+	
+	@ApiOperation(value = "Get Client Search Result Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Search Results Fetched Successfully"),
+            }
+    )
+	@PostMapping("/client/search")
+	public ResponseEntity<Object> getClientSearchResults(@RequestBody Map<String, Object> requestData) {
+		
+		List<Map<String, Object>> results = userService.getSearchResults(requestData);
+        if (results == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch search results");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Search Results Fetched Successfully");
+			list.put("results", results);
+//			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
 	}
 }

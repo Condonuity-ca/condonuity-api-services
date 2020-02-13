@@ -514,7 +514,7 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		try {
 			
-			List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
+			List<Integer> ids = vendorTags.stream().map(VendorTags::getTagId).collect(Collectors.toList());	
 			
 	        
 	        List<Object[]> tags = predefinedTagsRepository.findTagsByTagId(ids);
