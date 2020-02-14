@@ -670,6 +670,7 @@ public class ClientService {
 			        
 			        if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
 			        	// only other name available
+			        	map.put("assignedTo", new ArrayList());
 			        } else if(clientTask.getIsOther() == Constants.Availability.NOT_AVAILABLE.getValue()) {			        	
 			        	map.put("assignedTo", getClientUsers(clientTask.getId()));
 //			        	map.put("assignee",getClientUsers(clientTask.getId()));
@@ -714,18 +715,25 @@ public class ClientService {
 		return allClientTaskComments;
 	}
 
-	private List<String> getClientUsers(int taskId) {
+	private List<Map<String, Object>> getClientUsers(int taskId) {
 		// TODO Auto-generated method stub
 		
-		 List<String> allClientUsers = new ArrayList();
+		 List<Map<String, Object>> allClientUsers = new ArrayList();
 		 
 		 List<ClientUserTasks> clientUserTasks = clientUserTasksRepository.findAllByTaskId(taskId);
 		
 		if(clientUserTasks != null && clientUserTasks.size() > 0) {
 			for(ClientUserTasks clientUser: clientUserTasks) {
+				
+				Map<String, Object> map = new HashMap();
+				
 				ClientUser clientUserObj = clientUserRepository.findByClientId(clientUser.getClientId());
-				if(clientUserObj != null)
-				allClientUsers.add(clientUserObj.getFirstName() +" "+ clientUserObj.getLastName());
+				if(clientUserObj != null) {
+					map.put("clientUserId", clientUserObj.getClientId());
+					map.put("clientUserName", clientUserObj.getFirstName() +" "+ clientUserObj.getLastName());
+					
+					allClientUsers.add(map);
+				}
 			}
 		}
 		return allClientUsers;

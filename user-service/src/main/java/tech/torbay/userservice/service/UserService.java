@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
@@ -25,6 +26,7 @@ import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
+import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
@@ -54,6 +56,8 @@ public class UserService {
 	VendorTagsRepository vendorTagsRepository;
 	@Autowired
 	ClientOrganisationRepository clientOrganisationRepository;
+	@Autowired
+	ClientBuildingRepoRepository clientBuildingRepoRepository;
 	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
@@ -158,6 +162,16 @@ public class UserService {
 				}
 				
 		        
+				return result;
+			}
+			case 9:{
+				List<ClientBuildingRepository> buildingRepositories = clientBuildingRepoRepository.findAllByKeyword(clientOrganisationId, keyword);
+				for(ClientBuildingRepository buildingRepository : buildingRepositories) {
+					ObjectMapper oMapper = new ObjectMapper();
+			        Map<String, Object> map = oMapper.convertValue(buildingRepository, Map.class);
+			        result.add(map);
+				}
+				
 				return result;
 			}
 		}

@@ -202,6 +202,33 @@ public class ClientController {
 		}
 	}
 	
+	@ApiOperation(value = "Fetching Client Organisation Users details with in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful All Client User Details")
+            }
+    )
+	@GetMapping("/client/org/users/{clientOrganisationId}")
+	public ResponseEntity<Object> getClientOrganisationUsers(@PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+		List<Object> clients = clientService.getAllClientsByOrganisation(clientOrganisationId);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(clients != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Client Organisation Users details fetched successfully");
+			response.put("clientUsers", clients);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
 	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
     @ApiResponses(
             value = {
