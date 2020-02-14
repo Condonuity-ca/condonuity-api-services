@@ -1,7 +1,10 @@
 package tech.torbay.userservice.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -92,19 +95,19 @@ public class UserService {
 				ArrayList<Project> tagContainedProjects = new ArrayList();
 				if(tags != null && tags.size() > 0) {
 					for(PredefinedTags tag : tags) {
-						List<Project> projects = projectRepository.findAllByKeyword(clientOrganisationId, String.valueOf("%"+tag.getTagId()+"%"));
+						List<Project> projects = projectRepository.findAllByTagKeyword(clientOrganisationId, String.valueOf("%"+tag.getTagId()+"%"));
 						tagContainedProjects.addAll(new ArrayList<>(projects));
 					}
 				}
 				
 				List<Project> projects = projectRepository.findAllByKeyword(clientOrganisationId, keyword);
 				for(Project project : projects) {
-					for (Iterator<Project> subProject = tagContainedProjects.iterator() ; subProject.hasNext() ; ) {
-						Project pro = subProject.next();
-						if(project.getProjectId() == pro.getProjectId()) {
-							subProject.remove();
-						}
-					}
+//					for (Iterator<Project> subProject = tagContainedProjects.iterator() ; subProject.hasNext() ; ) {
+//						Project pro = subProject.next();
+//						if(project.getProjectId() == pro.getProjectId()) {
+//							subProject.remove();
+//						}
+//					}
 					result.add(getProjectObject(project));
 				}
 				
@@ -113,6 +116,23 @@ public class UserService {
 						result.add(getProjectObject(project));
 					}
 				}
+				
+				HashSet<Map<String, Object>> resultSet = new HashSet(result);
+				result.clear();
+				result.addAll(resultSet);
+				
+				Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
+		            
+		            @Override
+		            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
+		                Integer o1 = (Integer) e1.get("projectId");
+		                Integer o2 = (Integer) e2.get("projectId");
+		                return o1.compareTo(o2);
+		            }
+		        };
+		        
+		        Collections.sort(result, valueComparator);
+		        
 				return result;
 			}
 			
@@ -135,12 +155,12 @@ public class UserService {
 				List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllByKeyword(keyword);
 				
 				for(VendorOrganisation vendorOrg : vendorOrgsAll) {
-					for (Iterator<VendorOrganisation> subVendorOrg = tagContainedVendors.iterator() ; subVendorOrg.hasNext() ; ) {
-						VendorOrganisation org = subVendorOrg.next();
-						if(vendorOrg.getVendorOrganisationId() == org.getVendorOrganisationId()) {
-							subVendorOrg.remove();
-						}
-					}
+//					for (Iterator<VendorOrganisation> subVendorOrg = tagContainedVendors.iterator() ; subVendorOrg.hasNext() ; ) {
+//						VendorOrganisation org = subVendorOrg.next();
+//						if(vendorOrg.getVendorOrganisationId() == org.getVendorOrganisationId()) {
+//							subVendorOrg.remove();
+//						}
+//					}
 			        result.add(getVendorOrganisationObj(clientOrganisationId, vendorOrg));
 				}
 		    	
@@ -149,6 +169,22 @@ public class UserService {
 						result.add(getVendorOrganisationObj(clientOrganisationId, vendorOrg));
 					}
 				}
+				
+				HashSet<Map<String, Object>> resultSet = new HashSet(result);
+				result.clear();
+				result.addAll(resultSet);
+				
+				Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
+		            
+		            @Override
+		            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
+		                Integer o1 = (Integer) e1.get("vendorOrganisationId");
+		                Integer o2 = (Integer) e2.get("vendorOrganisationId");
+		                return o1.compareTo(o2);
+		            }
+		        };
+				 
+				Collections.sort(result, valueComparator);
 				
 				return result;
 			}
@@ -165,18 +201,152 @@ public class UserService {
 				return result;
 			}
 			case 9:{
-				List<ClientBuildingRepository> buildingRepositories = clientBuildingRepoRepository.findAllByKeyword(clientOrganisationId, keyword);
+				// check clientId - createdBy, ModifiedBy - completed using query
+				// check tenant_status, person_tenant_type, unit_type, lien_type
+				List<ClientBuildingRepository> allTypeBasedBuildingRepositories = getAllTypeBasedRepositorySearchResults(actualKeyword);
+				HashSet<ClientBuildingRepository> allTypeBasedBuildingRepositoriesSet = new HashSet(allTypeBasedBuildingRepositories);
+				 
+				List<ClientBuildingRepository> buildingRepositories = clientBuildingRepoRepository.findAllWithInnerJoinByKeyword(clientOrganisationId, keyword);
 				for(ClientBuildingRepository buildingRepository : buildingRepositories) {
 					ObjectMapper oMapper = new ObjectMapper();
 			        Map<String, Object> map = oMapper.convertValue(buildingRepository, Map.class);
 			        result.add(map);
 				}
 				
+				for(ClientBuildingRepository buildingRepository : allTypeBasedBuildingRepositoriesSet) {
+					ObjectMapper oMapper = new ObjectMapper();
+			        Map<String, Object> map = oMapper.convertValue(buildingRepository, Map.class);
+			        result.add(map);
+				}
+				
+				HashSet<Map<String, Object>> resultSet = new HashSet(result);
+				result.clear();
+				result.addAll(resultSet);
+				
+	             
+				Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
+		            
+		            @Override
+		            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
+		                Integer o1 = (Integer) e1.get("id");
+		                Integer o2 = (Integer) e2.get("id");
+		                return o1.compareTo(o2);
+		            }
+		        };
+				 
+				Collections.sort(result, valueComparator);
+				 
 				return result;
 			}
 		}
 		
 		return null;
+	}
+
+	private List<ClientBuildingRepository> getAllTypeBasedRepositorySearchResults(String keyword) {
+		// TODO Auto-generated method stub
+		
+		List<ClientBuildingRepository> allTypeBasedBuildingRepositories =  new ArrayList();
+		
+		switch(keyword.toLowerCase()) {
+			case "occupied":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.OWNER_OCCUPIED.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
+				break;
+			}
+			case "owner":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.OWNER_OCCUPIED.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.OWNER.getValue());
+				
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
+				break;
+			}
+			case "vacant":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.VACANT.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
+				break;
+			}
+			
+			case "leased":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.LEASED.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
+				break;
+			}
+			case "other":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.OTHER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.OTHER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByLienType(Constants.LienType.OTHER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.OTHER.getValue());
+				
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByLien);
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
+				break;
+			}
+			case "occupant":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.OCCUPANT.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
+				break;
+			}
+			case "tenant":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.TENANT.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
+				break;
+			}
+			case "yes":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByLienType(Constants.LienType.YES.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByLien);
+				break;
+			}
+			case "no":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByLienType(Constants.LienType.NO.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByLien);
+				break;
+			}
+			case "locker":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.LOCKER.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
+				break;
+			}
+			case "residential":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.RESIDENTIAL_UNIT.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
+				break;
+			}
+			case "parking":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.PARKING_UNIT.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
+				break;
+			}
+			case "commercial":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.COMMERCIAL_UNIT.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
+				break;
+			}
+			case "common":
+			{
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.COMMON_ELEMENT.getValue());
+				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
+				break;
+			}
+		}
+		
+		return allTypeBasedBuildingRepositories;
 	}
 
 	private Map<String, Object> getVendorOrganisationObj(Integer clientOrganisationId, VendorOrganisation vendorOrg) {
