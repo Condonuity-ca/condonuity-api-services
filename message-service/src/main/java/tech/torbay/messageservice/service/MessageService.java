@@ -37,7 +37,6 @@ public class MessageService {
 	ThreadFilesRepository threadFilesRepository;
 	@Autowired
 	CommentFilesRepository commentFilesRepository;
-	
 	@Autowired
 	ExternalMessageRepository externalMessageRepository;
 	@Autowired

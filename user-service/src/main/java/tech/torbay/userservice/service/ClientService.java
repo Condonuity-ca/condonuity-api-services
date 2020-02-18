@@ -676,6 +676,12 @@ public class ClientService {
 //			        	map.put("assignee",getClientUsers(clientTask.getId()));
 			        }
 			        
+			        ClientUser createdBy = clientUserRepository.findByClientId(clientTask.getCreatedBy());
+			        ClientUser modifiedBy = clientUserRepository.findByClientId(clientTask.getModifiedBy());
+			        
+			        map.put("createdByUser",createdBy.getFirstName()+" "+createdBy.getLastName());
+			        map.put("modifiedByUser",modifiedBy.getFirstName()+" "+modifiedBy.getLastName());
+			        
 			        map.put("comments",getTaskComments(clientTask.getId()));
 			        
 			        allClientTasks.add(map);

@@ -69,7 +69,7 @@ public class MessageController {
             }
     )
 	@GetMapping("/internal/messages/{userType}/{clientOrganisationId}")
-	private ResponseEntity<Object> createThread(@PathVariable("userType") Integer userType, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+	private ResponseEntity<Object> getInternalMessages(@PathVariable("userType") Integer userType, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		
 		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(clientOrganisationId, userType);
@@ -153,7 +153,7 @@ public class MessageController {
             }
     )
 	@GetMapping("/external/messages/{userType}/{organisationId}")
-	private ResponseEntity<Object> createExternalThread(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+	private ResponseEntity<Object> getExternalMessages(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
 		// TODO Auto-generated method stub
 		
 		List<Map<String,Object>> externalMessages = messageService.getExternalMessages(organisationId, userType);

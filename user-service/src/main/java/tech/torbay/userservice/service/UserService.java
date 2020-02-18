@@ -16,6 +16,20 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tech.torbay.userservice.repository.CommentFilesRepository;
+import tech.torbay.userservice.repository.ExternalMessageCommentRepository;
+import tech.torbay.userservice.repository.ExternalMessageRepository;
+import tech.torbay.userservice.repository.InternalMessageCommentRepository;
+import tech.torbay.userservice.repository.InternalMessageRepository;
+import tech.torbay.userservice.repository.ThreadFilesRepository;
+import tech.torbay.userservice.entity.ExternalMessage;
+import tech.torbay.userservice.entity.ExternalMessageComment;
+import tech.torbay.userservice.Utils.Utils;
+import tech.torbay.userservice.constants.Constants.ThreadType;
+import tech.torbay.userservice.entity.CommentFiles;
+import tech.torbay.userservice.entity.InternalMessage;
+import tech.torbay.userservice.entity.InternalMessageComment;
+import tech.torbay.userservice.entity.ThreadFiles;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientOrganisation;
@@ -31,6 +45,7 @@ import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
+import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.UserRepository;
@@ -61,6 +76,24 @@ public class UserService {
 	ClientOrganisationRepository clientOrganisationRepository;
 	@Autowired
 	ClientBuildingRepoRepository clientBuildingRepoRepository;
+	/*Messages-START*/
+	@Autowired
+	InternalMessageRepository internalMessageRepository;
+	@Autowired
+	InternalMessageCommentRepository internalMessageCommentRepository;
+	@Autowired
+	ThreadFilesRepository threadFilesRepository;
+	@Autowired
+	CommentFilesRepository commentFilesRepository;
+	@Autowired
+	ExternalMessageRepository externalMessageRepository;
+	@Autowired
+	ExternalMessageCommentRepository externalMessageCommentRepository;
+	/*Messages-END*/
+	@Autowired
+	ClientUserRepository clientUserRepository;
+	
+	
 	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
@@ -200,6 +233,80 @@ public class UserService {
 		        
 				return result;
 			}
+			case 5:{ 
+				// - changes
+				// 1. add username based search
+				// 2. add org details
+				try {
+					Integer threadType = Integer.parseInt(String.valueOf(requestData.get("threadType")));
+					
+					if(threadType == Constants.ThreadType.INTERNAL.getValue()) {
+						List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
+						HashSet<InternalMessage> uniqueInternalMessages = new HashSet(internalMessages);
+						
+						for(InternalMessage internalMessage : internalMessages) {
+							Map<String,Object> map = new HashMap<>();
+							ObjectMapper oMapper = new ObjectMapper();
+							map = oMapper.convertValue(internalMessage, Map.class);
+							
+							List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
+							List<Map<String,Object>> allFiles = new ArrayList();
+							for(ThreadFiles threadFile : threadFiles) {
+								Map<String,Object> file = new HashMap<>();
+								file.put("id", threadFile.getId());
+								file.put("fileName", threadFile.getFileName());
+								file.put("fileType", threadFile.getFileType());
+								file.put("fileUrl", threadFile.getFileUrl());
+								file.put("createdAt", threadFile.getCreatedAt());
+								file.put("modifiedDate", threadFile.getModifiedDate());
+								allFiles.add(file);
+							}
+							ClientUser createdBy = clientUserRepository.findByClientId(internalMessage.getUserId());
+							 
+							map.put("createdByUser", createdBy.getFirstName()+" "+createdBy.getLastName()); // this created by user search is missing
+							map.put("files",allFiles);
+							map.put("comments",getInternalThreadComments(internalMessage.getId()));
+							
+							result.add(map);
+						}
+					} else if(threadType == Constants.ThreadType.EXTERNAL.getValue()) {
+						List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
+						HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);
+						
+						for(ExternalMessage externalMessage : uniqueExternalMessages) {
+							
+							Map<String,Object> map = new HashMap<>();
+							ObjectMapper oMapper = new ObjectMapper();
+							map = oMapper.convertValue(externalMessage, Map.class);
+							
+							List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+							List<Map<String,Object>> allFiles = new ArrayList();
+							for(ThreadFiles threadFile : threadFiles) {
+								Map<String,Object> file = new HashMap<>();
+								file.put("id", threadFile.getId());
+								file.put("fileName", threadFile.getFileName());
+								file.put("fileType", threadFile.getFileType());
+								file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+								file.put("blobName", threadFile.getBlobName());
+								file.put("containerName", threadFile.getContainerName());
+//								file.put("fileUrl", threadFile.getFileUrl());
+								file.put("createdAt", threadFile.getCreatedAt());
+//								file.put("modifiedDate", threadFile.getModifiedDate());
+								allFiles.add(file);
+							}
+							
+							map.put("files",allFiles);
+							map.put("comments",getExternalThreadComments(externalMessage.getId()));
+							
+							result.add(map);
+						}
+					}
+				} catch(Exception exp) {
+					return null;
+				}
+				
+				return result;
+			}
 			case 9:{
 				// check clientId - createdBy, ModifiedBy - completed using query
 				// check tenant_status, person_tenant_type, unit_type, lien_type
@@ -242,6 +349,74 @@ public class UserService {
 		
 		return null;
 	}
+	
+	private List<Map<String,Object>> getExternalThreadComments(Integer threadId) {
+		// TODO Auto-generated method stub
+		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(threadId);
+		
+		List<Map<String,Object>> allComments = new ArrayList();
+		
+		for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+			
+			Map<String,Object> map = new HashMap<>();
+			ObjectMapper oMapper = new ObjectMapper();
+			map = oMapper.convertValue(externalMessageComment, Map.class);
+			
+			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(externalMessageComment.getId(), ThreadType.EXTERNAL.getValue());
+			List<Map<String,Object>> allFiles = new ArrayList();
+			for(CommentFiles commentFile : commentFiles) {
+				Map<String,Object> file = new HashMap<>();
+				file.put("id", commentFile.getId());
+				file.put("fileName", commentFile.getFileName());
+				file.put("fileType", commentFile.getFileType());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(commentFile.getFileSize())));
+				file.put("blobName", commentFile.getBlobName());
+				file.put("containerName", commentFile.getContainerName());
+//				file.put("fileUrl", commentFile.getFileUrl());
+				file.put("createdAt", commentFile.getCreatedAt());
+//				file.put("modifiedDate", commentFile.getModifiedDate());
+				allFiles.add(file);
+			}
+			map.put("files","[]"/*allFiles*/);
+			allComments.add(map);
+		}
+		return allComments;
+	}
+
+	
+	private List<Map<String,Object>> getInternalThreadComments(Integer threadId) {
+		// TODO Auto-generated method stub
+		List<InternalMessageComment> internalMessageComments = internalMessageCommentRepository.findAllByThreadId(threadId);
+		
+		List<Map<String,Object>> allComments = new ArrayList();
+		
+		for(InternalMessageComment internalMessageComment : internalMessageComments) {
+			
+			Map<String,Object> map = new HashMap<>();
+			ObjectMapper oMapper = new ObjectMapper();
+			map = oMapper.convertValue(internalMessageComment, Map.class);
+			
+			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(internalMessageComment.getId(), ThreadType.INTERNAL.getValue());
+			List<Map<String,Object>> allFiles = new ArrayList();
+			for(CommentFiles commentFile : commentFiles) {
+				Map<String,Object> file = new HashMap<>();
+				file.put("id", commentFile.getId());
+				file.put("fileName", commentFile.getFileName());
+				file.put("fileType", commentFile.getFileType());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(commentFile.getFileSize())));
+				file.put("blobName", commentFile.getBlobName());
+				file.put("containerName", commentFile.getContainerName());
+//				file.put("fileUrl", commentFile.getFileUrl());
+				file.put("createdAt", commentFile.getCreatedAt());
+//				file.put("modifiedDate", commentFile.getModifiedDate());
+				allFiles.add(file);
+			}
+			map.put("files",allFiles);
+			allComments.add(map);
+		}
+		return allComments;
+	}
+	
 
 	private List<ClientBuildingRepository> getAllTypeBasedRepositorySearchResults(String keyword) {
 		// TODO Auto-generated method stub

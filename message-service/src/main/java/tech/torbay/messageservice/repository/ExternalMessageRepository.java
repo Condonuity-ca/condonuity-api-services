@@ -13,7 +13,7 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
 
     List<ExternalMessage> findAll();
 
-    ExternalMessage save(InternalMessage internalMessage);
+    ExternalMessage save(ExternalMessage internalMessage);
     
     ExternalMessage findOneById(Integer id);
     
