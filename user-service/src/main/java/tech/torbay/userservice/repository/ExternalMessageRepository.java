@@ -27,6 +27,15 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
     		"OR " + 
     		"(em.target_organisation_id = co.client_organisation_id and em.target_user_type = 1)" + 
     		")" + 
+    		"LEFT JOIN condonuitydev.client_user cu " + 
+    		"ON ( " + 
+    		"(em.source_user_id = cu.client_id and em.source_user_type = 1) " + 
+    		")" + 
+    		"LEFT JOIN condonuitydev.vendor_user vu " + 
+    		"ON ( " + 
+    		"(em.source_user_id = vu.user_id and em.source_user_type = 2) " + 
+    		")" + 
+    		"LEFT JOIN condonuitydev.external_message_comment emc ON ( em.id = emc.thread_id) " +     		
     		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
     		"ON ( " + 
     		"(em.source_organisation_id = vo.vendor_organisation_id and em.source_user_type = 2) " + 
@@ -58,7 +67,16 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
     		"vo.province like (?3) or " + 
     		"vo.logo_name like (?3) or " + 
     		"vo.expertise_category like (?3) or " + 
-    		"vo.website like (?3)" + 
+    		"vo.website like (?3) or " + 
+    		"cu.first_name like (?3) or " +
+    		"cu.last_name like (?3) or " +
+    		"cu.legal_name like (?3) or " +
+    		"vu.first_name like (?3) or " +
+    		"vu.last_name like (?3) or " +
+    		"vu.email like (?3) or " +
+    		"emc.comment like (?3) or " +
+    		"emc.created_at like (?3) or " +
+    		"emc.modified_date like (?3)" +
     		")", nativeQuery =true)
 	List<ExternalMessage> findAllByOrganisationIdAndUserTypeAndKeyword(
 			Integer clientOrganisationId,

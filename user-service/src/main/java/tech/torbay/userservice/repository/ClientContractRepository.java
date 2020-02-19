@@ -20,4 +20,22 @@ public interface ClientContractRepository extends JpaRepository<ClientContract, 
     
     ClientContract save(ClientContract clientContract);
 
+    @Query(value = "SELECT cc.* " + 
+    		"FROM condonuitydev.client_contract cc " + 
+    		"where ( client_organisation_id = (?1) and status = 1) and " + 
+    		"concat (cc.vendor_name, '.', cc.services, '.', cc.signed_date, " + 
+    		"'.', cc.expiry_date, '.', cc.cost, '.', cc.expected_increase, " + 
+    		"'.', cc.term, '.', cc.cancellation_term, " + 
+    		"'.', cc.notes, '.', cc.created_at, '.', cc.modified_date) LIKE (?2)", nativeQuery = true)
+	List<ClientContract> findAllByClientOrganisationIdAndKeyword(Integer clientOrganisationId, String keyword);
+
+    List<ClientContract> findAllByCancellationUnits(Integer cancellationUnit);
+    
+    List<ClientContract> findAllByGstAvailablity(Integer gstAvailability);
+    
+    List<ClientContract> findAllByRenewalType(Integer renewalType);
+    
+    List<ClientContract> findAllByCostTermUnits(Integer costTermUnits);
+    
+    List<ClientContract> findAllByTermUnits(Integer termUnits);
 }

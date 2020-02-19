@@ -32,6 +32,7 @@ import tech.torbay.userservice.entity.InternalMessageComment;
 import tech.torbay.userservice.entity.ThreadFiles;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
+import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
@@ -42,8 +43,10 @@ import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorTags;
+import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
+import tech.torbay.userservice.repository.ClientContractRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
@@ -53,6 +56,7 @@ import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
 import tech.torbay.userservice.repository.VendorTagsRepository;
+import tech.torbay.userservice.repository.VendorUserRepository;
 
 @Component
 public class UserService {
@@ -92,6 +96,10 @@ public class UserService {
 	/*Messages-END*/
 	@Autowired
 	ClientUserRepository clientUserRepository;
+	@Autowired
+	VendorUserRepository vendorUserRepository;
+	@Autowired
+	ClientContractRepository clientContractRepository;
 	
 	
 	
@@ -235,8 +243,8 @@ public class UserService {
 			}
 			case 5:{ 
 				// - changes
-				// 1. add username based search
-				// 2. add org details
+				// 1. add username based search both source , target - completed as well messages - ?
+				// 2. add user, org details both source and target - completed as well messages - ?
 				try {
 					Integer threadType = Integer.parseInt(String.valueOf(requestData.get("threadType")));
 					
@@ -295,6 +303,35 @@ public class UserService {
 								allFiles.add(file);
 							}
 							
+							
+							/*if okay use SQL Result Set mapping query here when require optimization*/
+							if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+								ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+								ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+								
+								map.put("createdByUser",clientUser.getFirstName() +" "+ clientUser.getLastName());
+								map.put("sourceOrganisationName",clientOrganisation.getOrganisationName());
+								
+							} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+								VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+								VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+								
+								map.put("createdByUser",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
+								map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
+							}
+							
+							
+							if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
+								ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
+								
+								map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
+								
+							} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
+								VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
+								
+								map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
+							}
+							
 							map.put("files",allFiles);
 							map.put("comments",getExternalThreadComments(externalMessage.getId()));
 							
@@ -304,6 +341,44 @@ public class UserService {
 				} catch(Exception exp) {
 					return null;
 				}
+				
+				return result;
+			}
+			
+			case 8:{
+				List<ClientContract> allConstantBasedContracts = getAllConstantsBasedContractsSearchResults(actualKeyword);
+				HashSet<ClientContract> allConstantBasedContractsSet = new HashSet(allConstantBasedContracts);
+				
+				List<ClientContract> clientContracts = clientContractRepository.findAllByClientOrganisationIdAndKeyword(clientOrganisationId, keyword);
+				for(ClientContract clientContract : clientContracts) {
+					ObjectMapper oMapper = new ObjectMapper();
+			        Map<String, Object> map = oMapper.convertValue(clientContract, Map.class);
+			        result.add(map);
+				}
+				// term_units, cancellation, gst, renewal, cost_term
+				
+				for(ClientContract clientContract : allConstantBasedContractsSet) {
+					ObjectMapper oMapper = new ObjectMapper();
+			        Map<String, Object> map = oMapper.convertValue(clientContract, Map.class);
+			        result.add(map);
+				}
+				
+				HashSet<Map<String, Object>> resultSet = new HashSet(result);
+				result.clear();
+				result.addAll(resultSet);
+				
+	             
+				Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
+		            
+		            @Override
+		            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
+		                Integer o1 = (Integer) e1.get("id");
+		                Integer o2 = (Integer) e2.get("id");
+		                return o1.compareTo(o2);
+		            }
+		        };
+				 
+				Collections.sort(result, valueComparator);
 				
 				return result;
 			}
@@ -348,6 +423,122 @@ public class UserService {
 		}
 		
 		return null;
+	}
+	
+	private List<ClientContract> getAllConstantsBasedContractsSearchResults(String keyword) {
+		// TODO Auto-generated method stub
+		
+		List<ClientContract> allTypeConstantsBasedContracts =  new ArrayList();
+		
+		switch(keyword.toLowerCase()) {
+			case "auto":
+			case "auto renewal":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByRenewalType(Constants.RenewalType.AUTO.getValue());
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "manual":
+			case "manual renewal":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByRenewalType(Constants.RenewalType.MANUAL.getValue());
+				
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "yes":
+			case "including gst":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByGstAvailablity(Constants.Availability.AVAILABLE.getValue());
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "no":
+			case "without gst":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByGstAvailablity(Constants.Availability.NOT_AVAILABLE.getValue());
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "weekly":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.WEEKLY.getValue());
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "monthly":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "yearly":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.YEARLY.getValue());
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "year":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts2 = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.YEARLY.getValue());
+				
+				allTypeConstantsBasedContracts.addAll(contracts);
+				allTypeConstantsBasedContracts.addAll(contracts1);
+				allTypeConstantsBasedContracts.addAll(contracts2);
+				break;
+			}
+			case "month":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts2 = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				
+				allTypeConstantsBasedContracts.addAll(contracts);
+				allTypeConstantsBasedContracts.addAll(contracts1);
+				allTypeConstantsBasedContracts.addAll(contracts2);
+				break;
+			}
+			case "week":
+			{
+				
+				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.WEEKLY.getValue());
+				
+				allTypeConstantsBasedContracts.addAll(contracts);
+				break;
+			}
+			case "years":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.YEARLY.getValue());
+				
+				allTypeConstantsBasedContracts.addAll(contracts);
+				allTypeConstantsBasedContracts.addAll(contracts1);
+				break;
+			}
+			case "months":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				
+				allTypeConstantsBasedContracts.addAll(contracts);
+				allTypeConstantsBasedContracts.addAll(contracts1);
+				break;
+			}
+			case "day":
+			case "days":
+			{
+				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.TermUnits.DAYS.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.TermUnits.DAYS.getValue());
+				
+				allTypeConstantsBasedContracts.addAll(contracts);
+				allTypeConstantsBasedContracts.addAll(contracts1);
+				break;
+			}
+		}
+		
+		return allTypeConstantsBasedContracts;
 	}
 	
 	private List<Map<String,Object>> getExternalThreadComments(Integer threadId) {
