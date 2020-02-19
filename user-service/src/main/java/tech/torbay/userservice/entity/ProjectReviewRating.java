@@ -25,6 +25,7 @@ public class ProjectReviewRating {
 	private Integer id = 0;
     private Integer projectId = 0;
     private Integer clientId = 0;
+    private Integer clientOrganisationId = 0;
     private Integer vendorOrganisationId = 0;
     private Integer vendorId = 0;
     private String rating;
@@ -63,6 +64,14 @@ public class ProjectReviewRating {
 		this.clientId = clientId;
 	}
 	
+	public Integer getClientOrganisationId() {
+		return clientOrganisationId;
+	}
+
+	public void setClientOrganisationId(Integer clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId;
+	}
+
 	public Integer getVendorOrganisationId() {
 		return vendorOrganisationId;
 	}
@@ -122,9 +131,10 @@ public class ProjectReviewRating {
 	@Override
 	public String toString() {
 		return "ProjectReviewRating [id=" + id + ", projectId=" + projectId + ", clientId=" + clientId
-				+ ", vendorOrganisationId=" + vendorOrganisationId + ", vendorId=" + vendorId + ", rating=" + rating
-				+ ", reviewComments=" + reviewComments + ", replyComments=" + replyComments + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + "]";
+				+ ", clientOrganisationId=" + clientOrganisationId + ", vendorOrganisationId=" + vendorOrganisationId
+				+ ", vendorId=" + vendorId + ", rating=" + rating + ", reviewComments=" + reviewComments
+				+ ", replyComments=" + replyComments + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
+				+ "]";
 	}
 
 }

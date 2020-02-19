@@ -346,6 +346,7 @@ public class ClientService {
 			
 			List<Map<String,Object>> vendorCategoryRatings = (List<Map<String,Object>>) vendorCategoryRatingsObj;
 			Integer clientId = (Integer) ratings.get("clientId");
+			Integer clientOrganisationId = (Integer) ratings.get("clientOrganisationId");
 			Integer projectId = (Integer) ratings.get("projectId");
 			Integer vendorOrganisationId = (Integer) ratings.get("vendorOrganisationId");
 			
@@ -357,12 +358,13 @@ public class ClientService {
 				Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
 				
 				vendorRating.setClientId(clientId);
+				vendorRating.setClientOrganisationId(clientOrganisationId);
 				vendorRating.setProjectId(projectId);				
 				vendorRating.setVendorOrganisationId(vendorOrganisationId);
 				vendorRating.setRatingCategory(ratingCategory);
 				vendorRating.setRating(ratingValue);
 				
-				VendorCategoryRatings vendorRate = vendorCategoryRatingsRepository.findByClientIdAndProjectIdAndRatingCategory(clientId, projectId, ratingCategory);
+				VendorCategoryRatings vendorRate = vendorCategoryRatingsRepository.findByClientIdAndClientOrganisationIdAndProjectIdAndRatingCategory(clientId, clientOrganisationId, projectId, ratingCategory);
 				
 				if(vendorRate != null) {
 					vendorRating.setId(vendorRate.getId());
@@ -454,10 +456,10 @@ public class ClientService {
     	
 	}
 
-	public List<Map<String, Object>> getAllClientReviews(Integer clientId) {
+	public List<Map<String, Object>> getAllClientReviews(Integer clientId, Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		
-		List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientId(clientId);
+		List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientIdAndClientOrganisationId(clientId, clientOrganisationId);
 		
 		List<Map<String, Object>> clientReviews = new ArrayList();
 		
@@ -470,7 +472,7 @@ public class ClientService {
 			
 			Map<String,Object> projectReview = new HashMap();
 			
-			projectReview.put("rating", getVendorCategoryRatingsByClientId(vendorOrganisationId, clientId, projectReviewRating.getProjectId()));
+			projectReview.put("rating", getVendorCategoryRatingsByClientIdAndClientOrgId(vendorOrganisationId, clientId, clientOrganisationId, projectReviewRating.getProjectId()));
 			projectReview.put("reviewDate", projectReviewRating.getCreatedAt());
 			projectReview.put("vendorOrganisation", vendorOrganisation);
 			projectReview.put("project", project);
@@ -481,15 +483,15 @@ public class ClientService {
 		return clientReviews;
 	}
 	
-	private Double getVendorCategoryRatingsByClientId(Integer vendorOrgId, Integer clientId, Integer projectId) {
+	private Double getVendorCategoryRatingsByClientIdAndClientOrgId(Integer vendorOrgId, Integer clientId, Integer clientOrganisationId, Integer projectId) {
 		// TODO Auto-generated method stub
 		
 		List<VendorCategoryRatings> vendorRatings = new ArrayList();
 		
 		if(projectId == null || projectId == 0) {
-			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientId(vendorOrgId, clientId);
+			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientIdAndClientOrganisationId(vendorOrgId, clientId, clientOrganisationId);
 		} else {
-			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientIdAndProjectId(vendorOrgId, clientId, projectId);
+			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientIdAndClientOrganisationIdAndProjectId(vendorOrgId, clientId, clientOrganisationId, projectId);
 		}
 		
         try {

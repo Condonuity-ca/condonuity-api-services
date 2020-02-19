@@ -22,9 +22,10 @@ public interface VendorCategoryRatingsRepository extends JpaRepository<VendorCat
 
 	List<VendorCategoryRatings> findByProjectId(Integer projectId);
 
-	VendorCategoryRatings findByClientIdAndProjectIdAndRatingCategory(Integer clientId, Integer projectId, Integer ratingCategory);
+	VendorCategoryRatings findByClientIdAndClientOrganisationIdAndProjectIdAndRatingCategory(Integer clientId, Integer clientOrganisationId, Integer projectId, Integer ratingCategory);
 	
-	List<VendorCategoryRatings> findByVendorOrganisationIdAndClientId(Integer vendorId, Integer clientId);
+	List<VendorCategoryRatings> findByVendorOrganisationIdAndClientIdAndClientOrganisationId(Integer vendorId, Integer clientId, Integer clientOrganisationId);
 	
-	List<VendorCategoryRatings> findByVendorOrganisationIdAndClientIdAndProjectId(Integer vendorId, Integer clientId, Integer projectId);
+	List<VendorCategoryRatings> findByVendorOrganisationIdAndClientIdAndClientOrganisationIdAndProjectId(Integer vendorId, Integer clientId, Integer clientOrganisationId, Integer projectId);
+
 }

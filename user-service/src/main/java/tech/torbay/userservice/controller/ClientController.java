@@ -484,11 +484,11 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client All submitted reviews fetched Successfully"),
             }
     )
-	@GetMapping("/client/reviews/{clientId}")
+	@GetMapping("/client/reviews/{clientId}/{clientOrganisationId}")
 	public ResponseEntity<Object> getClientAllMyReviews(
-			@PathVariable Integer clientId) {
+			@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
 		
-		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId);
+		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
         if (clientAllReviews == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),

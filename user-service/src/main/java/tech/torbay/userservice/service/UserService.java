@@ -38,6 +38,7 @@ import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.PredefinedTags;
 import tech.torbay.userservice.entity.Project;
+import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
@@ -51,6 +52,7 @@ import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
+import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.UserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
@@ -100,8 +102,8 @@ public class UserService {
 	VendorUserRepository vendorUserRepository;
 	@Autowired
 	ClientContractRepository clientContractRepository;
-	
-	
+	@Autowired
+	ProjectReviewRatingRepository projectReviewRatingRepository;
 	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
@@ -344,7 +346,29 @@ public class UserService {
 				
 				return result;
 			}
-			
+			case 6:{
+				List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientIdAndClientOrganisationIdAndKeyword(clientUserId, clientOrganisationId, keyword);
+				
+				for(ProjectReviewRating projectReviewRating : projectReviewsForVendors) {
+					
+					Integer vendorOrganisationId = projectReviewRating.getVendorOrganisationId();
+					
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
+					Project project = projectRepository.findByProjectId(projectReviewRating.getProjectId());
+					
+					Map<String,Object> projectReview = new HashMap();
+					
+					projectReview.put("rating", getVendorCategoryRatingsByClientIdAndClientOrgId(vendorOrganisationId, clientUserId, clientOrganisationId, projectReviewRating.getProjectId()));
+					projectReview.put("reviewComments", projectReviewRating.getReviewComments());
+					projectReview.put("replyComments", projectReviewRating.getReplyComments());
+					projectReview.put("reviewDate", projectReviewRating.getCreatedAt());
+					projectReview.put("vendorOrganisation", vendorOrganisation);
+					projectReview.put("project", project);
+					
+					result.add(projectReview);
+				}
+				return result;
+			}
 			case 8:{
 				List<ClientContract> allConstantBasedContracts = getAllConstantsBasedContractsSearchResults(actualKeyword);
 				HashSet<ClientContract> allConstantBasedContractsSet = new HashSet(allConstantBasedContracts);
@@ -423,6 +447,42 @@ public class UserService {
 		}
 		
 		return null;
+	}
+	
+	private Double getVendorCategoryRatingsByClientIdAndClientOrgId(Integer vendorOrgId, Integer clientId, Integer clientOrganisationId, Integer projectId) {
+		// TODO Auto-generated method stub
+		
+		List<VendorCategoryRatings> vendorRatings = new ArrayList();
+		
+		if(projectId == null || projectId == 0) {
+			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientIdAndClientOrganisationId(vendorOrgId, clientId, clientOrganisationId);
+		} else {
+			vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndClientIdAndClientOrganisationIdAndProjectId(vendorOrgId, clientId, clientOrganisationId, projectId);
+		}
+		
+        try {
+        	double sumCategoryResponsiveness = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryProfessionalism = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryAccuracy = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+        	double sumCategoryQuality = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
+
+        	long responsivenessCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).count();
+        	long professionalismCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).count();
+        	long accuracyCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).count();
+        	long qualityCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).count();
+        	
+        	
+        	double overAllRating = (sumCategoryResponsiveness/responsivenessCount * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
+        			(sumCategoryProfessionalism/responsivenessCount * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
+        			(sumCategoryAccuracy/accuracyCount * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
+        			(sumCategoryQuality/qualityCount * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	
+        	return overAllRating;
+        	
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return 0d;
+        }
 	}
 	
 	private List<ClientContract> getAllConstantsBasedContractsSearchResults(String keyword) {

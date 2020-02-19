@@ -17,6 +17,7 @@ public class VendorCategoryRatings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
     private Integer clientId = 0;
+    private Integer clientOrganisationId = 0;
     private Integer vendorOrganisationId = 0;
     private Integer projectId = 0;
     private Float rating = 0f;
@@ -44,6 +45,14 @@ public class VendorCategoryRatings {
 
 	public void setClientId(Integer clientId) {
 		this.clientId = clientId;
+	}
+
+	public Integer getClientOrganisationId() {
+		return clientOrganisationId;
+	}
+
+	public void setClientOrganisationId(Integer clientOrganisationId) {
+		this.clientOrganisationId = clientOrganisationId;
 	}
 
 	public Integer getVendorOrganisationId() {
@@ -96,8 +105,9 @@ public class VendorCategoryRatings {
 
 	@Override
 	public String toString() {
-		return "VendorCategoryRatings [id=" + id + ", clientId=" + clientId + ", vendorOrganisationId=" + vendorOrganisationId + ", projectId="
-				+ projectId + ", rating=" + rating + ", ratingCategory=" + ratingCategory + ", createdAt=" + createdAt
+		return "VendorCategoryRatings [id=" + id + ", clientId=" + clientId + ", clientOrganisationId="
+				+ clientOrganisationId + ", vendorOrganisationId=" + vendorOrganisationId + ", projectId=" + projectId
+				+ ", rating=" + rating + ", ratingCategory=" + ratingCategory + ", createdAt=" + createdAt
 				+ ", modifiedDate=" + modifiedDate + "]";
 	}
 
