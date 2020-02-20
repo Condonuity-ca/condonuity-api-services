@@ -46,12 +46,12 @@ public interface ClientBuildingRepoRepository extends JpaRepository<ClientBuildi
     		"cu.first_name, '.', cu.last_name) LIKE (?2)", nativeQuery = true)
 	List<ClientBuildingRepository> findAllWithInnerJoinByKeyword(Integer clientOrganisationId, String keyword);
 
-	List<ClientBuildingRepository> findAllByTenantStatus(int tenantStatus);
+	List<ClientBuildingRepository> findAllByClientOrganisationIdAndTenantStatus(Integer clientOrganisationId, int tenantStatus);
 
-	List<ClientBuildingRepository> findAllByUnitType(int unitType);
+	List<ClientBuildingRepository> findAllByClientOrganisationIdAndUnitType(Integer clientOrganisationId, int unitType);
 
-	List<ClientBuildingRepository> findAllByLienType(int lienType);
+	List<ClientBuildingRepository> findAllByClientOrganisationIdAndLienType(Integer clientOrganisationId, int lienType);
 
-	List<ClientBuildingRepository> findAllByPersonTenantType(int personTenantType);
+	List<ClientBuildingRepository> findAllByClientOrganisationIdAndPersonTenantType(Integer clientOrganisationId, int personTenantType);
 
 }

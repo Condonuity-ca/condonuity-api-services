@@ -29,13 +29,13 @@ public interface ClientContractRepository extends JpaRepository<ClientContract, 
     		"'.', cc.notes, '.', cc.created_at, '.', cc.modified_date) LIKE (?2)", nativeQuery = true)
 	List<ClientContract> findAllByClientOrganisationIdAndKeyword(Integer clientOrganisationId, String keyword);
 
-    List<ClientContract> findAllByCancellationUnits(Integer cancellationUnit);
+    List<ClientContract> findAllByClientOrganisationIdAndCancellationUnits(Integer clientOrganisationId, Integer cancellationUnit);
     
-    List<ClientContract> findAllByGstAvailablity(Integer gstAvailability);
+    List<ClientContract> findAllByClientOrganisationIdAndGstAvailablity(Integer clientOrganisationId, Integer gstAvailability);
     
-    List<ClientContract> findAllByRenewalType(Integer renewalType);
+    List<ClientContract> findAllByClientOrganisationIdAndRenewalType(Integer clientOrganisationId, Integer renewalType);
     
-    List<ClientContract> findAllByCostTermUnits(Integer costTermUnits);
+    List<ClientContract> findAllByClientOrganisationIdAndCostTermUnits(Integer clientOrganisationId, Integer costTermUnits);
     
-    List<ClientContract> findAllByTermUnits(Integer termUnits);
+    List<ClientContract> findAllByClientOrganisationIdAndTermUnits(Integer clientOrganisationId, Integer termUnits);
 }

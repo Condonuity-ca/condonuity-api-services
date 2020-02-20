@@ -34,8 +34,10 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientTask;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.ClientUserTasks;
 import tech.torbay.userservice.entity.PredefinedTags;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
@@ -49,7 +51,10 @@ import tech.torbay.userservice.exception.ResourceNotFoundException;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
+import tech.torbay.userservice.repository.ClientTaskCommentsRepository;
+import tech.torbay.userservice.repository.ClientTaskRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
+import tech.torbay.userservice.repository.ClientUserTasksRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
@@ -104,6 +109,12 @@ public class UserService {
 	ClientContractRepository clientContractRepository;
 	@Autowired
 	ProjectReviewRatingRepository projectReviewRatingRepository;
+	@Autowired
+	ClientTaskRepository clientTaskRepository;
+	@Autowired
+	ClientTaskCommentsRepository clientTaskCommentsRepository;
+	@Autowired
+	ClientUserTasksRepository clientUserTasksRepository;
 	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
@@ -369,8 +380,48 @@ public class UserService {
 				}
 				return result;
 			}
+			case 7:{
+				List<ClientTask> clientTasks = clientTaskRepository.findAllByClientOrganisationIdAndKeyword(clientOrganisationId, keyword);
+				HashSet<ClientTask> clientTasksSet = new HashSet(clientTasks);
+				
+				List<ClientTask> clientTasksByPriorityAndStatus = getTasksByStatusAndPriority(clientOrganisationId, actualKeyword);
+				
+				 try {
+					 for(ClientTask clientTask : clientTasksSet) {
+					        Map<String, Object> map = getClientTask(clientTask);
+					        result.add(map);
+						}
+					 
+					 for(ClientTask clientTask : clientTasksByPriorityAndStatus) {
+					        Map<String, Object> map = getClientTask(clientTask);
+					        result.add(map);
+						}
+					 
+					 
+					 	HashSet<Map<String, Object>> resultSet = new HashSet(result);
+						result.clear();
+						result.addAll(resultSet);
+						
+			             
+						Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
+				            
+				            @Override
+				            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
+				                Integer o1 = (Integer) e1.get("id");
+				                Integer o2 = (Integer) e2.get("id");
+				                return o1.compareTo(o2);
+				            }
+				        };
+						 
+						Collections.sort(result, valueComparator);
+					 
+				 } catch(Exception exp) {
+					 exp.printStackTrace();
+				 }
+				return result;
+			}
 			case 8:{
-				List<ClientContract> allConstantBasedContracts = getAllConstantsBasedContractsSearchResults(actualKeyword);
+				List<ClientContract> allConstantBasedContracts = getAllConstantsBasedContractsSearchResults(clientOrganisationId, actualKeyword);
 				HashSet<ClientContract> allConstantBasedContractsSet = new HashSet(allConstantBasedContracts);
 				
 				List<ClientContract> clientContracts = clientContractRepository.findAllByClientOrganisationIdAndKeyword(clientOrganisationId, keyword);
@@ -409,7 +460,7 @@ public class UserService {
 			case 9:{
 				// check clientId - createdBy, ModifiedBy - completed using query
 				// check tenant_status, person_tenant_type, unit_type, lien_type
-				List<ClientBuildingRepository> allTypeBasedBuildingRepositories = getAllTypeBasedRepositorySearchResults(actualKeyword);
+				List<ClientBuildingRepository> allTypeBasedBuildingRepositories = getAllTypeBasedRepositorySearchResults(clientOrganisationId, actualKeyword);
 				HashSet<ClientBuildingRepository> allTypeBasedBuildingRepositoriesSet = new HashSet(allTypeBasedBuildingRepositories);
 				 
 				List<ClientBuildingRepository> buildingRepositories = clientBuildingRepoRepository.findAllWithInnerJoinByKeyword(clientOrganisationId, keyword);
@@ -449,6 +500,158 @@ public class UserService {
 		return null;
 	}
 	
+	private Map<String, Object> getClientTask(ClientTask clientTask) {
+		// TODO Auto-generated method stub
+		ObjectMapper oMapper = new ObjectMapper();
+        Map<String, Object> map = oMapper.convertValue(clientTask, Map.class);
+        
+        if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+        	// only other name available
+        	map.put("assignedTo", new ArrayList());
+        } else if(clientTask.getIsOther() == Constants.Availability.NOT_AVAILABLE.getValue()) {			        	
+        	map.put("assignedTo", getClientUsers(clientTask.getId()));
+//        	map.put("assignee",getClientUsers(clientTask.getId()));
+        }
+        
+        ClientUser createdBy = clientUserRepository.findByClientId(clientTask.getCreatedBy());
+        ClientUser modifiedBy = clientUserRepository.findByClientId(clientTask.getModifiedBy());
+        
+        map.put("createdByUser",createdBy.getFirstName()+" "+createdBy.getLastName());
+        map.put("modifiedByUser",modifiedBy.getFirstName()+" "+modifiedBy.getLastName());
+        
+        map.put("comments",getTaskComments(clientTask.getId()));
+        
+        return map;
+	}
+
+	private List<ClientTask> getTasksByStatusAndPriority(Integer clientOrganisationId, String keyword) {
+		// TODO Auto-generated method stub
+		List<ClientTask> allTasksByStatusAndPriority =  new ArrayList();
+		
+		switch(keyword.toLowerCase()) {
+			case "highest":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndPriority(clientOrganisationId,Constants.Priority.HIGHEST.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+			case "high":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndPriority(clientOrganisationId,Constants.Priority.HIGHEST.getValue());
+				List<ClientTask> tasks1 = clientTaskRepository.findAllByClientOrganisationIdAndPriority(clientOrganisationId,Constants.Priority.HIGH.getValue());
+				
+				allTasksByStatusAndPriority.addAll(tasks);
+				allTasksByStatusAndPriority.addAll(tasks1);
+				break;
+			}
+			case "medium":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndPriority(clientOrganisationId,Constants.Priority.MEDIUM.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+			case "low":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndPriority(clientOrganisationId,Constants.Priority.LOW.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+			case "open":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndTaskStatus(clientOrganisationId,Constants.TaskStatus.OPEN.getValue());
+				List<ClientTask> tasks1 = clientTaskRepository.findAllByClientOrganisationIdAndTaskStatus(clientOrganisationId,Constants.TaskStatus.RE_OPENED.getValue());
+				
+				allTasksByStatusAndPriority.addAll(tasks);
+				allTasksByStatusAndPriority.addAll(tasks1);
+				break;
+			}
+			case "deferred":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndTaskStatus(clientOrganisationId,Constants.TaskStatus.DEFERRED.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+			case "hold":
+			case "on hold":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndTaskStatus(clientOrganisationId,Constants.TaskStatus.ON_HOLD.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+			case "progress":
+			case "in progress":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndTaskStatus(clientOrganisationId,Constants.TaskStatus.IN_PROGRESS.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+			case "closed":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndTaskStatus(clientOrganisationId,Constants.TaskStatus.CLOSED.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+			case "opened":
+			case "re opened":
+			{
+				List<ClientTask> tasks = clientTaskRepository.findAllByClientOrganisationIdAndTaskStatus(clientOrganisationId,Constants.TaskStatus.RE_OPENED.getValue());
+				allTasksByStatusAndPriority.addAll(tasks);
+				break;
+			}
+		}
+		
+		return allTasksByStatusAndPriority;
+	}
+
+	private List<Map<String, Object>> getTaskComments(int taskId) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> allClientTaskComments = new ArrayList();
+		 
+		List<ClientTaskComments> clientTaskComments = clientTaskCommentsRepository.findAllByTaskId(taskId);
+		
+		for(ClientTaskComments clientTaskComment : clientTaskComments) {
+			ObjectMapper oMapper = new ObjectMapper();
+//	        Map<String, Object> map = oMapper.convertValue(clientTaskComment, Map.class);
+	        Map<String, Object> map = new HashMap();
+	        
+	        map.put("id", clientTaskComment.getId());
+	        map.put("clientId", clientTaskComment.getClientId());
+	        ClientUser clientUserObj = clientUserRepository.findByClientId(clientTaskComment.getClientId());
+			if(clientUserObj != null)
+	        map.put("clientName", clientUserObj.getFirstName() +" "+ clientUserObj.getLastName());
+			map.put("comment", clientTaskComment.getComment());
+			map.put("createdAt", clientTaskComment.getCreatedAt());
+			
+	        allClientTaskComments.add(map);
+		}
+		
+		return allClientTaskComments;
+	}
+	
+	private List<Map<String, Object>> getClientUsers(int taskId) {
+		// TODO Auto-generated method stub
+		
+		 List<Map<String, Object>> allClientUsers = new ArrayList();
+		 
+		 List<ClientUserTasks> clientUserTasks = clientUserTasksRepository.findAllByTaskId(taskId);
+		
+		if(clientUserTasks != null && clientUserTasks.size() > 0) {
+			for(ClientUserTasks clientUser: clientUserTasks) {
+				
+				Map<String, Object> map = new HashMap();
+				
+				ClientUser clientUserObj = clientUserRepository.findByClientId(clientUser.getClientId());
+				if(clientUserObj != null) {
+					map.put("clientUserId", clientUserObj.getClientId());
+					map.put("clientUserName", clientUserObj.getFirstName() +" "+ clientUserObj.getLastName());
+					
+					allClientUsers.add(map);
+				}
+			}
+		}
+		return allClientUsers;
+	}
+	
 	private Double getVendorCategoryRatingsByClientIdAndClientOrgId(Integer vendorOrgId, Integer clientId, Integer clientOrganisationId, Integer projectId) {
 		// TODO Auto-generated method stub
 		
@@ -485,7 +688,7 @@ public class UserService {
         }
 	}
 	
-	private List<ClientContract> getAllConstantsBasedContractsSearchResults(String keyword) {
+	private List<ClientContract> getAllConstantsBasedContractsSearchResults(Integer clientOrganisationId, String keyword) {
 		// TODO Auto-generated method stub
 		
 		List<ClientContract> allTypeConstantsBasedContracts =  new ArrayList();
@@ -494,14 +697,14 @@ public class UserService {
 			case "auto":
 			case "auto renewal":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByRenewalType(Constants.RenewalType.AUTO.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndRenewalType(clientOrganisationId, Constants.RenewalType.AUTO.getValue());
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
 			}
 			case "manual":
 			case "manual renewal":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByRenewalType(Constants.RenewalType.MANUAL.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndRenewalType(clientOrganisationId, Constants.RenewalType.MANUAL.getValue());
 				
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
@@ -509,40 +712,40 @@ public class UserService {
 			case "yes":
 			case "including gst":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByGstAvailablity(Constants.Availability.AVAILABLE.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndGstAvailablity(clientOrganisationId, Constants.Availability.AVAILABLE.getValue());
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
 			}
 			case "no":
 			case "without gst":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByGstAvailablity(Constants.Availability.NOT_AVAILABLE.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndGstAvailablity(clientOrganisationId, Constants.Availability.NOT_AVAILABLE.getValue());
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
 			}
 			case "weekly":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.WEEKLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCostTermUnits(clientOrganisationId, Constants.CostTermUnits.WEEKLY.getValue());
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
 			}
 			case "monthly":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCostTermUnits(clientOrganisationId, Constants.CostTermUnits.MONTHLY.getValue());
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
 			}
 			case "yearly":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCostTermUnits(clientOrganisationId, Constants.CostTermUnits.YEARLY.getValue());
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
 			}
 			case "year":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.YEARLY.getValue());
-				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.YEARLY.getValue());
-				List<ClientContract> contracts2 = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCancellationUnits(clientOrganisationId, Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByClientOrganisationIdAndTermUnits(clientOrganisationId, Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts2 = clientContractRepository.findAllByClientOrganisationIdAndCostTermUnits(clientOrganisationId, Constants.CostTermUnits.YEARLY.getValue());
 				
 				allTypeConstantsBasedContracts.addAll(contracts);
 				allTypeConstantsBasedContracts.addAll(contracts1);
@@ -551,9 +754,9 @@ public class UserService {
 			}
 			case "month":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.MONTHLY.getValue());
-				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
-				List<ClientContract> contracts2 = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCancellationUnits(clientOrganisationId, Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByClientOrganisationIdAndTermUnits(clientOrganisationId, Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts2 = clientContractRepository.findAllByClientOrganisationIdAndCostTermUnits(clientOrganisationId, Constants.CostTermUnits.MONTHLY.getValue());
 				
 				allTypeConstantsBasedContracts.addAll(contracts);
 				allTypeConstantsBasedContracts.addAll(contracts1);
@@ -563,15 +766,15 @@ public class UserService {
 			case "week":
 			{
 				
-				List<ClientContract> contracts = clientContractRepository.findAllByCostTermUnits(Constants.CostTermUnits.WEEKLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCostTermUnits(clientOrganisationId, Constants.CostTermUnits.WEEKLY.getValue());
 				
 				allTypeConstantsBasedContracts.addAll(contracts);
 				break;
 			}
 			case "years":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.YEARLY.getValue());
-				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCancellationUnits(clientOrganisationId, Constants.CostTermUnits.YEARLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByClientOrganisationIdAndTermUnits(clientOrganisationId, Constants.CostTermUnits.YEARLY.getValue());
 				
 				allTypeConstantsBasedContracts.addAll(contracts);
 				allTypeConstantsBasedContracts.addAll(contracts1);
@@ -579,8 +782,8 @@ public class UserService {
 			}
 			case "months":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.CostTermUnits.MONTHLY.getValue());
-				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCancellationUnits(clientOrganisationId, Constants.CostTermUnits.MONTHLY.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByClientOrganisationIdAndTermUnits(clientOrganisationId, Constants.CostTermUnits.MONTHLY.getValue());
 				
 				allTypeConstantsBasedContracts.addAll(contracts);
 				allTypeConstantsBasedContracts.addAll(contracts1);
@@ -589,8 +792,8 @@ public class UserService {
 			case "day":
 			case "days":
 			{
-				List<ClientContract> contracts = clientContractRepository.findAllByCancellationUnits(Constants.TermUnits.DAYS.getValue());
-				List<ClientContract> contracts1 = clientContractRepository.findAllByTermUnits(Constants.TermUnits.DAYS.getValue());
+				List<ClientContract> contracts = clientContractRepository.findAllByClientOrganisationIdAndCancellationUnits(clientOrganisationId, Constants.TermUnits.DAYS.getValue());
+				List<ClientContract> contracts1 = clientContractRepository.findAllByClientOrganisationIdAndTermUnits(clientOrganisationId, Constants.TermUnits.DAYS.getValue());
 				
 				allTypeConstantsBasedContracts.addAll(contracts);
 				allTypeConstantsBasedContracts.addAll(contracts1);
@@ -669,7 +872,7 @@ public class UserService {
 	}
 	
 
-	private List<ClientBuildingRepository> getAllTypeBasedRepositorySearchResults(String keyword) {
+	private List<ClientBuildingRepository> getAllTypeBasedRepositorySearchResults(Integer clientOrganisationId, String keyword) {
 		// TODO Auto-generated method stub
 		
 		List<ClientBuildingRepository> allTypeBasedBuildingRepositories =  new ArrayList();
@@ -677,14 +880,14 @@ public class UserService {
 		switch(keyword.toLowerCase()) {
 			case "occupied":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.OWNER_OCCUPIED.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByClientOrganisationIdAndTenantStatus(clientOrganisationId, Constants.TenantStatus.OWNER_OCCUPIED.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
 				break;
 			}
 			case "owner":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.OWNER_OCCUPIED.getValue());
-				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.OWNER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByClientOrganisationIdAndTenantStatus(clientOrganisationId, Constants.TenantStatus.OWNER_OCCUPIED.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByClientOrganisationIdAndPersonTenantType(clientOrganisationId, Constants.PersonTenantType.OWNER.getValue());
 				
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
@@ -692,23 +895,23 @@ public class UserService {
 			}
 			case "vacant":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.VACANT.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByClientOrganisationIdAndTenantStatus(clientOrganisationId, Constants.TenantStatus.VACANT.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
 				break;
 			}
 			
 			case "leased":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.LEASED.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByClientOrganisationIdAndTenantStatus(clientOrganisationId, Constants.TenantStatus.LEASED.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
 				break;
 			}
 			case "other":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByTenantStatus(Constants.TenantStatus.OTHER.getValue());
-				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.OTHER.getValue());
-				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByLienType(Constants.LienType.OTHER.getValue());
-				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.OTHER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByTenant = clientBuildingRepoRepository.findAllByClientOrganisationIdAndTenantStatus(clientOrganisationId, Constants.TenantStatus.OTHER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByClientOrganisationIdAndPersonTenantType(clientOrganisationId, Constants.PersonTenantType.OTHER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByClientOrganisationIdAndLienType(clientOrganisationId, Constants.LienType.OTHER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByClientOrganisationIdAndUnitType(clientOrganisationId, Constants.UnitType.OTHER.getValue());
 				
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByTenant);
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
@@ -718,55 +921,55 @@ public class UserService {
 			}
 			case "occupant":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.OCCUPANT.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByClientOrganisationIdAndPersonTenantType(clientOrganisationId, Constants.PersonTenantType.OCCUPANT.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
 				break;
 			}
 			case "tenant":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByPersonTenantType(Constants.PersonTenantType.TENANT.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByUnit = clientBuildingRepoRepository.findAllByClientOrganisationIdAndPersonTenantType(clientOrganisationId, Constants.PersonTenantType.TENANT.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByUnit);
 				break;
 			}
 			case "yes":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByLienType(Constants.LienType.YES.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByClientOrganisationIdAndLienType(clientOrganisationId, Constants.LienType.YES.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByLien);
 				break;
 			}
 			case "no":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByLienType(Constants.LienType.NO.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByLien = clientBuildingRepoRepository.findAllByClientOrganisationIdAndLienType(clientOrganisationId, Constants.LienType.NO.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByLien);
 				break;
 			}
 			case "locker":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.LOCKER.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByClientOrganisationIdAndUnitType(clientOrganisationId, Constants.UnitType.LOCKER.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
 				break;
 			}
 			case "residential":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.RESIDENTIAL_UNIT.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByClientOrganisationIdAndUnitType(clientOrganisationId, Constants.UnitType.RESIDENTIAL_UNIT.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
 				break;
 			}
 			case "parking":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.PARKING_UNIT.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByClientOrganisationIdAndUnitType(clientOrganisationId, Constants.UnitType.PARKING_UNIT.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
 				break;
 			}
 			case "commercial":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.COMMERCIAL_UNIT.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByClientOrganisationIdAndUnitType(clientOrganisationId, Constants.UnitType.COMMERCIAL_UNIT.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
 				break;
 			}
 			case "common":
 			{
-				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByUnitType(Constants.UnitType.COMMON_ELEMENT.getValue());
+				List<ClientBuildingRepository> buildingRepositoriesByPersonTenantType = clientBuildingRepoRepository.findAllByClientOrganisationIdAndUnitType(clientOrganisationId, Constants.UnitType.COMMON_ELEMENT.getValue());
 				allTypeBasedBuildingRepositories.addAll(buildingRepositoriesByPersonTenantType);
 				break;
 			}
