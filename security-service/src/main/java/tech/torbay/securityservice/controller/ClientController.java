@@ -355,6 +355,12 @@ public class ClientController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
+		return registerClientOrganisation(Integer.parseInt(String.valueOf(userData.get("userId"))), organisation);
+        
+	}
+	
+	private ResponseEntity<Object> registerClientOrganisation(Integer clientId, ClientOrganisation organisation) {
+		// TODO Auto-generated method stub
 		if(clientService.checkOrganisationNameAvailable(organisation.getOrganisationName())) {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.CONFLICT.getValue(),
@@ -363,7 +369,7 @@ public class ClientController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
-		ClientOrganisation clientorganisation = clientService.addClientOrganisation(Integer.parseInt(String.valueOf(userData.get("userId"))), organisation);
+		ClientOrganisation clientorganisation = clientService.addClientOrganisation(clientId, organisation);
         if (clientorganisation == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -380,9 +386,23 @@ public class ClientController {
             
             return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
         }
-        
 	}
 	
+	@ApiOperation(value = "New Client Organisation Registration")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful New Client Organisation Registered")
+            }
+    )
+	@PostMapping("/client/org/register/complete")
+	public ResponseEntity<Object> completeClientCompanyRegistration(
+			@RequestParam("clientId") Integer clientId,
+			@RequestBody ClientOrganisation organisation ,
+			UriComponentsBuilder builder) {
+		
+		return registerClientOrganisation(clientId, organisation);
+		
+	}
 	private void sendClientEmailVerification(ClientUser clientUser) {
 		// TODO Auto-generated method stub
 //		String content = securityAES.getRegisterEncodedURL(clientUser.getEmail(), clientUser.getClientId(), Constants.UserType.CLIENT.getValue()); // query format request with Base64 Encryption

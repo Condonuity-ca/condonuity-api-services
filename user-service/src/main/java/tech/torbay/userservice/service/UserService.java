@@ -24,6 +24,8 @@ import tech.torbay.userservice.repository.InternalMessageRepository;
 import tech.torbay.userservice.repository.ThreadFilesRepository;
 import tech.torbay.userservice.entity.ExternalMessage;
 import tech.torbay.userservice.entity.ExternalMessageComment;
+import tech.torbay.userservice.repository.VendorBidRepository;
+import tech.torbay.userservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants.ThreadType;
 import tech.torbay.userservice.entity.CommentFiles;
@@ -45,6 +47,7 @@ import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
+import tech.torbay.userservice.entity.VendorProjectInterests;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
@@ -115,6 +118,10 @@ public class UserService {
 	ClientTaskCommentsRepository clientTaskCommentsRepository;
 	@Autowired
 	ClientUserTasksRepository clientUserTasksRepository;
+	@Autowired
+	VendorBidRepository vendorBidRepository;
+	@Autowired
+	VendorProjectInterestsRepository vendorProjectInterestsRepository;
 	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
@@ -128,7 +135,7 @@ public class UserService {
 		return userRepository.save(userObj);
 	}
 
-	public List<Map<String, Object>> getSearchResults(Map<String, Object> requestData) {
+	public List<Map<String, Object>> getClientSearchResults(Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
 		
 		Integer searchType = Integer.parseInt(String.valueOf(requestData.get("searchType")));
@@ -156,12 +163,6 @@ public class UserService {
 				
 				List<Project> projects = projectRepository.findAllByKeyword(clientOrganisationId, keyword);
 				for(Project project : projects) {
-//					for (Iterator<Project> subProject = tagContainedProjects.iterator() ; subProject.hasNext() ; ) {
-//						Project pro = subProject.next();
-//						if(project.getProjectId() == pro.getProjectId()) {
-//							subProject.remove();
-//						}
-//					}
 					result.add(getProjectObject(project));
 				}
 				
@@ -209,12 +210,6 @@ public class UserService {
 				List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllByKeyword(keyword);
 				
 				for(VendorOrganisation vendorOrg : vendorOrgsAll) {
-//					for (Iterator<VendorOrganisation> subVendorOrg = tagContainedVendors.iterator() ; subVendorOrg.hasNext() ; ) {
-//						VendorOrganisation org = subVendorOrg.next();
-//						if(vendorOrg.getVendorOrganisationId() == org.getVendorOrganisationId()) {
-//							subVendorOrg.remove();
-//						}
-//					}
 			        result.add(getVendorOrganisationObj(clientOrganisationId, vendorOrg));
 				}
 		    	
@@ -836,7 +831,6 @@ public class UserService {
 		}
 		return allComments;
 	}
-
 	
 	private List<Map<String,Object>> getInternalThreadComments(Integer threadId) {
 		// TODO Auto-generated method stub
@@ -870,7 +864,6 @@ public class UserService {
 		}
 		return allComments;
 	}
-	
 
 	private List<ClientBuildingRepository> getAllTypeBasedRepositorySearchResults(Integer clientOrganisationId, String keyword) {
 		// TODO Auto-generated method stub
@@ -1081,6 +1074,69 @@ public class UserService {
         	exp.printStackTrace();
         	return 0d;
         }
+	}
+
+	
+	public List<Map<String, Object>> getVendorSearchResults(Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		Integer searchType = Integer.parseInt(String.valueOf(requestData.get("searchType")));
+		String actualKeyword = String.valueOf(requestData.get("keyword"));
+		Integer vendorUserId = Integer.parseInt(String.valueOf(requestData.get("vendorUserId")));
+		Integer vendorOrganisationId = Integer.parseInt(String.valueOf(requestData.get("vendorOrganisationId")));
+		
+		String keyword = "%"+actualKeyword+"%";
+		
+		List<Map<String, Object>> result = new ArrayList();
+		
+		switch(searchType) {
+			case 2:{
+				List<Object[]> projects = projectRepository.findAllProjectsForMarketPlaceByKeyword(keyword);
+				
+				List<Map<String,Object>> allProjects = new ArrayList();
+				
+				 projects.stream().forEach((record) -> {
+			        Project project = (Project) record[0];
+			        String condoName = (String) record[1];
+			        String firstName = (String) record[2];
+			        String lastName = (String) record[3];
+			        
+			        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+			        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+						        .map(Integer::parseInt)
+						        .collect(Collectors.toList());
+				        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+				       
+				        Map<String,Object> map = new HashMap<>();
+						
+						ObjectMapper oMapper = new ObjectMapper();
+						
+						map = oMapper.convertValue(project, Map.class);
+						
+						
+						map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+						map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+						map.put("condoName", condoName);
+						map.put("projectCreatedBy", firstName+" "+lastName);
+						
+						VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( project.getProjectId(), vendorOrganisationId);
+						
+						if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
+							map.put("isInterested", true);
+						} else {
+							map.put("isInterested", false);
+						}
+						
+								
+						result.add(map);
+			        }
+			        
+			        
+				 });
+				
+			}
+		}
+		
+		return null;
 	}
 
 }

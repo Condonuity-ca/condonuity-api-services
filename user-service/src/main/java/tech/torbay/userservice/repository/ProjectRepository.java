@@ -46,4 +46,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 			"pro.tags LIKE (?2)"
 			, nativeQuery = true)
 	List<Project> findAllByTagKeyword(Integer clientOrganisationId, String keyword);
+
+	@Query(name="Project.MarketPlaceSearch")
+	List<Object[]> findAllProjectsForMarketPlaceByKeyword(String keyword);
 }

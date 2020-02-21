@@ -65,7 +65,7 @@ public class SpringBootEmail {
 //        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" + 
 //        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
 //        		"</div>"+
-//        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify email to continue Registration\n"
+//        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify your email to continue Registration\n"
 //        + content +"</div>\r\n" + 
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
@@ -74,7 +74,7 @@ public class SpringBootEmail {
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
         		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Thank you for you registration request</div>\r\n" +
-				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please verify email to continue Registration" +"</div>\r\n" +
+				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please verify your email to continue Registration" +"</div>\r\n" +
         		
          "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">VERIFY EMAIL</a>" +"</div>\r\n" +
 //        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
@@ -198,7 +198,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 //        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" + 
 //        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
 //        		"</div>"+
-//        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify email to continue Registration\n"
+//        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify your email to continue Registration\n"
 //        + content +"</div>\r\n" + 
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +

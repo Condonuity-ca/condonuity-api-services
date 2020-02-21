@@ -149,11 +149,20 @@ public class UserController {
 									return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 								}
 						} else {
-								ResponseMessage responseMessage = new ResponseMessage(
-										APIStatusCode.CLIENT_ORGANISATION_NOT_FOUND.getValue(),
-						        		"Failed",
-						        		"Client Organisation Not registered for this User");
-								return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+//								ResponseMessage responseMessage = new ResponseMessage(
+//										APIStatusCode.CLIENT_ORGANISATION_NOT_FOUND.getValue(),
+//						        		"Failed",
+//						        		"Client Organisation Not registered for this User");
+								// proceed option for client organisation registration
+								// or
+								// send registration mail again to proceed registration
+							HashMap<String, Object> list = new HashMap();
+							list.put("statusCode", APIStatusCode.ORGANISATION_NOT_FOUND.getValue());
+							list.put("statusMessage", "Success");
+							list.put("responseMessage", "Client Organisation Not registered for this User");
+							list.put("userDetails", clientInfo);
+							list.put("authToken", Token);
+							return new ResponseEntity<>(list, HttpStatus.OK);
 						}
 					} else {
 						ResponseMessage responseMessage = new ResponseMessage(
@@ -167,21 +176,40 @@ public class UserController {
 					VendorOrganisation vendorOrgInfo = new VendorOrganisation();
 					if (vendorUserInfo != null ) {
 					
-						if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+						if(vendorUserInfo.getVendorOrganisationId() != null && vendorUserInfo.getVendorOrganisationId()  > 0) {
+							if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+								HashMap<String, Object> list = new HashMap();
+								list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+								list.put("statusMessage", "Success");
+								list.put("responseMessage", "Vendor User details fetched successfully");
+								list.put("userDetails", vendorUserInfo);
+								list.put("authToken", Token);
+								return new ResponseEntity<>(list, HttpStatus.OK);
+							} else {
+								ResponseMessage responseMessage = new ResponseMessage(
+										APIStatusCode.INACTIVE_USER.getValue(),
+						        		"Failed",
+						        		"Inactive User Information");
+								return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+							}
+						} else {
+//							ResponseMessage responseMessage = new ResponseMessage(
+//									APIStatusCode.VENDOR_ORGANISATION_NOT_FOUND.getValue(),
+//					        		"Failed",
+//					        		"Vendor Organisation Not registered for this User");
+							// proceed option for Vendor organisation registration
+							// or
+							// send registration mail again to proceed registration
+							
 							HashMap<String, Object> list = new HashMap();
-							list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+							list.put("statusCode", APIStatusCode.ORGANISATION_NOT_FOUND.getValue());
 							list.put("statusMessage", "Success");
-							list.put("responseMessage", "Vendor User details fetched successfully");
+							list.put("responseMessage", "Vendor Organisation Not registered for this User");
 							list.put("userDetails", vendorUserInfo);
 							list.put("authToken", Token);
 							return new ResponseEntity<>(list, HttpStatus.OK);
-						} else {
-							ResponseMessage responseMessage = new ResponseMessage(
-									APIStatusCode.INACTIVE_USER.getValue(),
-					        		"Failed",
-					        		"Inactive User Information");
-							return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 						}
+						
 	//					list.put("vendorOrgDetails",vendorOrgInfo);
 					} else {
 						ResponseMessage responseMessage = new ResponseMessage(

@@ -38,7 +38,18 @@ import javax.validation.constraints.Size;
 	    		  @ColumnResult(name="first_name"),
 	    		  @ColumnResult(name="last_name")
 	    		  }
-	  )
+	  ),
+	  @SqlResultSetMapping(
+		      name="marketPlaceSearch",
+		      entities={
+		    		  @EntityResult(entityClass=Project.class)
+		    		  },
+		      columns={
+		    		  @ColumnResult(name="management_company"),
+		    		  @ColumnResult(name="first_name"),
+		    		  @ColumnResult(name="last_name")
+		    		  }
+		  )
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
@@ -46,6 +57,20 @@ import javax.validation.constraints.Size;
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
 	    resultSetMapping="marketPlace")
+
+@NamedNativeQuery(
+	    name="Project.MarketPlaceSearch", 
+	    query="SELECT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and" +
+	    		"concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
+				"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
+				"'.', pro.duration, '.', pro.description, " + 
+				"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
+				"LIKE (?1) and concat (co.management_company, '.', cu.first_name, '.', cu.last_name) LIKE (?1)", 
+	    resultSetMapping="marketPlaceSearch")
+// if bid - add search
+
 public class Project {
 
     public Project() {

@@ -487,8 +487,13 @@ public class ClientController {
 	@GetMapping("/client/reviews/{clientId}/{clientOrganisationId}")
 	public ResponseEntity<Object> getClientAllMyReviews(
 			@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+		//if client user based reviews
+//		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
 		
-		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
+		// if organisation based reviews
+		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientOrganisationId);
+		
+		
         if (clientAllReviews == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),

@@ -344,8 +344,8 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "All Favorite Projects Details fetched successfully")
             }
     )
-	@GetMapping("/projects/favorite/vendor/organisation/{vendorId}")
-	public ResponseEntity<Object> getVendorFavoriteProjects(@PathVariable("vendorId") Integer id) {
+	@GetMapping("/projects/favorite/vendor/organisation/{orgId}")
+	public ResponseEntity<Object> getVendorFavoriteProjects(@PathVariable("orgId") Integer id) {
 		List<Map<String,Object>> list = projectService.getVendorFavoriteProjects(id);
 		
 		HashMap<String, Object> response = new HashMap();
@@ -489,10 +489,10 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "All Projects for Vendor Marketplace fetched successfully")
             }
     )
-	@GetMapping("/projects/marketplace/{vendorId}")
-	public ResponseEntity<Object> getAllProjectForVendorMarketPlace(@PathVariable("vendorId") Integer vendorId) {
+	@GetMapping("/projects/marketplace/{vendorOrganisationId}")
+	public ResponseEntity<Object> getAllProjectForVendorMarketPlace(@PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
 
-		List<Map<String,Object>> projects = projectService.findAllProjectsForVendorMarketplace(vendorId);
+		List<Map<String,Object>> projects = projectService.findAllProjectsForVendorMarketplace(vendorOrganisationId);
 		
 		HashMap<String, Object> list = new HashMap();
 		

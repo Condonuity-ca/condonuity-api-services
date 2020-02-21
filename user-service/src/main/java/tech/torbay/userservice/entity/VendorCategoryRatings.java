@@ -16,6 +16,7 @@ public class VendorCategoryRatings {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
+    private Integer reviewRatingId = 0;
     private Integer clientId = 0;
     private Integer clientOrganisationId = 0;
     private Integer vendorOrganisationId = 0;
@@ -37,6 +38,14 @@ public class VendorCategoryRatings {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public Integer getReviewRatingId() {
+		return reviewRatingId;
+	}
+
+	public void setReviewRatingId(Integer reviewRatingId) {
+		this.reviewRatingId = reviewRatingId;
 	}
 
 	public Integer getClientId() {
@@ -105,10 +114,10 @@ public class VendorCategoryRatings {
 
 	@Override
 	public String toString() {
-		return "VendorCategoryRatings [id=" + id + ", clientId=" + clientId + ", clientOrganisationId="
-				+ clientOrganisationId + ", vendorOrganisationId=" + vendorOrganisationId + ", projectId=" + projectId
-				+ ", rating=" + rating + ", ratingCategory=" + ratingCategory + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + "]";
+		return "VendorCategoryRatings [id=" + id + ", reviewRatingId=" + reviewRatingId + ", clientId=" + clientId
+				+ ", clientOrganisationId=" + clientOrganisationId + ", vendorOrganisationId=" + vendorOrganisationId
+				+ ", projectId=" + projectId + ", rating=" + rating + ", ratingCategory=" + ratingCategory
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

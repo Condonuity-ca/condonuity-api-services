@@ -446,6 +446,7 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		
 		Integer projectId = Integer.parseInt(String.valueOf(requestData.get("projectId")));
+    	Integer vendorOrganisationId = Integer.parseInt(String.valueOf(requestData.get("vendorOrganisationId")));
     	Integer vendorId = Integer.parseInt(String.valueOf(requestData.get("vendorId")));
     	Integer interestStatus = Integer.parseInt(String.valueOf(requestData.get("interestStatus")));
     	
@@ -453,12 +454,14 @@ public class ProjectService {
     	vendorProjectInterests.setInterestStatus(interestStatus);
     	vendorProjectInterests.setProjectId(projectId);
     	vendorProjectInterests.setVendorId(vendorId);
+    	vendorProjectInterests.setVendorOrganisationId(vendorOrganisationId);
     	
-    	VendorProjectInterests interest = vendorProjectInterestsRepository.findByProjectIdAndVendorId(projectId, vendorId);
+    	VendorProjectInterests interest = vendorProjectInterestsRepository.findByProjectIdAndVendorOrganisationId(projectId, vendorOrganisationId);
     	if( interest == null) {
     		return vendorProjectInterestsRepository.save(vendorProjectInterests);
     	} else {
     		interest.setInterestStatus(interestStatus);
+    		interest.setVendorId(vendorId);
     		return vendorProjectInterestsRepository.save(interest);
     	}
 		
@@ -572,14 +575,17 @@ public class ProjectService {
 		
 	}
 
-	public List<Map<String, Object>> getVendorFavoriteProjects(Integer id) {
+	public List<Map<String, Object>> getVendorFavoriteProjects(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorId(id);
+		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorOrganisationId(vendorOrganisationId);
 		
 		List<Integer> projectIds = vendorProjectInterests.stream()
                 .map(VendorProjectInterests::getProjectId).collect(Collectors.toList());
 		
-		List<Project> allInterestedProjects = projectRepository.getAllVendorProjects(projectIds);
+		List<Project> allInterestedProjects = new ArrayList();
+		if(projectIds != null && projectIds.size() > 0) {
+			allInterestedProjects = projectRepository.getAllVendorProjects(projectIds);
+		}
 		
 		List<Map<String,Object>> favoriteProjects = new ArrayList();
 		
@@ -608,7 +614,7 @@ public class ProjectService {
 		return favoriteProjects;
 	}
 
-	public List<Map<String, Object>> findAllProjectsForVendorMarketplace(Integer vendorId) {
+	public List<Map<String, Object>> findAllProjectsForVendorMarketplace(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		List<Object[]> projects = projectRepository.findAllProjectsForMarketPlace();
 //		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorId(vendorId);
@@ -640,7 +646,7 @@ public class ProjectService {
 				map.put("condoName", condoName);
 				map.put("projectCreatedBy", firstName+" "+lastName);
 				
-				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( project.getProjectId(), vendorId);
+				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorOrganisationId( project.getProjectId(), vendorOrganisationId);
 				
 				if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
 					map.put("isInterested", true);
@@ -659,17 +665,18 @@ public class ProjectService {
 		return allProjects;
 	}
 
-	public Map<String, Object> getProjectForVendor(Integer projectId, Integer vendorId) {
+	public Map<String, Object> getProjectForVendor(Integer projectId, Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		
 		Project project = projectRepository.findByProjectId(projectId); 
-		VendorUser vendorUser = vendorUserRepository.findByUserId(vendorId); 
 		
 		List<Integer> ids = Stream.of(project.getTags().split(","))
 		        .map(Integer::parseInt)
 		        .collect(Collectors.toList());
-		
-		List<Object[]> tags = predefinedTagsRepository.findTagsByTagId(ids);
+		List<Object[]> tags = new ArrayList();
+		if(ids != null && ids.size() > 0) {
+			tags = predefinedTagsRepository.findTagsByTagId(ids);
+		}
 		List<Map<String,Object>> allTags = new ArrayList();
 		
 		tags.stream().forEach((record) -> {
@@ -693,11 +700,11 @@ public class ProjectService {
 		
 		map.put("tags",allTags);
 		
-		Map<String,Object> vendorBid = GetVendorBidForProject(projectId, vendorUser.getVendorOrganisationId());
+		Map<String,Object> vendorBid = GetVendorBidForProject(projectId, vendorOrganisationId);
 		
 		map.put("vendorBid",vendorBid); // null if not placed a bid
 		map.put("questionAnswers",projectQARepository.findProjectQuestionAnswerByProjectId(projectId));
-		VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( projectId, vendorId);
+		VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorOrganisationId( projectId, vendorOrganisationId);
 		
 		if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
 			map.put("isInterested", true);

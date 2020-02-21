@@ -1,4 +1,4 @@
-package tech.torbay.projectservice.entity;
+package tech.torbay.userservice.entity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import tech.torbay.projectservice.constants.Constants.ProjectInterestStatus;
+import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 
 @Entity
 @JsonInclude(value = Include.NON_NULL)
@@ -26,7 +26,6 @@ public class VendorProjectInterests {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id = 0;
     private Integer projectId = 0;
-    private Integer vendorOrganisationId = 0;
 	private Integer vendorId = 0;
 	private Integer interestStatus = ProjectInterestStatus.LIKE.getValue();
     
@@ -54,14 +53,6 @@ public class VendorProjectInterests {
 		this.projectId = projectId;
 	}
 
-	public Integer getVendorOrganisationId() {
-		return vendorOrganisationId;
-	}
-
-	public void setVendorOrganisationId(Integer vendorOrganisationId) {
-		this.vendorOrganisationId = vendorOrganisationId;
-	}
-	
 	public Integer getVendorId() {
 		return vendorId;
 	}
@@ -100,12 +91,4 @@ public class VendorProjectInterests {
         if (!(o instanceof VendorProjectInterests )) return false;
         return id != null && id.equals(((VendorProjectInterests) o).getId());
     }
-
-	@Override
-	public String toString() {
-		return "VendorProjectInterests [id=" + id + ", projectId=" + projectId + ", vendorOrganisationId="
-				+ vendorOrganisationId + ", vendorId=" + vendorId + ", interestStatus=" + interestStatus
-				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
-	}
-
 }

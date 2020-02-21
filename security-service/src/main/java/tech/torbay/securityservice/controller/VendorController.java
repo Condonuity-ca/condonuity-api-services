@@ -75,6 +75,12 @@ public class VendorController {
         			"Failed to Parse Request - Bad Request");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
+		
+		return registerVendorOrganisation(Integer.parseInt(String.valueOf(userData.get("userId"))), vendorOrganisationData);
+	}
+	
+	private ResponseEntity<Object> registerVendorOrganisation(Integer vendorId, Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
 		if(vendorService.checkOrganisationNameAvailable(vendorOrganisationData)) {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.CONFLICT.getValue(),
@@ -83,7 +89,7 @@ public class VendorController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
-        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(Integer.parseInt(String.valueOf(userData.get("userId"))), vendorOrganisationData);
+        VendorOrganisation vendorOrg= vendorService.addVendorOrgnisation(vendorId, vendorOrganisationData);
         if (vendorOrg == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -101,6 +107,21 @@ public class VendorController {
         }
 	}
 	
+	@ApiOperation(value = "New Vendor Registration")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successfully New Vendor Registred"),
+                    @ApiResponse(code = 201, message = "Successfully New Vendor Registred")
+            }
+    )
+	@PostMapping("/vendor/organisation/register/complete")
+	public ResponseEntity<Object> completeVendorOrganisationRegistration(
+			@RequestParam("vendorId") Integer vendorId, 
+			@RequestBody Map<String, Object> vendorOrganisationData, UriComponentsBuilder builder) {
+		
+		return registerVendorOrganisation(vendorId, vendorOrganisationData);
+	}
+
 	@ApiOperation(value = "New Vendor User Registration")
     @ApiResponses(
             value = {
