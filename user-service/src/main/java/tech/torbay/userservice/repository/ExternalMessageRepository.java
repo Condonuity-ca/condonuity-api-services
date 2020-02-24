@@ -19,7 +19,7 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
     
     List<ExternalMessage> findAllBySourceOrganisationIdAndSourceUserType(Integer sourceOrganisationId, Integer sourceUserType);
 
-    @Query(value="SELECT em.* " + 
+    @Query(value="SELECT DISTINCT em.* " + 
     		"FROM condonuitydev.external_message em " + 
     		"INNER JOIN condonuitydev.client_organisation co " + 
     		"ON ( " + 

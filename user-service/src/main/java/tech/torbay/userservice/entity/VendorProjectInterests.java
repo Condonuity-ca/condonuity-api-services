@@ -26,6 +26,7 @@ public class VendorProjectInterests {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id = 0;
     private Integer projectId = 0;
+    private Integer vendorOrganisationId = 0;
 	private Integer vendorId = 0;
 	private Integer interestStatus = ProjectInterestStatus.LIKE.getValue();
     
@@ -53,6 +54,14 @@ public class VendorProjectInterests {
 		this.projectId = projectId;
 	}
 
+	public Integer getVendorOrganisationId() {
+		return vendorOrganisationId;
+	}
+
+	public void setVendorOrganisationId(Integer vendorOrganisationId) {
+		this.vendorOrganisationId = vendorOrganisationId;
+	}
+	
 	public Integer getVendorId() {
 		return vendorId;
 	}
@@ -91,4 +100,12 @@ public class VendorProjectInterests {
         if (!(o instanceof VendorProjectInterests )) return false;
         return id != null && id.equals(((VendorProjectInterests) o).getId());
     }
+
+	@Override
+	public String toString() {
+		return "VendorProjectInterests [id=" + id + ", projectId=" + projectId + ", vendorOrganisationId="
+				+ vendorOrganisationId + ", vendorId=" + vendorId + ", interestStatus=" + interestStatus
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+	}
+
 }

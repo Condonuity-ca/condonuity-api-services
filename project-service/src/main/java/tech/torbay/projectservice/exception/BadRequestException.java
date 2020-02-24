@@ -25,7 +25,7 @@ public class BadRequestException extends RuntimeException {
     }
 
     public BadRequestException(String resourceName, String fieldName, Object fieldValue) {
-        super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue));
+        super(String.format("%s failed due to invalid format of %s : '%s'", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;

@@ -49,27 +49,58 @@ import javax.validation.constraints.Size;
 		    		  @ColumnResult(name="first_name"),
 		    		  @ColumnResult(name="last_name")
 		    		  }
-		  )
+		  ),
+	  @SqlResultSetMapping(
+			  name="vendorProjectsSearch",
+			  entities={
+					  @EntityResult(entityClass=Project.class)
+			  },
+			  columns={
+					  @ColumnResult(name="management_company"),
+					  @ColumnResult(name="first_name"),
+					  @ColumnResult(name="last_name")
+			  }
+			  )
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
-	    query="SELECT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
 	    resultSetMapping="marketPlace")
 
 @NamedNativeQuery(
 	    name="Project.MarketPlaceSearch", 
-	    query="SELECT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and" +
-	    		"concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and " +
+	    		"( concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
 				"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
 				"'.', pro.duration, '.', pro.description, " + 
 				"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
-				"LIKE (?1) and concat (co.management_company, '.', cu.first_name, '.', cu.last_name) LIKE (?1)", 
+				"LIKE (?1) or concat (cu.first_name, '.', cu.last_name) "+
+				"LIKE (?1) or co.management_company LIKE (?1) "+
+				"or CONCAT(TRIM(cu.first_name), ' ', TRIM(cu.last_name)) LIKE (?1) )", 
 	    resultSetMapping="marketPlaceSearch")
 // if bid - add search
+@NamedNativeQuery(
+	    name="Project.VendorProjectsSearch", 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name " + 
+	    		"FROM condonuitydev.projects pro " + 
+	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
+	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
+	    		"LEFT JOIN condonuitydev.bids b ON b.project_id = pro.project_id " + 
+	    		"WHERE ( pro.status = 2 and ( vpi.vendor_organisation_id = (?1) or b.vendor_org_id = (?1))) " + 
+	    		"and ( concat ( " + 
+	    		"pro.project_name, '.', pro.tags, '.', pro.bid_end_date, '.', " + 
+	    		"pro.project_start_date, '.', pro.project_completion_deadline, '.', " + 
+	    		"pro.estimated_budget, '.', pro.duration, '.', pro.description, '.', " + 
+	    		"pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) LIKE (?2) " + 
+	    		"or concat (cu.first_name, '.', cu.last_name) LIKE (?2) " + 
+	    		"or co.management_company LIKE (?2) " + 
+	    		"or CONCAT(TRIM(cu.first_name), ' ', TRIM(cu.last_name)) LIKE (?2) )", 
+	    resultSetMapping="vendorProjectsSearch")
 
 public class Project {
 

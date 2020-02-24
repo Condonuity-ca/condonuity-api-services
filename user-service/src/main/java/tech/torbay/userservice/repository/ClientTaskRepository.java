@@ -21,7 +21,7 @@ public interface ClientTaskRepository extends JpaRepository<ClientTask, Integer>
     
     ClientTask save(ClientTask clientTask);
 
-    @Query(value = "SELECT ct.* " + 
+    @Query(value = "SELECT DISTINCT ct.* " + 
     		"FROM condonuitydev.client_tasks ct " + 
     		"INNER JOIN condonuitydev.client_user cu " + 
     		"ON (ct.created_by = cu.client_id or ct.modified_by = cu.client_id) " + 

@@ -31,7 +31,7 @@ public interface InternalMessageRepository extends JpaRepository<InternalMessage
 //			Integer clientOrganisationId, 
 //			int value,
 //			String keyword);
-    @Query(value="SELECT im.*" + 
+    @Query(value="SELECT DISTINCT im.*" + 
     		"FROM condonuitydev.internal_message im " + 
     		"INNER JOIN condonuitydev.client_user cu ON (im.user_id = cu.client_id) " + 
     		"LEFT JOIN condonuitydev.internal_message_comment imc ON ( im.id = imc.thread_id) " + 

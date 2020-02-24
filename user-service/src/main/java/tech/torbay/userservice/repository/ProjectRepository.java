@@ -49,4 +49,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	@Query(name="Project.MarketPlaceSearch")
 	List<Object[]> findAllProjectsForMarketPlaceByKeyword(String keyword);
+
+	@Query(name="Project.VendorProjectsSearch")
+	List<Object[]> findAllProjectsForVendorByKeyword(Integer vendorOrganisationId, String keyword);
 }
+

@@ -150,7 +150,7 @@ public class UserService {
 		switch(searchType) {
 			case 1:
 			case 2:{
-				
+				// check contract type
 				// check keyword has project tags				
 				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
 				ArrayList<Project> tagContainedProjects = new ArrayList();
@@ -258,7 +258,7 @@ public class UserService {
 					
 					if(threadType == Constants.ThreadType.INTERNAL.getValue()) {
 						List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
-						HashSet<InternalMessage> uniqueInternalMessages = new HashSet(internalMessages);
+						HashSet<InternalMessage> uniqueInternalMessages = new HashSet(internalMessages);// add distinct
 						
 						for(InternalMessage internalMessage : internalMessages) {
 							Map<String,Object> map = new HashMap<>();
@@ -287,7 +287,7 @@ public class UserService {
 						}
 					} else if(threadType == Constants.ThreadType.EXTERNAL.getValue()) {
 						List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
-						HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);
+						HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);// add distinct
 						
 						for(ExternalMessage externalMessage : uniqueExternalMessages) {
 							
@@ -377,7 +377,7 @@ public class UserService {
 			}
 			case 7:{
 				List<ClientTask> clientTasks = clientTaskRepository.findAllByClientOrganisationIdAndKeyword(clientOrganisationId, keyword);
-				HashSet<ClientTask> clientTasksSet = new HashSet(clientTasks);
+				HashSet<ClientTask> clientTasksSet = new HashSet(clientTasks);// no need added distinct
 				
 				List<ClientTask> clientTasksByPriorityAndStatus = getTasksByStatusAndPriority(clientOrganisationId, actualKeyword);
 				
@@ -1089,54 +1089,71 @@ public class UserService {
 		List<Map<String, Object>> result = new ArrayList();
 		
 		switch(searchType) {
+			case 1:{
+				List<Object[]> projects = projectRepository.findAllProjectsForVendorByKeyword(vendorOrganisationId, keyword);
+				
+				return getProjectsBundle(vendorOrganisationId, projects);
+			}
 			case 2:{
+				// check contract type, posttype, interest
+				
 				List<Object[]> projects = projectRepository.findAllProjectsForMarketPlaceByKeyword(keyword);
 				
-				List<Map<String,Object>> allProjects = new ArrayList();
+				return getProjectsBundle(vendorOrganisationId, projects);
+			}
+			case 3:{
 				
-				 projects.stream().forEach((record) -> {
-			        Project project = (Project) record[0];
-			        String condoName = (String) record[1];
-			        String firstName = (String) record[2];
-			        String lastName = (String) record[3];
-			        
-			        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
-			        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
-						        .map(Integer::parseInt)
-						        .collect(Collectors.toList());
-				        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
-				       
-				        Map<String,Object> map = new HashMap<>();
-						
-						ObjectMapper oMapper = new ObjectMapper();
-						
-						map = oMapper.convertValue(project, Map.class);
-						
-						
-						map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-						map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
-						map.put("condoName", condoName);
-						map.put("projectCreatedBy", firstName+" "+lastName);
-						
-						VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorId( project.getProjectId(), vendorOrganisationId);
-						
-						if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
-							map.put("isInterested", true);
-						} else {
-							map.put("isInterested", false);
-						}
-						
-								
-						result.add(map);
-			        }
-			        
-			        
-				 });
-				
+				return result;
 			}
 		}
 		
 		return null;
+	}
+
+	private List<Map<String, Object>> getProjectsBundle(Integer vendorOrganisationId, List<Object[]> projects) {
+		
+		List<Map<String, Object>> result = new ArrayList();
+		
+		// TODO Auto-generated method stub
+		projects.stream().forEach((record) -> {
+	        Project project = (Project) record[0];
+	        String condoName = (String) record[1];
+	        String firstName = (String) record[2];
+	        String lastName = (String) record[3];
+	        
+	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+				        .map(Integer::parseInt)
+				        .collect(Collectors.toList());
+		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		       
+		        Map<String,Object> map = new HashMap<>();
+				
+				ObjectMapper oMapper = new ObjectMapper();
+				
+				map = oMapper.convertValue(project, Map.class);
+				
+				
+				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("condoName", condoName);
+				map.put("projectCreatedBy", firstName+" "+lastName);
+				
+				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorOrganisationId( project.getProjectId(), vendorOrganisationId);
+				
+				if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
+					map.put("isInterested", true);
+				} else {
+					map.put("isInterested", false);
+				}
+				
+						
+				result.add(map);
+	        }
+	        
+	        
+		 });
+		return result;
 	}
 
 }

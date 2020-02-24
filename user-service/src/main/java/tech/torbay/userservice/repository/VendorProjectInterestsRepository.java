@@ -20,8 +20,8 @@ public interface VendorProjectInterestsRepository extends JpaRepository<VendorPr
 	@Query(value="SELECT COUNT(b.project_id) FROM condonuitydev.vendor_project_interests b WHERE project_id = (?1) AND interest_status = 1", nativeQuery = true)
 	Integer getProjectInterestCount(Integer projectId);
 
-	VendorProjectInterests findByProjectIdAndVendorId(Integer projectId, Integer vendorId);
+	VendorProjectInterests findByProjectIdAndVendorOrganisationId(Integer projectId, Integer vendorOrganisationId);
 
 	List<VendorProjectInterests> findByVendorId(Integer id);
-	
+
 }

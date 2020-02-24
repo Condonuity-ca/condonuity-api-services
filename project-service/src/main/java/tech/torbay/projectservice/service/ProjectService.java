@@ -31,6 +31,8 @@ import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
 import tech.torbay.projectservice.entity.VendorUser;
+import tech.torbay.projectservice.exception.BadRequestException;
+import tech.torbay.projectservice.exception.ResourceNotFoundException;
 import tech.torbay.projectservice.repository.BidFilesRepository;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.ClientUserRepository;
@@ -188,7 +190,7 @@ public class ProjectService {
 		}
 	}
 
-	private String calculateDuration(String emptyDuration, String startingDate, String endingDate) {
+	public String calculateDuration(String emptyDuration, String startingDate, String endingDate) {
 		// TODO Auto-generated method stub
 		
 		try {
@@ -196,6 +198,7 @@ public class ProjectService {
 			LocalDate endDate = LocalDate.parse(endingDate);
 			Period period = Period.between(startDate, endDate); 
 			String projectDuration = period.toString().replace("P", "").replace("Y", " Year ").replace("M", " Months ").replace("D", " Days");
+			
 			return projectDuration;
 		} catch(Exception exp) {
 			logger.error("Exception :"+exp);
@@ -207,6 +210,7 @@ public class ProjectService {
 	public VendorBid createProjectBid(VendorBid vendorBid) {
 		// TODO Auto-generated method stub
 		try {
+			
 			vendorBid.setVendorProjectDuration(calculateDuration(vendorBid.getVendorProjectDuration(), vendorBid.getVendorStartDate(),vendorBid.getVendorEndDate()));
 			
 			return vendorBidRepository.save(vendorBid);

@@ -141,6 +141,12 @@ public class ProjectController {
 		
 		try {
 			logger.info("projectObj "+ project.toString());
+			
+//			String projectDuration = projectService.calculateDuration(project.getDuration(), project.getProjectStartDate(), project.getProjectCompletionDeadline());
+//			if(projectDuration.startsWith("-")) { // need to check this exception
+//				throw new BadRequestException("project creation", "project Duration", projectDuration);
+//			}
+			
 			Project projectObj = projectService.createProject(project);
 	        if (projectObj == null) {
 	     
@@ -265,6 +271,12 @@ public class ProjectController {
         			"Vendor Already placed a Bid for this Project");
 			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
+		
+//		String vendorProjectDuration = projectService.calculateDuration(vendorBid.getVendorProjectDuration(), vendorBid.getVendorStartDate(),vendorBid.getVendorEndDate());
+//		
+//		if(vendorProjectDuration.startsWith("-")) { // need to check this exception
+//			throw new BadRequestException("bid creation", "Vendor Project Duration", vendorProjectDuration);
+//		}
 		
 		VendorBid vendorBidObj = projectService.createProjectBid(vendorBid);
         if (vendorBidObj == null) {
