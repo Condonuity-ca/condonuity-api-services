@@ -49,5 +49,24 @@ public interface InternalMessageRepository extends JpaRepository<InternalMessage
 			Integer clientOrganisationId, 
 			int userType,
 			String keyword);
+    
+    @Query(value="SELECT DISTINCT im.*" + 
+    		"FROM condonuitydev.internal_message im " + 
+    		"INNER JOIN condonuitydev.vendor_user vu ON (im.user_id = vu.user_id) " + 
+    		"LEFT JOIN condonuitydev.internal_message_comment imc ON ( im.id = imc.thread_id) " + 
+    		"where ( im.organisation_id = (?1) and im.user_type = (?2) ) and " + 
+    		"(imc.comment like (?3) or " + 
+    		"imc.created_at like (?3) or " + 
+    		"imc.modified_date like (?3) or " + 
+    		"im.thread_subject like (?3) or " + 
+    		"im.thread_description like (?3) or " + 
+    		"im.created_at like (?3) or " + 
+    		"vu.first_name like (?3) or " + 
+    		"vu.last_name like (?3) or " + 
+    		"vu.email like (?3))", nativeQuery =true)
+	List<InternalMessage> findAllByOrganisationIdAndUserTypeAndKeywordForVendor(
+			Integer vendorOrganisationId, 
+			int userType,
+			String keyword);
 	
 }

@@ -21,7 +21,7 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 	@Query(value = "SELECT co.* FROM condonuitydev.client_organisation co where " + 
 			"concat (co.organisation_name, '.', co.management_company, '.', co.corporate_number, '.', " + 
 			"co.registration_date, '.', co.address, '.', co.city, '.', co.province, '.', co.postal_code, '.', " + 
-			"co.country_code or co.phone_number or co.fax_number or co.units or " + 
+			"co.country_code, '.', co.phone_number, '.', co.fax_number or co.units, '.', " + 
 			"co.voting_units, '.', co.manager_name, '.', co.manager_email, '.', co.manager_phone, '.', " + 
 			"co.board_email, '.', co.general_email, '.', co.management_email, '.', co.created_at, '.', co.modified_date )" + 
 			" LIKE (?1)", nativeQuery = true)

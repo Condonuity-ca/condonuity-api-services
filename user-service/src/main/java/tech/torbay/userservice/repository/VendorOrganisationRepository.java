@@ -24,7 +24,7 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 			"	'.', vo.expertise_category, '.', vo.country_code, '.', vo.email," + 
 			"	'.', vo.phone_number, '.', vo.fax_number, '.', vo.website, '.', vo.logo_name," + 
 			"   '.', vo.established_date, '.', vo.annual_revenue, '.', vo.description, '.', vo.contact_person_email," + 
-			"   '.', vo.contact_person_phone, '.', vo.employees_count, '.', vo.created_at, '.', vo.modified_date)" + 
+			"   '.', vo.contact_person_phone, '.', vo.created_at, '.', vo.modified_date)" + 
 			" LIKE (?1) "
 			, nativeQuery = true)
 	List<VendorOrganisation> findAllByKeyword(String keyword);
@@ -35,7 +35,7 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 			"	'.', vo.expertise_category, '.', vo.country_code, '.', vo.email," + 
 			"	'.', vo.phone_number, '.', vo.fax_number, '.', vo.website, '.', vo.logo_name," + 
 			"   '.', vo.established_date, '.', vo.annual_revenue, '.', vo.description, '.', vo.contact_person_email," + 
-			"   '.', vo.contact_person_phone, '.', vo.employees_count, '.', vo.created_at, '.', vo.modified_date)" + 
+			"   '.', vo.contact_person_phone, '.', vo.created_at, '.', vo.modified_date)" + 
 			" LIKE (?2) "
 			, nativeQuery = true)
 	List<VendorOrganisation> findAllByKeyword(List<Integer> vendorIds, String keyword);
