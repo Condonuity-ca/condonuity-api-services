@@ -29,7 +29,7 @@
         <module>project-service</module>
         <module>file-service</module>
 		<module>message-service</module>
-		<module>client-service</module>
+		<!-- <module>client-service</module> -->
 		<module>vendor-service</module>
     </modules>
 
