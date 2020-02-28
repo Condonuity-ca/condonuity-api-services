@@ -791,5 +791,24 @@ public class ProjectService {
 		return vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(vendorBid.getProjectId(), vendorBid.getVendorOrgId());
 	}
 
+	public void UpdateProjectStatus() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean checkIsProjectBiddingClosed(Integer projectId) {
+		// TODO Auto-generated method stub
+		Project project = projectRepository.findByProjectId(projectId);
+		
+		return Utils.checkDateCrossed(project.getBidEndDate());
+	}
+
+	public boolean checkIsProjectBiddingClosedByBidId(Integer bidId) {
+		// TODO Auto-generated method stub
+		VendorBid vendorBid = vendorBidRepository.findOneById(bidId);
+		
+		return checkIsProjectBiddingClosed(vendorBid.getProjectId());
+	}
+
 }
 

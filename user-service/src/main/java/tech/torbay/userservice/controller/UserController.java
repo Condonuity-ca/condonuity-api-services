@@ -1,5 +1,6 @@
 package tech.torbay.userservice.controller;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +34,22 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Scheduled(fixedDelay = 10000)
+	public void run() {
+	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
+	    try {
+//			cronJobSch();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+//	@Scheduled(cron = "0 * 9 * * ?")
+//	public void cronJobSch() throws Exception {
+//		logger.info("Current time is :: " + Calendar.getInstance().getTime());
+//	}
 	
 	@ApiOperation(value = "Existing User password reset implementation")
     @ApiResponses(
@@ -71,7 +89,6 @@ public class UserController {
     )
 	@PostMapping("/client/search")
 	public ResponseEntity<Object> getClientSearchResults(@RequestBody Map<String, Object> requestData) {
-		
 		List<Map<String, Object>> results = userService.getClientSearchResults(requestData);
         if (results == null) {
         	ResponseMessage responseMessage = new ResponseMessage(

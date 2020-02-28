@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,4 +81,28 @@ public class Utils {
 
 	    return hrSize;
 	}
+	
+	public static Boolean checkDateCrossed(String bidEndDate) {
+		
+		try {
+			Date date = new Date();
+			
+			long currentDateTime = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).toInstant().toEpochMilli();
+			
+			Date endDate=new SimpleDateFormat("yyyy-MM-dd").parse(bidEndDate); 
+			 
+			long millisOfBidEndDate = endDate.getTime();
+			
+			if(currentDateTime > millisOfBidEndDate) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+		
+	}
+	
 }

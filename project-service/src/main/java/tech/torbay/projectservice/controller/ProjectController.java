@@ -1,6 +1,7 @@
 package tech.torbay.projectservice.controller;
 
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -277,6 +279,13 @@ public class ProjectController {
 //		if(vendorProjectDuration.startsWith("-")) { // need to check this exception
 //			throw new BadRequestException("bid creation", "Vendor Project Duration", vendorProjectDuration);
 //		}
+		if(projectService.checkIsProjectBiddingClosed(vendorBid.getProjectId())) {
+			ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.PROJECT_BID_END_DATE_CROSSED.getValue(),
+            		"Failed",
+        			"Project Bid End Date Finished");
+			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
 		
 		VendorBid vendorBidObj = projectService.createProjectBid(vendorBid);
         if (vendorBidObj == null) {
@@ -412,6 +421,14 @@ public class ProjectController {
     )
 	@PutMapping("/vendor/bid/publish/{bidId}")
 	public ResponseEntity<Object> publishProjectBid(@PathVariable("bidId") Integer bidId) {
+		
+		if(projectService.checkIsProjectBiddingClosedByBidId(bidId)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.PROJECT_BID_END_DATE_CROSSED.getValue(),
+            		"Failed",
+        			"Project Bid End Date Finished");
+			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
 		
 		VendorBid vendorBid = projectService.publishVendorBid(bidId);
         if (vendorBid == null) {

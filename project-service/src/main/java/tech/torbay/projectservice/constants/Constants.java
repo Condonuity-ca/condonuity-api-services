@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class Constants {
 
+	public static final String TIME_ZONE = "Europe/London";
 
 	public enum UserType {
 	    CLIENT(1),
@@ -94,7 +95,8 @@ public class Constants {
 	    BAD_REQUEST(3),
 	    NOT_FOUND(4),
 	    AUTHENTICATION_FAILED(5),
-		CONFLICT(6);
+		CONFLICT(6),
+		PROJECT_BID_END_DATE_CROSSED(7);
 		
 	    private int value;
 	    private static Map map = new HashMap<>();
