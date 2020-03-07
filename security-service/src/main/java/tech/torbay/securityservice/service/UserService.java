@@ -14,12 +14,15 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.config.SecurityAES;
+import tech.torbay.securityservice.constants.Constants;
+import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
+import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.repository.PredefinedTagsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
 import tech.torbay.securityservice.repository.UserRepository;
@@ -35,6 +38,10 @@ public class UserService {
 	ServiceCitiesRepository serviceCitiesRepository;
 	@Autowired
 	PredefinedTagsRepository predefinedTagsRepository;
+	@Autowired
+	ClientUserRepository clientUserRepository;
+	@Autowired
+	VendorUserRepository vendorUserRepository;
 	
 	@Autowired
     private BCryptPasswordEncoder encoder;
@@ -57,7 +64,7 @@ public class UserService {
 	
 	
 	
-	public User resetPassword(Integer userId, Integer userType, String password) {
+	public User resetPassword(Integer userId, Integer userType, String password, String firstName, String lastName, String phone) {
 		// TODO Auto-generated method stub
 		
 		// New User used to reset password after accept invite
@@ -69,6 +76,28 @@ public class UserService {
 		}
 //		user.setPassword(/* SecurityAES.encrypt( */user.get("password")/* ) */);
 		userObj.setPassword(password);
+		
+		try {
+			if(userType == Constants.UserType.CLIENT.getValue()) {
+				ClientUser clientUser = clientUserRepository.findByClientId(userId);
+				
+				clientUser.setFirstName(firstName);
+				clientUser.setLastName(lastName);
+				clientUser.setPhone(phone);
+				
+				clientUserRepository.save(clientUser);
+			} else if(userType == Constants.UserType.VENDOR.getValue()) {
+				VendorUser vendorUser = vendorUserRepository.findByUserId(userId);
+				
+				vendorUser.setFirstName(firstName);
+				vendorUser.setLastName(lastName);
+				
+				vendorUserRepository.save(vendorUser);
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
 		return userRepository.save(userObj);
 	}
 

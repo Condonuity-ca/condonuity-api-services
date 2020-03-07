@@ -195,8 +195,6 @@ public class ProjectController {
 			new BadRequestException(exp.getMessage());
 		}
 		return null;
-		
-        
 	}
 	
 	@ApiOperation(value = "Client Project Update Implementation")
@@ -222,12 +220,17 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project updated successfully");
-        	
+        	SendProjectUpdateNotification(project);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
 	}
 	
+	private void SendProjectUpdateNotification(Project project) {
+		// TODO Auto-generated method stub
+		projectService.sendProjectUpdateNotification(project);
+	}
+
 	@ApiOperation(value = "Client Project Publish Implementation")
     @ApiResponses(
             value = {

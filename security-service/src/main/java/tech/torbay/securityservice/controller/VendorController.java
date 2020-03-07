@@ -28,6 +28,7 @@ import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
@@ -133,13 +134,22 @@ public class VendorController {
 	public ResponseEntity<Object> addVendorUser(@RequestBody VendorUser vendorUser, UriComponentsBuilder builder) {
 		
 		// check vendor user already exist or not
-		
-		if(vendorService.findByEmail(vendorUser.getEmail()) != null) {
-			ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.CONFLICT.getValue(),
-	        		"Failed",
-	        		"Vendor User Already Exist");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		VendorUser vuObj = vendorService.findByEmail(vendorUser.getEmail());
+		if( vuObj != null) {
+			
+			HashMap<String, Object> list = new HashMap();
+			if(vuObj.getVendorOrganisationId() ==  0) {
+				list.put("isNew",true);
+			} else {
+				list.put("isNew",false);
+			}
+			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "User Record Already Exists");
+			list.put("userId",vuObj.getUserId());
+			list.put("userType",UserType.VENDOR.getValue());
+			
+        	return new ResponseEntity<Object>(list,HttpStatus.OK);
 			
 		} else {
 			VendorUser vendor_user = vendorService.addVendorUser(vendorUser);
@@ -398,4 +408,29 @@ public class VendorController {
 		System.out.println("Done");
 	}
 
+	@ApiOperation(value = "Vendor Registration Email Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor Registration Email Implementation")
+            }
+    )
+	@PostMapping("/vendor/user/registration/email")
+	public ResponseEntity<Object> vendorUserExists(@RequestBody VendorUser vendor) {
+		VendorUser vendorUser = vendorService.findByVendorUserId(vendor.getUserId());
+		
+		if(vendorUser != null ) {
+			sendVendorEmailVerification(vendorUser);
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Email Sent Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.NOT_FOUND.getValue(),
+	        		"RESOURCE_NOT_FOUND",
+	        		"Vendor User Record Not Found");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		}
+	}
 } 

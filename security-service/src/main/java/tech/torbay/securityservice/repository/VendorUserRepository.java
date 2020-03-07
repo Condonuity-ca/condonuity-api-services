@@ -21,6 +21,6 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 
 	VendorUser findByUserId(Integer userId);
 
-	@Query(value = "select vu from condonuitydev.vendor_user vu where vendor_organisation_id = (?1)  AND account_status = 1 AND account_status = 0", nativeQuery = true)//only active users
+	@Query(value = "select vu.* from condonuitydev.vendor_user vu where vu.vendor_organisation_id = 1  AND vu.account_status = 1 OR vu.account_status = 0", nativeQuery = true)//only active users
 	List<VendorUser> findAllByVendorOrganisationId(Integer vendorOrganisationId);
 }

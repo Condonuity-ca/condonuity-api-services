@@ -35,16 +35,16 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	@Scheduled(fixedDelay = 10000)
-	public void run() {
-	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
-	    try {
-//			cronJobSch();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	@Scheduled(fixedDelay = 10000)
+//	public void run() {
+//	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
+//	    try {
+////			cronJobSch();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 //	@Scheduled(cron = "0 * 9 * * ?")
 //	public void cronJobSch() throws Exception {

@@ -21,9 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -31,6 +28,7 @@ import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
@@ -39,7 +37,6 @@ import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.service.UserService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
-import tech.torbay.securityservice.utils.QueryStringCreator;
 import tech.torbay.securityservice.utils.Utils;
 
 @RestController
@@ -177,13 +174,23 @@ public class ClientController {
 	public ResponseEntity<Object> registerClientUser(@RequestBody ClientUser client, UriComponentsBuilder builder) {
 		
 		// org_id
-		
-		if(clientService.findByEmail(client.getEmail()) != null ) {
-			ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.CONFLICT.getValue(),
-        			"Failed",
-        			"User Record Already Exists");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		ClientUser cuObj = clientService.findByEmail(client.getEmail());
+		if( cuObj != null ) {
+			
+			HashMap<String, Object> list = new HashMap();
+			if(clientService.getAllOrganisationsForClientUser(cuObj.getClientId()) == 0) {
+				list.put("isNew",true);
+			} else {
+				list.put("isNew",false);
+			}
+			
+			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "User Record Already Exists");
+			list.put("userId",cuObj.getClientId());
+			list.put("userType",UserType.CLIENT.getValue());
+			
+        	return new ResponseEntity<Object>(list,HttpStatus.OK);
 		} else {
 			ClientUser clientUser;
 			try {
@@ -519,4 +526,29 @@ public class ClientController {
 		System.out.println("Done");
 	}
 		
+	@ApiOperation(value = "Vendor Registration Email Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor Registration Email Implementation")
+            }
+    )
+	@PostMapping("/client/user/registration/email")
+	public ResponseEntity<Object> vendorUserExists(@RequestBody ClientUser client) {
+		ClientUser clientUser = clientService.findById(client.getClientId());
+		
+		if(clientUser != null ) {
+			sendClientEmailVerification(clientUser);
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Email Sent Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.NOT_FOUND.getValue(),
+	        		"RESOURCE_NOT_FOUND",
+	        		"Vendor User Record Not Found");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		}
+	}
 }

@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.vendorservice.constants.Constants.APIStatusCode;
+import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
 import tech.torbay.vendorservice.entity.UserWishList;
 import tech.torbay.vendorservice.entity.VendorInsurance;
@@ -200,6 +201,33 @@ public class VendorController {
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
 			response.put("vendorOrgs", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
+            }
+    )
+	@GetMapping("/vendors")
+	public ResponseEntity<Object> getAllVendorOrganisationNames() {
+		List<Map<String,Object>> list = vendorService.getAllVendors();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
+			response.put("vendors", list);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {
@@ -627,5 +655,32 @@ public class VendorController {
 	        		"Preferenced Client Added Successfully");
 			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
         }
+	}
+	
+	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
+            }
+    )
+	@GetMapping("/vendor/notifications/{vendorId}/{vendorOrganisationId}")
+	public ResponseEntity<Object> getVendorNotifications(@PathVariable("vendorId") Integer vendorId, @PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
+		List<Notification> list = vendorService.getVendorNotifications(vendorId, vendorOrganisationId);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
+			response.put("vendorOrgs", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
 	}
 } 

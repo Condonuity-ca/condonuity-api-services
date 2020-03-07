@@ -421,6 +421,21 @@ public class UserController {
 		try {
 			String hash = String.valueOf(requestData.get("hash"));
 			String password = String.valueOf(requestData.get("password"));
+			
+			String firstName = "";
+			String lastName = "";
+			String phone = "";
+			try {
+				firstName = String.valueOf(requestData.get("firstName"));
+				lastName = String.valueOf(requestData.get("lastName"));
+				phone = String.valueOf(requestData.get("phone"));
+			} catch(Exception exp) {
+				exp.printStackTrace();
+				firstName = "";
+				lastName = "";
+				phone = "";
+			}
+			
 			Boolean isFirstTimeUser = Boolean.parseBoolean(String.valueOf(requestData.get("isNewUser")));
 			
 			String decryptedUser = SecurityAES.decrypt(hash);
@@ -442,7 +457,7 @@ public class UserController {
 			if(isFirstTimeUser) {
 				// store terms and condition datetime
 				
-				if (userService.resetPassword(userId, userType, password) == null) {
+				if (userService.resetPassword(userId, userType, password, firstName, lastName, phone) == null) {
 			    	ResponseMessage responseMessage = new ResponseMessage(
 			    			APIStatusCode.REQUEST_FAILED.getValue(),
 			        		"Failed",
@@ -470,7 +485,7 @@ public class UserController {
 			} else {
 				System.out.println("decrypt hash :"+hash);
 				
-				return ResetPassword(userId, userType, password);
+				return ResetPassword(userId, userType, password, firstName, lastName, phone);
 			} 
 			
 		} catch(Exception exp) {
@@ -483,9 +498,9 @@ public class UserController {
 		}
 	}
 	
-	private ResponseEntity<Object> ResetPassword(Integer userId, Integer userType, String password) {
+	private ResponseEntity<Object> ResetPassword(Integer userId, Integer userType, String password, String firstName, String lastName, String phone) {
 		// TODO Auto-generated method stub
-		if (userService.resetPassword(userId, userType, password) == null) {
+		if (userService.resetPassword(userId, userType, password, firstName, lastName, phone) == null) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",

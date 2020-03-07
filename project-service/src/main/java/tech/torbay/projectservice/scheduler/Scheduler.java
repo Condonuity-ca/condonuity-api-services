@@ -16,7 +16,7 @@ public class Scheduler {
 	@Autowired
 	private ProjectService projectService;
 	
-	@Scheduled(fixedDelay = 10000)
+	@Scheduled(fixedDelay = 12*60*60*1000)
 	public void run() {
 	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
 	    try {

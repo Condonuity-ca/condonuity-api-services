@@ -30,5 +30,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	@Query("select pro from Project pro where pro.projectId IN (?1)")
 	List<Project> getAllVendorProjects(List<Integer> ids);
+
+	@Query(value = "Update condonuitydev.projects set status = 3 where bid_end_date < now();", nativeQuery = true)
+	void updateClosedProjects();
 	
 }

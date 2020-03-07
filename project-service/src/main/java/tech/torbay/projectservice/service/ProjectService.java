@@ -19,9 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
+import tech.torbay.projectservice.constants.Constants.NotificationType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
+import tech.torbay.projectservice.constants.Constants.UserType;
 import tech.torbay.projectservice.entity.BidFiles;
 import tech.torbay.projectservice.entity.ClientUser;
+import tech.torbay.projectservice.entity.Notification;
 import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectFiles;
@@ -36,6 +39,7 @@ import tech.torbay.projectservice.exception.ResourceNotFoundException;
 import tech.torbay.projectservice.repository.BidFilesRepository;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.ClientUserRepository;
+import tech.torbay.projectservice.repository.NotificationRepository;
 import tech.torbay.projectservice.repository.PredefinedTagsRepository;
 import tech.torbay.projectservice.repository.ProjectFilesRepository;
 import tech.torbay.projectservice.repository.ProjectProductsRepository;
@@ -76,11 +80,15 @@ public class ProjectService {
 	ProjectFilesRepository projectFilesRepository;
 	@Autowired
 	BidFilesRepository bidFilesRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
 	public List<Map<String,Object>>  findAllProjects() {
 //		// TODO Auto-generated method stub
+		
+		checkIsProjectsClosed();
 		
 		List<Object[]> projects = projectRepository.findAllProjectsForMarketPlace();
 		
@@ -236,9 +244,9 @@ public class ProjectService {
 
 	public List<Map<String,Object>> getAllProjects(ProjectSortBy past, Integer id) {
 		// TODO Auto-generated method stub
+		checkIsProjectsClosed();
 		
 		List<Project> projects = new ArrayList();
-		
 		switch(past.getValue()) {
 			case 0: {
 //				All - 0
@@ -282,6 +290,11 @@ public class ProjectService {
 		}
 		
 		return allProjects;
+	}
+
+	private void checkIsProjectsClosed() {
+		// TODO Auto-generated method stub
+		projectRepository.updateClosedProjects();
 	}
 
 	public ProjectQuestionAnswer createProjectQuestion(ProjectQuestionAnswer projectQA) {
@@ -387,6 +400,8 @@ public class ProjectService {
 	}
 
 	public List<Project> getAllProjects(Integer id) {
+		checkIsProjectsClosed();
+		
 		// TODO Auto-generated method stub
 		List<Project> projects = projectRepository.findAll();
 		
@@ -475,6 +490,8 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		
 		try {
+			checkIsProjectsClosed();
+			
 			List<Object[]> vendorBids = vendorBidRepository.findCurrentProjectsByVendorOrgId(vendorOrganisationId);
 			
 			List<Map<String,Object>> allProjects = new ArrayList();
@@ -527,6 +544,8 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		
 		try {
+			checkIsProjectsClosed();
+			
 			List<Object[]> vendorBids = vendorBidRepository.findHistoryProjectsByVendorOrgId(vendorOrganisationId);
 			
 			List<Map<String,Object>> allProjects = new ArrayList();
@@ -581,6 +600,8 @@ public class ProjectService {
 
 	public List<Map<String, Object>> getVendorFavoriteProjects(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
+		checkIsProjectsClosed();
+		
 		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorOrganisationId(vendorOrganisationId);
 		
 		List<Integer> projectIds = vendorProjectInterests.stream()
@@ -620,6 +641,9 @@ public class ProjectService {
 
 	public List<Map<String, Object>> findAllProjectsForVendorMarketplace(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
+		
+		checkIsProjectsClosed();
+		
 		List<Object[]> projects = projectRepository.findAllProjectsForMarketPlace();
 //		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorId(vendorId);
 		
@@ -671,6 +695,7 @@ public class ProjectService {
 
 	public Map<String, Object> getProjectForVendor(Integer projectId, Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
+		checkIsProjectsClosed();
 		
 		Project project = projectRepository.findByProjectId(projectId); 
 		
@@ -791,11 +816,6 @@ public class ProjectService {
 		return vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(vendorBid.getProjectId(), vendorBid.getVendorOrgId());
 	}
 
-	public void UpdateProjectStatus() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public boolean checkIsProjectBiddingClosed(Integer projectId) {
 		// TODO Auto-generated method stub
 		Project project = projectRepository.findByProjectId(projectId);
@@ -808,6 +828,27 @@ public class ProjectService {
 		VendorBid vendorBid = vendorBidRepository.findOneById(bidId);
 		
 		return checkIsProjectBiddingClosed(vendorBid.getProjectId());
+	}
+
+	public void sendProjectUpdateNotification(Project project) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		
+		notification.setNotificationCategoryType(NotificationType.PROJECT_UPDATE.getValue());
+		notification.setNotificationCategoryId(project.getProjectId());
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(project.getClientId());
+		notification.setOrganisationId(project.getClientOrganisationId());
+		notification.setTitle("Changes");
+		notification.setDescription("Changes - "+project.getProjectName()+" project made changes");
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
+
+	public void UpdateProjectStatus() {
+		// TODO Auto-generated method stub
+		checkIsProjectsClosed();
 	}
 
 }

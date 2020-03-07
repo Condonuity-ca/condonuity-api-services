@@ -146,7 +146,7 @@ public class Constants {
 	        return value;
 	    }
 	}
-	
+	//SET SQL_SAFE_UPDATES = 0;
 	public enum ProjectPostType {
 		UNPUBLISHED(1),
 		PUBLISHED(2),
@@ -383,6 +383,72 @@ public class Constants {
 
 	    public static VendorRatingCategoryPercentage valueOf(int pageType) {
 	        return (VendorRatingCategoryPercentage) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum NotificationType {
+		// changes -c, expiry -e, new - n, won -w, lose -l, new bid - b, 
+		PROJECT_CREATE(1),
+		PROJECT_UPDATE(2),
+	    PROJECT_EXPIRY(3),
+	    BID_CREATE(4),
+	    BID_UPDATE(5),
+		BID_WON_LOSE(6),
+		REVIEW_CREATE(7),
+		REVIEW_COMMENT(8),
+		TASK_CREATE(9),
+		TASK_UPDATE(10),
+		TASK_COMMENT(11),
+		MESSAGE_THREAD_CREATE(12),
+		MESSAGE_THREAD_UPDATE(13),
+		MESSAGE_THREAD_COMMENT(14);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private NotificationType(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (NotificationType pageType : NotificationType.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static NotificationType valueOf(int pageType) {
+	        return (NotificationType) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum UserAccountStatus {
+	    INVITED(0),
+	    ACTIVE(1),
+	    INACTIVE(2);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private UserAccountStatus(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (UserAccountStatus pageType : UserAccountStatus.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static UserAccountStatus valueOf(int pageType) {
+	        return (UserAccountStatus) map.get(pageType);
 	    }
 
 	    public int getValue() {

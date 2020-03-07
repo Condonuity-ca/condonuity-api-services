@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.vendorservice.constants.Constants;
 import tech.torbay.vendorservice.constants.Constants.UserAccountStatus;
+import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
 import tech.torbay.vendorservice.entity.ProjectReviewRating;
 import tech.torbay.vendorservice.entity.UserProfileImages;
@@ -33,6 +34,8 @@ import tech.torbay.vendorservice.entity.VendorServicesCities;
 import tech.torbay.vendorservice.entity.VendorTags;
 import tech.torbay.vendorservice.entity.VendorUser;
 import tech.torbay.vendorservice.repository.ClientUserRepository;
+import tech.torbay.vendorservice.repository.NotificationRepository;
+import tech.torbay.vendorservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.vendorservice.repository.PredefinedTagsRepository;
 import tech.torbay.vendorservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.vendorservice.repository.UserProfileImagesRepository;
@@ -87,6 +90,10 @@ public class VendorService {
 	UserProfileImagesRepository userProfileImagesRepository;
 	@Autowired
 	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
+	@Autowired
+	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -793,6 +800,34 @@ public class VendorService {
 		}
 		
 		return null;
+	}
+
+	public List<Map<String,Object>> getAllVendors() {
+		// TODO Auto-generated method stub
+		 List<Object[]> vendorOrganisations = vendorOrganisationRepository.findAllCompanyName();
+			List<Map<String,Object>> vendors = new ArrayList();
+			
+			vendorOrganisations.stream().forEach((record) -> {
+				Integer vendorOrganisationId = (Integer) record[0];
+				String companyName = (String) record[1];
+				
+				Map<String,Object> map = new HashMap<>();
+		        map.put("vendorOrganisationId", vendorOrganisationId);
+		        map.put("companyName", companyName);
+		        
+		        
+		        vendors.add(map);
+		        });
+			
+			return vendors;
+	}
+
+	public List<Notification> getVendorNotifications(Integer vendorId, Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		List<Notification> notifications = notificationRepository.findAll();
+//		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
+		
+		return notifications;
 	}
 }
 
