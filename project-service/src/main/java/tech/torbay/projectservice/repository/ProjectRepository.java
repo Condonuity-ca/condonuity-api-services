@@ -2,7 +2,10 @@ package tech.torbay.projectservice.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +34,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	@Query("select pro from Project pro where pro.projectId IN (?1)")
 	List<Project> getAllVendorProjects(List<Integer> ids);
 
+	@Transactional
+	@Modifying
 	@Query(value = "Update condonuitydev.projects set status = 3 where bid_end_date < now();", nativeQuery = true)
 	void updateClosedProjects();
 	
