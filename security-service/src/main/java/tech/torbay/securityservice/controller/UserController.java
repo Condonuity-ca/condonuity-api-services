@@ -41,6 +41,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Multimap;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -709,6 +710,36 @@ public class UserController {
 		 	list.put("statusMessage", "Success");
 		 	list.put("responseMessage", "List of All Service Cities fetched successfully");
 		 	list.put("serviceCities",serviceCities);
+		 	
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 } else {
+		 	
+		 	list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+		 	list.put("statusMessage", "Failed");
+		 	list.put("responseMessage", "Database Error");
+
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 }
+
+		}
+	 
+	 @ApiOperation(value = "Fetching All Service Province and cities implementation")
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(code = 200, message = "All Service Province and cities fetched successfully")
+	            }
+	    )
+		@GetMapping("/service/provinces")
+		public ResponseEntity<Object> getAllProvinceCities() {
+		
+		 HashMap<String, Object> serviceCities = userService.findAllProvinceCities();
+		 
+		 HashMap<String, Object> list = new HashMap();
+		 if(serviceCities != null) {
+		 	list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+		 	list.put("statusMessage", "Success");
+		 	list.put("responseMessage", "List of All Service Province and Cities fetched successfully");
+		 	list.put("serviceCities",serviceCities.entrySet().toArray());
 		 	
 		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
 		 } else {

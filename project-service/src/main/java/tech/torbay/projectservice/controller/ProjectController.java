@@ -206,11 +206,19 @@ public class ProjectController {
 	@PutMapping("/client/project")
 	public ResponseEntity<Object> updateProject(@RequestBody Project project) {
 		
+		if(!projectService.checkIsProjectExists(project.getProjectId())) {
+			ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.NOT_FOUND.getValue(),
+            		"Failed",
+        			"Project Not Found");
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
 		project = projectService.updateProject(project);
         if (project == null) {
      
         	ResponseMessage responseMessage = new ResponseMessage(
-            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		StatusCode.REQUEST_FAILED.getValue(),
             		"Failed",
         			"Failed to Update Project");
         	

@@ -851,5 +851,10 @@ public class ProjectService {
 		checkIsProjectsClosed();
 	}
 
+	public boolean checkIsProjectExists(Integer projectId) {
+		// TODO Auto-generated method stub
+		return projectRepository.existsById(projectId);
+	}
+
 }
 

@@ -2,31 +2,34 @@ package tech.torbay.securityservice.service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
-import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
-import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.repository.PredefinedTagsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
 import tech.torbay.securityservice.repository.UserRepository;
-import tech.torbay.securityservice.repository.VendorOrganisationRepository;
 import tech.torbay.securityservice.repository.VendorUserRepository;
 
 @Component
@@ -109,6 +112,35 @@ public class UserService {
 	public List<ServiceCities> findAllServiceCities() {
 		// TODO Auto-generated method stub
 		return serviceCitiesRepository.findAll();
+	}
+	
+	public HashMap<String, Object> findAllProvinceCities() {
+		// TODO Auto-generated method stub
+		List<ServiceCities> serviceCities = serviceCitiesRepository.findAll();
+		List<String> provinces = serviceCitiesRepository.findAllCityProvinces();
+		
+		HashMap<String, Object> provinceCities = new HashMap();
+		
+		for (String province : provinces) {
+			List<HashMap<String, Object>> cities = serviceCities
+					.stream()
+					.filter(serviceCity -> serviceCity.getCityProvince().equals(province))
+					.map(city -> {
+						ObjectMapper oMapper = new ObjectMapper();
+				        // object -> Map
+						HashMap<String, Object> cityObj = oMapper.convertValue(city, HashMap.class);
+						cityObj.remove("cityProvince");
+						cityObj.remove("createdAt");
+						cityObj.remove("modifiedDate");
+				        cityObj.remove("status");
+						return cityObj;
+					})
+					.collect(Collectors.toList());
+		
+			provinceCities.put(province,cities);
+        }
+		
+		return provinceCities;
 	}
 
 	public void updateTermsAcceptedTimestamp(Integer userId, Integer userType) {
