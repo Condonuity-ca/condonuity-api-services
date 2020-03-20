@@ -824,10 +824,20 @@ public class VendorService {
 
 	public List<Notification> getVendorNotifications(Integer vendorId, Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
+		List<Notification> filteredNotifications = new ArrayList<Notification>();
+		
 		List<Notification> notifications = notificationRepository.findAll();
 //		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 		
-		return notifications;
+		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
+		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
+		
+		filteredNotifications.addAll(projectBidsNotifications);
+		filteredNotifications.addAll(projectInterestNotifications);
+		
+		
+		
+		return filteredNotifications;
 	}
 }
 
