@@ -1,7 +1,6 @@
 package tech.torbay.projectservice.controller;
 
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import tech.torbay.projectservice.constants.Constants;
+import tech.torbay.projectservice.constants.Constants.NotificationType;
 import tech.torbay.projectservice.constants.Constants.ProjectPostType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.StatusCode;
@@ -164,7 +162,6 @@ public class ProjectController {
 	                		StatusCode.REQUEST_FAILED.getValue(),
 	                		"Failed",
 	            			"Failed to Post Project");
-	        		
 	        	}
 	        	
 	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
@@ -187,6 +184,8 @@ public class ProjectController {
 	    			response.put("statusMessage", "Success");
 	    			response.put("responseMessage", "Project posted successfully");
 	    			response.put("projectId", projectObj.getProjectId());
+	    			
+	    			SendProjectNotification(project, NotificationType.PROJECT_CREATE);
 	        	}
 	        	
 	        	return new ResponseEntity<Object>(response, HttpStatus.OK);
@@ -228,17 +227,12 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project updated successfully");
-        	SendProjectUpdateNotification(project);
+        	SendProjectNotification(project, NotificationType.PROJECT_UPDATE);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
 	}
 	
-	private void SendProjectUpdateNotification(Project project) {
-		// TODO Auto-generated method stub
-		projectService.sendProjectUpdateNotification(project);
-	}
-
 	@ApiOperation(value = "Client Project Publish Implementation")
     @ApiResponses(
             value = {
@@ -262,7 +256,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Published successfully");
-        	
+        	SendProjectNotification(project, NotificationType.PROJECT_CREATE);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
@@ -335,7 +329,7 @@ public class ProjectController {
     			response.put("statusMessage", "Success");
     			response.put("responseMessage", "Project Bid posted successfully");
     			response.put("bidId", vendorBid.getId());
-        		
+    			SendBidNotification(vendorBid, NotificationType.BID_CREATE);
         	}
         	
         	return new ResponseEntity<Object>(response,HttpStatus.OK);
@@ -424,10 +418,10 @@ public class ProjectController {
 		}
 	}
 	
-	@ApiOperation(value = "Client Project Publish Implementation")
+	@ApiOperation(value = "Project Bid Publish Implementation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "Project Published Successfully")
+                    @ApiResponse(code = 200, message = "Project Bid Published Successfully")
             }
     )
 	@PutMapping("/vendor/bid/publish/{bidId}")
@@ -455,7 +449,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Bid Published successfully");
-        	
+        	SendBidNotification(vendorBid, NotificationType.BID_CREATE);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
@@ -794,5 +788,15 @@ public class ProjectController {
 
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		}
+	}
+	
+	private void SendProjectNotification(Project project, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		projectService.sendProjectNotification(project, notificationType.getValue());
+	}
+	
+	private void SendBidNotification(VendorBid vendorBid, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		projectService.sendBidNotification(vendorBid, notificationType.getValue());
 	}
 } 

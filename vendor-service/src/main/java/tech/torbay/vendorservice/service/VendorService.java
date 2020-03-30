@@ -836,8 +836,8 @@ public class VendorService {
 		filteredNotifications.addAll(projectInterestNotifications);
 		
 		
-		
-		return filteredNotifications;
+		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
+		return uniqueNotifications;
 	}
 }
 

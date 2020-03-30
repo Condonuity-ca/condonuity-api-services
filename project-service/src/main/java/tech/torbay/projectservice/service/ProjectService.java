@@ -184,7 +184,6 @@ public class ProjectService {
 	public Project createProject(Project project) {
 		// TODO Auto-generated method stub
 		try {
-		
 			project.setDuration(calculateDuration(project.getDuration(), project.getProjectStartDate(), project.getProjectCompletionDeadline()));
 			Project projectObj = projectRepository.save(project);
 //			int id = projectObj.getProjectId();
@@ -830,17 +829,36 @@ public class ProjectService {
 		return checkIsProjectBiddingClosed(vendorBid.getProjectId());
 	}
 
-	public void sendProjectUpdateNotification(Project project) {
+	public boolean checkIsProjectExists(Integer projectId) {
+		// TODO Auto-generated method stub
+		return projectRepository.existsById(projectId);
+	}
+	
+	public void sendProjectNotification(Project project, int notificationType) {
 		// TODO Auto-generated method stub
 		Notification notification = new Notification();
+		String message = "Changes";
+		String subContent = " project made changes";
+		switch(notificationType) {
+			case 1:{
+				message = "New Project";
+				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
+				break;
+			}
+			case 2 :{
+				message = "Changes";
+				subContent = " project made changes";
+				break;
+			}
+		}
 		
-		notification.setNotificationCategoryType(NotificationType.PROJECT_UPDATE.getValue());
+		notification.setNotificationCategoryType(notificationType);
 		notification.setNotificationCategoryId(project.getProjectId());
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(project.getClientId());
 		notification.setOrganisationId(project.getClientOrganisationId());
-		notification.setTitle("Changes");
-		notification.setDescription("Changes - "+project.getProjectName()+" project made changes");
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+project.getProjectName()+subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
@@ -851,9 +869,35 @@ public class ProjectService {
 		checkIsProjectsClosed();
 	}
 
-	public boolean checkIsProjectExists(Integer projectId) {
+	public void sendBidNotification(VendorBid vendorBid, int notificationType) {
 		// TODO Auto-generated method stub
-		return projectRepository.existsById(projectId);
+		Notification notification = new Notification();
+		String message = "Changes";
+		String subContent = " project made changes";
+		switch(notificationType) {
+			case 4 :{
+				message = "New Bid";
+				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
+				break;
+			}
+			case 5 :{
+				message = "Changes";
+				subContent = " project made changes";
+				break;
+			}
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(vendorBid.getId());
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(vendorBid.getVendorUser().getUserId());
+		notification.setOrganisationId(vendorBid.getVendorOrgId());
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+projectRepository.findOneByProjectId(vendorBid.getProjectId()).getProjectName()+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+		
 	}
 
 }

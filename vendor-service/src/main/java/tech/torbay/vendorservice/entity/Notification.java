@@ -134,5 +134,16 @@ public class Notification {
 				+ ", status=" + status + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
-    
+	@Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Notification) {
+            return ((Notification) obj).id == id;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
 }
