@@ -337,6 +337,66 @@ public class ProjectController {
         
 	}
 	
+	@ApiOperation(value = "Vendor Project Bid Update implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Bid updated successfully")
+            }
+    )
+	@PutMapping("/vendor/project/bid")
+	public ResponseEntity<Object> updateProjectBid(@RequestBody VendorBid vendorBid) {
+		
+		if(projectService.checkIsProjectBiddingClosed(vendorBid.getProjectId())) {
+			ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.PROJECT_BID_END_DATE_CROSSED.getValue(),
+            		"Failed",
+        			"Project Bid End Date Finished");
+			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		
+		VendorBid vendorBidObj = projectService.updateProjectBid(vendorBid);
+        if (vendorBidObj == null) {
+     
+        	ResponseMessage responseMessage = null;
+        	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+            
+        		responseMessage = new ResponseMessage(
+                		StatusCode.REQUEST_FAILED.getValue(),
+                		"Failed",
+            			"Failed to Update Project Bid");
+        	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
+        		responseMessage = new ResponseMessage(
+                		StatusCode.REQUEST_FAILED.getValue(),
+                		"Failed",
+            			"Failed to Update Project Bid");
+        		
+        	}
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+		/*
+		 * HttpHeaders headers = new HttpHeaders();
+		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
+		 * organisation.getOrganisationId()).toUri());
+		 */
+        	HashMap<String, Object> response = new HashMap();
+        	if(vendorBid.getBidStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+    			response.put("statusMessage", "Success");
+    			response.put("responseMessage", "Project Bid updated successfully");
+    			
+        	} else if(vendorBid.getBidStatus() == ProjectPostType.PUBLISHED.getValue()){
+        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+    			response.put("statusMessage", "Success");
+    			response.put("responseMessage", "Project Bid updated successfully");
+    			SendBidNotification(vendorBid, NotificationType.BID_UPDATE);
+        	}
+        	
+        	return new ResponseEntity<Object>(response,HttpStatus.OK);
+        }
+        
+	}
+	
 	@ApiOperation(value = "Fetching All Current Projects details with in a vendor Organisation")
     @ApiResponses(
             value = {

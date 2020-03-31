@@ -657,10 +657,10 @@ public class VendorController {
         }
 	}
 	
-	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
+	@ApiOperation(value = "Fetching All Vendor Notifications Implementation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
+                    @ApiResponse(code = 200, message = "All Vendor Notifications fetched successfully")
             }
     )
 	@GetMapping("/vendor/notifications/{vendorId}/{vendorOrganisationId}")
@@ -671,8 +671,8 @@ public class VendorController {
 		if(list != null) {
 			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			response.put("statusMessage", "Success");
-			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
-			response.put("vendorOrgs", list);
+			response.put("responseMessage", "All notifications fetched successfully");
+			response.put("notifications", list);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {

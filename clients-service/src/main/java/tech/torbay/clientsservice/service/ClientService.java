@@ -27,6 +27,7 @@ import tech.torbay.clientsservice.entity.ClientTask;
 import tech.torbay.clientsservice.entity.ClientTaskComments;
 import tech.torbay.clientsservice.entity.ClientUser;
 import tech.torbay.clientsservice.entity.ClientUserTasks;
+import tech.torbay.clientsservice.entity.Notification;
 import tech.torbay.clientsservice.entity.OrganisationPayment;
 import tech.torbay.clientsservice.entity.Project;
 import tech.torbay.clientsservice.entity.ProjectReviewRating;
@@ -44,6 +45,7 @@ import tech.torbay.clientsservice.repository.ClientTaskCommentsRepository;
 import tech.torbay.clientsservice.repository.ClientTaskRepository;
 import tech.torbay.clientsservice.repository.ClientUserRepository;
 import tech.torbay.clientsservice.repository.ClientUserTasksRepository;
+import tech.torbay.clientsservice.repository.NotificationRepository;
 import tech.torbay.clientsservice.repository.OrganisationPaymentRepository;
 import tech.torbay.clientsservice.repository.ProjectRepository;
 import tech.torbay.clientsservice.repository.ProjectReviewRatingRepository;
@@ -91,6 +93,8 @@ public class ClientService {
 	ClientUserTasksRepository clientUserTasksRepository;
 	@Autowired
 	ClientBuildingRepoRepository clientBuildingRepoRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -968,6 +972,22 @@ public class ClientService {
 	public List<ClientBuildingRepository> getClientBuildingRepositories(Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		return clientBuildingRepoRepository.findAllByClientOrganisationId(clientOrganisationId);
+	}
+
+	public List<Notification> getClientNotifications(Integer clientId, Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+				List<Notification> filteredNotifications = new ArrayList<Notification>();
+				
+				List<Notification> notifications = notificationRepository.findAll();
+//				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
+				
+				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
+				
+				filteredNotifications.addAll(projectBidsNotifications);
+				
+				
+				List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
+				return uniqueNotifications;
 	}
 }
 

@@ -425,6 +425,17 @@ public class ProjectService {
 		}
 	}
 
+	public VendorBid updateProjectBid(VendorBid vendorBid) {
+		// TODO Auto-generated method stub
+		try {
+//			check, which fields need to update
+			return vendorBidRepository.save(vendorBid);
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+	}
+	
 	public Project publishProject(Integer projectId) {
 		// TODO Auto-generated method stub
 		Project project = projectRepository.findOneByProjectId(projectId);
@@ -850,6 +861,11 @@ public class ProjectService {
 				subContent = " project made changes";
 				break;
 			}
+			case 3 :{
+				message = "Expiry";
+				subContent = " project bidding expiring on "+project.getBidEndDate();
+				break;
+			}
 		}
 		
 		notification.setNotificationCategoryType(notificationType);
@@ -873,7 +889,7 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		Notification notification = new Notification();
 		String message = "Changes";
-		String subContent = " project made changes";
+		String subContent = " Bid made changes";
 		switch(notificationType) {
 			case 4 :{
 				message = "New Bid";
@@ -882,7 +898,12 @@ public class ProjectService {
 			}
 			case 5 :{
 				message = "Changes";
-				subContent = " project made changes";
+				subContent = " Project Bid made changes";
+				break;
+			}
+			case 6 :{
+				message = "Awarded";
+				subContent = " project awarded successfully";
 				break;
 			}
 		}
@@ -890,7 +911,9 @@ public class ProjectService {
 		notification.setNotificationCategoryType(notificationType);
 		notification.setNotificationCategoryId(vendorBid.getId());
 		notification.setUserType(UserType.CLIENT.getValue());
+		if(vendorBid.getVendorUser() != null)
 		notification.setUserId(vendorBid.getVendorUser().getUserId());
+		
 		notification.setOrganisationId(vendorBid.getVendorOrgId());
 		notification.setTitle(message);
 		notification.setDescription(message+" - "+projectRepository.findOneByProjectId(vendorBid.getProjectId()).getProjectName()+subContent);

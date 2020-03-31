@@ -28,6 +28,7 @@ import tech.torbay.clientsservice.entity.ClientOrganisation;
 import tech.torbay.clientsservice.entity.ClientTask;
 import tech.torbay.clientsservice.entity.ClientTaskComments;
 import tech.torbay.clientsservice.entity.ClientUser;
+import tech.torbay.clientsservice.entity.Notification;
 import tech.torbay.clientsservice.entity.OrganisationPayment;
 import tech.torbay.clientsservice.entity.UserWishList;
 import tech.torbay.clientsservice.service.ClientService;
@@ -914,5 +915,32 @@ public class ClientController {
 			
 			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
+	}
+	
+	@ApiOperation(value = "Fetching All Client Organisation Notifications")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Client Notifications fetched successfully")
+            }
+    )
+	@GetMapping("/client/notifications/{clientId}/{clientOrganisationId}")
+	public ResponseEntity<Object> getVendorNotifications(@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+		List<Notification> list = clientService.getClientNotifications(clientId, clientOrganisationId);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Notifications fetched successfully");
+			response.put("notifications", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
 	}
 }
