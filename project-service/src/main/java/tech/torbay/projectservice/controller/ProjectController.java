@@ -755,7 +755,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Reviewed and Rated Successfully");
-        	
+        	SendReviewRatingNotification(projectReviewRating, NotificationType.REVIEW_CREATE);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
@@ -769,8 +769,8 @@ public class ProjectController {
     )
 	@PutMapping("/projects/review/reply")
 	public ResponseEntity<Object> replyProjectReview(@RequestBody ProjectReviewRating projectReviewRating) {
-		projectReviewRating = projectService.replyProjectReview(projectReviewRating);
-        if (projectReviewRating == null) {
+		ProjectReviewRating projectReviewRatingObj = projectService.replyProjectReview(projectReviewRating);
+        if (projectReviewRatingObj == null) {
      
         	ResponseMessage responseMessage = new ResponseMessage(
             		StatusCode.REQUEST_SUCCESS.getValue(),
@@ -788,7 +788,10 @@ public class ProjectController {
             		"Success",
             		"Replied to a Project Review Successfully");
         	
+        	SendReviewRatingNotification(projectReviewRating, NotificationType.REVIEW_COMMENT);
+        	
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        	
         }
         
 	}
@@ -858,5 +861,10 @@ public class ProjectController {
 	private void SendBidNotification(VendorBid vendorBid, NotificationType notificationType) {
 		// TODO Auto-generated method stub
 		projectService.sendBidNotification(vendorBid, notificationType.getValue());
+	}
+	
+	private void SendReviewRatingNotification(ProjectReviewRating projectReviewRating, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		projectService.sendReviewRatingNotification(projectReviewRating, notificationType.getValue());
 	}
 } 

@@ -831,9 +831,11 @@ public class VendorService {
 		
 		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
 		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
+		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
 		
 		filteredNotifications.addAll(projectBidsNotifications);
 		filteredNotifications.addAll(projectInterestNotifications);
+		filteredNotifications.addAll(reviewRatingNotifications);
 		
 		
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());

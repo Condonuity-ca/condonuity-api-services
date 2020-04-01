@@ -1,6 +1,7 @@
 package tech.torbay.projectservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import tech.torbay.projectservice.entity.VendorUser;
@@ -21,4 +22,5 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 	List<VendorUser> findByVendorOrganisationIdAndAccountStatus(Integer id, Integer accountStatus);
 	
 	List<VendorUser> findByVendorOrganisationId(Integer id);
+	
 }

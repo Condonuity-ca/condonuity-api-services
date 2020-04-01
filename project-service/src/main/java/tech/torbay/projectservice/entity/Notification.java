@@ -52,10 +52,12 @@ public class Notification {
     private Integer userType = 0;
     private Integer status = 0;
 
-	@CreatedDate
+    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
     
-    @LastModifiedDate
+    @Basic(optional = false)
+    @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
 
 	public Integer getId() {

@@ -48,6 +48,7 @@ import tech.torbay.projectservice.repository.ProjectRepository;
 import tech.torbay.projectservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.projectservice.repository.VendorBidRepository;
 import tech.torbay.projectservice.repository.VendorCategoryRatingsRepository;
+import tech.torbay.projectservice.repository.VendorOrganisationRepository;
 import tech.torbay.projectservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.projectservice.repository.VendorUserRepository;
 
@@ -72,6 +73,8 @@ public class ProjectService {
 	VendorProjectInterestsRepository vendorProjectInterestsRepository;
 	@Autowired
 	VendorUserRepository vendorUserRepository;
+	@Autowired
+	VendorOrganisationRepository vendorOrganisationRepository;
 	@Autowired
 	ClientUserRepository clientUserRepository;
 	@Autowired
@@ -894,23 +897,26 @@ public class ProjectService {
 			case 4 :{
 				message = "New Bid";
 				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
+				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}
 			case 5 :{
 				message = "Changes";
 				subContent = " Project Bid made changes";
+				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}
 			case 6 :{
 				message = "Awarded";
 				subContent = " project awarded successfully";
+				notification.setUserType(UserType.CLIENT.getValue());
 				break;
 			}
 		}
 		
 		notification.setNotificationCategoryType(notificationType);
 		notification.setNotificationCategoryId(vendorBid.getId());
-		notification.setUserType(UserType.CLIENT.getValue());
+		
 		if(vendorBid.getVendorUser() != null)
 		notification.setUserId(vendorBid.getVendorUser().getUserId());
 		
@@ -921,6 +927,42 @@ public class ProjectService {
 		
 		notificationRepository.save(notification);
 		
+	}
+
+	public void sendReviewRatingNotification(ProjectReviewRating projectReviewRating, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Review";
+		String subContent = " review added";
+		switch(notificationType) {
+			case 7 :{
+				message = "New Review";
+				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				notification.setUserType(UserType.CLIENT.getValue());
+				notification.setUserId(projectReviewRating.getClientId());
+				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
+				break;
+			}
+			case 8 :{
+				message = "New Reply";
+				String vendorOrgName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
+				subContent = vendorOrgName +" Vendor Organisation replied to this review";
+				notification.setUserType(UserType.VENDOR.getValue());
+				notification.setUserId(projectReviewRating.getVendorId());
+				notification.setOrganisationId(projectReviewRating.getVendorOrganisationId());
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(projectReviewRating.getId());
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 
 }
