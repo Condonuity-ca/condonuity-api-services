@@ -943,4 +943,9 @@ public class ClientController {
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
 	}
+	
+//	private void SendTaskNotification(VendorBid vendorBid, NotificationType notificationType) {
+//		// TODO Auto-generated method stub
+//		projectService.sendBidNotification(vendorBid, notificationType.getValue());
+//	}
 }

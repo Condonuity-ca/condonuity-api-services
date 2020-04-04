@@ -20,12 +20,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.messageservice.constants.Constants;
 import tech.torbay.messageservice.constants.Constants.APIStatusCode;
 import tech.torbay.messageservice.entity.ExternalMessage;
+import tech.torbay.messageservice.entity.ExternalMessageComment;
 import tech.torbay.messageservice.entity.InternalMessage;
 import tech.torbay.messageservice.entity.InternalMessageComment;
 import tech.torbay.messageservice.service.MessageService;
 import tech.torbay.messageservice.statusmessage.ResponseMessage;
+import tech.torbay.messageservice.constants.Constants.NotificationType;
 
 @RestController
 @RequestMapping("/api")
@@ -58,6 +61,13 @@ public class MessageController {
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "Message Thread Created Successfully");
 			response.put("threadId", String.valueOf(internalMessageObj.getId()));
+			
+			try {
+				SendInternalMessageNotification(internalMessageObj, NotificationType.INTERNAL_MESSAGE_THREAD_CREATE);
+				} catch (Exception exp) {
+					exp.printStackTrace();
+				}
+			
 	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
 	    }
 	}
@@ -115,6 +125,13 @@ public class MessageController {
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "Message Thread Comment Created Successfully");
 			response.put("threadCommentId", String.valueOf(internalMessageCommentObj.getId()));
+			
+			try {
+				SendInternalMessageCommentNotification(internalMessageCommentObj, NotificationType.INTERNAL_MESSAGE_THREAD_COMMENT);
+				} catch (Exception exp) {
+					exp.printStackTrace();
+				}
+			
 	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
 	    }
 	}
@@ -142,6 +159,13 @@ public class MessageController {
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "Message Thread Created Successfully");
 			response.put("threadId", String.valueOf(externalMessageObj.getId()));
+			
+			try {
+				SendExternalMessageNotification(externalMessageObj, NotificationType.EXTERNAL_MESSAGE_THREAD_CREATE);
+				} catch (Exception exp) {
+					exp.printStackTrace();
+				}
+			
 	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
 	    }
 	}
@@ -183,11 +207,11 @@ public class MessageController {
             }
     )
 	@PostMapping("/external/message/comment/create")
-	private ResponseEntity<Object> createExternalThreadComment(@RequestBody InternalMessageComment internalMessageComment) {
+	private ResponseEntity<Object> createExternalThreadComment(@RequestBody ExternalMessageComment externalMessageComment) {
 		// TODO Auto-generated method stub
 		
-		InternalMessageComment internalMessageCommentObj = messageService.createThreadComment(internalMessageComment);
-		if (internalMessageCommentObj == null) {
+		ExternalMessageComment externalMessageCommentObj = messageService.createThreadComment(externalMessageComment);
+		if (externalMessageCommentObj == null) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
@@ -198,8 +222,32 @@ public class MessageController {
 	    	response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "Message Thread Comment Created Successfully");
-			response.put("threadCommentId", String.valueOf(internalMessageCommentObj.getId()));
+			response.put("threadCommentId", String.valueOf(externalMessageCommentObj.getId()));
+			try {
+			SendExternalMessageCommentNotification(externalMessageCommentObj, NotificationType.EXTERNAL_MESSAGE_THREAD_COMMENT);
+			} catch (Exception exp) {
+				exp.printStackTrace();
+			}
+			
 	    	return new ResponseEntity<Object>(response,HttpStatus.OK);
 	    }
+	}
+	
+	private void SendInternalMessageNotification(InternalMessage internalMessage, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		messageService.sendInternalMessageNotification(internalMessage, notificationType.getValue());
+	}
+	private void SendInternalMessageCommentNotification(InternalMessageComment internalMessageComment, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		messageService.sendInternalMessageCommentNotification(internalMessageComment, notificationType.getValue());
+	}
+	
+	private void SendExternalMessageNotification(ExternalMessage externalMessage, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		messageService.sendExternalMessageNotification(externalMessage, notificationType.getValue());
+	}
+	private void SendExternalMessageCommentNotification(ExternalMessageComment externalMessageComment, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		messageService.sendExternalMessageCommentNotification(externalMessageComment, notificationType.getValue());
 	}
 }
