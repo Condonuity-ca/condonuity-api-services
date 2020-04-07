@@ -17,6 +17,7 @@ import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.TaskStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
+import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
@@ -27,9 +28,11 @@ import tech.torbay.userservice.entity.ClientTask;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.ClientUserTasks;
+import tech.torbay.userservice.entity.ExternalMessage;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.UserLevelNotification;
 import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
@@ -47,6 +50,7 @@ import tech.torbay.userservice.repository.ClientUserTasksRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.UserLevelNotificationRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
@@ -91,6 +95,8 @@ public class ClientService {
 	ClientUserTasksRepository clientUserTasksRepository;
 	@Autowired
 	ClientBuildingRepoRepository clientBuildingRepoRepository;
+	@Autowired
+	UserLevelNotificationRepository userLevelNotificationRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -744,7 +750,7 @@ public class ClientService {
 			
 			clientTask.setModifiedBy(clientTask.getCreatedBy());
 			clientTask.setStatus(UserAccountStatus.ACTIVE.getValue());
-			
+			clientTask.setAssignedTo(assignee);//extra data
 			ClientTask clientTaskObj = clientTaskRepository.save(clientTask); 
 			
 			if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
@@ -879,7 +885,8 @@ public class ClientService {
 			clientTaskObj.setTaskDescription(clientTask.getTaskDescription());
 			clientTaskObj.setTaskStatus(clientTask.getTaskStatus());
 			clientTaskObj.setIsOther(clientTask.getIsOther());
-			clientTaskObj.setOthersName(clientTask.getOthersName());;
+			clientTaskObj.setOthersName(clientTask.getOthersName());
+			clientTaskObj.setAssignedTo(assignee);//extra data
 			
 			if(clientTask.getTaskStatus() == TaskStatus.CLOSED.getValue()) {
 				clientTaskObj.setClosureDate(Utils.getDateTime());
@@ -968,6 +975,84 @@ public class ClientService {
 	public List<ClientBuildingRepository> getClientBuildingRepositories(Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		return clientBuildingRepoRepository.findAllByClientOrganisationId(clientOrganisationId);
+	}
+
+	public void sendTaskNotification(ClientTask clientTask, int notificationType) {
+		// TODO Auto-generated method stub
+		UserLevelNotification notification = new UserLevelNotification();
+		String message = "New Task";
+		String subContent = " new task updated";
+		switch(notificationType) {
+			case 9 :{
+				message = "New Task";
+				subContent = clientTask.getTaskDescription() + " task created";
+				break;
+			}
+			case 10	 :{
+				message = "Task Updated";
+				subContent = clientTask.getTaskDescription()+ " task updated";
+				break;
+			}
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(clientTask.getId());
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notification.setFromUserId(clientTask.getCreatedBy());
+		notification.setFromUserType(UserType.CLIENT.getValue());
+		notification.setFromOrganisationId(clientTask.getClientOrganisationId());
+//		notification.setToUserId(Constants.ZERO);
+		notification.setToUserType(UserType.CLIENT.getValue());
+		notification.setToOrganisationId(clientTask.getClientOrganisationId());
+		
+		String assignee = clientTask.getAssignedTo();
+		if(assignee != null && assignee.length() > 0) {
+			List<String> clientUsers = Arrays.asList(assignee.split(","));
+			for(String clientUser: clientUsers) {
+				notification.setToUserId(Integer.parseInt(clientUser));
+				
+				userLevelNotificationRepository.save(notification);
+			}
+		} else {
+			// other user notification
+		}
+		
+	}
+
+	public void sendTaskCommentNotification(ClientTaskComments clientTaskComment, int notificationType) {
+		// TODO Auto-generated method stub
+		UserLevelNotification notification = new UserLevelNotification();
+		String message = "New Comment";
+		String subContent = " received message comment in task";
+		switch(notificationType) {
+			case 11	 :{
+				message = "New Comment";
+				subContent = "New comments on Task";
+				break;
+			}
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(clientTaskComment.getId());
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		
+		notification.setFromUserId(clientTaskComment.getClientId());
+		notification.setFromUserType(UserType.CLIENT.getValue());
+		ClientTask clientTask = clientTaskRepository.findOneById(clientTaskComment.getTaskId());
+		int sourceOrganisationId = clientTask.getClientOrganisationId();
+		int targetOrganisationId = clientTask.getClientOrganisationId();
+		notification.setFromOrganisationId(sourceOrganisationId);
+//		notification.setToUserId(externalMessageComment.getUserId());
+//		notification.setToUserType(externalMessageComment.getUserType());
+		notification.setToOrganisationId(targetOrganisationId);
+		
+		userLevelNotificationRepository.save(notification);
 	}
 }
 

@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
+import tech.torbay.userservice.constants.Constants.NotificationType;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
@@ -673,7 +674,8 @@ public class ClientController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Task Added Successfully");
 			list.put("taskId", clientTaskObj.getId());
-			
+			System.out.println(clientTaskObj.toString());
+			SendTaskNotification(clientTaskObj, NotificationType.TASK_CREATE);
 			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
 	}
@@ -705,6 +707,7 @@ public class ClientController {
 			list.put("responseMessage", "Client Task Updated Successfully");
 			list.put("taskId", clientTaskObj.getId());
 			
+			SendTaskNotification(clientTaskObj, NotificationType.TASK_UPDATE);
 			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
 	}
@@ -766,7 +769,7 @@ public class ClientController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Task Comment Added Successfully");
 			list.put("commentId", clientTaskComment.getId());
-			
+			SendTaskCommentNotification(clientTaskComment, NotificationType.TASK_COMMENT);
 			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
 	}
@@ -885,10 +888,10 @@ public class ClientController {
         }
 	}
 	
-	@ApiOperation(value = "Delete Client Task Implementation")
+	@ApiOperation(value = "Delete Client Building Repository Implementation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "Client Task Deleted Successfully")
+                    @ApiResponse(code = 200, message = "Client Building Repository Deleted Successfully")
             }
     )
 	@PutMapping("/client/org/building/repo/inactive")
@@ -914,5 +917,15 @@ public class ClientController {
 			
 			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
+	}
+	
+	private void SendTaskNotification(ClientTask clientTask, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		clientService.sendTaskNotification(clientTask, notificationType.getValue());
+	}
+	
+	private void SendTaskCommentNotification(ClientTaskComments clientTaskComment, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		clientService.sendTaskCommentNotification(clientTaskComment, notificationType.getValue());
 	}
 }
