@@ -18,6 +18,7 @@ import tech.torbay.vendorservice.constants.Constants.UserAccountStatus;
 import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
 import tech.torbay.vendorservice.entity.ProjectReviewRating;
+import tech.torbay.vendorservice.entity.UserLevelNotification;
 import tech.torbay.vendorservice.entity.UserProfileImages;
 import tech.torbay.vendorservice.entity.UserWishList;
 import tech.torbay.vendorservice.entity.VendorBrands;
@@ -38,6 +39,7 @@ import tech.torbay.vendorservice.repository.NotificationRepository;
 import tech.torbay.vendorservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.vendorservice.repository.PredefinedTagsRepository;
 import tech.torbay.vendorservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.vendorservice.repository.UserLevelNotificationRepository;
 import tech.torbay.vendorservice.repository.UserProfileImagesRepository;
 import tech.torbay.vendorservice.repository.UserWishListRepository;
 import tech.torbay.vendorservice.repository.VendorBrandsRepository;
@@ -94,6 +96,8 @@ public class VendorService {
 	NotificationRepository notificationRepository;
 	@Autowired
 	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
+	@Autowired
+	UserLevelNotificationRepository userLevelNotificationRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -832,6 +836,23 @@ public class VendorService {
 		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
 		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
 		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
+		
+		List<UserLevelNotification> messagesNotifications = userLevelNotificationRepository.findAllMessagesNotifications(vendorOrganisationId);
+		
+		for (UserLevelNotification userLevelNotification : messagesNotifications) {
+			Notification notification = new Notification();
+			notification.setId(userLevelNotification.getId());
+			notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());
+			notification.setNotificationCategoryType(userLevelNotification.getNotificationCategoryType());
+			notification.setTitle(userLevelNotification.getTitle());
+			notification.setDescription(userLevelNotification.getDescription());
+			notification.setUserId(userLevelNotification.getFromUserId());
+			notification.setUserType(userLevelNotification.getFromUserType());
+			notification.setCreatedAt(userLevelNotification.getCreatedAt());
+			notification.setModifiedDate(userLevelNotification.getModifiedDate());
+			
+			filteredNotifications.add(notification);
+		}
 		
 		filteredNotifications.addAll(projectBidsNotifications);
 		filteredNotifications.addAll(projectInterestNotifications);

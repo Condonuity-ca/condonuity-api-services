@@ -31,6 +31,7 @@ import tech.torbay.clientsservice.entity.Notification;
 import tech.torbay.clientsservice.entity.OrganisationPayment;
 import tech.torbay.clientsservice.entity.Project;
 import tech.torbay.clientsservice.entity.ProjectReviewRating;
+import tech.torbay.clientsservice.entity.UserLevelNotification;
 import tech.torbay.clientsservice.entity.UserProfileImages;
 import tech.torbay.clientsservice.entity.UserWishList;
 import tech.torbay.clientsservice.entity.VendorCategoryRatings;
@@ -49,6 +50,7 @@ import tech.torbay.clientsservice.repository.NotificationRepository;
 import tech.torbay.clientsservice.repository.OrganisationPaymentRepository;
 import tech.torbay.clientsservice.repository.ProjectRepository;
 import tech.torbay.clientsservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.clientsservice.repository.UserLevelNotificationRepository;
 import tech.torbay.clientsservice.repository.UserProfileImagesRepository;
 import tech.torbay.clientsservice.repository.UserWishListRepository;
 import tech.torbay.clientsservice.repository.VendorCategoryRatingsRepository;
@@ -95,6 +97,8 @@ public class ClientService {
 	ClientBuildingRepoRepository clientBuildingRepoRepository;
 	@Autowired
 	NotificationRepository notificationRepository;
+	@Autowired
+	UserLevelNotificationRepository userLevelNotificationRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -982,6 +986,24 @@ public class ClientService {
 //				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 				
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
+				List<UserLevelNotification> messagesNotifications = userLevelNotificationRepository.findAllMessagesNotifications(clientOrganisationId); 
+				List<UserLevelNotification> taskNotifications = userLevelNotificationRepository.findAllTaskNotifications(clientOrganisationId, clientId); 
+				
+				messagesNotifications.addAll(taskNotifications);
+				for (UserLevelNotification userLevelNotification : messagesNotifications) {
+					Notification notification = new Notification();
+					notification.setId(userLevelNotification.getId());
+					notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());
+					notification.setNotificationCategoryType(userLevelNotification.getNotificationCategoryType());
+					notification.setTitle(userLevelNotification.getTitle());
+					notification.setDescription(userLevelNotification.getDescription());
+					notification.setUserId(userLevelNotification.getFromUserId());
+					notification.setUserType(userLevelNotification.getFromUserType());
+					notification.setCreatedAt(userLevelNotification.getCreatedAt());
+					notification.setModifiedDate(userLevelNotification.getModifiedDate());
+					
+					filteredNotifications.add(notification);
+				}
 				
 				filteredNotifications.addAll(projectBidsNotifications);
 				

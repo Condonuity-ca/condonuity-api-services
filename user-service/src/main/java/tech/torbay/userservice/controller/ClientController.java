@@ -674,7 +674,6 @@ public class ClientController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Task Added Successfully");
 			list.put("taskId", clientTaskObj.getId());
-			System.out.println(clientTaskObj.toString());
 			SendTaskNotification(clientTaskObj, NotificationType.TASK_CREATE);
 			return new ResponseEntity<Object>(list,/* headers, */ HttpStatus.OK);
         }
