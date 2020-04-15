@@ -683,4 +683,5 @@ public class VendorController {
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
 	}
+	// to check the db connection issue, I am making comment changes in this build internal_v_10.5
 } 
