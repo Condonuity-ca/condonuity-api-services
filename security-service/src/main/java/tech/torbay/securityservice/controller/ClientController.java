@@ -300,7 +300,20 @@ public class ClientController {
 	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 			}
 		} else {
-			if(clientUsers.size() < Constants.MAX_USER_COUNT) {
+			User existUser= userService.findByEmail(email);
+			if(existUser != null && existUser.getUserType() == UserType.VENDOR.getValue()) {
+				HashMap<String, Object> list = new HashMap();
+				
+				list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+				list.put("statusMessage", "Failed");
+				list.put("responseMessage", "Vendor User Record Already Exists");
+				list.put("userId",existUser.getUserId());
+				list.put("userType",existUser.getUserType());
+				
+	        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+			}
+			
+			if(existUser == null && clientUsers.size() < Constants.MAX_USER_COUNT) {
 				// Add Client and user-org Association 
 				ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, clientUserObj);
 		        

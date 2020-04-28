@@ -50,7 +50,19 @@ public class ClientService {
 		//1 : Register if account does not exist
 		//2 : 
 		
-		ClientAssociation clientAssociation = new ClientAssociation();
+		//check if client - organisation association exist or not
+		//exist - no new association required
+		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUser.getClientId(),organisationId);
+		if( clientAssociation != null) {
+			//1.already has association, if you want resend invitation send here
+			//2.reset association
+			//3.deleted user also can re-invite here
+			
+		} else {
+		//else create new association
+		
+			clientAssociation = new ClientAssociation();
+		}
 		clientAssociation.setClientOrganisationId(organisationId);
 		clientAssociation.setClientId(clientUser.getClientId());
 		clientAssociation.setClientUserType(clientUserType);
@@ -62,6 +74,7 @@ public class ClientService {
 		if(clientAssociationRepository.save(clientAssociation) != null) {
 			return clientUser;
 		}
+	
 		
 		return null;
 	}
