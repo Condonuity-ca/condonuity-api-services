@@ -33,6 +33,7 @@ import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.service.UserService;
@@ -174,11 +175,12 @@ public class ClientController {
 	public ResponseEntity<Object> registerClientUser(@RequestBody ClientUser client, UriComponentsBuilder builder) {
 		
 		// org_id
-		ClientUser cuObj = clientService.findByEmail(client.getEmail());
-		if( cuObj != null ) {
+//		ClientUser cuObj = clientService.findByEmail(client.getEmail());
+		User user = userService.findByEmail(client.getEmail());
+		if( user != null ) {
 			
 			HashMap<String, Object> list = new HashMap();
-			if(clientService.getAllOrganisationsForClientUser(cuObj.getClientId()) == 0) {
+			if(user.getUserType() == UserType.CLIENT.getValue() & clientService.getAllOrganisationsForClientUser(user.getUserId()) == 0) {
 				list.put("isNew",true);
 			} else {
 				list.put("isNew",false);
@@ -187,8 +189,8 @@ public class ClientController {
 			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
 			list.put("statusMessage", "Failed");
 			list.put("responseMessage", "User Record Already Exists");
-			list.put("userId",cuObj.getClientId());
-			list.put("userType",UserType.CLIENT.getValue());
+			list.put("userId",user.getUserId());
+			list.put("userType",user.getUserType());
 			
         	return new ResponseEntity<Object>(list,HttpStatus.OK);
 		} else {
