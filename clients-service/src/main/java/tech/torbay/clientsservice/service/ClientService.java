@@ -402,8 +402,10 @@ public class ClientService {
 				vendorRating.setVendorOrganisationId(vendorOrganisationId);
 				vendorRating.setRatingCategory(ratingCategory);
 				vendorRating.setRating(ratingValue);
-				
-				VendorCategoryRatings vendorRate = vendorCategoryRatingsRepository.findByClientIdAndClientOrganisationIdAndProjectIdAndRatingCategory(clientId, clientOrganisationId, projectId, ratingCategory);
+				VendorCategoryRatings vendorRate = null;
+				if(projectId != null) {
+					vendorRate = vendorCategoryRatingsRepository.findByClientIdAndClientOrganisationIdAndProjectIdAndRatingCategory(clientId, clientOrganisationId, projectId, ratingCategory);
+				}
 				
 				if(vendorRate != null) {
 					vendorRating.setId(vendorRate.getId());

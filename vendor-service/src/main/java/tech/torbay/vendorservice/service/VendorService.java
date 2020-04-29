@@ -193,8 +193,11 @@ public class VendorService {
 				 
 				 mappedObj.put("clientName",clientUserRepository.findByClientId(vendorReviewsForProject.getClientId()).getLegalName());
 				 VendorUser vendorUser = vendorUserRepository.findByUserId(vendorReviewsForProject.getVendorId());
-				 mappedObj.put("vendorName",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
-				 
+				 if(vendorUser != null) {
+					 mappedObj.put("vendorName",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
+				 } else {
+					 mappedObj.put("vendorName","");
+				 }
 				 vendorAllReviews.add(mappedObj);
 			 }
 			 
@@ -216,12 +219,23 @@ public class VendorService {
         	double sumCategoryQuality = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
 	        
         	Map<String, Object> mappedObj = new HashMap<String, Object>();
+        	long responsivenessCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).count();
+        	long professionalismCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).count();
+        	long accuracyCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).count();
+        	long qualityCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).count();
         	
-        	mappedObj.put("responsiveness", sumCategoryResponsiveness);
-        	mappedObj.put("professionalism", sumCategoryProfessionalism);
-        	mappedObj.put("accuracy", sumCategoryAccuracy);
-        	mappedObj.put("quality", sumCategoryQuality);
-        	
+//        	mappedObj.put("responsiveness", sumCategoryResponsiveness/responsivenessCount);
+//        	mappedObj.put("professionalism", sumCategoryProfessionalism/professionalismCount);
+//        	mappedObj.put("accuracy", sumCategoryAccuracy/accuracyCount);
+//        	mappedObj.put("quality", sumCategoryQuality/qualityCount);
+        	mappedObj.put("responsiveness", (sumCategoryResponsiveness/responsivenessCount) );
+        	mappedObj.put("professionalism", (sumCategoryProfessionalism/professionalismCount) );
+        	mappedObj.put("accuracy", (sumCategoryAccuracy/accuracyCount) );
+        	mappedObj.put("quality", (sumCategoryQuality/qualityCount) );
+//        	(sumCategoryResponsiveness/responsivenessCount * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
+// 			(sumCategoryProfessionalism/responsivenessCount * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
+// 			(sumCategoryAccuracy/accuracyCount * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
+// 			(sumCategoryQuality/qualityCount * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
         	return mappedObj;
 	        
         } catch(Exception exp) {
