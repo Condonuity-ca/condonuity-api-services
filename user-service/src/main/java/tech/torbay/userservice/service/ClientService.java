@@ -524,7 +524,7 @@ public class ClientService {
 //		return clientReviews;
 //	}
 	
-	public List<Map<String, Object>> getAllClientReviews(Integer clientOrganisationId) {
+	public List<Map<String, Object>> getAllClientReviews(Integer clientId, Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		
 		List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientOrganisationId(clientOrganisationId);
@@ -542,6 +542,12 @@ public class ClientService {
 			
 			// no need calculate overall rating, there is a input for overall rating , and we are gonna retrieve all category ratings to so we dont need calculation here, previouly added only because of UI has only one rating view
 //			projectReview.put("rating", getVendorCategoryRatingsByClientOrgId(vendorOrganisationId, clientOrganisationId, projectReviewRating.getProjectId()));
+			if(clientId == projectReviewRating.getClientId()) {
+				projectReview.put("isEditable", true);
+			} else {
+				projectReview.put("isEditable", false);
+			}
+			
 			projectReview.put("rating", projectReviewRating.getRating());
 			projectReview.put("reviewDate", projectReviewRating.getCreatedAt());
 			projectReview.put("reviewComments", projectReviewRating.getReviewComments());

@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.vendorservice.constants.Constants;
 import tech.torbay.vendorservice.constants.Constants.UserAccountStatus;
+import tech.torbay.vendorservice.entity.ClientUser;
 import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
 import tech.torbay.vendorservice.entity.ProjectReviewRating;
@@ -190,14 +191,16 @@ public class VendorService {
 			 for (ProjectReviewRating vendorReviewsForProject : projectReviewsForVendors) {
 				 ObjectMapper objMapper = new ObjectMapper();
 				 Map<String, Object> mappedObj = objMapper.convertValue(vendorReviewsForProject, Map.class);
-				 
-				 mappedObj.put("clientName",clientUserRepository.findByClientId(vendorReviewsForProject.getClientId()).getLegalName());
+				 ClientUser clientUser = clientUserRepository.findByClientId(vendorReviewsForProject.getClientId());
+				 mappedObj.put("clientName",clientUser.getFirstName()+" "+clientUser.getLastName());
 				 VendorUser vendorUser = vendorUserRepository.findByUserId(vendorReviewsForProject.getVendorId());
 				 if(vendorUser != null) {
 					 mappedObj.put("vendorName",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
 				 } else {
 					 mappedObj.put("vendorName","");
 				 }
+				 mappedObj.put("categoryRating",getDetailedRatingForReview(vendorReviewsForProject.getId()));
+				 
 				 vendorAllReviews.add(mappedObj);
 			 }
 			 
@@ -206,6 +209,21 @@ public class VendorService {
 			 exp.printStackTrace();
 			 return null;
 		 }
+	}
+	
+	private Object getDetailedRatingForReview(Integer reviewRatingId) {
+		// TODO Auto-generated method stub4
+		List<VendorCategoryRatings> vendorCategoryRatings = vendorCategoryRatingsRepository.findAllByReviewRatingId(reviewRatingId);
+		
+		List<Map<String,Object>> categoryRating = new ArrayList();
+		
+		for(VendorCategoryRatings vendorCategoryRating : vendorCategoryRatings){
+			Map<String,Object> map = new HashMap();
+			map.put("ratingCategory", vendorCategoryRating.getRatingCategory());
+			map.put("rating", vendorCategoryRating.getRating());
+			categoryRating.add(map);
+		}
+		return categoryRating;
 	}
 
 	private Object getVendorDetailedRatings(Integer vendorOrganisationId) {

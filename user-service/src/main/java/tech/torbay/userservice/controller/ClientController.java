@@ -492,7 +492,7 @@ public class ClientController {
 //		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
 		
 		// if organisation based reviews
-		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientOrganisationId);
+		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
 		
 		
         if (clientAllReviews == null) {
