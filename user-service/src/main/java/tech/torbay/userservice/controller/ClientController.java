@@ -479,6 +479,58 @@ public class ClientController {
         }
 	}
 	
+	@ApiOperation(value = "Updating Client Review Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client review updated Successfully"),
+            }
+    )
+	@PutMapping("/client/review/update")
+	public ResponseEntity<Object> updateClientReview(@RequestBody Map<String, Object> requestData) {
+		//if client user based reviews
+//		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
+		boolean isRated = clientService.updateReview(requestData);
+        if (!isRated) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Update Review");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Review Updated Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Deleting Client Review Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client review deleted Successfully"),
+            }
+    )
+	@PutMapping("/client/review/inactive/{reviewId}")
+	public ResponseEntity<Object> updateClientReview(@PathVariable("reviewId") Integer reviewId) {
+		//if client user based reviews
+//		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
+		boolean isRated = clientService.deleteReview(reviewId);
+        if (!isRated) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Delete Review");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Review Deleted Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+        }
+	}
+	
 	@ApiOperation(value = "Fetching Client All Submitted Reviews Implementation")
     @ApiResponses(
             value = {

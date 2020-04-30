@@ -51,6 +51,6 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
 			Integer clientOrganisationId, 
 			String keyword);
 
-	List<ProjectReviewRating> findAllByClientOrganisationId(Integer clientOrganisationId);
+	List<ProjectReviewRating> findAllByClientOrganisationIdAndStatus(Integer clientOrganisationId, Integer status);
 
 }

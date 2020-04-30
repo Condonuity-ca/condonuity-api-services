@@ -32,4 +32,6 @@ public interface VendorCategoryRatingsRepository extends JpaRepository<VendorCat
 	
 	List<VendorCategoryRatings> findAllByReviewRatingId(Integer reviewRatingId);
 
+	VendorCategoryRatings findByReviewRatingIdAndRatingCategory(Integer reviewId, Integer ratingCategory);
+
 }

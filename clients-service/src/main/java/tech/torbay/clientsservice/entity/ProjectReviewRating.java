@@ -31,7 +31,16 @@ public class ProjectReviewRating {
     private String rating;
     private String reviewComments;
     private String replyComments;
+    private Integer status;
     
+    public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
@@ -133,8 +142,8 @@ public class ProjectReviewRating {
 		return "ProjectReviewRating [id=" + id + ", projectId=" + projectId + ", clientId=" + clientId
 				+ ", clientOrganisationId=" + clientOrganisationId + ", vendorOrganisationId=" + vendorOrganisationId
 				+ ", vendorId=" + vendorId + ", rating=" + rating + ", reviewComments=" + reviewComments
-				+ ", replyComments=" + replyComments + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
-				+ "]";
+				+ ", replyComments=" + replyComments + ", status=" + status + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

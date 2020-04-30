@@ -383,6 +383,7 @@ public class ClientService {
 //			projectRRObj.setReplyComments(replyComments); - required when reply to a client comment
 			projectRRObj.setReviewComments(reviewComments);;
 			projectRRObj.setRating(overAllRating);
+			projectRRObj.setStatus(UserAccountStatus.ACTIVE.getValue());
 			
 //			return projectReviewRatingRepository.setReplyComments(projectReviewRating.getId(), projectReviewRating.getReplyComments());
 			ProjectReviewRating projectRR = projectReviewRatingRepository.save(projectRRObj);
@@ -426,6 +427,87 @@ public class ClientService {
 		return true;
 	}
 
+	public boolean updateReview(Map<String, Object> ratings) {
+		// TODO Auto-generated method stub
+		
+		try {
+			
+			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			List vendorCategoryRatingsObj = mapper.convertValue(ratings.get("categoryRatings"), List.class);
+			
+			List<Map<String,Object>> vendorCategoryRatings = (List<Map<String,Object>>) vendorCategoryRatingsObj;
+			Integer reviewId = (Integer) ratings.get("reviewId");
+			Integer clientId = (Integer) ratings.get("clientId");
+			Integer clientOrganisationId = (Integer) ratings.get("clientOrganisationId");
+			String reviewComments = (String) ratings.get("reviewComments");
+			String overAllRating = (String) ratings.get("overAllRating");
+			
+			
+			Integer projectId = null;
+			Integer vendorOrganisationId = null;
+//			try {
+//				projectId = (Integer) ratings.get("projectId");
+//			} catch(Exception exp) {
+//				exp.printStackTrace();
+//			}
+			
+			try {
+				vendorOrganisationId = (Integer) ratings.get("vendorOrganisationId");
+			} catch(Exception exp) {
+				exp.printStackTrace();
+			}
+			
+			ProjectReviewRating projectRRObj = projectReviewRatingRepository.findOneById(reviewId);
+			if(projectRRObj != null) {
+				projectRRObj.setReviewComments(reviewComments);;
+				projectRRObj.setRating(overAllRating);
+				ProjectReviewRating projectRR = projectReviewRatingRepository.save(projectRRObj);
+			} else {
+				return false;
+			}
+			// add category ratings
+			for(Map<String,Object> rating : vendorCategoryRatings) {
+				
+				Integer ratingCategory = (Integer) rating.get("ratingCategory");
+				Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
+				
+				VendorCategoryRatings vendorRate = vendorCategoryRatingsRepository.findByReviewRatingIdAndRatingCategory(reviewId, ratingCategory);
+				
+				if(vendorRate != null) {
+					vendorRate.setRatingCategory(ratingCategory);
+					vendorRate.setRating(ratingValue);
+					vendorRate.setId(vendorRate.getId());
+					VendorCategoryRatings rate = vendorCategoryRatingsRepository.save(vendorRate);
+				} else {
+					return false;
+				}
+				
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public boolean deleteReview(Integer reviewId) {
+		
+		try {
+			ProjectReviewRating projectRRObj = projectReviewRatingRepository.findOneById(reviewId);
+			if(projectRRObj != null) {
+				projectRRObj.setStatus(UserAccountStatus.INACTIVE.getValue());
+				ProjectReviewRating projectRR = projectReviewRatingRepository.save(projectRRObj);
+			} else {
+				return false;
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	public ClientUser updateClientPrimaryOrganisation(Integer clientUserId, Integer clientOrgId) {
 		// TODO Auto-generated method stub
 		ClientUser clientUser = clientUserRepository.findByClientId(clientUserId);
@@ -528,7 +610,7 @@ public class ClientService {
 	public List<Map<String, Object>> getAllClientReviews(Integer clientId, Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		
-		List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientOrganisationId(clientOrganisationId);
+		List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientOrganisationIdAndStatus(clientOrganisationId, UserAccountStatus.ACTIVE.getValue());
 		
 		List<Map<String, Object>> clientReviews = new ArrayList();
 		
@@ -543,7 +625,7 @@ public class ClientService {
 			
 			// no need calculate overall rating, there is a input for overall rating , and we are gonna retrieve all category ratings to so we dont need calculation here, previouly added only because of UI has only one rating view
 //			projectReview.put("rating", getVendorCategoryRatingsByClientOrgId(vendorOrganisationId, clientOrganisationId, projectReviewRating.getProjectId()));
-			if(clientId == projectReviewRating.getClientId()) {
+			if(clientId.equals(projectReviewRating.getClientId())) {
 				projectReview.put("isEditable", true);
 			} else {
 				projectReview.put("isEditable", false);
