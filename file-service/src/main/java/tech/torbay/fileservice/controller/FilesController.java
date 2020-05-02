@@ -572,6 +572,36 @@ public class FilesController {
 		
 	}
 	
+	//Client Organisation Profile Image Upload
+		@PostMapping("/upload/client/organisation/profile/{organisationId}")
+		public ResponseEntity<Map<String, Object>> uploadClientOrganisationProfileImage(@PathVariable("organisationId") Integer organisationId,
+				@RequestParam("multipartFile") MultipartFile multipartFile, HttpServletRequest request) {
+
+			Map<String, Object> map = new HashMap<>();
+			if(multipartFile == null) {
+				map.put("statusCode", StatusCode.FILE_NOT_FOUND.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Please select any files to upload");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			URI url = azureBlobService.uploadClientOrganisationProfileImage(organisationId, Constants.Containers.ORGANISATION_PROFILE_IMAGES.getValue(), multipartFile);
+			
+			if(url != null) {
+				map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+				map.put("statusMessage", "Success");
+				map.put("responseMessage", "Client Organisation Profile Image Uploaded Successfully");
+				map.put("containerName", Constants.Containers.PROFILE_IMAGES.getValue());
+				map.put("resource", url);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			} else {
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to upload image");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+		}
+	
 	//upload internal thread files
 	@PostMapping("/uploads/internal/thread/{threadId}")
 	public ResponseEntity<Map<String, Object>> uploadInternalThreadFiles(@PathVariable("threadId") Integer threadId,

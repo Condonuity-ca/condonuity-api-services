@@ -27,8 +27,8 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 
-import tech.torbay.fileservice.constants.Constants.Containers;
 import tech.torbay.fileservice.entity.BidFiles;
+import tech.torbay.fileservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.fileservice.entity.ClientRegistrationFiles;
 import tech.torbay.fileservice.entity.CommentFiles;
 import tech.torbay.fileservice.entity.ProjectFiles;
@@ -36,6 +36,7 @@ import tech.torbay.fileservice.entity.ThreadFiles;
 import tech.torbay.fileservice.entity.UserProfileImages;
 import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.fileservice.repository.BidFilesRepository;
+import tech.torbay.fileservice.repository.ClientOrganisationProfileImagesRepository;
 import tech.torbay.fileservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.fileservice.repository.CommentFilesRepository;
 import tech.torbay.fileservice.repository.ProjectFilesRepository;
@@ -65,6 +66,8 @@ public class AzureBlobService {
 	ThreadFilesRepository threadFilesRepository;
 	@Autowired
 	CommentFilesRepository commentFilesRepository;
+	@Autowired
+	ClientOrganisationProfileImagesRepository clientOrganisationProfileImagesRepository;
 
 	public boolean createContainer(String containerName) {
 
@@ -516,6 +519,54 @@ public class AzureBlobService {
 			
 			vendorOrganisationProfileImages = vendorOrganisationProfileImagesRepository.save(vendorOrganisationProfileImages);
 			if(vendorOrganisationProfileImages != null) {
+				return uri;
+			} else {
+				return null;
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public URI uploadClientOrganisationProfileImage(Integer organisationId, String containerName, MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+		try {
+			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			String blobName = uuid.toString()+"."+extension;
+			
+			URI uri = uploads(containerName, multipartFile, blobName);
+			
+			String fileName = multipartFile.getOriginalFilename();
+			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
+			
+			ClientOrganisationProfileImages clientOrganisationProfileImages = clientOrganisationProfileImagesRepository.findByClientOrganisationId(organisationId);
+			
+			if(clientOrganisationProfileImages != null) {
+				clientOrganisationProfileImages.setContainerName(containerName);
+				clientOrganisationProfileImages.setBlobName(blobName);
+				clientOrganisationProfileImages.setFileName(fileName);
+				clientOrganisationProfileImages.setFileType(fileType);
+				clientOrganisationProfileImages.setFileSize(fileSize);
+				clientOrganisationProfileImages.setFileUrl(uri.toString());
+			} else {
+				clientOrganisationProfileImages = new ClientOrganisationProfileImages();
+				clientOrganisationProfileImages.setClientOrganisationId(organisationId);;
+				clientOrganisationProfileImages.setContainerName(containerName);
+				clientOrganisationProfileImages.setBlobName(blobName);
+				clientOrganisationProfileImages.setFileName(fileName);
+				clientOrganisationProfileImages.setFileType(fileType);
+				clientOrganisationProfileImages.setFileSize(fileSize);
+				clientOrganisationProfileImages.setFileUrl(uri.toString());
+			}
+			
+			ClientOrganisationProfileImages clientOrganisationProfileImagesObj = clientOrganisationProfileImagesRepository.save(clientOrganisationProfileImages);
+			if(clientOrganisationProfileImagesObj != null) {
 				return uri;
 			} else {
 				return null;
