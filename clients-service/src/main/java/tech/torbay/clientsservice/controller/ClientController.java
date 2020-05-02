@@ -184,7 +184,7 @@ public class ClientController {
     )
 	@GetMapping("/client/orgs")
 	public ResponseEntity<Object> getAllClientOrganisations() {
-		List<ClientOrganisation> list = clientService.getAllClientOrganisations();
+		List<Object> list = clientService.getAllClientOrganisations();
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -337,7 +337,7 @@ public class ClientController {
 	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer id) {
 		ClientOrganisation organisation = clientService.getOrganisationById(id);
 		System.out.println("organisation : "+organisation.toString());
-		List<ClientAmenities> amenitiesInfo = clientService.getAmenitiesByOrgId(id);
+		List<Map<String, Object>> amenitiesInfo = clientService.getAmenitiesByOrgId(id);
 		List<Map<String,Object>> clientRegistrationFiles = clientService.getClientRegistrationFiles(id);
 //		System.out.println("amenitiesInfo : "+amenitiesInfo.toString());
 //		//IF admin get All other users details
@@ -368,10 +368,9 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client Organisation Amenities Information Updated successfully")
             }
     )
-	@PutMapping("/client/org/amenity")
-	public ResponseEntity<Object> updateAmenities(@RequestBody ClientAmenities amenitiesInfo) {
-		System.out.println(amenitiesInfo);
-        if (clientService.updateAmenities(amenitiesInfo) == null) {
+	@PutMapping("/client/org/amenity/{clientOrgId}")
+	public ResponseEntity<Object> updateAmenities(@PathVariable("clientOrgId") Integer clientOrgId, @RequestBody List<ClientAmenities> clientAmenities) {
+        if (!clientService.updateAmenities(clientOrgId, clientAmenities)) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
         			"Failed",

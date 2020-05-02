@@ -36,6 +36,7 @@ import tech.torbay.clientsservice.entity.UserProfileImages;
 import tech.torbay.clientsservice.entity.UserWishList;
 import tech.torbay.clientsservice.entity.VendorCategoryRatings;
 import tech.torbay.clientsservice.entity.VendorOrganisation;
+import tech.torbay.clientsservice.repository.AmenitiesRepository;
 import tech.torbay.clientsservice.repository.ClientAmenitiesRepository;
 import tech.torbay.clientsservice.repository.ClientAssociationRepository;
 import tech.torbay.clientsservice.repository.ClientBuildingRepoRepository;
@@ -55,6 +56,7 @@ import tech.torbay.clientsservice.repository.UserProfileImagesRepository;
 import tech.torbay.clientsservice.repository.UserWishListRepository;
 import tech.torbay.clientsservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.clientsservice.repository.VendorOrganisationRepository;
+import tech.torbay.clientsservice.entity.Amenities;
 
 @Component
 public class ClientService {
@@ -65,6 +67,8 @@ public class ClientService {
 	ClientOrganisationRepository clientOrganisationRepository;
 	@Autowired
 	ClientAmenitiesRepository clientAmenitiesRepository;
+	@Autowired
+	AmenitiesRepository amenitiesRepository;
 	@Autowired
 	OrganisationPaymentRepository clientOrganisationPaymentRepository;
 	@Autowired
@@ -231,9 +235,21 @@ public class ClientService {
 		return clientOrganisationRepository.findByClientOrganisationId(id);
 	}
 
-	public List<ClientAmenities> getAmenitiesByOrgId(Integer clientOrgId) {
+	public List<Map<String, Object>> getAmenitiesByOrgId(Integer clientOrgId) {
 		// TODO Auto-generated method stub
-		return clientAmenitiesRepository.findAllByClientOrganisationId(clientOrgId);
+		List<ClientAmenities> amenities = clientAmenitiesRepository.findAllByClientOrganisationId(clientOrgId);
+		List<Map<String, Object>> clientAmenities = new ArrayList();
+		for(ClientAmenities clientAmenity : amenities) {
+
+			Map<String, Object> map = new HashMap<>();
+			Amenities amenity = amenitiesRepository.findOneById(clientAmenity.getAmenityId());
+			map.put("amenityId",clientAmenity.getAmenityId());
+			map.put("amenityName",amenity.getAmenitiesName());
+			map.put("amenityLogo",amenity.getLogo());
+			clientAmenities.add(map);
+		}
+		
+		return clientAmenities;
 	}
 
 	public List<Object> getAllClientsByOrganisation(Integer clientOrgId) {
@@ -291,22 +307,42 @@ public class ClientService {
 		return paymentDetails;
 	}
 
-	public ClientAmenities updateAmenities(ClientAmenities amenitiesInfo) {
+	public boolean updateAmenities(Integer clientOrgId, List<ClientAmenities> clientAmenities) {
 		// TODO Auto-generated method stub
-		
 		try {
-			System.out.print(amenitiesInfo.toString());
-			ClientAmenities amenity = clientAmenitiesRepository.save(amenitiesInfo);
-			return amenity;
+			clientAmenitiesRepository.deleteByClientOrganisationId(clientOrgId);
+			
+			for(ClientAmenities clientAmenity : clientAmenities) {
+				
+				clientAmenity.setClientOrganisationId(clientOrgId);
+				clientAmenitiesRepository.save(clientAmenity);
+			}
+			
 		} catch(Exception exp) {
 			exp.printStackTrace();
+			return false;
 		}
-		return null;
+		return true;
 	}
 
-	public List<ClientOrganisation> getAllClientOrganisations() {
+	public List<Object> getAllClientOrganisations() {
 		// TODO Auto-generated method stub
-		return clientOrganisationRepository.findAll();
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAll();
+		
+		List<Object> clientOrganisations = new ArrayList();
+		
+		for(ClientOrganisation clientOrg : clientOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+	        
+	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+	        map.put("amenities", amenitiesInfo);
+			clientOrganisations.add(map);
+		}
+		
+    			
+		return clientOrganisations;
 	}
 
 	public List<Object> getAllClientOrganisationsByVendorOrgId(Integer vendorOrgId) {
@@ -328,6 +364,10 @@ public class ClientService {
 	        if(userWish != null) {
 	        	map.put("isPreferred", "true");
 	        }
+	        
+	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+	        map.put("amenities", amenitiesInfo);
+	        
 			clientOrganisations.add(map);
 		}
 		
@@ -437,25 +477,13 @@ public class ClientService {
 			
 			List<Map<String,Object>> vendorCategoryRatings = (List<Map<String,Object>>) vendorCategoryRatingsObj;
 			Integer reviewId = (Integer) ratings.get("reviewId");
-			Integer clientId = (Integer) ratings.get("clientId");
-			Integer clientOrganisationId = (Integer) ratings.get("clientOrganisationId");
 			String reviewComments = (String) ratings.get("reviewComments");
 			String overAllRating = (String) ratings.get("overAllRating");
 			
 			
 			Integer projectId = null;
 			Integer vendorOrganisationId = null;
-//			try {
-//				projectId = (Integer) ratings.get("projectId");
-//			} catch(Exception exp) {
-//				exp.printStackTrace();
-//			}
 			
-			try {
-				vendorOrganisationId = (Integer) ratings.get("vendorOrganisationId");
-			} catch(Exception exp) {
-				exp.printStackTrace();
-			}
 			
 			ProjectReviewRating projectRRObj = projectReviewRatingRepository.findOneById(reviewId);
 			if(projectRRObj != null) {

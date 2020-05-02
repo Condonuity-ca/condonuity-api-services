@@ -18,6 +18,7 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.TaskStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
+import tech.torbay.userservice.entity.Amenities;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
@@ -37,6 +38,7 @@ import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
+import tech.torbay.userservice.repository.AmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
@@ -65,6 +67,8 @@ public class ClientService {
 	ClientOrganisationRepository clientOrganisationRepository;
 	@Autowired
 	ClientAmenitiesRepository clientAmenitiesRepository;
+	@Autowired
+	AmenitiesRepository amenitiesRepository;
 	@Autowired
 	OrganisationPaymentRepository clientOrganisationPaymentRepository;
 	@Autowired
@@ -229,9 +233,21 @@ public class ClientService {
 		return clientOrganisationRepository.findByClientOrganisationId(id);
 	}
 
-	public List<ClientAmenities> getAmenitiesByOrgId(Integer clientOrgId) {
+	public List<Map<String, Object>> getAmenitiesByOrgId(Integer clientOrgId) {
 		// TODO Auto-generated method stub
-		return clientAmenitiesRepository.findAllByClientOrganisationId(clientOrgId);
+		List<ClientAmenities> amenities = clientAmenitiesRepository.findAllByClientOrganisationId(clientOrgId);
+		List<Map<String, Object>> clientAmenities = new ArrayList();
+		for(ClientAmenities clientAmenity : amenities) {
+
+			Map<String, Object> map = new HashMap<>();
+			Amenities amenity = amenitiesRepository.findOneById(clientAmenity.getAmenityId());
+			map.put("amenityId",clientAmenity.getAmenityId());
+			map.put("amenityName",amenity.getAmenitiesName());
+			map.put("amenityLogo",amenity.getLogo());
+			clientAmenities.add(map);
+		}
+		
+		return clientAmenities;
 	}
 
 	public List<Object> getAllClientsByOrganisation(Integer clientOrgId) {
@@ -289,22 +305,42 @@ public class ClientService {
 		return paymentDetails;
 	}
 
-	public ClientAmenities updateAmenities(ClientAmenities amenitiesInfo) {
+	public boolean updateAmenities(Integer clientOrgId, List<ClientAmenities> clientAmenities) {
 		// TODO Auto-generated method stub
-		
 		try {
-			System.out.print(amenitiesInfo.toString());
-			ClientAmenities amenity = clientAmenitiesRepository.save(amenitiesInfo);
-			return amenity;
+			clientAmenitiesRepository.deleteByClientOrganisationId(clientOrgId);
+			
+			for(ClientAmenities clientAmenity : clientAmenities) {
+				
+				clientAmenity.setClientOrganisationId(clientOrgId);
+				clientAmenitiesRepository.save(clientAmenity);
+			}
+			
 		} catch(Exception exp) {
 			exp.printStackTrace();
+			return false;
 		}
-		return null;
+		return true;
 	}
 
-	public List<ClientOrganisation> getAllClientOrganisations() {
+	public List<Object> getAllClientOrganisations() {
 		// TODO Auto-generated method stub
-		return clientOrganisationRepository.findAll();
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAll();
+		
+		List<Object> clientOrganisations = new ArrayList();
+		
+		for(ClientOrganisation clientOrg : clientOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+	        
+	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+	        map.put("amenities", amenitiesInfo);
+			clientOrganisations.add(map);
+		}
+		
+    			
+		return clientOrganisations;
 	}
 
 	public List<Object> getAllClientOrganisationsByVendorOrgId(Integer vendorOrgId) {
@@ -326,6 +362,9 @@ public class ClientService {
 	        if(userWish != null) {
 	        	map.put("isPreferred", "true");
 	        }
+	        
+	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+	        map.put("amenities", amenitiesInfo);
 			clientOrganisations.add(map);
 		}
 		

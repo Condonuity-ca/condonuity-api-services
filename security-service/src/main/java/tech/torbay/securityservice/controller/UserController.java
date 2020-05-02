@@ -53,6 +53,7 @@ import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.constants.Token;
 import tech.torbay.securityservice.email.SpringBootEmail;
+import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
@@ -762,16 +763,50 @@ public class UserController {
 		@GetMapping("/app/data")
 		public ResponseEntity<Object> getAppData() {
 		
-		 List<ServiceCities> serviceCities = userService.findAllServiceCities();
+//		 List<ServiceCities> serviceCities = userService.findAllServiceCities();
+		 HashMap<String, Object> serviceProvincesCities = userService.findAllProvinceCities();
 		 List<PredefinedTags> predefinedTags = userService.findAllPredefinedTags();
+		 List<Amenities> amenities = userService.findAllAmenities();
 		 
 		 HashMap<String, Object> list = new HashMap();
-		 if(serviceCities != null) {
+		 if(serviceProvincesCities != null) {
 		 	list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 		 	list.put("statusMessage", "Success");
 		 	list.put("responseMessage", "List of All App Data fetched successfully");
-		 	list.put("serviceCities",serviceCities);
+//		 	list.put("serviceCities",serviceCities);
+		 	list.put("serviceProvinceCities",serviceProvincesCities.entrySet().toArray());
 		 	list.put("predefinedTags",predefinedTags);
+		 	list.put("amenities",amenities);
+		 	
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 } else {
+		 	
+		 	list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+		 	list.put("statusMessage", "Failed");
+		 	list.put("responseMessage", "Database Error");
+
+		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
+		 }
+
+		}
+	 
+	 @ApiOperation(value = "Fetching All Client Amenities implementation")
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(code = 200, message = "All Client Amenities fetched successfully")
+	            }
+	    )
+		@GetMapping("/client/amenities")
+		public ResponseEntity<Object> getAllAmenities() {
+		
+		 List<Amenities> amenities = userService.findAllAmenities();
+		 
+		 HashMap<String, Object> list = new HashMap();
+		 if(amenities != null) {
+		 	list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+		 	list.put("statusMessage", "Success");
+		 	list.put("responseMessage", "List of Client Amenities fetched successfully");
+		 	list.put("amenities",amenities);
 		 	
 		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
 		 } else {

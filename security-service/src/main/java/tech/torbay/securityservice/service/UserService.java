@@ -20,12 +20,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import tech.torbay.securityservice.constants.Constants;
+import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
+import tech.torbay.securityservice.repository.AmenitiesRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.repository.PredefinedTagsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
@@ -45,6 +47,8 @@ public class UserService {
 	ClientUserRepository clientUserRepository;
 	@Autowired
 	VendorUserRepository vendorUserRepository;
+	@Autowired
+	AmenitiesRepository amenitiesRepository;
 	
 	@Autowired
     private BCryptPasswordEncoder encoder;
@@ -165,6 +169,11 @@ public class UserService {
 	public List<PredefinedTags> findAllPredefinedTags() {
 		// TODO Auto-generated method stub
 		return predefinedTagsRepository.findAll();
+	}
+	
+	public List<Amenities> findAllAmenities() {
+		// TODO Auto-generated method stub
+		return amenitiesRepository.findAll();
 	}
 }
 
