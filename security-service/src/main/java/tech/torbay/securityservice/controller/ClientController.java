@@ -401,12 +401,16 @@ public class ClientController {
         } else {
         	HttpHeaders headers = new HttpHeaders();
 //            headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(organisation.getClientOrganisationId()).toUri());
-            ResponseMessage responseMessage = new ResponseMessage(
-            		APIStatusCode.REQUEST_SUCCESS.getValue(),
-            		"Success",
-            		"Client Organisation Registered for verification");
             
-            return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
+            HashMap<String, Object> list = new HashMap();
+			
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Organisation Registered for verification");
+			list.put("clientOrganisationId",clientorganisation.getClientOrganisationId());
+			
+        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+            
         }
 	}
 	

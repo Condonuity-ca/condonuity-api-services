@@ -35,6 +35,7 @@ import tech.torbay.fileservice.entity.ProjectFiles;
 import tech.torbay.fileservice.entity.ThreadFiles;
 import tech.torbay.fileservice.entity.UserProfileImages;
 import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
+import tech.torbay.fileservice.entity.VendorRegistrationFiles;
 import tech.torbay.fileservice.repository.BidFilesRepository;
 import tech.torbay.fileservice.repository.ClientOrganisationProfileImagesRepository;
 import tech.torbay.fileservice.repository.ClientRegistrationFilesRepository;
@@ -43,6 +44,7 @@ import tech.torbay.fileservice.repository.ProjectFilesRepository;
 import tech.torbay.fileservice.repository.ThreadFilesRepository;
 import tech.torbay.fileservice.repository.UserProfileImagesRepository;
 import tech.torbay.fileservice.repository.VendorOrganisationProfileImagesRepository;
+import tech.torbay.fileservice.repository.VendorRegistrationFilesRepository;
 
 @Component
 public class AzureBlobService {
@@ -68,6 +70,8 @@ public class AzureBlobService {
 	CommentFilesRepository commentFilesRepository;
 	@Autowired
 	ClientOrganisationProfileImagesRepository clientOrganisationProfileImagesRepository;
+	@Autowired
+	VendorRegistrationFilesRepository vendorRegistrationFilesRepository;
 
 	public boolean createContainer(String containerName) {
 
@@ -291,6 +295,46 @@ public class AzureBlobService {
 		return null;
 	}
 	
+	// upload vendor registration single file	
+		public URI uploadVendorRegistrationFile(Integer vendorId, Integer vendorOrganisationId, String containerName, MultipartFile multipartFile) {
+			// TODO Auto-generated method stub
+			try {
+				createContainer(containerName);
+				UUID uuid = UUID.randomUUID();
+				String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+				String blobName = uuid.toString()+"."+extension;
+
+				URI uri = uploads(containerName, multipartFile, blobName);
+				
+				String fileName = multipartFile.getOriginalFilename();
+				String fileType = multipartFile.getContentType();
+				String fileSize = String.valueOf(multipartFile.getSize());
+				
+				VendorRegistrationFiles vendorRegistrationFile = new VendorRegistrationFiles();
+				vendorRegistrationFile.setVendorUserId(vendorId);
+				vendorRegistrationFile.setVendorOrganisationId(vendorOrganisationId);
+				vendorRegistrationFile.setContainerName(containerName);
+				vendorRegistrationFile.setBlobName(blobName);
+				vendorRegistrationFile.setFileName(fileName);
+				vendorRegistrationFile.setFileType(fileType);
+				vendorRegistrationFile.setFileSize(fileSize);
+				vendorRegistrationFile.setFileUrl(uri.toString());
+				
+				vendorRegistrationFile = vendorRegistrationFilesRepository.save(vendorRegistrationFile);
+				
+				if(vendorRegistrationFile != null) {
+					return uri;
+				} else {
+					return null;
+				}
+				
+			} catch(Exception exp) {
+				exp.printStackTrace();
+			}
+			
+			return null;
+		}
+	
 	// client organisation registration multiple file upload
 	public List<URI> uploadClientRegistrationFiles(Integer clientId, Integer clientOrganisationId, String containerName, MultipartFile[] multipartFiles) {
 		// TODO Auto-generated method stub
@@ -302,6 +346,18 @@ public class AzureBlobService {
 		
 		return uris;
 	}
+	
+	// vendor organisation registration multiple file upload
+		public List<URI> uploadVendorRegistrationFiles(Integer vendorId, Integer vendorOrganisationId, String containerName, MultipartFile[] multipartFiles) {
+			// TODO Auto-generated method stub
+			List<URI> uris = new ArrayList();
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				uris.add(uploadVendorRegistrationFile(vendorId, vendorOrganisationId, containerName, multipartFile));
+			}
+			
+			return uris;
+		}
 	
 	// single file upload
 	public URI uploadProjectFiles(Integer projectId, String containerName, MultipartFile multipartFile) {

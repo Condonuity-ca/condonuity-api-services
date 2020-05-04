@@ -93,7 +93,8 @@ public class Constants {
 	}
 	
 	public enum Containers {
-	    CLIENT_REGISTRATION_FILES("clientregistrationfiles"),
+		CLIENT_REGISTRATION_FILES("clientregistrationfiles"),
+	    VENDOR_REGISTRATION_FILES("vendorregistrationfiles"),
 	    PROJECT_FILES("projectfiles"),
 	    BID_FILES("bidfiles"),
 	    PROFILE_IMAGES("profileimages"),

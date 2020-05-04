@@ -100,11 +100,15 @@ public class VendorController {
         } else {
 	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
-	        ResponseMessage responseMessage = new ResponseMessage(
-	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"New Vendor Organisation Created Successfully");
-			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
+			
+			 HashMap<String, Object> list = new HashMap();
+				
+				list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+				list.put("statusMessage", "Success");
+				list.put("responseMessage", "New Vendor Organisation Created Successfully");
+				list.put("vendorOrganisationId",vendorOrg.getVendorOrganisationId());
+				
+	        	return new ResponseEntity<Object>(list,HttpStatus.OK);
         }
 	}
 	

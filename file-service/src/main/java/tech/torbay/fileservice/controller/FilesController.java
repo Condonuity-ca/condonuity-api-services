@@ -788,4 +788,64 @@ public class FilesController {
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
 	}
+	
+	// Client Registration Document Upload
+	
+		@PostMapping("/upload/vendor/registration/{vendorOrganisationId}/{vendorId}")
+		public ResponseEntity<Map<String, Object>> uploadVendorRegistrationFile(@PathVariable("vendorOrganisationId") Integer vendorOrganisationId,
+				@PathVariable("vendorId") Integer vendorId,
+				@RequestParam("multipartFile") MultipartFile multipartFile, HttpServletRequest request) {
+
+			URI url = azureBlobService.uploadVendorRegistrationFile(vendorId, vendorOrganisationId, Constants.Containers.VENDOR_REGISTRATION_FILES.getValue(), multipartFile);
+			
+			Map<String, Object> map = new HashMap<>();
+			if(url != null) {
+				map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+				map.put("statusMessage", "Success");
+				map.put("responseMessage", "Vendor Registration File Uploaded Successfully");
+				map.put("containerName", Constants.Containers.VENDOR_REGISTRATION_FILES.getValue());
+				map.put("resource", url);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			} else {
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to upload file");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+		}
+		
+		// multiple - client registration
+		@PostMapping(value = "/uploads/vendor/registration/{vendorOrganisationId}/{vendorId}", consumes = { "multipart/form-data" })
+		public ResponseEntity<Map<String, Object>> uploadVendorRegistrationFiles(@PathVariable("vendorOrganisationId") Integer vendorOrganisationId,
+				@PathVariable("vendorId") Integer vendorId,
+				@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
+
+			Map<String, Object> map = new HashMap<>();
+			
+			if(multipartFiles == null || multipartFiles.length == 0 ) {
+				map.put("statusCode", StatusCode.FILE_NOT_FOUND.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Please select any files to upload");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+			List<URI> url = azureBlobService.uploadVendorRegistrationFiles(vendorId, vendorOrganisationId, Constants.Containers.VENDOR_REGISTRATION_FILES.getValue(), multipartFiles);
+			
+			
+			if(url != null) {
+				map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+				map.put("statusMessage", "Success");
+				map.put("responseMessage", "Vendor Registration File Uploaded Successfully");
+				map.put("containerName", Constants.Containers.VENDOR_REGISTRATION_FILES.getValue());
+				map.put("resource", url);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			} else {
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to upload file");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+		}
 }
