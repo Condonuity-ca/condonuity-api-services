@@ -155,8 +155,11 @@ public class VendorService {
 	        mappedObj.put("memberships",vendorMembershipsRepository.getVendorMemberships(vendorOrganisationId));
 	        
 	        try {
-	        VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
-	        mappedObj.put("vendorProfileImageUrl",vendorOrgProfileImage.getFileUrl());
+	        String logo = getOrganisationLogo(vendorOrganisationId);
+	        if(logo != null)
+	        	mappedObj.put("vendorProfileImageUrl", logo);
+	        else
+	        	mappedObj.put("vendorProfileImageUrl", "");
 	        } catch(Exception exp) {
 	        	exp.printStackTrace();
 	        }
@@ -168,6 +171,16 @@ public class VendorService {
 		}
 		
 		return null/* vendorOrganisationRepository.findByVendorOrganisationId(id) */;
+	}
+	
+	public String getOrganisationLogo(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
+		
+        if(vendorOrgProfileImage != null)
+        	return vendorOrgProfileImage.getFileUrl();
+        else
+        	return null;
 	}
 
 	private Object getVendorReviewsRatings(Integer vendorOrganisationId) {
@@ -322,6 +335,15 @@ public class VendorService {
 	        	map.put("vendorTags","");
 	        }
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        try {
+		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
+		        if(logo != null)
+		        	map.put("vendorProfileImageUrl", logo);
+		        else
+		        	map.put("vendorProfileImageUrl", "");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
+	        }
 	        vendorOrganisations.add(map);
 		}
 		
@@ -535,6 +557,15 @@ public class VendorService {
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        if(userWish != null) {
 	        	map.put("isPreferred", "true");
+	        }
+	        try {
+		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
+		        if(logo != null)
+		        	map.put("vendorProfileImageUrl", logo);
+		        else
+		        	map.put("vendorProfileImageUrl", "");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
 	        }
 	        vendorOrganisations.add(map);
 		}

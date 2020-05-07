@@ -336,6 +336,7 @@ public class ClientController {
 	@GetMapping("/client/org/{id}")
 	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer id) {
 		ClientOrganisation organisation = clientService.getOrganisationById(id);
+		String organisationLogo = clientService.getOrganisationLogo(id);
 		System.out.println("organisation : "+organisation.toString());
 		List<Map<String, Object>> amenitiesInfo = clientService.getAmenitiesByOrgId(id);
 		List<Map<String,Object>> clientRegistrationFiles = clientService.getClientRegistrationFiles(id);
@@ -349,6 +350,7 @@ public class ClientController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Organisation details fetched successfully");
 			list.put("organisation", organisation);
+			list.put("organisationLogo", organisationLogo);
 			list.put("clientAmenities",amenitiesInfo);
 			list.put("registrationFiles",clientRegistrationFiles);
 			

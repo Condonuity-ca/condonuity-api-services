@@ -24,6 +24,7 @@ import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.userservice.entity.ClientRegistrationFiles;
 import tech.torbay.userservice.entity.ClientTask;
 import tech.torbay.userservice.entity.ClientTaskComments;
@@ -43,6 +44,7 @@ import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
+import tech.torbay.userservice.repository.ClientOrganisationProfileImagesRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.userservice.repository.ClientTaskCommentsRepository;
@@ -101,6 +103,8 @@ public class ClientService {
 	ClientBuildingRepoRepository clientBuildingRepoRepository;
 	@Autowired
 	UserLevelNotificationRepository userLevelNotificationRepository;
+	@Autowired
+	ClientOrganisationProfileImagesRepository clientOrganisationProfileImageRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -232,6 +236,16 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		return clientOrganisationRepository.findByClientOrganisationId(id);
 	}
+	
+	public String getOrganisationLogo(Integer id) {
+		// TODO Auto-generated method stub
+		ClientOrganisationProfileImages clientOrganisationProfileImages = clientOrganisationProfileImageRepository.findByClientOrganisationId(id);
+		
+        if(clientOrganisationProfileImages != null)
+        	return clientOrganisationProfileImages.getFileUrl();
+        else
+        	return null;
+	}
 
 	public List<Map<String, Object>> getAmenitiesByOrgId(Integer clientOrgId) {
 		// TODO Auto-generated method stub
@@ -336,6 +350,11 @@ public class ClientService {
 	        
 	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
 	        map.put("amenities", amenitiesInfo);
+	        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());
+	        if(logo != null)
+	        	map.put("organisationLogo", logo);
+	        else
+	        	map.put("organisationLogo", "");
 			clientOrganisations.add(map);
 		}
 		
@@ -365,6 +384,11 @@ public class ClientService {
 	        
 	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
 	        map.put("amenities", amenitiesInfo);
+	        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());
+	        if(logo != null)
+	        	map.put("organisationLogo", logo);
+	        else
+	        	map.put("organisationLogo", "");
 			clientOrganisations.add(map);
 		}
 		

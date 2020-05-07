@@ -2,6 +2,8 @@ package tech.torbay.securityservice.controller;
 
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +38,7 @@ import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
+import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.service.UserService;
@@ -107,10 +116,88 @@ public class VendorController {
 				list.put("statusMessage", "Success");
 				list.put("responseMessage", "New Vendor Organisation Created Successfully");
 				list.put("vendorOrganisationId",vendorOrg.getVendorOrganisationId());
-				
+				list.put("vendorId",vendorId);
+				User userInfo = userService.findByIdAndUserType(vendorId, UserType.VENDOR.getValue());
+				try {
+					list.put("authToken",getAuthToken(userInfo.getUsername(), userInfo.getPassword()));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        	return new ResponseEntity<Object>(list,HttpStatus.OK);
         }
 	}
+	
+	
+private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {
+		
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	     
+	    final String url = "http://127.0.0.1:8762/auth";
+	    URI uri = null;
+		try {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	     
+	    AppUser user = new AppUser( username, password);
+	    
+	    
+//	    HttpEntity<String> request = new HttpEntity<>(userJsonObj, headers);
+	    
+	    
+	    ResponseEntity<String> result = restTemplate.postForEntity(uri, user/*headers*/, String.class);
+	     
+	    //Verify request succeed
+//	    Assert.assertEquals(200, result.getStatusCodeValue());
+	    
+	    ObjectMapper objectMapper = new ObjectMapper();
+        Token tokenObj = objectMapper.readValue(result.getBody(), Token.class);
+	    
+		return tokenObj.token;
+	}
+
+	private static class AppUser {
+	    private String username, password;
+	
+	    public AppUser(String username, String password) {
+	        this.username = username;
+	        this.password = password;
+	    }
+	
+	    public String getUsername() {
+	        return username;
+	    }
+	
+	    public void setUsername(String username) {
+	        this.username = username;
+	    }
+	
+	    public String getPassword() {
+	        return password;
+	    }
+	
+	    public void setPassword(String password) {
+	        this.password = password;
+	    }
+	
+	}
+	
+	private static class Token {
+        private String token;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+    }
 	
 	@ApiOperation(value = "New Vendor Registration")
     @ApiResponses(

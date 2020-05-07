@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
+import tech.torbay.userservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorInsurance;
