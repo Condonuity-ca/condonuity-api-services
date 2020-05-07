@@ -28,6 +28,7 @@ import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorInsurance;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorPortfolio;
+import tech.torbay.userservice.entity.VendorRegistrationFiles;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.service.VendorService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
@@ -80,6 +81,7 @@ public class VendorController {
 		Object vendorOrganisation = vendorService.getVendorOrganisationById(vendorOrganisationId);
 		List<VendorPortfolio> vendorPortfolio = vendorService.getVendorPortfolio(vendorOrganisationId);
 		List<VendorInsurance> vendorInsurance = vendorService.getVendorInsurance(vendorOrganisationId);
+		List<Map<String, Object>> vendorRegistrationFiles = vendorService.getVendorRegistrationFiles(vendorOrganisationId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(vendorOrganisation != null) {
@@ -89,6 +91,7 @@ public class VendorController {
 			response.put("vendor", vendorOrganisation);
 			response.put("vendorPortfolios", vendorPortfolio);
 			response.put("vendorInsurances", vendorInsurance);
+			response.put("vendorRegistrationFiles", vendorRegistrationFiles);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {

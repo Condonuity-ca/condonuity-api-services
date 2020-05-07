@@ -13,10 +13,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
+import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.ServiceCities;
 import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorBrands;
@@ -28,6 +30,7 @@ import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.userservice.entity.VendorPortfolio;
 import tech.torbay.userservice.entity.VendorProducts;
+import tech.torbay.userservice.entity.VendorRegistrationFiles;
 import tech.torbay.userservice.entity.VendorServices;
 import tech.torbay.userservice.entity.VendorServicesCities;
 import tech.torbay.userservice.entity.VendorTags;
@@ -35,6 +38,7 @@ import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.ServiceCitiesRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorBrandsRepository;
@@ -46,9 +50,11 @@ import tech.torbay.userservice.repository.VendorOrganisationProfileImagesReposit
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
 import tech.torbay.userservice.repository.VendorPortfolioRepository;
 import tech.torbay.userservice.repository.VendorProductsRepository;
+import tech.torbay.userservice.repository.VendorRegistrationFilesRepository;
 import tech.torbay.userservice.repository.VendorServicesCitiesRepository;
 import tech.torbay.userservice.repository.VendorServicesRepository;
 import tech.torbay.userservice.repository.VendorUserRepository;
+import tech.torbay.userservice.entity.ClientRegistrationFiles;
 import tech.torbay.userservice.entity.ClientUser;
 
 @Component
@@ -88,6 +94,10 @@ public class VendorService {
 	UserProfileImagesRepository userProfileImagesRepository;
 	@Autowired
 	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
+	@Autowired
+	ServiceCitiesRepository servicesCitiesRepository;
+	@Autowired
+	VendorRegistrationFilesRepository vendorRegistrationFilesRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -141,6 +151,18 @@ public class VendorService {
 	        } else {
 	        	mappedObj.put("vendorTags","[]");
 	        }
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		mappedObj.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		mappedObj.put("city","");
+	        	}
+	        	
+	        } else {
+	        	mappedObj.put("city","");
+			}
 	        mappedObj.put("rating",getVendorCategoryRatings(vendorOrganisationId));
 	        mappedObj.put("detailedRating",getVendorDetailedRatings(vendorOrganisationId));
 	        mappedObj.put("reviewsRatings",getVendorReviewsRatings(vendorOrganisationId));
@@ -334,6 +356,18 @@ public class VendorService {
 	        } else {
 	        	map.put("vendorTags","");
 	        }
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        try {
 		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
@@ -554,6 +588,18 @@ public class VendorService {
 	        } else {
 	        	map.put("vendorTags","");
 	        }
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        if(userWish != null) {
 	        	map.put("isPreferred", "true");
@@ -856,6 +902,29 @@ public class VendorService {
 		}
 		
 		return null;
+	}
+
+	public List<Map<String, Object>> getVendorRegistrationFiles(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		List<VendorRegistrationFiles> vendorRegistrationFiles = vendorRegistrationFilesRepository.findAllByVendorOrganisationId(vendorOrganisationId);
+		
+		List<Map<String, Object>> files = new ArrayList();
+		for(VendorRegistrationFiles registrationFile : vendorRegistrationFiles) {
+			Map<String, Object> obj = new HashMap<>();
+			
+			obj.put("id", registrationFile.getId());
+			obj.put("fileName", registrationFile.getFileName());
+			obj.put("fileType", registrationFile.getFileType());
+			obj.put("fileSize", Utils.formatFileSize(Long.parseLong(registrationFile.getFileSize())));
+			obj.put("blobName", registrationFile.getBlobName());
+			obj.put("containerName", registrationFile.getContainerName());
+//			obj.put("fileUrl", registrationFile.getFileUrl());
+			obj.put("createdAt", registrationFile.getCreatedAt());
+			
+			files.add(obj);
+		}
+		
+		return files;
 	}
 }
 

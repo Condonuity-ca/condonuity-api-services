@@ -1,26 +1,33 @@
 package tech.torbay.userservice.entity;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import tech.torbay.userservice.constants.Constants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
+@JsonInclude(value = Include.NON_NULL)
 @Table(name = "service_cities")
 public class ServiceCities {
-
-    public ServiceCities() {
+	
+	public ServiceCities() {
 
     }
+ 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id = 0;
     private String cityName = "";
     private String cityProvince = "";
-	private Integer status = 0;
+    private Integer status = 0;
     
-	@Basic(optional = false)
+    @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
     

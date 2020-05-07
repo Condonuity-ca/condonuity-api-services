@@ -30,10 +30,10 @@ import tech.torbay.userservice.entity.ClientTask;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.ClientUserTasks;
-import tech.torbay.userservice.entity.ExternalMessage;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.ServiceCities;
 import tech.torbay.userservice.entity.UserLevelNotification;
 import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
@@ -54,6 +54,7 @@ import tech.torbay.userservice.repository.ClientUserTasksRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.ServiceCitiesRepository;
 import tech.torbay.userservice.repository.UserLevelNotificationRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
@@ -105,6 +106,8 @@ public class ClientService {
 	UserLevelNotificationRepository userLevelNotificationRepository;
 	@Autowired
 	ClientOrganisationProfileImagesRepository clientOrganisationProfileImageRepository;
+	@Autowired
+	ServiceCitiesRepository servicesCitiesRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -232,9 +235,32 @@ public class ClientService {
 		return clientOrganisationRepository.save(clientOrg);
 	}
 
-	public ClientOrganisation getOrganisationById(Integer id) {
+	public Object getOrganisationById(Integer id) {
 		// TODO Auto-generated method stub
-		return clientOrganisationRepository.findByClientOrganisationId(id);
+		ClientOrganisation clientOrganisation =  clientOrganisationRepository.findByClientOrganisationId(id);
+		
+		ObjectMapper oMapper = new ObjectMapper();
+        // object -> Map
+        Map<String, Object> map = oMapper.convertValue(clientOrganisation, Map.class);
+        if(clientOrganisation.getCity() != null ) {
+        	try {
+        		Integer city = Integer.parseInt(clientOrganisation.getCity());
+        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+        		map.put("city",serviceCity.getCityName());
+        	} catch(Exception exp) {
+        		map.put("city","");
+        	}
+        	
+        } else {
+        	map.put("city","");
+		}
+        String logo = getOrganisationLogo(id);
+        if(logo != null)
+        	map.put("organisationLogo", logo);
+        else
+        	map.put("organisationLogo", logo);
+        
+        return map;
 	}
 	
 	public String getOrganisationLogo(Integer id) {
@@ -347,7 +373,18 @@ public class ClientService {
 			ObjectMapper oMapper = new ObjectMapper();
 	        // object -> Map
 	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
-	        
+	        if(clientOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(clientOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
 	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
 	        map.put("amenities", amenitiesInfo);
 	        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());
@@ -381,7 +418,18 @@ public class ClientService {
 	        if(userWish != null) {
 	        	map.put("isPreferred", "true");
 	        }
-	        
+	        if(clientOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(clientOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
 	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
 	        map.put("amenities", amenitiesInfo);
 	        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());

@@ -129,7 +129,7 @@ public class VendorController {
 	}
 	
 	
-private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {
+	private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {
 		
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
