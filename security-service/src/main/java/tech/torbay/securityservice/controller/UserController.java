@@ -158,12 +158,25 @@ public class UserController {
 								// proceed option for client organisation registration
 								// or
 								// send registration mail again to proceed registration
+							
+							/*Hash Generation*/
+							HashMap<String, Object> userObj = new HashMap();
+							
+							userObj.put("email", userInfo.getUsername());
+							userObj.put("userId", userInfo.getUserId());
+							userObj.put("userType", userInfo.getUserType());
+							
+							String responseJsonString = Utils.ClasstoJsonString(userObj);
+							String encryptClientUserHash = SecurityAES.encrypt(responseJsonString);
+							
+							
 							HashMap<String, Object> list = new HashMap();
 							list.put("statusCode", APIStatusCode.ORGANISATION_NOT_FOUND.getValue());
 							list.put("statusMessage", "Success");
 							list.put("responseMessage", "Client Organisation Not registered for this User");
 							list.put("userDetails", clientInfo);
 							list.put("authToken", Token);
+							list.put("hash", encryptClientUserHash);
 							return new ResponseEntity<>(list, HttpStatus.OK);
 						}
 					} else {
@@ -203,12 +216,24 @@ public class UserController {
 							// or
 							// send registration mail again to proceed registration
 							
+							
+							/*Hash Generation*/
+							HashMap<String, Object> userObj = new HashMap();
+							
+							userObj.put("email", userInfo.getUsername());
+							userObj.put("userId", userInfo.getUserId());
+							userObj.put("userType", userInfo.getUserType());
+							
+							String responseJsonString = Utils.ClasstoJsonString(userObj);
+							String encryptVendorUserHash = SecurityAES.encrypt(responseJsonString);
+							
 							HashMap<String, Object> list = new HashMap();
 							list.put("statusCode", APIStatusCode.ORGANISATION_NOT_FOUND.getValue());
 							list.put("statusMessage", "Success");
 							list.put("responseMessage", "Vendor Organisation Not registered for this User");
 							list.put("userDetails", vendorUserInfo);
 							list.put("authToken", Token);
+							list.put("hash", encryptVendorUserHash);
 							return new ResponseEntity<>(list, HttpStatus.OK);
 						}
 						

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 import tech.torbay.securityservice.constants.Constants;
 
@@ -23,6 +24,7 @@ public class VendorOrganisation {
 	private Integer vendorOrganisationId = 0;
     private Integer userType = Constants.UserType.VENDOR.getValue();
     private String legalName = "";
+//    @NotBlank(message = "Company Name must not be blank")
     private String companyName = "";
     private String establishedDate = "";
     private Integer employeesCount = 0;
