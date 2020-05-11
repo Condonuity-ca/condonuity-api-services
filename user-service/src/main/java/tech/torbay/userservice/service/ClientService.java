@@ -341,7 +341,10 @@ public class ClientService {
 		// TODO Auto-generated method stub
 //		return clientOrganisationPaymentRepository.findAllByOrganisationId(orgId);
 		List paymentDetails = new ArrayList();
-		paymentDetails.add(new OrganisationPayment());
+		OrganisationPayment organisationPayment = new OrganisationPayment();
+		organisationPayment.setOrganisationId(orgId);
+		organisationPayment.setUserType(UserType.CLIENT.getValue());
+		paymentDetails.add(organisationPayment);
 		return paymentDetails;
 	}
 
@@ -626,7 +629,7 @@ public class ClientService {
 		return clientUserRepository.save(clientUser);
 	}
 
-	public Object getClientUserByIdAndClientOrgId(Integer id, Integer clientOrgId) {
+	public Map<String, Object> getClientUserByIdAndClientOrgId(Integer id, Integer clientOrgId) {
 		// TODO Auto-generated method stub
 		
 		ClientUser clientUser = clientUserRepository.findByClientId(id);
@@ -640,6 +643,7 @@ public class ClientService {
         clientObj.put("clientUserType", clientAssociate.getClientUserType());
         clientObj.put("userRole", clientAssociate.getUserRole());
         clientObj.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+        clientObj.put("clientOrganisationId", clientOrgId);
 
         return clientObj;
 	}
@@ -741,6 +745,7 @@ public class ClientService {
 				projectReview.put("isEditable", false);
 			}
 			
+			projectReview.put("id", projectReviewRating.getId());
 			projectReview.put("rating", projectReviewRating.getRating());
 			projectReview.put("reviewDate", projectReviewRating.getCreatedAt());
 			projectReview.put("reviewComments", projectReviewRating.getReviewComments());

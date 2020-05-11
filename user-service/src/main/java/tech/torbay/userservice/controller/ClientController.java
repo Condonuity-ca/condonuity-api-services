@@ -151,7 +151,7 @@ public class ClientController {
     )
 	@GetMapping("/client/user/{id}/{clientOrgId}")
 	public ResponseEntity<Object> getClientUserByIdAndOrgId(@PathVariable("id") Integer id, @PathVariable("clientOrgId") Integer clientOrgId) {
-    	Object client = clientService.getClientUserByIdAndClientOrgId(id, clientOrgId);
+    	Map<String, Object> client = clientService.getClientUserByIdAndClientOrgId(id, clientOrgId);
 		
 		System.out.println(client);
 		
@@ -397,11 +397,11 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Client Corporation , Payment and Billing Informations fetched successfully")
             }
     )
-	@GetMapping("/client/org/account/{orgId}")
-	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("orgId") Integer id) {
-		List<Object> clients = clientService.getAllClientsByOrganisation(id);
-		List<OrganisationPayment> paymentBillingDetails = clientService.getPaymentBillingDetails(id);
-		
+	@GetMapping("/client/org/account/{orgId}/{clientUserId}")
+	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("orgId") Integer clientOrgId, @PathVariable("clientUserId") Integer clientUserId) {
+		List<Object> clients = clientService.getAllClientsByOrganisation(clientOrgId);
+		List<OrganisationPayment> paymentBillingDetails = clientService.getPaymentBillingDetails(clientOrgId);
+		Map<String, Object> client = clientService.getClientUserByIdAndClientOrgId(clientUserId, clientOrgId);
 //		//IF admin get All other users details
 //		Clients allUsers = clientService;
 		HashMap<String, Object> list = new HashMap();
@@ -412,6 +412,9 @@ public class ClientController {
 			list.put("responseMessage", "Client Corporation Users, Payment and Billing Informations fetched successfully");
 			list.put("payment_billing_details",paymentBillingDetails);
 			list.put("users",clients);
+			list.put("clientOrganisationId",clientOrgId);
+			list.put("userRole",client.get("userRole"));
+			list.put("clientUserInfo",client);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {
