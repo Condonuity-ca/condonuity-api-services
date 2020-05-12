@@ -18,6 +18,8 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.TaskStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
+import tech.torbay.userservice.constants.Constants.VendorRatingCategory;
+import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.Amenities;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientAssociation;
@@ -499,6 +501,7 @@ public class ClientService {
 			
 //			return projectReviewRatingRepository.setReplyComments(projectReviewRating.getId(), projectReviewRating.getReplyComments());
 			ProjectReviewRating projectRR = projectReviewRatingRepository.save(projectRRObj);
+			Float overAllRatingCalculation =0.0f;
 			
 			// add category ratings
 			for(Map<String,Object> rating : vendorCategoryRatings) {
@@ -508,6 +511,25 @@ public class ClientService {
 				Integer ratingCategory = (Integer) rating.get("ratingCategory");
 				Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
 				
+				switch(ratingCategory) {
+					case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+						break;
+					}
+					case 2/*VendorRatingCategory.PROFESSIONALISM.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+						break;
+					}
+					case 3/*VendorRatingCategory.ACCURACY.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+						break;
+					}
+					case 4/*VendorRatingCategory.QUALITY.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+						break;
+					}
+				}
+				System.out.println("overAllRatingCalculation : "+overAllRatingCalculation);
 				vendorRating.setReviewRatingId(projectRR.getId());
 				vendorRating.setClientId(clientId);
 				vendorRating.setClientOrganisationId(clientOrganisationId);
@@ -532,6 +554,9 @@ public class ClientService {
 				}
 				
 			}
+			projectRR.setRating(String.valueOf(overAllRatingCalculation));
+			projectRR = projectReviewRatingRepository.save(projectRR);
+			System.out.println("overAllRatingCalculation : "+overAllRatingCalculation);
 		} catch(Exception exp) {
 			exp.printStackTrace();
 			return false;

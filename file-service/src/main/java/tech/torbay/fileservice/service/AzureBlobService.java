@@ -831,6 +831,12 @@ public class AzureBlobService {
 				map.put("fileType", clientRegistrationFiles.getFileType());
 				return map;
 			}
+			case "vendorregistrationfiles":{
+				VendorRegistrationFiles vendorRegistrationFiles =  vendorRegistrationFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", vendorRegistrationFiles.getFileName());
+				map.put("fileType", vendorRegistrationFiles.getFileType());
+			}
 			case "projectfiles":{
 				ProjectFiles projectFiles = projectFilesRepository.findByBlobName(blobName);
 				Map<String, String> map = new HashMap();
@@ -853,10 +859,21 @@ public class AzureBlobService {
 				return map;
 			}
 			case "organisationprofileimages":{
-				VendorOrganisationProfileImages vendorOrganisationProfileImages = vendorOrganisationProfileImagesRepository.findByBlobName(blobName);
 				Map<String, String> map = new HashMap();
-				map.put("fileName", vendorOrganisationProfileImages.getFileName());
-				map.put("fileType", vendorOrganisationProfileImages.getFileType());
+				VendorOrganisationProfileImages vendorOrganisationProfileImages = vendorOrganisationProfileImagesRepository.findByBlobName(blobName);
+				if (vendorOrganisationProfileImages != null) {
+					map.put("fileName", vendorOrganisationProfileImages.getFileName());
+					map.put("fileType", vendorOrganisationProfileImages.getFileType());
+				} else { 
+					ClientOrganisationProfileImages clientOrganisationProfileImages = clientOrganisationProfileImagesRepository.findByBlobName(blobName);
+					if (clientOrganisationProfileImages != null) {
+						map.put("fileName", clientOrganisationProfileImages.getFileName());
+						map.put("fileType", clientOrganisationProfileImages.getFileType());
+					} else {
+						map.put("fileName", "");
+						map.put("fileType", "");
+					}
+				}
 				return map;
 			}
 			case "internalthreadfiles":

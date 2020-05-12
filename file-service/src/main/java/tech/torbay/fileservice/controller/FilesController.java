@@ -238,56 +238,66 @@ public class FilesController {
 //			}
 	    	
 	    	CloudBlockBlob blobFile = azureBlobService.getBlobFile(containerName, blobName);
-	    	Map<String, String> fileInformation = azureBlobService.getFileInformation(containerName, blobName);
-	    	
-	    	String fileName = blobName;
-	    	// Try to determine file's content type
-	        String contentType = Files.getFileExtension(Files.getFileExtension(blobName));
-	         
-	    	if(fileInformation != null) {
-		    	fileName = fileInformation.get("fileName");
-		    	contentType = fileInformation.get("fileType");
+	    	if(blobFile != null) {
+	    		Map<String, String> fileInformation = azureBlobService.getFileInformation(containerName, blobName);
+		    	
+		    	String fileName = blobName;
+		    	// Try to determine file's content type
+		        String contentType = Files.getFileExtension(Files.getFileExtension(blobName));
+		         
+		    	if(fileInformation != null) {
+			    	fileName = fileInformation.get("fileName");
+			    	contentType = fileInformation.get("fileType");
+		    	}
+		    	
+		    	InputStream input =  blobFile.openInputStream();
+	            InputStreamReader inr = new InputStreamReader(input, "UTF-8");
+	            
+	            //case1
+//	            blobFile.download(
+//						new FileOutputStream(System.getProperty("user.home") + blobFile.getName()));
+	            //case2
+//	            byte[] imageBytes = new byte[blobFile.getStreamWriteSizeInBytes()];
+//	            input.read(imageBytes, 0, imageBytes.length);
+//	            input.close();
+//	            String imageStr = Base64.encodeBase64String(imageBytes);
+//	            return imageStr;
+	            
+		         // Fallback to the default content type if type could not be determined
+		         if (contentType == null) {
+		             contentType = "application/octet-stream";
+		         }
+	//
+	            ByteArrayResource resource = new ByteArrayResource(IOUtils.toByteArray(input));
+	            long contentLength = resource.contentLength();
+	            
+	            
+	            HttpHeaders header = new HttpHeaders();
+		        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
+//		        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+//		        header.add("Pragma", "no-cache");
+//		        header.add("Expires", "0");
+		        
+		        print("contentLength :"+contentLength);
+		        print("fileName :"+fileName);
+		        print("header :"+header.toString());
+		        print("contentType :"+contentType);
+		        print("MediaType.parseMediaType(contentType) :"+MediaType.parseMediaType(contentType));
+		        
+		        return ResponseEntity.ok()
+			             .contentLength(contentLength)
+			             .contentType(MediaType.parseMediaType(contentType))
+			             .headers(header)
+			             .body(resource);
+	    	} else {
+	    		Map<String, Object> map = new HashMap<>();
+	    		map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to download file");
+//				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+				return null;
 	    	}
 	    	
-	    	InputStream input =  blobFile.openInputStream();
-            InputStreamReader inr = new InputStreamReader(input, "UTF-8");
-            
-            //case1
-//            blobFile.download(
-//					new FileOutputStream(System.getProperty("user.home") + blobFile.getName()));
-            //case2
-//            byte[] imageBytes = new byte[blobFile.getStreamWriteSizeInBytes()];
-//            input.read(imageBytes, 0, imageBytes.length);
-//            input.close();
-//            String imageStr = Base64.encodeBase64String(imageBytes);
-//            return imageStr;
-            
-	         // Fallback to the default content type if type could not be determined
-	         if (contentType == null) {
-	             contentType = "application/octet-stream";
-	         }
-//
-            ByteArrayResource resource = new ByteArrayResource(IOUtils.toByteArray(input));
-            long contentLength = resource.contentLength();
-            
-            
-            HttpHeaders header = new HttpHeaders();
-	        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
-//	        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
-//	        header.add("Pragma", "no-cache");
-//	        header.add("Expires", "0");
-	        
-	        print("contentLength :"+contentLength);
-	        print("fileName :"+fileName);
-	        print("header :"+header.toString());
-	        print("contentType :"+contentType);
-	        print("MediaType.parseMediaType(contentType) :"+MediaType.parseMediaType(contentType));
-	        
-	        return ResponseEntity.ok()
-		             .contentLength(contentLength)
-		             .contentType(MediaType.parseMediaType(contentType))
-		             .headers(header)
-		             .body(resource);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

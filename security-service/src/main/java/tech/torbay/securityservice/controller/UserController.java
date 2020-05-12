@@ -175,7 +175,7 @@ public class UserController {
 							list.put("statusMessage", "Success");
 							list.put("responseMessage", "Client Organisation Not registered for this User");
 							list.put("userDetails", clientInfo);
-							list.put("authToken", Token);
+//							list.put("authToken", Token);
 							list.put("hash", encryptClientUserHash);
 							return new ResponseEntity<>(list, HttpStatus.OK);
 						}
@@ -232,7 +232,7 @@ public class UserController {
 							list.put("statusMessage", "Success");
 							list.put("responseMessage", "Vendor Organisation Not registered for this User");
 							list.put("userDetails", vendorUserInfo);
-							list.put("authToken", Token);
+//							list.put("authToken", Token);
 							list.put("hash", encryptVendorUserHash);
 							return new ResponseEntity<>(list, HttpStatus.OK);
 						}
