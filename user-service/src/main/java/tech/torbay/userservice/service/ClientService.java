@@ -776,8 +776,38 @@ public class ClientService {
 			projectReview.put("reviewComments", projectReviewRating.getReviewComments());
 			projectReview.put("replyComments", projectReviewRating.getReplyComments());
 			projectReview.put("vendorOrganisation", vendorOrganisation);
-			projectReview.put("vendorCategoryRating", getVendorCategoryRatings(projectReviewRating.getId()));
 			
+			List<Map<String, Object>> vendorCategoryRatings = getVendorCategoryRatings(projectReviewRating.getId());
+			projectReview.put("vendorCategoryRating", vendorCategoryRatings);
+			
+			Float overAllRatingCalculation=0.0f;
+			for(Map<String,Object> rating : vendorCategoryRatings) {
+				
+				VendorCategoryRatings vendorRating = new VendorCategoryRatings();
+				
+				Integer ratingCategory = (Integer) rating.get("ratingCategory");
+				Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
+				
+				switch(ratingCategory) {
+					case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+						break;
+					}
+					case 2/*VendorRatingCategory.PROFESSIONALISM.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+						break;
+					}
+					case 3/*VendorRatingCategory.ACCURACY.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+						break;
+					}
+					case 4/*VendorRatingCategory.QUALITY.getValue()*/ :{
+						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+						break;
+					}
+				}
+			}
+			projectReview.put("rating", overAllRatingCalculation);
 			Integer projectId = projectReviewRating.getProjectId();
 			if(projectId != null &&  projectId > 0) {
 				Project project = projectRepository.findByProjectId(projectReviewRating.getProjectId());

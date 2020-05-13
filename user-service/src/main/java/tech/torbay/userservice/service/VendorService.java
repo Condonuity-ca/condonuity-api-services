@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
+import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.ServiceCities;
@@ -224,7 +225,36 @@ public class VendorService {
 					 mappedObj.put("vendorName","");
 				 }
 				 mappedObj.put("categoryRating",getDetailedRatingForReview(vendorReviewsForProject.getId()));
-				 
+				 List<Map<String, Object>> vendorCategoryRatings = getDetailedRatingForReview(vendorReviewsForProject.getId());
+					
+					Float overAllRatingCalculation=0.0f;
+					for(Map<String,Object> rating : vendorCategoryRatings) {
+						
+						VendorCategoryRatings vendorRating = new VendorCategoryRatings();
+						
+						Integer ratingCategory = (Integer) rating.get("ratingCategory");
+						Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
+						
+						switch(ratingCategory) {
+							case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+								break;
+							}
+							case 2/*VendorRatingCategory.PROFESSIONALISM.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+								break;
+							}
+							case 3/*VendorRatingCategory.ACCURACY.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+								break;
+							}
+							case 4/*VendorRatingCategory.QUALITY.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+								break;
+							}
+						}
+					}
+					mappedObj.put("rating", overAllRatingCalculation);
 				 vendorAllReviews.add(mappedObj);
 			 }
 			 
@@ -235,7 +265,7 @@ public class VendorService {
 		 }
 	}
 
-	private Object getDetailedRatingForReview(Integer reviewRatingId) {
+	private List<Map<String,Object>> getDetailedRatingForReview(Integer reviewRatingId) {
 		// TODO Auto-generated method stub4
 		List<VendorCategoryRatings> vendorCategoryRatings = vendorCategoryRatingsRepository.findAllByReviewRatingId(reviewRatingId);
 		
@@ -663,12 +693,25 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		try {
 			
-			List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
+//			List<Integer> ids = vendorTags.stream().map(VendorTags::getId).collect(Collectors.toList());	
+//			
+//	        String tags = predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(","));
+//	        
+//	        return tags;
+			List<Integer> ids = vendorTags.stream().map(VendorTags::getTagId).collect(Collectors.toList());	
 			
-	        String tags = predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(","));
 	        
-	        return tags;
+	        List<Object[]> tags = predefinedTagsRepository.findTagsByTagId(ids);
+			List<String> allTags = new ArrayList();
 			
+			tags.stream().forEach((record) -> {
+				Integer tagId = (Integer) record[0];
+				String tagName = (String) record[1];
+		        
+		        allTags.add(tagName);
+		        });
+			String tagsStr = String.join(",", allTags);
+			return tagsStr;
 		} catch(Exception exp){
 			exp.printStackTrace();
 			return null;
