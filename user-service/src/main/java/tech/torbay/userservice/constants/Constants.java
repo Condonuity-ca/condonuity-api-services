@@ -233,6 +233,33 @@ public class Constants {
 	    }
 	}
 	
+	public enum TaskUsers {
+	    OTHER_USER_ONLY(1),
+	    CLIENT_USER_ONLY(2),
+	    BOTH_USER_AND_NONUSER(3);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private TaskUsers(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (TaskUsers pageType : TaskUsers.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static TaskUsers valueOf(int pageType) {
+	        return (TaskUsers) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	public enum PortfolioSortBy {
 	    ASC(1),
 	    DESC(2),

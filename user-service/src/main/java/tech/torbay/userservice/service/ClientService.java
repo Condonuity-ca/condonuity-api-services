@@ -1008,20 +1008,48 @@ public class ClientService {
 			
 			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			ClientTask clientTask = mapper.convertValue(clientTaskData.get("clientTask"), ClientTask.class);
-			String assignee = (String) clientTaskData.get("assignee");
+			List<Map<String, Object>> assignee = mapper.convertValue(clientTaskData.get("assignee"), List.class);
 			
 			clientTask.setModifiedBy(clientTask.getCreatedBy());
 			clientTask.setStatus(UserAccountStatus.ACTIVE.getValue());
-			clientTask.setAssignedTo(assignee);//extra data
+//			clientTask.setAssignedTo(assignee);//extra data
 			ClientTask clientTaskObj = clientTaskRepository.save(clientTask); 
 			
-			if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+			List<String> assigneeIds = new ArrayList();
+			List<String> assigneeOthersNames = new ArrayList();
+			for(Map<String, Object> assignUser: assignee) {
+				String clientUserId = String.valueOf(assignUser.get("clientUserId"));
+				String clientUserName = (String) assignUser.get("clientUserName");
+				
+				if(clientUserId != null && clientUserId.trim().length() > 0 ){
+					if (Integer.parseInt(clientUserId) > 0) {
+						assigneeIds.add(clientUserId);
+					} else {
+						assigneeOthersNames.add(clientUserName);
+					}
+				} else {
+					assigneeOthersNames.add(clientUserName);
+				}
+			}
+			Integer isOther = 0;
+			if(assigneeOthersNames.size() > 0 && assigneeIds.size() > 0){
+				isOther = Constants.TaskUsers.BOTH_USER_AND_NONUSER.getValue();
+			} else if(assigneeOthersNames.size() > 0){
+				isOther = Constants.TaskUsers.OTHER_USER_ONLY.getValue();
+			} else if(assigneeIds.size() > 0){
+				isOther = Constants.TaskUsers.CLIENT_USER_ONLY.getValue();
+			}
+			clientTask.setIsOther(isOther);
+			clientTask.setOthersName(String.join(",",assigneeOthersNames));
+			clientTask.setAssignedTo(String.join(",", assigneeIds));//extra data
+			
+			
+			if(clientTask.getIsOther() == Constants.TaskUsers.OTHER_USER_ONLY.getValue()) {
 				// don't save assignee Ids records
-			} else {
+			} else if (clientTask.getIsOther() == Constants.TaskUsers.CLIENT_USER_ONLY.getValue() || clientTask.getIsOther() == Constants.TaskUsers.BOTH_USER_AND_NONUSER.getValue()){
 				// check and store client Ids assigned to
-				if(assignee != null && assignee.length() > 0) {
-					List<String> clientUsers = Arrays.asList(assignee.split(","));
-					for(String clientUser: clientUsers) {
+				if(assigneeIds != null && assigneeIds.size() > 0) {
+					for(String clientUser: assigneeIds) {
 						ClientUserTasks clientUserTask = new ClientUserTasks();
 						clientUserTask.setClientId(Integer.parseInt(clientUser));
 						clientUserTask.setTaskId(clientTaskObj.getId());
@@ -1054,15 +1082,28 @@ public class ClientService {
 			 for(ClientTask clientTask : clientTasks) {
 					ObjectMapper oMapper = new ObjectMapper();
 			        Map<String, Object> map = oMapper.convertValue(clientTask, Map.class);
-			        
-			        if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+			        List<Map<String, Object>> assignedClientUsers =new ArrayList();
+			        if(clientTask.getIsOther() == Constants.TaskUsers.BOTH_USER_AND_NONUSER.getValue() || clientTask.getIsOther() == Constants.TaskUsers.OTHER_USER_ONLY.getValue()) {
 			        	// only other name available
-			        	map.put("assignedTo", new ArrayList());
-			        } else if(clientTask.getIsOther() == Constants.Availability.NOT_AVAILABLE.getValue()) {			        	
-			        	map.put("assignedTo", getClientUsers(clientTask.getId()));
-//			        	map.put("assignee",getClientUsers(clientTask.getId()));
+//			        	map.put("assignedTo", new ArrayList());
+			        	String othersNames = clientTask.getOthersName();
+			        	List<String> othersUsers = Arrays.asList(othersNames.split(","));
+			        	List<Map<String, Object>> otherClientUsers =new ArrayList();
+			        	for(String othersUser: othersUsers) {
+							
+							Map<String, Object> other = new HashMap();
+							other.put("clientUserId", "");
+							other.put("clientUserName", othersUser);
+							otherClientUsers.add(other);
+						}
+			        	assignedClientUsers.addAll(otherClientUsers);
+			        } //need to check both cases
+			        if(clientTask.getIsOther() == Constants.TaskUsers.BOTH_USER_AND_NONUSER.getValue() || clientTask.getIsOther() == Constants.TaskUsers.CLIENT_USER_ONLY.getValue()) {			        	
+//			        	map.put("assignedTo", getClientUsers(clientTask.getId()));
+			        	assignedClientUsers.addAll(getClientUsers(clientTask.getId()));
 			        }
 			        
+			        map.put("assignedTo", assignedClientUsers);
 			        ClientUser createdBy = clientUserRepository.findByClientId(clientTask.getCreatedBy());
 			        ClientUser modifiedBy = clientUserRepository.findByClientId(clientTask.getModifiedBy());
 			        
@@ -1070,7 +1111,8 @@ public class ClientService {
 			        map.put("modifiedByUser",modifiedBy.getFirstName()+" "+modifiedBy.getLastName());
 			        
 			        map.put("comments",getTaskComments(clientTask.getId()));
-			        
+			        map.remove("isOther");
+			        map.remove("othersName");
 			        allClientTasks.add(map);
 				}
 			 
@@ -1138,7 +1180,8 @@ public class ClientService {
 			
 			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			ClientTask clientTask = mapper.convertValue(clientTaskData.get("clientTask"), ClientTask.class);
-			String assignee = (String) clientTaskData.get("assignee");
+//			String assignee = (String) clientTaskData.get("assignee");
+			List<Map<String, Object>> assignee = mapper.convertValue(clientTaskData.get("assignee"), List.class);
 			
 			ClientTask clientTaskObj = clientTaskRepository.findOneById(clientTask.getId());
 			
@@ -1146,9 +1189,36 @@ public class ClientService {
 			clientTaskObj.setPriority(clientTask.getPriority());
 			clientTaskObj.setTaskDescription(clientTask.getTaskDescription());
 			clientTaskObj.setTaskStatus(clientTask.getTaskStatus());
-			clientTaskObj.setIsOther(clientTask.getIsOther());
-			clientTaskObj.setOthersName(clientTask.getOthersName());
-			clientTaskObj.setAssignedTo(assignee);//extra data
+//			clientTaskObj.setIsOther(clientTask.getIsOther());
+//			clientTaskObj.setOthersName(clientTask.getOthersName());
+//			clientTaskObj.setAssignedTo(assignee);//extra data
+			List<String> assigneeIds = new ArrayList();
+			List<String> assigneeOthersNames = new ArrayList();
+			for(Map<String, Object> assignUser: assignee) {
+				String clientUserId = String.valueOf(assignUser.get("clientUserId"));
+				String clientUserName = (String) assignUser.get("clientUserName");
+				
+				if(clientUserId != null && clientUserId.trim().length() > 0 ){
+					if (Integer.parseInt(clientUserId) > 0) {
+						assigneeIds.add(clientUserId);
+					} else {
+						assigneeOthersNames.add(clientUserName);
+					}
+				} else {
+					assigneeOthersNames.add(clientUserName);
+				}
+			}
+			Integer isOther = 0;
+			if(assigneeOthersNames.size() > 0 && assigneeIds.size() > 0){
+				isOther = Constants.TaskUsers.BOTH_USER_AND_NONUSER.getValue();
+			} else if(assigneeOthersNames.size() > 0){
+				isOther = Constants.TaskUsers.OTHER_USER_ONLY.getValue();
+			} else if(assigneeIds.size() > 0){
+				isOther = Constants.TaskUsers.CLIENT_USER_ONLY.getValue();
+			}
+			clientTaskObj.setIsOther(isOther);
+			clientTaskObj.setOthersName(String.join(",",assigneeOthersNames));
+			clientTaskObj.setAssignedTo(String.join(",", assigneeIds));//extra data
 			
 			if(clientTask.getTaskStatus() == TaskStatus.CLOSED.getValue()) {
 				clientTaskObj.setClosureDate(Utils.getDateTime());
@@ -1156,17 +1226,17 @@ public class ClientService {
 			
 			clientTaskObj = clientTaskRepository.save(clientTaskObj); 
 			
-			if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+			if(clientTask.getIsOther() == Constants.TaskUsers.OTHER_USER_ONLY.getValue()) {
 				// don't save assignee Ids records
 				clientUserTasksRepository.deleteByTaskId(clientTaskObj.getId());
 			} else {
 				// check and store client Ids assigned to
-				if(assignee != null && assignee.length() > 0) {
+				if(assigneeIds != null && assigneeIds.size() > 0) {
 					// delete old assignee and update new
 					clientUserTasksRepository.deleteByTaskId(clientTaskObj.getId());
 										
-					List<String> clientUsers = Arrays.asList(assignee.split(","));
-					for(String clientUser: clientUsers) {
+//					List<String> clientUsers = Arrays.asList(assignee.split(","));
+					for(String clientUser: assigneeIds) {
 						ClientUserTasks clientUserTask = new ClientUserTasks();
 						clientUserTask.setClientId(Integer.parseInt(clientUser));
 						clientUserTask.setTaskId(clientTaskObj.getId());
