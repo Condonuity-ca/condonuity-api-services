@@ -97,6 +97,7 @@ public class Constants {
 	    VENDOR_REGISTRATION_FILES("vendorregistrationfiles"),
 	    PROJECT_FILES("projectfiles"),
 	    BID_FILES("bidfiles"),
+	    PROJECT_AWARD_FILES("projectawardfiles"),
 	    PROFILE_IMAGES("profileimages"),
 	    ORGANISATION_PROFILE_IMAGES("organisationprofileimages"),
 	    MESSAGE_INTERNAL_THREAD_FILES("internalthreadfiles"),

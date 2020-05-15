@@ -30,6 +30,7 @@ import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.StatusCode;
 import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
+import tech.torbay.projectservice.entity.ProjectAwards;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
@@ -527,6 +528,7 @@ public class ProjectController {
 		Map<String,Object> project = projectService.findByProjectId(id);
 		List<Map<String,Object>> projectAllBids = projectService.getAllBidsByProjectId(id);
 		List<ProjectQuestionAnswer> projectAllQA = projectService.getAllQAByProjectId(id);
+		Map<String,Object> awardedBid = projectService.getAwardedBid(id);
 		
 		HashMap<String, Object> list = new HashMap();
 		
@@ -537,6 +539,10 @@ public class ProjectController {
 			list.put("project", project);
 			list.put("allBids",projectAllBids);
 			list.put("questionAnswers",projectAllQA);
+			if(awardedBid != null) {
+				list.put("awardedBid",awardedBid);
+			}
+			
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {
@@ -867,4 +873,43 @@ public class ProjectController {
 		// TODO Auto-generated method stub
 		projectService.sendReviewRatingNotification(projectReviewRating, notificationType.getValue());
 	}
+	
+	@ApiOperation(value = "Project Award decision implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Awarded successfully")
+            }
+    )
+	@PostMapping("/projects/award")
+	public ResponseEntity<Object> postProjectReview(@RequestBody ProjectAwards projectAwards) {
+		ProjectAwards projectAwardsObj = projectService.projectAwarding(projectAwards);
+        if (projectAwardsObj == null) {
+     
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Failed",
+        			"Failed to Awarding Project");        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+		/*
+		 * HttpHeaders headers = new HttpHeaders();
+		 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
+		 * organisation.getOrganisationId()).toUri());
+		 */
+        	HashMap<String, Object> list = new HashMap();
+        	list.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Project Awarded successfully");
+			list.put("projectAwardId", projectAwardsObj.getId());
+			
+        	SendProjectAwardNotification(projectAwardsObj, NotificationType.BID_WON_LOSE);
+        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+        }
+	}
+	
+    private void SendProjectAwardNotification(ProjectAwards projectAwardsObj, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		projectService.sendProjectAwardNotification(projectAwardsObj, notificationType.getValue());
+	}
+        
 } 

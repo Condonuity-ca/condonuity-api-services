@@ -1,6 +1,5 @@
 package tech.torbay.projectservice.service;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
-import tech.torbay.projectservice.constants.Constants.NotificationType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.UserType;
 import tech.torbay.projectservice.entity.BidFiles;
@@ -27,20 +25,20 @@ import tech.torbay.projectservice.entity.ClientUser;
 import tech.torbay.projectservice.entity.Notification;
 import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
+import tech.torbay.projectservice.entity.ProjectAwards;
 import tech.torbay.projectservice.entity.ProjectFiles;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
-import tech.torbay.projectservice.entity.VendorUser;
-import tech.torbay.projectservice.exception.BadRequestException;
-import tech.torbay.projectservice.exception.ResourceNotFoundException;
 import tech.torbay.projectservice.repository.BidFilesRepository;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.ClientUserRepository;
 import tech.torbay.projectservice.repository.NotificationRepository;
 import tech.torbay.projectservice.repository.PredefinedTagsRepository;
+import tech.torbay.projectservice.repository.ProjectAwardFilesRepository;
+import tech.torbay.projectservice.repository.ProjectAwardsRepository;
 import tech.torbay.projectservice.repository.ProjectFilesRepository;
 import tech.torbay.projectservice.repository.ProjectProductsRepository;
 import tech.torbay.projectservice.repository.ProjectQARepository;
@@ -85,6 +83,10 @@ public class ProjectService {
 	BidFilesRepository bidFilesRepository;
 	@Autowired
 	NotificationRepository notificationRepository;
+	@Autowired
+	ProjectAwardsRepository projectAwardsRepository;
+	@Autowired
+	ProjectAwardFilesRepository projectAwardFilesRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -963,6 +965,67 @@ public class ProjectService {
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
+	}
+
+	public ProjectAwards projectAwarding(ProjectAwards projectAwards) {
+		// TODO Auto-generated method stub
+		ProjectAwards projectAwardsObj = projectAwardsRepository.findByProjectId(projectAwards.getProjectId());
+		if(projectAwardsObj != null) {
+			projectAwardsObj.setAwardedBidId(projectAwards.getAwardedBidId());
+			projectAwardsObj.setVendorOrganisationId(projectAwards.getVendorOrganisationId());
+			projectAwardsObj.setAwardDate(projectAwards.getAwardDate());
+			projectAwardsObj.setTotalPrice(projectAwards.getTotalPrice());
+			projectAwardsObj.setComments(projectAwards.getComments());
+			projectAwardsObj.setDuration(projectAwards.getDuration());
+			projectAwardsObj.setStartDate(projectAwards.getStartDate());
+			
+			projectAwardsRepository.save(projectAwardsObj);
+		} else {
+			projectAwardsObj = projectAwardsRepository.save(projectAwards);
+		}
+		
+		VendorBid vendorBid = vendorBidRepository.findOneById(projectAwards.getAwardedBidId());
+		vendorBid.setBidStatus(Constants.BidPostType.AWARDED.getValue());
+		vendorBidRepository.save(vendorBid);
+		
+		Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
+		project.setAwardedBidId(projectAwards.getAwardedBidId());
+		projectRepository.save(project);
+		
+		return projectAwardsObj;
+	}
+
+	public void sendProjectAwardNotification(ProjectAwards projectAwardsObj, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Awarded";
+		String subContent = " Bid Awarded";
+		notification.setUserType(UserType.VENDOR.getValue());
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(projectAwardsObj.getId());
+		
+		notification.setUserId(0);
+		
+		notification.setOrganisationId(projectAwardsObj.getVendorOrganisationId());
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+projectRepository.findOneByProjectId(projectAwardsObj.getProjectId()).getProjectName()+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
+
+	public Map<String,Object> getAwardedBid(Integer projectId) {
+		// TODO Auto-generated method stub
+		ProjectAwards projectAwards = projectAwardsRepository.findByProjectId(projectId);
+		 Map<String,Object> map = new HashMap();
+		if(projectAwards !=null) {
+			VendorBid vendorBid = vendorBidRepository.findOneById(projectAwards.getAwardedBidId());
+			 map.put("bid",vendorBid);
+			 map.put("bidFiles",projectAwardFilesRepository.findAllByProjectAwardId(projectAwards.getId()));
+		}
+		 
+		 return map;
 	}
 
 }

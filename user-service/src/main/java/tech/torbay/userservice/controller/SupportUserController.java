@@ -48,7 +48,6 @@ public class SupportUserController {
 //		
 //		Integer or = Integer.parseInt(String.valueOf(requestData.get("userId")));
 //		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
-//		String password = String.valueOf(requestData.get("password"));
 //		
 //		
 //		if (supportUserService.resetPassword(userId, userType, password) == null) {

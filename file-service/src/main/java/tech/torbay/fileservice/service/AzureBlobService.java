@@ -31,6 +31,7 @@ import tech.torbay.fileservice.entity.BidFiles;
 import tech.torbay.fileservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.fileservice.entity.ClientRegistrationFiles;
 import tech.torbay.fileservice.entity.CommentFiles;
+import tech.torbay.fileservice.entity.ProjectAwardFiles;
 import tech.torbay.fileservice.entity.ProjectFiles;
 import tech.torbay.fileservice.entity.ThreadFiles;
 import tech.torbay.fileservice.entity.UserProfileImages;
@@ -40,6 +41,7 @@ import tech.torbay.fileservice.repository.BidFilesRepository;
 import tech.torbay.fileservice.repository.ClientOrganisationProfileImagesRepository;
 import tech.torbay.fileservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.fileservice.repository.CommentFilesRepository;
+import tech.torbay.fileservice.repository.ProjectAwardFilesRepository;
 import tech.torbay.fileservice.repository.ProjectFilesRepository;
 import tech.torbay.fileservice.repository.ThreadFilesRepository;
 import tech.torbay.fileservice.repository.UserProfileImagesRepository;
@@ -72,6 +74,8 @@ public class AzureBlobService {
 	ClientOrganisationProfileImagesRepository clientOrganisationProfileImagesRepository;
 	@Autowired
 	VendorRegistrationFilesRepository vendorRegistrationFilesRepository;
+	@Autowired
+	ProjectAwardFilesRepository projectAwardFilesRepository;
 
 	public boolean createContainer(String containerName) {
 
@@ -892,9 +896,72 @@ public class AzureBlobService {
 				map.put("fileType", commentFiles.getFileType());
 				return map;
 			}
+			case "projectawardfiles":{
+				ProjectAwardFiles projectAwardFiles = projectAwardFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", projectAwardFiles.getFileName());
+				map.put("fileType", projectAwardFiles.getFileType());
+				return map;
+			}
 		}
 		return null;
 		
-		
 	}
+	
+	// multiple file upload
+		public List<URI> uploadProjectAwardFiles(Integer projectAwardId, String containerName, MultipartFile[] multipartFiles) {
+			// TODO Auto-generated method stub
+			try {
+				List<URI> uris = new ArrayList();
+				
+				for(MultipartFile multipartFile : multipartFiles) {
+					uris.add(uploadProjectAwardFile(projectAwardId, containerName, multipartFile));
+				}
+				
+				
+				return uris;
+			} catch(Exception exp) {
+				exp.printStackTrace();
+			}
+			
+			return null;
+		}
+		
+		// single file upload
+		public URI uploadProjectAwardFile(Integer projectAwardId, String containerName, MultipartFile multipartFile) {
+			// TODO Auto-generated method stub
+			try {
+				createContainer(containerName);
+				UUID uuid = UUID.randomUUID();
+				String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+				String blobName = uuid.toString()+"."+extension;
+
+				URI uri = uploads(containerName, multipartFile, blobName);
+				
+				String fileName = multipartFile.getOriginalFilename();
+				String fileType = multipartFile.getContentType();
+				String fileSize = String.valueOf(multipartFile.getSize());
+				
+				ProjectAwardFiles projectAwardFiles = new ProjectAwardFiles();
+				projectAwardFiles.setProjectAwardId(projectAwardId);
+				projectAwardFiles.setContainerName(containerName);
+				projectAwardFiles.setBlobName(blobName);
+				projectAwardFiles.setFileName(fileName);
+				projectAwardFiles.setFileType(fileType);
+				projectAwardFiles.setFileSize(fileSize);
+				projectAwardFiles.setFileUrl(uri.toString());
+				
+				ProjectAwardFiles projectAwardFilesObj = projectAwardFilesRepository.save(projectAwardFiles);
+				if(projectAwardFilesObj != null) {
+					return uri;
+				} else {
+					return null;
+				}
+				
+			} catch(Exception exp) {
+				exp.printStackTrace();
+			}
+			
+			return null;
+		}
 }
