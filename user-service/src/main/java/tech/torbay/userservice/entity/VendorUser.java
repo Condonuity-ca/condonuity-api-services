@@ -28,6 +28,7 @@ public class VendorUser {
     private String email = "";
 	private Integer accountStatus = 0;
 	private Integer accountVerificationStatus = 0;
+	private Integer deleteStatus = 0;
     
 	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)

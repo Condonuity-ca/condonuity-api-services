@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.constants.Constants;
+import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
@@ -69,6 +70,7 @@ public class ClientService {
 		clientAssociation.setUserRole(userRole);
 		clientAssociation.setAccountVerificationStatus(userVerificationStatus/* Constants.VerificationStatus.NOT_VERIFIED.getValue() */);
 		clientAssociation.setUserAccountStatus(userAccountStatus/* Constants.UserAccountStatus.ACTIVE.getValue() */);
+		clientAssociation.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue()/* Constants.UserAccountStatus.ACTIVE.getValue() */);
 		
 		//2.1.3
 		if(clientAssociationRepository.save(clientAssociation) != null) {
@@ -149,6 +151,8 @@ public class ClientService {
 		
 
 		try {
+			clientOrganisation.setActiveStatus(DeleteStatus.ACTIVE.getValue());
+			clientOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
 			clientOrganisation = clientOrganisationRepository.save(clientOrganisation);
 			
 			if(clientOrganisation != null) {
@@ -266,11 +270,24 @@ public class ClientService {
 		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
 		
 		for (ClientAssociation clientAssociation : clientAssociations) {
-			if(clientAssociation.getUserAccountStatus() == Constants.UserAccountStatus.ACTIVE.getValue()) {
+			if(clientAssociation.getUserAccountStatus() == Constants.UserAccountStatus.ACTIVE.getValue() ) {
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	public boolean checkIsClientAccountActive(Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		
+		for (ClientAssociation clientAssociation : clientAssociations) {
+			if(clientAssociation.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public boolean checkOrganisationNameAvailable(String organisationName) {

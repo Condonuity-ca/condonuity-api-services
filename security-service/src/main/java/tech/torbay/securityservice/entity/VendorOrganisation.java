@@ -3,13 +3,20 @@ package tech.torbay.securityservice.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import tech.torbay.securityservice.constants.Constants;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 
 @Entity
 @Table(name = "vendor_organisation")
@@ -44,8 +51,26 @@ public class VendorOrganisation {
     private String province = "";
     private String postalCode = "";
     private String countryCode = "";
-	
-    @Basic(optional = false)
+    private Integer activeStatus = DeleteStatus.NOT_AVAILABLE.getValue();
+    private Integer deleteStatus = DeleteStatus.NOT_AVAILABLE.getValue();
+    
+    public Integer getActiveStatus() {
+		return activeStatus;
+	}
+
+	public void setActiveStatus(Integer activeStatus) {
+		this.activeStatus = activeStatus;
+	}
+
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+
+	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
     
@@ -261,13 +286,13 @@ public class VendorOrganisation {
 	public String toString() {
 		return "VendorOrganisation [vendorOrganisationId=" + vendorOrganisationId + ", userType=" + userType
 				+ ", legalName=" + legalName + ", companyName=" + companyName + ", establishedDate=" + establishedDate
-				+ ", employeesCount=" + employeesCount + ", annualRevenue="
-				+ annualRevenue + ", description=" + description + ", contactPerson=" + contactPerson
-				+ ", contactPersonEmail=" + contactPersonEmail + ", contactPersonPhone=" + contactPersonPhone
-				+ ", email=" + email + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber + ", website="
-				+ website + ", expertiseCategory=" + expertiseCategory + ", logoName=" + logoName + ", address="
-				+ address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
-				+ ", countryCode=" + countryCode + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
+				+ ", employeesCount=" + employeesCount + ", annualRevenue=" + annualRevenue + ", description="
+				+ description + ", contactPerson=" + contactPerson + ", contactPersonEmail=" + contactPersonEmail
+				+ ", contactPersonPhone=" + contactPersonPhone + ", email=" + email + ", phoneNumber=" + phoneNumber
+				+ ", faxNumber=" + faxNumber + ", website=" + website + ", expertiseCategory=" + expertiseCategory
+				+ ", logoName=" + logoName + ", address=" + address + ", city=" + city + ", province=" + province
+				+ ", postalCode=" + postalCode + ", countryCode=" + countryCode + ", activeStatus=" + activeStatus
+				+ ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
 				+ ", vendorTags=" + vendorTags + "]";
 	}
 

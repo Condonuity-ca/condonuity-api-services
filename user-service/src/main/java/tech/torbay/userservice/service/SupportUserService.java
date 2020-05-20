@@ -27,12 +27,15 @@ import tech.torbay.userservice.entity.ExternalMessageComment;
 import tech.torbay.userservice.repository.VendorBidRepository;
 import tech.torbay.userservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.userservice.Utils.Utils;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
 import tech.torbay.userservice.constants.Constants.ThreadType;
+import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.entity.CommentFiles;
 import tech.torbay.userservice.entity.InternalMessage;
 import tech.torbay.userservice.entity.InternalMessageComment;
 import tech.torbay.userservice.entity.ThreadFiles;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.entity.ClientAssociation;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
@@ -51,6 +54,7 @@ import tech.torbay.userservice.entity.VendorProjectInterests;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
+import tech.torbay.userservice.repository.ClientAssociationRepository;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
@@ -74,12 +78,83 @@ public class SupportUserService {
 	
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
 	VendorTagsRepository vendorTagsRepository;
 	@Autowired
 	ClientOrganisationRepository clientOrganisationRepository;
 	@Autowired
+	VendorOrganisationRepository vendorOrganisationRepository;
+	@Autowired
 	ClientUserRepository clientUserRepository;
 	@Autowired
 	VendorUserRepository vendorUserRepository;
+	@Autowired
+	ClientAssociationRepository clientAssociationRepository;
+	
+	
+	public boolean updateOrganisationActivationStatus(Integer organisationId, Integer userType, Integer activeStatus, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		
+		if(userType == UserType.CLIENT.getValue()) {
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(organisationId);
+			switch(activeStatus) {
+				case 1:{//DeleteStatus.ACTIVE.getValue()
+					clientOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
+					break;
+				}
+				case 2:{//DeleteStatus.INACTIVE.getValue()
+					clientOrganisation.setDeleteStatus(DeleteStatus.INACTIVE.getValue());
+					break;
+				}
+			}
+			
+			ClientOrganisation ClientOrganisationObj = clientOrganisationRepository.save(clientOrganisation);
+			if(ClientOrganisationObj != null) {
+				clientAssociationRepository.setDeleteStatusByClientOrganisationId(activeStatus, organisationId);
+				return true;
+			}
+		} else if(userType == UserType.VENDOR.getValue()) {
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(organisationId);
+			switch(activeStatus) {
+				case 1:{//DeleteStatus.ACTIVE.getValue()
+					vendorOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
+					break;
+				}
+				case 2:{//DeleteStatus.INACTIVE.getValue()
+					vendorOrganisation.setDeleteStatus(DeleteStatus.INACTIVE.getValue());
+					break;
+				}
+			}
+			
+			VendorOrganisation vendorOrganisationObj = vendorOrganisationRepository.save(vendorOrganisation);
+			
+			if(vendorOrganisationObj != null) {
+				
+				vendorUserRepository.setDeleteStatusByVendorOrganisationId(activeStatus, organisationId);
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	public boolean updateUserActivationStatus(Integer userId, Integer organisationId, Integer userType,
+			Integer activeStatus, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		if(userType == UserType.CLIENT.getValue()) {
+			int isUpdated = clientAssociationRepository.setDeleteStatusByClientIdAndClientOrganisationId(activeStatus, userId, organisationId);
+						
+			if(isUpdated > 0) {
+				return true;
+			}
+		} else if(userType == UserType.VENDOR.getValue()) {
+			int isUpdated = vendorUserRepository.setDeleteStatusByVendorIdAndVendorOrganisationId(activeStatus, userId, organisationId);
+			
+			if(isUpdated > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 }

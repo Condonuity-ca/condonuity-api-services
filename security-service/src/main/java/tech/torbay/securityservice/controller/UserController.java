@@ -48,6 +48,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
@@ -135,14 +136,23 @@ public class UserController {
 						if(clientService.getAllOrganisationsForClientUser(clientInfo.getClientId()) > 0) {
 								
 								if(clientService.checkIsClientActiveAtlestOneAccount(clientInfo.getClientId())) {
-									HashMap<String, Object> list = new HashMap();
-									list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-									list.put("statusMessage", "Success");
-									list.put("responseMessage", "Client details fetched successfully");
-									list.put("userDetails", clientInfo);
-									list.put("authToken", Token);
+									if(clientService.checkIsClientAccountActive(clientInfo.getClientId())) {
+										HashMap<String, Object> list = new HashMap();
+										list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+										list.put("statusMessage", "Success");
+										list.put("responseMessage", "Client details fetched successfully");
+										list.put("userDetails", clientInfo);
+										list.put("authToken", Token);
+										
+										return new ResponseEntity<>(list, HttpStatus.OK);
+									} else {
+										ResponseMessage responseMessage = new ResponseMessage(
+												APIStatusCode.INACTIVE_USER.getValue(),
+								        		"Failed",
+								        		"User Account Deleted");
+										return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+									}
 									
-									return new ResponseEntity<>(list, HttpStatus.OK);
 								} else {
 									ResponseMessage responseMessage = new ResponseMessage(
 											APIStatusCode.NO_ACTIVE_ORGANISATION_FOUND.getValue(),
@@ -193,13 +203,22 @@ public class UserController {
 					
 						if(vendorUserInfo.getVendorOrganisationId() != null && vendorUserInfo.getVendorOrganisationId()  > 0) {
 							if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
-								HashMap<String, Object> list = new HashMap();
-								list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-								list.put("statusMessage", "Success");
-								list.put("responseMessage", "Vendor User details fetched successfully");
-								list.put("userDetails", vendorUserInfo);
-								list.put("authToken", Token);
-								return new ResponseEntity<>(list, HttpStatus.OK);
+								if(vendorUserInfo.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+									HashMap<String, Object> list = new HashMap();
+									list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+									list.put("statusMessage", "Success");
+									list.put("responseMessage", "Vendor User details fetched successfully");
+									list.put("userDetails", vendorUserInfo);
+									list.put("authToken", Token);
+									return new ResponseEntity<>(list, HttpStatus.OK);
+								} else {
+									ResponseMessage responseMessage = new ResponseMessage(
+											APIStatusCode.INACTIVE_USER.getValue(),
+							        		"Failed",
+							        		"User Account Deleted");
+									return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+								}
+								
 							} else {
 								ResponseMessage responseMessage = new ResponseMessage(
 										APIStatusCode.INACTIVE_USER.getValue(),
@@ -652,6 +671,22 @@ public class UserController {
 						
 						
 						try {
+							if(user.getUserType() == UserType.CLIENT.getValue()) {
+								if(!clientService.checkIsClientAccountActive(user.getUserId())) {
+									response.put("statusCode", APIStatusCode.INACTIVE_USER.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+									response.put("statusMessage", "Failed");
+									response.put("responseMessage", "Client User Account Deleted");
+						        	return new ResponseEntity<Object>(response, HttpStatus.OK);
+								}
+							} else if(user.getUserType() ==  UserType.VENDOR.getValue()) {
+								VendorUser vendorUserInfo = vendorService.findByVendorUserId(user.getUserId());
+								if(vendorUserInfo.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+									response.put("statusCode", APIStatusCode.INACTIVE_USER.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+									response.put("statusMessage", "Failed");
+									response.put("responseMessage", "Vendor User Account Deleted");
+						        	return new ResponseEntity<Object>(response, HttpStatus.OK);
+								}
+							}
 				        	sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());
 				        	response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
 							response.put("statusMessage", "Success");

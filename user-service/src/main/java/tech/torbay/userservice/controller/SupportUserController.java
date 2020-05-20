@@ -36,32 +36,66 @@ public class SupportUserController {
 	@Autowired
 	private SupportUserService supportUserService;
 	
-//	@ApiOperation(value = "Organisation Activation / De-Activation implementation by Support User and alerts using Email")
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(code = 200, message = "Organisation Activation / De-Activation implementation")
-//            }
-//    )
-//	@PostMapping("/support/")
-//	private ResponseEntity<Object> ResetPassword(@RequestBody Map<String, Object> requestData) {
-//		// TODO Auto-generated method stub
-//		
-//		Integer or = Integer.parseInt(String.valueOf(requestData.get("userId")));
-//		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
-//		
-//		
-//		if (supportUserService.resetPassword(userId, userType, password) == null) {
-//	    	ResponseMessage responseMessage = new ResponseMessage(
-//	    			APIStatusCode.REQUEST_FAILED.getValue(),
-//	        		"Failed",
-//	        		"Failed to reset password");
-//	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-//	    } else {
-//	    	ResponseMessage responseMessage = new ResponseMessage(
-//	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
-//	        		"Success",
-//	        		"Password reset successfully");
-//	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
-//	    }
-//	}
+	@ApiOperation(value = "Organisation Activation / De-Activation implementation by Support User and alerts using Email")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Organisation Activation / De-Activation implementation")
+            }
+    )
+	@PostMapping("/support/organisation/active")
+	private ResponseEntity<Object> UpdateOragnisationActivationStatus(@RequestBody Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
+		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
+		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
+		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
+		
+		
+		if (!supportUserService.updateOrganisationActivationStatus(organisationId, userType, activeStatus, supportUserId)) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to update active Status");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Orgnisation Activation Status updated successfully");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    }
+	}
+	
+	@ApiOperation(value = "User Activation / De-Activation implementation by Support User and alerts using Email")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "User Activation / De-Activation implementation")
+            }
+    )
+	@PostMapping("/support/user/active")
+	private ResponseEntity<Object> ResetPassword(@RequestBody Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
+		Integer userId = Integer.parseInt(String.valueOf(requestData.get("userId")));
+		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
+		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
+		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
+		
+		
+		if (!supportUserService.updateUserActivationStatus(userId, organisationId, userType, activeStatus, supportUserId)) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to update active Status");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"User Activation Status updated successfully");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    }
+	}
 }

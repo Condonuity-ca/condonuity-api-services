@@ -33,6 +33,8 @@ public class VendorUser {
     
 	private Integer accountStatus = 0;
 	private Integer accountVerificationStatus = 0;
+	private Integer deleteStatus = 0;
+	
 	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
@@ -108,12 +110,20 @@ public class VendorUser {
 		this.modifiedDate = modifiedDate;
 	}
 	
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+	
 	@Override
 	public String toString() {
 		return "VendorUser [userId=" + userId + ", vendorOrganisationId=" + vendorOrganisationId + ", userType="
 				+ userType + ", userRole=" + userRole + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", email=" + email + ", accountStatus=" + accountStatus + ", accountVerificationStatus="
-				+ accountVerificationStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ accountVerificationStatus + ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
 	
 }

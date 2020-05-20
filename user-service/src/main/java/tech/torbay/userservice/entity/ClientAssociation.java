@@ -37,6 +37,7 @@ public class ClientAssociation {
     private Integer userRole = 0;
     private Integer accountVerificationStatus = 0;
     private Integer userAccountStatus = 0;
+    private Integer deleteStatus = 0;
     private String userInactiveDate = "";
     
     @Basic(optional = false)
@@ -130,18 +131,22 @@ public class ClientAssociation {
 		this.modifiedDate = modifiedDate;
 	}
 	
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "ClientAssociation [id=" + id + ", clientOrganisationId=" + clientOrganisationId + ", clientId="
 				+ clientId + ", clientUserType=" + clientUserType + ", userRole=" + userRole
 				+ ", accountVerificationStatus=" + accountVerificationStatus + ", userAccountStatus="
-				+ userAccountStatus + ", userInactiveDate=" + userInactiveDate + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + ", clientUser=" + clientUser + ", clientOrganisation="
-				+ clientOrganisation + "]";
+				+ userAccountStatus + ", deleteStatus=" + deleteStatus + ", userInactiveDate=" + userInactiveDate
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
-	
-	
-	
 	public ClientAssociation() {
 		// TODO Auto-generated constructor stub
 	}

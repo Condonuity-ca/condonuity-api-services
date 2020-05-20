@@ -322,7 +322,8 @@ public class ClientService {
 //		        	
 //		        } // Need to check this flow
 		        
-		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) {
+		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue() 
+		        		&& clientAssociate.getDeleteStatus() == Constants.DeleteStatus.ACTIVE.getValue()) {
 		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
 			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
@@ -772,6 +773,7 @@ public class ClientService {
 			
 			projectReview.put("id", projectReviewRating.getId());
 			projectReview.put("rating", projectReviewRating.getRating());
+			System.out.println("rating:1->"+projectReviewRating.getRating());
 			projectReview.put("reviewDate", projectReviewRating.getCreatedAt());
 			projectReview.put("reviewComments", projectReviewRating.getReviewComments());
 			projectReview.put("replyComments", projectReviewRating.getReplyComments());
@@ -779,7 +781,7 @@ public class ClientService {
 			
 			List<Map<String, Object>> vendorCategoryRatings = getVendorCategoryRatings(projectReviewRating.getId());
 			projectReview.put("vendorCategoryRating", vendorCategoryRatings);
-			
+			System.out.println("vendorCategoryRating:1->"+vendorCategoryRatings);
 			Float overAllRatingCalculation=0.0f;
 			for(Map<String,Object> rating : vendorCategoryRatings) {
 				
@@ -791,23 +793,32 @@ public class ClientService {
 				switch(ratingCategory) {
 					case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
 						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+						System.out.println("(ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);:1->"+(ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100));
+						System.out.println("overAllRatingCalculation:1->"+overAllRatingCalculation);
 						break;
 					}
 					case 2/*VendorRatingCategory.PROFESSIONALISM.getValue()*/ :{
 						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+						System.out.println("(ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);:1->"+(ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100));
+						System.out.println("overAllRatingCalculation:1->"+overAllRatingCalculation);
 						break;
 					}
 					case 3/*VendorRatingCategory.ACCURACY.getValue()*/ :{
 						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+						System.out.println("(ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);:1->"+(ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100));
+						System.out.println("overAllRatingCalculation:1->"+overAllRatingCalculation);
 						break;
 					}
 					case 4/*VendorRatingCategory.QUALITY.getValue()*/ :{
 						overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+						System.out.println("(ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);:1->"+(ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100));
+						System.out.println("overAllRatingCalculation:1->"+overAllRatingCalculation);
 						break;
 					}
 				}
 			}
 			projectReview.put("rating", overAllRatingCalculation);
+			System.out.println("rating:2->"+overAllRatingCalculation);
 			Integer projectId = projectReviewRating.getProjectId();
 			if(projectId != null &&  projectId > 0) {
 				Project project = projectRepository.findByProjectId(projectReviewRating.getProjectId());

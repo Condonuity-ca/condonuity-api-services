@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.*;
 
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -41,6 +43,8 @@ public class VendorOrganisation {
     private String province = "";
     private String postalCode = "";
     private String countryCode = "";
+    private Integer activeStatus = DeleteStatus.NOT_AVAILABLE.getValue();
+    private Integer deleteStatus = DeleteStatus.NOT_AVAILABLE.getValue();
 	
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -258,17 +262,33 @@ public class VendorOrganisation {
 	    }
 	}
 
+	public Integer getActiveStatus() {
+		return activeStatus;
+	}
+
+	public void setActiveStatus(Integer activeStatus) {
+		this.activeStatus = activeStatus;
+	}
+
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+
 	@Override
 	public String toString() {
 		return "VendorOrganisation [vendorOrganisationId=" + vendorOrganisationId + ", userType=" + userType
 				+ ", legalName=" + legalName + ", companyName=" + companyName + ", establishedDate=" + establishedDate
-				+ ", employeesCount=" + employeesCount + ", annualRevenue="
-				+ annualRevenue + ", description=" + description + ", contactPerson=" + contactPerson
-				+ ", contactPersonEmail=" + contactPersonEmail + ", contactPersonPhone=" + contactPersonPhone
-				+ ", email=" + email + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber + ", website="
-				+ website + ", expertiseCategory=" + expertiseCategory + ", logoName=" + logoName + ", address="
-				+ address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
-				+ ", countryCode=" + countryCode + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
+				+ ", employeesCount=" + employeesCount + ", annualRevenue=" + annualRevenue + ", description="
+				+ description + ", contactPerson=" + contactPerson + ", contactPersonEmail=" + contactPersonEmail
+				+ ", contactPersonPhone=" + contactPersonPhone + ", email=" + email + ", phoneNumber=" + phoneNumber
+				+ ", faxNumber=" + faxNumber + ", website=" + website + ", expertiseCategory=" + expertiseCategory
+				+ ", logoName=" + logoName + ", address=" + address + ", city=" + city + ", province=" + province
+				+ ", postalCode=" + postalCode + ", countryCode=" + countryCode + ", activeStatus=" + activeStatus
+				+ ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
 				+ ", vendorTags=" + vendorTags + "]";
 	}
 

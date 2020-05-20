@@ -26,6 +26,7 @@ import org.hibernate.annotations.NaturalIdCache;
 import javax.persistence.JoinColumn;
 
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
 
 @Entity(name = "ClientOrganisation")
 @Table(name = "client_organisation")
@@ -63,6 +64,8 @@ public class ClientOrganisation {
     private String managerName = "";
     private String managerEmail = "";
     private String managerPhone = "";
+    private Integer activeStatus = DeleteStatus.NOT_AVAILABLE.getValue();
+    private Integer deleteStatus = DeleteStatus.NOT_AVAILABLE.getValue();
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -138,14 +141,16 @@ public class ClientOrganisation {
 
 	@Override
 	public String toString() {
-		return "Client Organisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType 
+		return "ClientOrganisation [clientOrganisationId=" + clientOrganisationId + ", userType=" + userType
 				+ ", organisationName=" + organisationName + ", managementCompany=" + managementCompany
-				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail=" + generalEmail + ", managementEmail=" + managementEmail
-				+ ", boardEmail=" + boardEmail + ", address=" + address + ", city=" + city + ", province=" + province
-				+ ", postalCode=" + postalCode + ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber
-				+ ", faxNumber=" + faxNumber + ", units=" + units + ", votingUnits=" + votingUnits + ", managerName="
-				+ managerName + ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", createdAt="
-				+ createdAt + "]";
+				+ ", corporateNumber=" + corporateNumber + ", registrationDate=" + registrationDate + ", generalEmail="
+				+ generalEmail + ", managementEmail=" + managementEmail + ", boardEmail=" + boardEmail + ", address="
+				+ address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode
+				+ ", countryCode=" + countryCode + ", phoneNumber=" + phoneNumber + ", faxNumber=" + faxNumber
+				+ ", units=" + units + ", votingUnits=" + votingUnits + ", managerName=" + managerName
+				+ ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", activeStatus=" + activeStatus
+				+ ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
+				+ ", clientUsers=" + clientUsers + "]";
 	}
 	
 	
@@ -309,5 +314,22 @@ public class ClientOrganisation {
 	}
 	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public Integer getActiveStatus() {
+		return activeStatus;
+	}
+
+	public void setActiveStatus(Integer activeStatus) {
+		this.activeStatus = activeStatus;
+	}
+
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
 	}	
+	
 }
