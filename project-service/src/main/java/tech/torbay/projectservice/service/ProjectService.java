@@ -31,6 +31,8 @@ import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.entity.VendorCategoryRatings;
+import tech.torbay.projectservice.entity.VendorOrganisation;
+import tech.torbay.projectservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
 import tech.torbay.projectservice.repository.BidFilesRepository;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
@@ -46,6 +48,7 @@ import tech.torbay.projectservice.repository.ProjectRepository;
 import tech.torbay.projectservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.projectservice.repository.VendorBidRepository;
 import tech.torbay.projectservice.repository.VendorCategoryRatingsRepository;
+import tech.torbay.projectservice.repository.VendorOrganisationProfileImagesRepository;
 import tech.torbay.projectservice.repository.VendorOrganisationRepository;
 import tech.torbay.projectservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.projectservice.repository.VendorUserRepository;
@@ -87,6 +90,8 @@ public class ProjectService {
 	ProjectAwardsRepository projectAwardsRepository;
 	@Autowired
 	ProjectAwardFilesRepository projectAwardFilesRepository;
+	@Autowired
+	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -321,7 +326,21 @@ public class ProjectService {
 			
 			map = oMapper.convertValue(vendorBid, Map.class);
 			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorBid.getVendorOrgId());
 			
+			map.put("bidFiles",GetVendorBidFiles(vendorBid.getId()));
+			try {
+		        String logo = getOrganisationLogo(vendorBid.getVendorOrgId());
+		        if(logo != null)
+		        	map.put("vendorOrganisationProfileImage",logo);
+		        else
+		        	map.put("vendorOrganisationProfileImage","");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
+	        }
+			
+			map.put("organisationName",vendorOrganisation.getCompanyName());
+			map.put("legalName",vendorOrganisation.getLegalName());
 			map.put("rating",getVendorCategoryRatings(vendorBid.getVendorOrgId()));
 			
 					
@@ -385,6 +404,16 @@ public class ProjectService {
         	exp.printStackTrace();
         	return 0d;
         }
+	}
+	
+	public String getOrganisationLogo(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
+		
+        if(vendorOrgProfileImage != null)
+        	return vendorOrgProfileImage.getFileUrl();
+        else
+        	return null;
 	}
 
 	public List<ProjectQuestionAnswer> getAllQAByProjectId(Integer id) {
