@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1050,8 +1052,41 @@ public class ProjectService {
 		 Map<String,Object> map = new HashMap();
 		if(projectAwards !=null) {
 			VendorBid vendorBid = vendorBidRepository.findOneById(projectAwards.getAwardedBidId());
-			 map.put("bid",vendorBid);
-			 map.put("bidFiles",projectAwardFilesRepository.findAllByProjectAwardId(projectAwards.getId()));
+			
+			Map<String,Object> mapVendorBid = new HashMap<>();
+			
+			ObjectMapper oMapper = new ObjectMapper();
+			
+			mapVendorBid = oMapper.convertValue(vendorBid, Map.class);
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorBid.getVendorOrgId());
+			
+			mapVendorBid.put("bidFiles",GetVendorBidFiles(vendorBid.getId()));
+			try {
+		        String logo = getOrganisationLogo(vendorBid.getVendorOrgId());
+		        if(logo != null)
+		        	mapVendorBid.put("vendorOrganisationProfileImage",logo);
+		        else
+		        	mapVendorBid.put("vendorOrganisationProfileImage","");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
+	        }
+			
+			mapVendorBid.put("organisationName",vendorOrganisation.getCompanyName());
+			mapVendorBid.put("legalName",vendorOrganisation.getLegalName());
+			mapVendorBid.put("rating",getVendorCategoryRatings(vendorBid.getVendorOrgId()));
+			
+			
+			 map.put("bid",mapVendorBid);
+			 Map<String,Object> awardInfo = new HashMap();
+			 awardInfo.put("comments", projectAwards.getComments());
+			 awardInfo.put("awardDate", projectAwards.getAwardDate());
+			 awardInfo.put("totalPrice", projectAwards.getTotalPrice());
+			 awardInfo.put("startDate", projectAwards.getStartDate());
+			 awardInfo.put("duration", projectAwards.getDuration());
+			 map.put("awardInformation",awardInfo);
+			 map.put("awardFiles",projectAwardFilesRepository.findAllByProjectAwardId(projectAwards.getId()));
+			 
 		}
 		 
 		 return map;
