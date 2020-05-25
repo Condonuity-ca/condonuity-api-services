@@ -148,12 +148,16 @@ public class MessageService {
 			List<Map<String,Object>> allFiles = new ArrayList();
 			for(ThreadFiles threadFile : threadFiles) {
 				Map<String,Object> file = new HashMap<>();
+				
 				file.put("id", threadFile.getId());
 				file.put("fileName", threadFile.getFileName());
 				file.put("fileType", threadFile.getFileType());
-				file.put("fileUrl", threadFile.getFileUrl());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+				file.put("blobName", threadFile.getBlobName());
+				file.put("containerName", threadFile.getContainerName());
+//				file.put("fileUrl", commentFile.getFileUrl());
 				file.put("createdAt", threadFile.getCreatedAt());
-				file.put("modifiedDate", threadFile.getModifiedDate());
+//				file.put("modifiedDate", commentFile.getModifiedDate());
 				allFiles.add(file);
 			}
 			

@@ -78,11 +78,11 @@ public class MessageController {
                     @ApiResponse(code = 200, message = "Threads fetched successfully")
             }
     )
-	@GetMapping("/internal/messages/{userType}/{clientOrganisationId}")
-	private ResponseEntity<Object> getInternalMessages(@PathVariable("userType") Integer userType, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+	@GetMapping("/internal/messages/{userType}/{organisationId}")
+	private ResponseEntity<Object> getInternalMessages(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
 		// TODO Auto-generated method stub
 		
-		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(clientOrganisationId, userType);
+		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(organisationId, userType);
 		
 		HashMap<String, Object> list = new HashMap();
 		
