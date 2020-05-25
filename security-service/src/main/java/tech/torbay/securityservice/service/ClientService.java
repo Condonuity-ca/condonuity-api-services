@@ -228,6 +228,7 @@ public class ClientService {
 		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientId, clientOrgId);
 		clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
 		clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		clientAssociation.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
 		
 		return clientAssociationRepository.save(clientAssociation);
 	}

@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tech.torbay.messageservice.Utils.Utils;
 import tech.torbay.messageservice.constants.Constants;
 import tech.torbay.messageservice.constants.Constants.ThreadType;
+import tech.torbay.messageservice.entity.ClientOrganisation;
+import tech.torbay.messageservice.entity.ClientOrganisationProfileImages;
+import tech.torbay.messageservice.entity.ClientUser;
 import tech.torbay.messageservice.entity.CommentFiles;
 import tech.torbay.messageservice.entity.ExternalMessage;
 import tech.torbay.messageservice.entity.ExternalMessageComment;
@@ -20,6 +23,12 @@ import tech.torbay.messageservice.entity.InternalMessage;
 import tech.torbay.messageservice.entity.InternalMessageComment;
 import tech.torbay.messageservice.entity.ThreadFiles;
 import tech.torbay.messageservice.entity.UserLevelNotification;
+import tech.torbay.messageservice.entity.VendorOrganisation;
+import tech.torbay.messageservice.entity.VendorOrganisationProfileImages;
+import tech.torbay.messageservice.entity.VendorUser;
+import tech.torbay.messageservice.repository.ClientOrganisationProfileImagesRepository;
+import tech.torbay.messageservice.repository.ClientOrganisationRepository;
+import tech.torbay.messageservice.repository.ClientUserRepository;
 import tech.torbay.messageservice.repository.CommentFilesRepository;
 import tech.torbay.messageservice.repository.ExternalMessageCommentRepository;
 import tech.torbay.messageservice.repository.ExternalMessageRepository;
@@ -27,6 +36,11 @@ import tech.torbay.messageservice.repository.InternalMessageCommentRepository;
 import tech.torbay.messageservice.repository.InternalMessageRepository;
 import tech.torbay.messageservice.repository.ThreadFilesRepository;
 import tech.torbay.messageservice.repository.UserLevelNotificationRepository;
+import tech.torbay.messageservice.repository.UserProfileImagesRepository;
+import tech.torbay.messageservice.repository.VendorOrganisationProfileImagesRepository;
+import tech.torbay.messageservice.repository.VendorOrganisationRepository;
+import tech.torbay.messageservice.repository.VendorUserRepository;
+import tech.torbay.messageservice.entity.UserProfileImages;
 
 @Component
 public class MessageService {
@@ -49,7 +63,21 @@ public class MessageService {
 //	ExternalThreadCommentFilesRepository externalThreadcommentFilesRepository;
 	@Autowired
 	UserLevelNotificationRepository userLevelNotificationRepository;
-
+	@Autowired
+	ClientUserRepository clientUserRepository;
+	@Autowired
+	VendorUserRepository vendorUserRepository;
+	@Autowired
+	ClientOrganisationRepository clientOrganisationRepository;
+	@Autowired
+	VendorOrganisationRepository vendorOrganisationRepository;
+	@Autowired
+	ClientOrganisationProfileImagesRepository clientOrganisationProfileImageRepository;
+	@Autowired
+	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
+	@Autowired
+	UserProfileImagesRepository userProfileImagesRepository;
+	
 	public InternalMessage createThread(InternalMessage internalMessage) {
 		// TODO Auto-generated method stub
 		return internalMessageRepository.save(internalMessage);
@@ -72,6 +100,49 @@ public class MessageService {
 			Map<String,Object> map = new HashMap<>();
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(internalMessage, Map.class);
+			map.remove("userId");	
+			map.remove("organisationId");	
+			
+			Map<String,Object> user = new HashMap<>();
+			Map<String,Object> organisation = new HashMap<>();
+			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessage.getUserId(), internalMessage.getUserType());
+			
+			if(internalMessage.getUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientUser clientUser = clientUserRepository.findByClientId(internalMessage.getUserId());
+				user.put("userId",clientUser.getClientId());
+				user.put("firstName",clientUser.getFirstName());
+				user.put("lastName",clientUser.getLastName());
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(internalMessage.getOrganisationId());
+				organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+				organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+				organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+				organisation.put("organisationName",clientOrganisation.getOrganisationName());
+				organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+				
+			} else if(internalMessage.getUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessage.getUserId());
+				user.put("userId",vendorUser.getUserId());
+				user.put("firstName",vendorUser.getFirstName());
+				user.put("lastName",vendorUser.getLastName());
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(internalMessage.getOrganisationId());
+				organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+				organisation.put("legalName",vendorOrganisation.getLegalName());
+				organisation.put("organisationName",vendorOrganisation.getCompanyName());
+				organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+				organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+			}
+			
+			
+			map.put("user",user);
+			map.put("organisation",organisation);
+			
 			
 			List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
 			List<Map<String,Object>> allFiles = new ArrayList();
@@ -95,6 +166,26 @@ public class MessageService {
 		return allMessages;
 	}
 
+	public String getClientOrganisationLogo(Integer id) {
+		// TODO Auto-generated method stub
+		ClientOrganisationProfileImages clientOrganisationProfileImages = clientOrganisationProfileImageRepository.findByClientOrganisationId(id);
+		
+        if(clientOrganisationProfileImages != null)
+        	return clientOrganisationProfileImages.getFileUrl();
+        else
+        	return null;
+	}
+	
+	public String getVendorOrganisationLogo(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
+		
+        if(vendorOrgProfileImage != null)
+        	return vendorOrgProfileImage.getFileUrl();
+        else
+        	return null;
+	} 
+	
 	private List<Map<String,Object>> getInternalThreadComments(Integer threadId) {
 		// TODO Auto-generated method stub
 		List<InternalMessageComment> internalMessageComments = internalMessageCommentRepository.findAllByThreadId(threadId);
@@ -106,6 +197,34 @@ public class MessageService {
 			Map<String,Object> map = new HashMap<>();
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(internalMessageComment, Map.class);
+			map.remove("userId");	
+			
+			Map<String,Object> user = new HashMap<>();
+//			Map<String,Object> organisation = new HashMap<>();
+			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessageComment.getUserId(), internalMessageComment.getUserType());
+			
+			if(internalMessageComment.getUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientUser clientUser = clientUserRepository.findByClientId(internalMessageComment.getUserId());
+				user.put("userId",clientUser.getClientId());
+				user.put("firstName",clientUser.getFirstName());
+				user.put("lastName",clientUser.getLastName());
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+				
+			} else if(internalMessageComment.getUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessageComment.getUserId());
+				user.put("userId",vendorUser.getUserId());
+				user.put("firstName",vendorUser.getFirstName());
+				user.put("lastName",vendorUser.getLastName());
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+				
+			}
+			
+			
+			map.put("user",user);
+//			map.put("organisation",organisation);
 			
 			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(internalMessageComment.getId(), ThreadType.INTERNAL.getValue());
 			List<Map<String,Object>> allFiles = new ArrayList();

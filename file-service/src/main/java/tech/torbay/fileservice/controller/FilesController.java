@@ -689,7 +689,7 @@ public class FilesController {
 		if(url != null) {
 			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
 			map.put("statusMessage", "Success");
-			map.put("responseMessage", "Message Internal Thread Files Uploaded Successfully");
+			map.put("responseMessage", "Message External Thread Files Uploaded Successfully");
 			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue());
 			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);

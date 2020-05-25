@@ -77,6 +77,7 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		try {
 			vendorUser.setUserRole(Constants.UserRole.ADMIN.getValue());
+			vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
 		
 		if(vendorUserRepository.save(vendorUser) != null){
 			

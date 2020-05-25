@@ -102,8 +102,8 @@ public class Constants {
 	    ORGANISATION_PROFILE_IMAGES("organisationprofileimages"),
 	    MESSAGE_INTERNAL_THREAD_FILES("internalthreadfiles"),
 		MESSAGE_EXTERNAL_THREAD_FILES("externalthreadfiles"),
-		MESSAGE_INTERNAL_COMMENT_FILES("internalCommentfiles"),
-		MESSAGE_EXTERNAL_COMMENT_FILES("externalCommentfiles");
+		MESSAGE_INTERNAL_COMMENT_FILES("internalcommentfiles"),
+		MESSAGE_EXTERNAL_COMMENT_FILES("externalcommentfiles");
 
 	    private String value;
 	    private static Map map = new HashMap<>();

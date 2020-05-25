@@ -173,6 +173,33 @@ public class Constants {
 	    }
 	}
 
+	public enum DeleteStatus {
+	    NOT_AVAILABLE(0),
+	    ACTIVE(1),
+	    INACTIVE(2);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private DeleteStatus(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (DeleteStatus pageType : DeleteStatus.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static DeleteStatus valueOf(int pageType) {
+	        return (DeleteStatus) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	 // 0 - info not available
 	 // 1 - yes
 	 // 2 - no
