@@ -19,8 +19,8 @@ public class ExternalMessage {
     private Integer sourceOrganisationId = 0;
     private Integer sourceUserId = 0;
     private Integer sourceUserType = 0;
-    private Integer targetOrganisationId = 0;
-    private Integer targetUserType = 0;
+    private String targetOrganisationId = "";
+    private String targetUserType = "";
     private String threadSubject = "";
     private String threadDescription = "";
     
@@ -64,19 +64,19 @@ public class ExternalMessage {
 		this.sourceUserType = sourceUserType;
 	}
 
-	public Integer getTargetOrganisationId() {
+	public String getTargetOrganisationId() {
 		return targetOrganisationId;
 	}
 
-	public void setTargetOrganisationId(Integer targetOrganisationId) {
+	public void setTargetOrganisationId(String targetOrganisationId) {
 		this.targetOrganisationId = targetOrganisationId;
 	}
 
-	public Integer getTargetUserType() {
+	public String getTargetUserType() {
 		return targetUserType;
 	}
 
-	public void setTargetUserType(Integer targetUserType) {
+	public void setTargetUserType(String targetUserType) {
 		this.targetUserType = targetUserType;
 	}
 

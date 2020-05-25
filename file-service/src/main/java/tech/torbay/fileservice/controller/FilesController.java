@@ -720,7 +720,7 @@ public class FilesController {
 			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Message Comment Files Uploaded Successfully");
-			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_COMMENT_FILES.getValue());
+			map.put("containerName", Constants.Containers.MESSAGE_EXTERNAL_COMMENT_FILES.getValue());
 			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {

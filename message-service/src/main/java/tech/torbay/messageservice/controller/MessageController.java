@@ -143,7 +143,7 @@ public class MessageController {
             }
     )
 	@PostMapping("/external/message/create")
-	private ResponseEntity<Object> createExternalThread(@RequestBody ExternalMessage externalMessage) {
+	private ResponseEntity<Object> createExternalThread(@RequestBody Map<String, Object> externalMessage) {
 		// TODO Auto-generated method stub
 		
 		ExternalMessage externalMessageObj = messageService.createExternalThread(externalMessage);

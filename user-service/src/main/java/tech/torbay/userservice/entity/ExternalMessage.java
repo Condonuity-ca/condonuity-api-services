@@ -20,8 +20,8 @@ public class ExternalMessage {
     private Integer sourceUserId = 0;
     private Integer sourceUserType = 0;
     private Integer targetOrganisationId = 0;
-    private Integer targetUserType = 0;
-    private String threadSubject = "";
+    private Integer targetUserType = 0;//global_search_usage
+    private String threadSubject = "";//global_search_usage
     private String threadDescription = "";
     
     @Basic(optional = false)
