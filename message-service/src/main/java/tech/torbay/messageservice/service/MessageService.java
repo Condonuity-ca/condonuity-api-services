@@ -93,7 +93,7 @@ public class MessageService {
 		return internalMessageCommentRepository.save(internalMessageComment);
 	}
 
-	public List<Map<String,Object>> getInternalMessages(Integer organisationId, Integer userType) {
+	public List<Map<String,Object>> getInternalMessages(Integer organisationId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 
 		List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);
@@ -173,7 +173,7 @@ public class MessageService {
 			}
 			
 			map.put("files",allFiles);
-			map.put("comments",getInternalThreadComments(internalMessage.getId()));
+			map.put("comments",getInternalThreadComments(internalMessage.getId(), userType, userId));
 			
 			allMessages.add(map);
 		}
@@ -201,7 +201,7 @@ public class MessageService {
         	return null;
 	} 
 	
-	private List<Map<String,Object>> getInternalThreadComments(Integer threadId) {
+	private List<Map<String,Object>> getInternalThreadComments(Integer threadId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 		List<InternalMessageComment> internalMessageComments = internalMessageCommentRepository.findAllByThreadId(threadId);
 		
@@ -222,6 +222,11 @@ public class MessageService {
 			if(internalMessageComment.getUserType() == Constants.UserType.CLIENT.getValue()) {
 				
 				ClientUser clientUser = clientUserRepository.findByClientId(internalMessageComment.getUserId());
+				if(userId == clientUser.getClientId() && userType == internalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
 				user.put("userId",clientUser.getClientId());
 				user.put("firstName",clientUser.getFirstName());
 				user.put("lastName",clientUser.getLastName());
@@ -233,6 +238,11 @@ public class MessageService {
 			} else if(internalMessageComment.getUserType() == Constants.UserType.VENDOR.getValue()) {
 				
 				VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessageComment.getUserId());
+				if(userId == vendorUser.getUserId() && userType == internalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
 				user.put("userId",vendorUser.getUserId());
 				user.put("firstName",vendorUser.getFirstName());
 				user.put("lastName",vendorUser.getLastName());
@@ -316,7 +326,7 @@ public class MessageService {
 		return externalMessageCommentRepository.save(externalMessageComment);
 	}
 
-	public List<Map<String,Object>> getExternalMessages(Integer organisationId, Integer userType) {
+	public List<Map<String,Object>> getExternalMessages(Integer organisationId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 
 		List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);
@@ -402,7 +412,7 @@ public class MessageService {
 			}
 			
 			map.put("files",allFiles);
-			map.put("comments",getExternalThreadComments(externalMessage.getId()));
+			map.put("comments",getExternalThreadComments(externalMessage.getId(), userType, userId));
 			
 			allMessages.add(map);
 		}
@@ -447,7 +457,7 @@ public class MessageService {
 		return targetOrganisations;
 	}
 
-	private List<Map<String,Object>> getExternalThreadComments(Integer threadId) {
+	private List<Map<String,Object>> getExternalThreadComments(Integer threadId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(threadId);
 		
@@ -467,6 +477,11 @@ public class MessageService {
 			if(externalMessageComment.getUserType() == Constants.UserType.CLIENT.getValue()) {
 				
 				ClientUser clientUser = clientUserRepository.findByClientId(externalMessageComment.getUserId());
+				if(userId == clientUser.getClientId() && userType == externalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
 				user.put("userId",clientUser.getClientId());
 				user.put("firstName",clientUser.getFirstName());
 				user.put("lastName",clientUser.getLastName());
@@ -475,9 +490,19 @@ public class MessageService {
 				else
 					user.put("profileImageURL","");
 				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessageComment.getOrganisationId());
+				user.put("organisationId",clientOrganisation.getClientOrganisationId());
+				user.put("organisationName",clientOrganisation.getOrganisationName());
+				
+				
 			} else if(externalMessageComment.getUserType() == Constants.UserType.VENDOR.getValue()) {
 				
 				VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessageComment.getUserId());
+				if(userId == vendorUser.getUserId() && userType == externalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
 				user.put("userId",vendorUser.getUserId());
 				user.put("firstName",vendorUser.getFirstName());
 				user.put("lastName",vendorUser.getLastName());
@@ -485,6 +510,10 @@ public class MessageService {
 					user.put("profileImageURL",userProfileImage.getFileUrl());
 				else
 					user.put("profileImageURL","");
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessageComment.getOrganisationId());
+				user.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+				user.put("organisationName",vendorOrganisation.getCompanyName());
 				
 			}
 			map.put("user",user);

@@ -78,11 +78,14 @@ public class MessageController {
                     @ApiResponse(code = 200, message = "Threads fetched successfully")
             }
     )
-	@GetMapping("/internal/messages/{userType}/{organisationId}")
-	private ResponseEntity<Object> getInternalMessages(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+	@GetMapping("/internal/messages/{userType}/{organisationId}/{userId}")
+	private ResponseEntity<Object> getInternalMessages(@PathVariable("userType") Integer userType, 
+			@PathVariable("organisationId") Integer organisationId,
+			@PathVariable("userId") Integer userId
+			) {
 		// TODO Auto-generated method stub
 		
-		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(organisationId, userType);
+		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(organisationId, userType, userId);
 		
 		HashMap<String, Object> list = new HashMap();
 		
@@ -176,11 +179,14 @@ public class MessageController {
                     @ApiResponse(code = 200, message = "Threads fetched successfully")
             }
     )
-	@GetMapping("/external/messages/{userType}/{organisationId}")
-	private ResponseEntity<Object> getExternalMessages(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+	@GetMapping("/external/messages/{userType}/{organisationId}/{userId}")
+	private ResponseEntity<Object> getExternalMessages(@PathVariable("userType") Integer userType, 
+			@PathVariable("organisationId") Integer organisationId,
+			@PathVariable("userId") Integer userId
+			) {
 		// TODO Auto-generated method stub
 		
-		List<Map<String,Object>> externalMessages = messageService.getExternalMessages(organisationId, userType);
+		List<Map<String,Object>> externalMessages = messageService.getExternalMessages(organisationId, userType, userId);
 		
 		HashMap<String, Object> list = new HashMap();
 		
