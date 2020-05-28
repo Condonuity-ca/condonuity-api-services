@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.messageservice.Utils.Utils;
 import tech.torbay.messageservice.constants.Constants;
+import tech.torbay.messageservice.constants.Constants.DeleteStatus;
 import tech.torbay.messageservice.constants.Constants.ThreadType;
 import tech.torbay.messageservice.entity.ClientOrganisation;
 import tech.torbay.messageservice.entity.ClientOrganisationProfileImages;
@@ -329,7 +330,7 @@ public class MessageService {
 	public List<Map<String,Object>> getExternalMessages(Integer organisationId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 
-		List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);
+		List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndDeleteStatus(organisationId, userType, DeleteStatus.ACTIVE.getValue());
 		
 		HashSet<ExternalMessage> resultSet = new HashSet(externalMessages);
 		externalMessages.clear();
@@ -459,7 +460,7 @@ public class MessageService {
 
 	private List<Map<String,Object>> getExternalThreadComments(Integer threadId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
-		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(threadId);
+		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadIdAndDeleteStatus(threadId, DeleteStatus.ACTIVE.getValue());
 		
 		List<Map<String,Object>> allComments = new ArrayList();
 		

@@ -1,9 +1,14 @@
 package tech.torbay.messageservice.entity;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import tech.torbay.messageservice.constants.Constants.DeleteStatus;
 
 @Entity
 @Table(name = "external_message_comment")
@@ -21,6 +26,15 @@ public class ExternalMessageComment {
     private Integer userType = 0;
     private Integer threadId = 0;
     private String comment = "";
+    private Integer deleteStatus = DeleteStatus.ACTIVE.getValue();
+    
+    public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -97,8 +111,8 @@ public class ExternalMessageComment {
 	@Override
 	public String toString() {
 		return "ExternalMessageComment [id=" + id + ", userId=" + userId + ", organisationId=" + organisationId
-				+ ", userType=" + userType + ", threadId=" + threadId + ", comment=" + comment + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ ", userType=" + userType + ", threadId=" + threadId + ", comment=" + comment + ", deleteStatus="
+				+ deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

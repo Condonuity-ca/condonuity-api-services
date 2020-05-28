@@ -2,7 +2,10 @@ package tech.torbay.userservice.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -21,4 +24,9 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
 	List<ClientUser> findByClientId(List<Integer> ids);
 
 //	List<ClientOrganisation> findClientOrganisationByClientId();
+    
+    @Modifying
+	@Transactional
+	@Query(value="UPDATE condonuitydev.client_user SET first_name = (?1), last_name = (?2) WHERE client_id=(?3)", nativeQuery = true)
+	int setFirstNameAndLastNameByClientId(String firstName, String lastName, Integer userId);
 }

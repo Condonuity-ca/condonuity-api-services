@@ -14,6 +14,7 @@ import tech.torbay.projectservice.entity.Project;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
+	@Query(value="select pro.* from condonuitydev.projects pro where pro.delete_status = 1", nativeQuery = true )
     List<Project> findAll();
     
     @Query(name="Project.MarketPlace")
@@ -23,15 +24,15 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	List<Project> findAllByClientOrganisationIdAndStatus(Integer id, int value);
 	
-	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and ( status = 1 or status = 2 )", nativeQuery = true )
+	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and ( status = 1 or status = 2 ) and pro.delete_status = 1", nativeQuery = true )
 	List<Project> findAllCurrentProjects(Integer id);
 	
-	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and status = 3", nativeQuery = true )
+	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and status = 3 and pro.delete_status = 1", nativeQuery = true )
 	List<Project> findAllAwardedProjects(Integer id);
 	
 	Project findOneByProjectId(Integer projectId);
 
-	@Query("select pro from Project pro where pro.projectId IN (?1)")
+	@Query("select pro from Project pro where pro.projectId IN (?1) and pro.deleteStatus = 1")
 	List<Project> getAllVendorProjects(List<Integer> ids);
 
 	@Transactional

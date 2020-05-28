@@ -23,6 +23,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import tech.torbay.projectservice.constants.Constants.DeleteStatus;
+
 @Entity
 //@JsonInclude(value = Include.NON_NULL)
 @Table(name = "projects")
@@ -44,7 +46,7 @@ import javax.validation.constraints.Size;
 	    name="Project.MarketPlace", 
 	    query="SELECT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and pro.delete_status = 1;", 
 	    resultSetMapping="marketPlace")
 public class Project {
 
@@ -81,6 +83,14 @@ public class Project {
     private Integer postType = 0;
     private Integer status = 0;
     private Integer awardedBidId = 0;
+    private Integer deleteStatus = DeleteStatus.ACTIVE.getValue();
+	
+    public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
 	
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -265,8 +275,9 @@ public class Project {
 				+ ", projectCompletionDeadline=" + projectCompletionDeadline + ", estimatedBudget=" + estimatedBudget
 				+ ", duration=" + duration + ", description=" + description + ", specialConditions=" + specialConditions
 				+ ", city=" + city + ", contractType=" + contractType + ", insuranceRequired=" + insuranceRequired
-				+ ", postType=" + postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + ", projectProducts=" + projectProducts.toString() + "]";
+				+ ", postType=" + postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", deleteStatus="
+				+ deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", projectProducts="
+				+ projectProducts + "]";
 	}
 
     

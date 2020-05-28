@@ -2,7 +2,10 @@ package tech.torbay.userservice.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -146,5 +149,10 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
 			Integer vendorOrganisationId,
 			int userType, 
 			String keyword);
+
+	@Modifying
+	@Transactional
+	@Query(value="update condonuitydev.external_message set delete_status = (?1) where id = (?2);", nativeQuery = true)
+	int setDeleteStatusById(Integer activeStatus, Integer externalMessageId);
 
 }

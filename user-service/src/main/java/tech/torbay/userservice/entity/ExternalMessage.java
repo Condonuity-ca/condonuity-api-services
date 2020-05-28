@@ -1,9 +1,14 @@
 package tech.torbay.userservice.entity;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
 
 @Entity
 @Table(name = "external_message")
@@ -23,7 +28,16 @@ public class ExternalMessage {
     private Integer targetUserType = 0;//global_search_usage
     private String threadSubject = "";//global_search_usage
     private String threadDescription = "";
+    private Integer deleteStatus = DeleteStatus.ACTIVE.getValue();
     
+    public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+	
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
@@ -117,7 +131,8 @@ public class ExternalMessage {
 		return "ExternalMessage [id=" + id + ", sourceOrganisationId=" + sourceOrganisationId + ", sourceUserId="
 				+ sourceUserId + ", sourceUserType=" + sourceUserType + ", targetOrganisationId=" + targetOrganisationId
 				+ ", targetUserType=" + targetUserType + ", threadSubject=" + threadSubject + ", threadDescription="
-				+ threadDescription + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ threadDescription + ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt + ", modifiedDate="
+				+ modifiedDate + "]";
 	}
 
 }

@@ -90,6 +90,14 @@ public class SupportUserService {
 	VendorUserRepository vendorUserRepository;
 	@Autowired
 	ClientAssociationRepository clientAssociationRepository;
+	@Autowired
+	ProjectReviewRatingRepository projectReviewRatingRepository;
+	@Autowired
+	ProjectRepository projectRepository;
+	@Autowired
+	ExternalMessageRepository externalMessageRepository;
+	@Autowired
+	ExternalMessageCommentRepository externalMessageCommentRepository;
 	
 	
 	public boolean updateOrganisationActivationStatus(Integer organisationId, Integer userType, Integer activeStatus, Integer supportUserId) {
@@ -157,4 +165,76 @@ public class SupportUserService {
 		return false;
 	}
 	
+	public boolean updateReviewActivationStatus(Integer reviewRatingId, Integer activeStatus, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		int isUpdated = projectReviewRatingRepository.setStatusById(activeStatus, reviewRatingId);
+						
+		if(isUpdated > 0) {
+			return true;
+		}
+		return false;
+	}
+
+
+	public boolean updateClientCorporationInformation(Integer clientOrganisationId, String corporationName, String corporationNumber,
+			Integer supportUserId) {
+		// TODO Auto-generated method stub
+		int isUpdated = clientOrganisationRepository.setOrganisationNameAndCorporateNumberByClientOrganisationId(corporationName, corporationNumber, clientOrganisationId);
+		
+		if(isUpdated > 0) {
+			return true;
+		}
+		return false;
+	}
+
+
+	public boolean updateProjectActivationStatus(Integer projectId, Integer deleteStatus, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		int isUpdated = projectRepository.setDeleteStatusByProjectId(deleteStatus, projectId);
+		
+		if(isUpdated > 0) {
+			return true;
+		}
+		return false;
+	}
+
+
+	public boolean updateExternalMessageActivationStatus(Integer externalMessageId, Integer activeStatus, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		int isUpdated = externalMessageRepository.setDeleteStatusById(activeStatus, externalMessageId);
+		
+		if(isUpdated > 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean updateExternalMessageCommentActivationStatus(Integer externalMessageCommentId, Integer activeStatus, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		int isUpdated = externalMessageCommentRepository.setDeleteStatusById(activeStatus, externalMessageCommentId);
+		
+		if(isUpdated > 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean updateUserProfile(Integer userId, Integer organisationId, Integer userType,
+			String firstName, String lastName, Integer userRole, Integer clientUserType, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		if(userType == UserType.CLIENT.getValue()) {
+			int isUpdated = clientUserRepository.setFirstNameAndLastNameByClientId(firstName, lastName, userId);
+			int isUpdatedRoleAndUserType = clientAssociationRepository.setUserRoleAndClientUserTypeByClientIdAndClientOrganisationId(userRole, clientUserType, userId, organisationId);		
+			if(isUpdated > 0 && isUpdatedRoleAndUserType > 0) {
+				return true;
+			}
+		} else if(userType == UserType.VENDOR.getValue()) {
+			int isUpdated = vendorUserRepository.setFirstNameAndLastNameAndUserRoleByVendorIdAndVendorOrganisationId(firstName, lastName, userRole, userId, organisationId);
+			
+			if(isUpdated > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

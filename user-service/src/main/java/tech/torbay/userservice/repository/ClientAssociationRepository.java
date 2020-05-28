@@ -36,4 +36,11 @@ public interface ClientAssociationRepository extends JpaRepository<ClientAssocia
 	@Transactional
 	@Query(value="UPDATE condonuitydev.client_association SET delete_status = (?1) WHERE client_id=(?2) AND client_organisation_id = (?3)", nativeQuery = true)
 	int setDeleteStatusByClientIdAndClientOrganisationId(Integer deleteStatus, Integer clientId, Integer clientOrganisationId);
+
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE condonuitydev.client_association SET user_role = (?1), client_user_type = (?2) WHERE client_id=(?3) AND client_organisation_id = (?4)", nativeQuery = true)
+	int setUserRoleAndClientUserTypeByClientIdAndClientOrganisationId(Integer userRole, Integer clientUserType,
+			Integer userId, Integer organisationId);
+
 }

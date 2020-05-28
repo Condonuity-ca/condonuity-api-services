@@ -23,6 +23,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
+
 @Entity
 //@JsonInclude(value = Include.NON_NULL)
 @Table(name = "projects")
@@ -137,8 +139,16 @@ public class Project {
     private Integer postType = 0;
     private Integer status = 0;
     private Integer awardedBidId = 0;
+    private Integer deleteStatus = DeleteStatus.ACTIVE.getValue();
 	
-    @Basic(optional = false)
+    public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+
+	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
     
@@ -321,9 +331,9 @@ public class Project {
 				+ ", projectCompletionDeadline=" + projectCompletionDeadline + ", estimatedBudget=" + estimatedBudget
 				+ ", duration=" + duration + ", description=" + description + ", specialConditions=" + specialConditions
 				+ ", city=" + city + ", contractType=" + contractType + ", insuranceRequired=" + insuranceRequired
-				+ ", postType=" + postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", createdAt="
-				+ createdAt + ", modifiedDate=" + modifiedDate + ", projectProducts=" + projectProducts.toString() + "]";
+				+ ", postType=" + postType + ", status=" + status + ", awardedBidId=" + awardedBidId + ", deleteStatus="
+				+ deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", projectProducts="
+				+ projectProducts + "]";
 	}
 
-    
 }

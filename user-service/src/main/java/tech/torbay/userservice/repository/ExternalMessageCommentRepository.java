@@ -2,7 +2,11 @@ package tech.torbay.userservice.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import tech.torbay.userservice.entity.ExternalMessageComment;
@@ -17,5 +21,10 @@ public interface ExternalMessageCommentRepository extends JpaRepository<External
     ExternalMessageComment findOneById(Integer id);
 
 	List<ExternalMessageComment> findAllByThreadId(Integer threadId);
+
+	@Modifying
+	@Transactional
+	@Query(value="update condonuitydev.external_message_comment set delete_status = (?1) where id = (?2);", nativeQuery = true)
+	int setDeleteStatusById(Integer activeStatus, Integer externalMessageCommentId);
 	
 }

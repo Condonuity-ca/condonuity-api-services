@@ -3,6 +3,8 @@ package tech.torbay.userservice.repository;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -52,5 +54,10 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
 			String keyword);
 
 	List<ProjectReviewRating> findAllByClientOrganisationIdAndStatus(Integer clientOrganisationId, Integer status);
+
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE condonuitydev.project_reviews_ratings SET status = (?1) WHERE id=(?2);", nativeQuery = true)
+	int setStatusById(Integer status, Integer reviewRatingId);
 
 }

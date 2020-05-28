@@ -52,7 +52,7 @@ import tech.torbay.projectservice.constants.Constants;
 	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
 	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 2"/*Constants.ProjectPostType.PUBLISHED.getValue()*/, 
+	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 2 AND pro.delete_status = 1"/*Constants.ProjectPostType.PUBLISHED.getValue()*/, 
 	    resultSetMapping="vendorCurrentProjects")
 
 
@@ -61,7 +61,7 @@ import tech.torbay.projectservice.constants.Constants;
 	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
 	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 3 OR pro.status = 4", 
+	    		"WHERE vb.vendor_org_id = (?1) AND ( pro.status = 3 OR pro.status = 4 ) AND pro.delete_status = 1", 
 	    resultSetMapping="vendorHistoryProjects")
 
 public class VendorBid {

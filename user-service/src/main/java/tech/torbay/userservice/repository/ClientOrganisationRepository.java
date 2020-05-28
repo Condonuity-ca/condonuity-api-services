@@ -1,12 +1,15 @@
 package tech.torbay.userservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.ClientOrganisation;
 
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 @Repository
 public interface ClientOrganisationRepository extends JpaRepository<ClientOrganisation, Integer> {
@@ -26,6 +29,11 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 			"co.board_email, '.', co.general_email, '.', co.management_email, '.', co.created_at, '.', co.modified_date )" + 
 			" LIKE (?1)", nativeQuery = true)
     List<ClientOrganisation> findAllByKeyword(String keyword);
+
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE condonuitydev.client_organisation SET organisation_name = (?1) , corporate_number = (?2) WHERE client_organisation_id=(?3);", nativeQuery = true)
+	int setOrganisationNameAndCorporateNumberByClientOrganisationId(String corporationName, String corporationNumber, Integer clientOrganisationId);
 
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.organisation_name or co.management_company LIKE '%29%';")
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.client_organisation_id = (?1) and ( co.organisation_name or co.management_company ) LIKE '%(?2)%';")

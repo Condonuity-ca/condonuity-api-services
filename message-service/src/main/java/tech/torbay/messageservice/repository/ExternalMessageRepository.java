@@ -21,7 +21,7 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
     @Query(value = "SELECT * FROM condonuitydev.external_message em \r\n" + 
     		"left join condonuitydev.external_message_organisations emo on (em.id = emo.external_message_id)\r\n" + 
     		"where ( ( source_organisation_id = (?1) and source_user_type = (?2) ) " + 
-    		"or  ( emo.target_organisation_id = (?1) and emo.target_user_type = (?2)) );", nativeQuery = true)
-    List<ExternalMessage> findAllByOrganisationIdAndUserType(Integer organisationId, Integer userType);
+    		"or  ( emo.target_organisation_id = (?1) and emo.target_user_type = (?2)) ) and delete_status = (?3) ;", nativeQuery = true)
+    List<ExternalMessage> findAllByOrganisationIdAndUserTypeAndDeleteStatus(Integer organisationId, Integer userType, Integer deleteStatus);
 	
 }

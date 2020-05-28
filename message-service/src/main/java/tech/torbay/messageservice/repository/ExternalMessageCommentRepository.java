@@ -16,6 +16,6 @@ public interface ExternalMessageCommentRepository extends JpaRepository<External
     
     ExternalMessageComment findOneById(Integer id);
 
-	List<ExternalMessageComment> findAllByThreadId(Integer threadId);
+	List<ExternalMessageComment> findAllByThreadIdAndDeleteStatus(Integer threadId, Integer deleteStatus);
 	
 }

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
+import tech.torbay.projectservice.constants.Constants.DeleteStatus;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.UserType;
 import tech.torbay.projectservice.entity.BidFiles;
@@ -196,6 +197,7 @@ public class ProjectService {
 	public Project createProject(Project project) {
 		// TODO Auto-generated method stub
 		try {
+			project.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
 			project.setDuration(calculateDuration(project.getDuration(), project.getProjectStartDate(), project.getProjectCompletionDeadline()));
 			Project projectObj = projectRepository.save(project);
 //			int id = projectObj.getProjectId();
