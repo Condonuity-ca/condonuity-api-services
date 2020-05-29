@@ -781,7 +781,6 @@ public class AzureBlobService {
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
 			String fileSize = String.valueOf(multipartFile.getSize());
-			
 			CommentFiles commentFiles = new CommentFiles();
 			commentFiles.setCommentId(commentId);
 			commentFiles.setThreadType(threadType);
@@ -888,8 +887,8 @@ public class AzureBlobService {
 				map.put("fileType", threadFiles.getFileType());
 				return map;
 			}
-			case "internalCommentfiles":
-			case "externalCommentfiles":{
+			case "internalcommentfiles":
+			case "externalcommentfiles":{
 				CommentFiles commentFiles = commentFilesRepository.findByBlobName(blobName);
 				Map<String, String> map = new HashMap();
 				map.put("fileName", commentFiles.getFileName());

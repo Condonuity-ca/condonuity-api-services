@@ -267,7 +267,6 @@ public class FilesController {
 		         if (contentType == null) {
 		             contentType = "application/octet-stream";
 		         }
-	//
 	            ByteArrayResource resource = new ByteArrayResource(IOUtils.toByteArray(input));
 	            long contentLength = resource.contentLength();
 	            
