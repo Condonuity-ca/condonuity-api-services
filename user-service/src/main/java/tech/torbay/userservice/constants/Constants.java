@@ -722,15 +722,18 @@ public class Constants {
 	}
 	
 	public enum SearchType {
-		PROJECTS(1),
-	    MARKETPLACE_PROJECTS(2),
-		BROWSE_VENDORS(3),
-		BROWSE_CONDOS(4),
-		MESSAGES(5),
-		REVIEWS(6),
-		TASKS(7),
-		CONTRACTS(8),
-		BUILDING_REPOSITORY(9);
+		CURRENT_PROJECTS(1),
+		HISTORY_PROJECTS(2),
+		FAVOURITE_PROJECTS(3),
+	    MARKETPLACE_PROJECTS(4),
+		BROWSE_VENDORS(5),
+		BROWSE_CONDOS(6),
+		INTERNAL_MESSAGES(7),
+		EXTERNAL_MESSAGES(8),
+		REVIEWS(9),
+		TASKS(10),
+		CONTRACTS(11),
+		BUILDING_REPOSITORY(12);
 		
 		private int value;
 		private static Map map = new HashMap<>();

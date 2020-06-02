@@ -1,5 +1,6 @@
 package tech.torbay.userservice.repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.persistence.SqlResultSetMapping;
@@ -30,14 +31,14 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	@Query("select pro from Project pro where pro.projectId IN (?1)")
 	List<Project> getAllVendorProjects(List<Integer> ids);
 
-	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and " + 
+	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and delete_status = 1 and status IN (?3) " + 
 			"concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
 			"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
 			"'.', pro.duration, '.', pro.description, " + 
 			"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
 			"LIKE (?2)"
 			, nativeQuery = true)
-	List<Project> findAllByKeyword(Integer clientOrganisationId, String keyword);
+	List<Project> findAllByKeyword(Integer clientOrganisationId, String keyword, List<Integer> status);
 	
 	//SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = 1 and  
 //	 (pro.project_name LIKE '%remove%' or pro.description LIKE '%remove%' )
@@ -50,10 +51,13 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	List<Project> findAllByTagKeyword(Integer clientOrganisationId, String keyword);
 
 	@Query(name="Project.MarketPlaceSearch")
-	List<Object[]> findAllProjectsForMarketPlaceByKeyword(String keyword);
+	List<Object[]> findAllProjectsForMarketPlaceByKeyword(String keyword, List<Integer> projectStatusCodes);
 
 	@Query(name="Project.VendorProjectsSearch")
-	List<Object[]> findAllProjectsForVendorByKeyword(Integer vendorOrganisationId, String keyword);
+	List<Object[]> findAllProjectsForVendorByKeyword(Integer vendorOrganisationId, String keyword, List<Integer> projectStatusCodes);
+
+	@Query(name="Project.VendorFavoriteProjectsSearch")
+	List<Object[]> findFavouriteProjectsForVendorByKeyword(Integer vendorOrganisationId, String keyword, List<Integer> projectStatusCodes);
 
 	@Modifying
 	@Transactional

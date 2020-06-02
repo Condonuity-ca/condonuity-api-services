@@ -31,12 +31,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        // hard coding the users. All passwords must be encoded.
-
         final LoginUser app_user = userRepository.findByUsername(username);
         
         if(app_user != null) {
-        	AppUser appUser = new AppUser(1, app_user.getUsername(), encoder.encode(app_user.getPassword()), "ADMIN");
+        	AppUser appUser = new AppUser(1, app_user.getUsername(), app_user.getPassword(), "ADMIN");
 
             // Remember that Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
             // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN")).
@@ -53,7 +51,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     // A (temporary) class represent the user saved in the database.
-    private static class AppUser {
+    private class AppUser {
         private Integer id;
         private String username, password;
         private String role;
@@ -61,7 +59,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         public AppUser(Integer id, String username, String password, String role) {
             this.id = id;
             this.username = username;
-            this.password = password;
+            this.password = encoder.encode(password);
             this.role = role;
         }
 

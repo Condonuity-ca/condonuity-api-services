@@ -76,6 +76,9 @@ public class AzureBlobService {
 	VendorRegistrationFilesRepository vendorRegistrationFilesRepository;
 	@Autowired
 	ProjectAwardFilesRepository projectAwardFilesRepository;
+	
+	boolean URI_ACCESS_REQUIRED = true;
+	boolean URI_ACCESS_NOT_REQUIRED = false;
 
 	public boolean createContainer(String containerName) {
 
@@ -113,7 +116,7 @@ public class AzureBlobService {
 		return null;
 	}
 
-	public URI uploads(String containerName, MultipartFile multipartFile, String blobName) {
+	public URI uploads(String containerName, MultipartFile multipartFile, String blobName, boolean isRequireURIAccess) {
 		URI uri = null;
 		CloudBlobContainer container = null;
 		CloudBlockBlob blob = null;
@@ -121,8 +124,10 @@ public class AzureBlobService {
 		try {
 			container = cloudBlobClient.getContainerReference(containerName);
 			BlobContainerPermissions containerPermissions = new BlobContainerPermissions();
-			containerPermissions.setPublicAccess(BlobContainerPublicAccessType.CONTAINER);
-			container.uploadPermissions(containerPermissions);
+			if(isRequireURIAccess) {
+				containerPermissions.setPublicAccess(BlobContainerPublicAccessType.CONTAINER);
+				container.uploadPermissions(containerPermissions);
+			}
 			
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
@@ -268,7 +273,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -308,7 +313,7 @@ public class AzureBlobService {
 				String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 				String blobName = uuid.toString()+"."+extension;
 
-				URI uri = uploads(containerName, multipartFile, blobName);
+				URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
 				
 				String fileName = multipartFile.getOriginalFilename();
 				String fileType = multipartFile.getContentType();
@@ -372,7 +377,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -429,7 +434,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 			
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -501,7 +506,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 			
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -551,7 +556,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 			
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -599,7 +604,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 			
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName,URI_ACCESS_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -720,7 +725,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 			
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -776,7 +781,7 @@ public class AzureBlobService {
 			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 			String blobName = uuid.toString()+"."+extension;
 			
-			URI uri = uploads(containerName, multipartFile, blobName);
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
 			
 			String fileName = multipartFile.getOriginalFilename();
 			String fileType = multipartFile.getContentType();
@@ -935,7 +940,7 @@ public class AzureBlobService {
 				String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
 				String blobName = uuid.toString()+"."+extension;
 
-				URI uri = uploads(containerName, multipartFile, blobName);
+				URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
 				
 				String fileName = multipartFile.getOriginalFilename();
 				String fileType = multipartFile.getContentType();

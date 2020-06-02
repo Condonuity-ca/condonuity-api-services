@@ -27,6 +27,7 @@ import tech.torbay.userservice.entity.ExternalMessageComment;
 import tech.torbay.userservice.repository.VendorBidRepository;
 import tech.torbay.userservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.userservice.Utils.Utils;
+import tech.torbay.userservice.constants.Constants.ProjectPostType;
 import tech.torbay.userservice.constants.Constants.ThreadType;
 import tech.torbay.userservice.entity.CommentFiles;
 import tech.torbay.userservice.entity.InternalMessage;
@@ -147,9 +148,16 @@ public class UserService {
 		
 		List<Map<String, Object>> result = new ArrayList();
 		
+		List<Integer> projectStatusCodes = new ArrayList();
 		switch(searchType) {
 			case 1:
-			case 2:{
+				projectStatusCodes.add(ProjectPostType.UNPUBLISHED.getValue());//status = 1 or status = 2 - current projects status
+				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
+			case 2:
+				projectStatusCodes.add(ProjectPostType.COMPLETED.getValue());//status = 3 or status = 4 - current projects status
+				projectStatusCodes.add(ProjectPostType.TERMINATED.getValue());
+			case 4:{
+				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
 				// check contract type
 				// check keyword has project tags				
 				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
@@ -161,7 +169,7 @@ public class UserService {
 					}
 				}
 				
-				List<Project> projects = projectRepository.findAllByKeyword(clientOrganisationId, keyword);
+				List<Project> projects = projectRepository.findAllByKeyword(clientOrganisationId, keyword, projectStatusCodes);
 				for(Project project : projects) {
 					result.add(getProjectObject(project));
 				}
@@ -191,7 +199,7 @@ public class UserService {
 				return result;
 			}
 			
-			case 3:{
+			case 5:{
 				// check keyword has vendor tags				
 				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
 				List<VendorOrganisation> tagContainedVendors = new ArrayList();
@@ -237,7 +245,7 @@ public class UserService {
 				
 				return result;
 			}
-			case 4:{
+			case 6:{
 				
 				List<ClientOrganisation> clientOrganisations = clientOrganisationRepository.findAllByKeyword(keyword);
 				for(ClientOrganisation clientOrganisation : clientOrganisations) {
@@ -249,102 +257,103 @@ public class UserService {
 		        
 				return result;
 			}
-			case 5:{ 
+			case 7:{
+				try {
+					List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
+					HashSet<InternalMessage> uniqueInternalMessages = new HashSet(internalMessages);// add distinct
+					
+					for(InternalMessage internalMessage : internalMessages) {
+						Map<String,Object> map = new HashMap<>();
+						ObjectMapper oMapper = new ObjectMapper();
+						map = oMapper.convertValue(internalMessage, Map.class);
+						
+						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
+						List<Map<String,Object>> allFiles = new ArrayList();
+						for(ThreadFiles threadFile : threadFiles) {
+							Map<String,Object> file = new HashMap<>();
+							file.put("id", threadFile.getId());
+							file.put("fileName", threadFile.getFileName());
+							file.put("fileType", threadFile.getFileType());
+							file.put("fileUrl", threadFile.getFileUrl());
+							file.put("createdAt", threadFile.getCreatedAt());
+							file.put("modifiedDate", threadFile.getModifiedDate());
+							allFiles.add(file);
+						}
+						ClientUser createdBy = clientUserRepository.findByClientId(internalMessage.getUserId());
+						 
+						map.put("createdByUser", createdBy.getFirstName()+" "+createdBy.getLastName()); // this created by user search is missing
+						map.put("files",allFiles);
+						map.put("comments",getInternalThreadComments(internalMessage.getId()));
+						
+						result.add(map);
+					}
+				} catch(Exception exp) {
+					return null;
+				}
+			}
+			case 8:{ 
 				// - changes
 				// 1. add username based search both source , target - completed as well messages - ?
 				// 2. add user, org details both source and target - completed as well messages - ?
 				try {
-					Integer threadType = Integer.parseInt(String.valueOf(requestData.get("threadType")));
+					List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
+					HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);// add distinct
 					
-					if(threadType == Constants.ThreadType.INTERNAL.getValue()) {
-						List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
-						HashSet<InternalMessage> uniqueInternalMessages = new HashSet(internalMessages);// add distinct
+					for(ExternalMessage externalMessage : uniqueExternalMessages) {
 						
-						for(InternalMessage internalMessage : internalMessages) {
-							Map<String,Object> map = new HashMap<>();
-							ObjectMapper oMapper = new ObjectMapper();
-							map = oMapper.convertValue(internalMessage, Map.class);
-							
-							List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
-							List<Map<String,Object>> allFiles = new ArrayList();
-							for(ThreadFiles threadFile : threadFiles) {
-								Map<String,Object> file = new HashMap<>();
-								file.put("id", threadFile.getId());
-								file.put("fileName", threadFile.getFileName());
-								file.put("fileType", threadFile.getFileType());
-								file.put("fileUrl", threadFile.getFileUrl());
-								file.put("createdAt", threadFile.getCreatedAt());
-								file.put("modifiedDate", threadFile.getModifiedDate());
-								allFiles.add(file);
-							}
-							ClientUser createdBy = clientUserRepository.findByClientId(internalMessage.getUserId());
-							 
-							map.put("createdByUser", createdBy.getFirstName()+" "+createdBy.getLastName()); // this created by user search is missing
-							map.put("files",allFiles);
-							map.put("comments",getInternalThreadComments(internalMessage.getId()));
-							
-							result.add(map);
-						}
-					} else if(threadType == Constants.ThreadType.EXTERNAL.getValue()) {
-						List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeyword(clientOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
-						HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);// add distinct
+						Map<String,Object> map = new HashMap<>();
+						ObjectMapper oMapper = new ObjectMapper();
+						map = oMapper.convertValue(externalMessage, Map.class);
 						
-						for(ExternalMessage externalMessage : uniqueExternalMessages) {
-							
-							Map<String,Object> map = new HashMap<>();
-							ObjectMapper oMapper = new ObjectMapper();
-							map = oMapper.convertValue(externalMessage, Map.class);
-							
-							List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
-							List<Map<String,Object>> allFiles = new ArrayList();
-							for(ThreadFiles threadFile : threadFiles) {
-								Map<String,Object> file = new HashMap<>();
-								file.put("id", threadFile.getId());
-								file.put("fileName", threadFile.getFileName());
-								file.put("fileType", threadFile.getFileType());
-								file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
-								file.put("blobName", threadFile.getBlobName());
-								file.put("containerName", threadFile.getContainerName());
-//								file.put("fileUrl", threadFile.getFileUrl());
-								file.put("createdAt", threadFile.getCreatedAt());
-//								file.put("modifiedDate", threadFile.getModifiedDate());
-								allFiles.add(file);
-							}
-							
-							
-							/*if okay use SQL Result Set mapping query here when require optimization*/
-							if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
-								ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
-								ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
-								
-								map.put("createdByUser",clientUser.getFirstName() +" "+ clientUser.getLastName());
-								map.put("sourceOrganisationName",clientOrganisation.getOrganisationName());
-								
-							} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
-								VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
-								VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
-								
-								map.put("createdByUser",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
-								map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
-							}
-							
-							
-							if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
-								ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
-								
-								map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
-								
-							} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
-								VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
-								
-								map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
-							}
-							
-							map.put("files",allFiles);
-							map.put("comments",getExternalThreadComments(externalMessage.getId()));
-							
-							result.add(map);
+						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+						List<Map<String,Object>> allFiles = new ArrayList();
+						for(ThreadFiles threadFile : threadFiles) {
+							Map<String,Object> file = new HashMap<>();
+							file.put("id", threadFile.getId());
+							file.put("fileName", threadFile.getFileName());
+							file.put("fileType", threadFile.getFileType());
+							file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+							file.put("blobName", threadFile.getBlobName());
+							file.put("containerName", threadFile.getContainerName());
+//							file.put("fileUrl", threadFile.getFileUrl());
+							file.put("createdAt", threadFile.getCreatedAt());
+//							file.put("modifiedDate", threadFile.getModifiedDate());
+							allFiles.add(file);
 						}
+						
+						
+						/*if okay use SQL Result Set mapping query here when require optimization*/
+						if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+							ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+							
+							map.put("createdByUser",clientUser.getFirstName() +" "+ clientUser.getLastName());
+							map.put("sourceOrganisationName",clientOrganisation.getOrganisationName());
+							
+						} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+							VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+							
+							map.put("createdByUser",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
+							map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
+						}
+						
+						
+						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
+							
+							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
+							
+						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
+							
+							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
+						}
+						
+						map.put("files",allFiles);
+						map.put("comments",getExternalThreadComments(externalMessage.getId()));
+						
+						result.add(map);
 					}
 				} catch(Exception exp) {
 					return null;
@@ -352,7 +361,7 @@ public class UserService {
 				
 				return result;
 			}
-			case 6:{
+			case 9:{
 				List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByClientIdAndClientOrganisationIdAndKeyword(clientUserId, clientOrganisationId, keyword);
 				
 				for(ProjectReviewRating projectReviewRating : projectReviewsForVendors) {
@@ -375,7 +384,7 @@ public class UserService {
 				}
 				return result;
 			}
-			case 7:{
+			case 10:{
 				List<ClientTask> clientTasks = clientTaskRepository.findAllByClientOrganisationIdAndKeyword(clientOrganisationId, keyword);
 				HashSet<ClientTask> clientTasksSet = new HashSet(clientTasks);// no need added distinct
 				
@@ -415,7 +424,7 @@ public class UserService {
 				 }
 				return result;
 			}
-			case 8:{
+			case 11:{
 				List<ClientContract> allConstantBasedContracts = getAllConstantsBasedContractsSearchResults(clientOrganisationId, actualKeyword);
 				HashSet<ClientContract> allConstantBasedContractsSet = new HashSet(allConstantBasedContracts);
 				
@@ -452,7 +461,7 @@ public class UserService {
 				
 				return result;
 			}
-			case 9:{
+			case 12:{
 				// check clientId - createdBy, ModifiedBy - completed using query
 				// check tenant_status, person_tenant_type, unit_type, lien_type
 				List<ClientBuildingRepository> allTypeBasedBuildingRepositories = getAllTypeBasedRepositorySearchResults(clientOrganisationId, actualKeyword);
@@ -1104,20 +1113,35 @@ public class UserService {
 		
 		List<Map<String, Object>> result = new ArrayList();
 		
+		List<Integer> projectStatusCodes = new ArrayList();
+		
 		switch(searchType) {
-			case 1:{
-				List<Object[]> projects = projectRepository.findAllProjectsForVendorByKeyword(vendorOrganisationId, keyword);
+			case 1:
+				projectStatusCodes.add(ProjectPostType.UNPUBLISHED.getValue());//status = 1 or status = 2 - current projects status
+				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
+			case 2:
+				projectStatusCodes.add(ProjectPostType.COMPLETED.getValue());//status = 3 or status = 4 - current projects status
+				projectStatusCodes.add(ProjectPostType.TERMINATED.getValue());
 				
-				return getProjectsBundle(vendorOrganisationId, projects);
-			}
-			case 2:{
-				// check contract type, posttype, interest
+				List<Object[]> current_R_Historyprojects = projectRepository.findAllProjectsForVendorByKeyword(vendorOrganisationId, keyword, projectStatusCodes);
 				
-				List<Object[]> projects = projectRepository.findAllProjectsForMarketPlaceByKeyword(keyword);
-				
-				return getProjectsBundle(vendorOrganisationId, projects);
-			}
+				return getProjectsBundle(vendorOrganisationId, current_R_Historyprojects);
 			case 3:{
+				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
+				
+				List<Object[]> favoriteProjects = projectRepository.findFavouriteProjectsForVendorByKeyword(vendorOrganisationId, keyword, projectStatusCodes);
+				
+				return getProjectsBundle(vendorOrganisationId, favoriteProjects);
+			}
+			case 4:{
+				// check contract type, posttype, interest
+				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());//status = 2 - published projects status
+				
+				List<Object[]> projects = projectRepository.findAllProjectsForMarketPlaceByKeyword(keyword, projectStatusCodes);
+				
+				return getProjectsBundle(vendorOrganisationId, projects);
+			}
+			case 5:{
 				// check keyword has vendor tags				
 				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
 				List<VendorOrganisation> tagContainedVendors = new ArrayList();
@@ -1163,7 +1187,7 @@ public class UserService {
 				
 				return result;
 			}
-			case 4:{
+			case 6:{
 				
 				List<ClientOrganisation> clientOrganisations = clientOrganisationRepository.findAllByKeyword(keyword);
 				for(ClientOrganisation clientOrganisation : clientOrganisations) {
@@ -1173,104 +1197,106 @@ public class UserService {
 				}
 				return result;
 			}
-			case 5:{
+			case 7:{
 				try {
-					Integer threadType = Integer.parseInt(String.valueOf(requestData.get("threadType")));
+					List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeywordForVendor(vendorOrganisationId, Constants.UserType.VENDOR.getValue(), keyword);
+					HashSet<InternalMessage> uniqueInternalMessages = new HashSet(internalMessages);// add distinct
 					
-					if(threadType == Constants.ThreadType.INTERNAL.getValue()) {
-						List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeywordForVendor(vendorOrganisationId, Constants.UserType.VENDOR.getValue(), keyword);
-						HashSet<InternalMessage> uniqueInternalMessages = new HashSet(internalMessages);// add distinct
+					for(InternalMessage internalMessage : internalMessages) {
+						Map<String,Object> map = new HashMap<>();
+						ObjectMapper oMapper = new ObjectMapper();
+						map = oMapper.convertValue(internalMessage, Map.class);
 						
-						for(InternalMessage internalMessage : internalMessages) {
-							Map<String,Object> map = new HashMap<>();
-							ObjectMapper oMapper = new ObjectMapper();
-							map = oMapper.convertValue(internalMessage, Map.class);
-							
-							List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
-							List<Map<String,Object>> allFiles = new ArrayList();
-							for(ThreadFiles threadFile : threadFiles) {
-								Map<String,Object> file = new HashMap<>();
-								file.put("id", threadFile.getId());
-								file.put("fileName", threadFile.getFileName());
-								file.put("fileType", threadFile.getFileType());
-								file.put("fileUrl", threadFile.getFileUrl());
-								file.put("createdAt", threadFile.getCreatedAt());
-								file.put("modifiedDate", threadFile.getModifiedDate());
-								allFiles.add(file);
-							}
-							VendorUser createdBy = vendorUserRepository.findByUserId(internalMessage.getUserId());
-							 
-							map.put("createdByUser", createdBy.getFirstName()+" "+createdBy.getLastName()); // this created by user search is missing
-							map.put("files",allFiles);
-							map.put("comments",getInternalThreadComments(internalMessage.getId()));
-							
-							result.add(map);
+						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
+						List<Map<String,Object>> allFiles = new ArrayList();
+						for(ThreadFiles threadFile : threadFiles) {
+							Map<String,Object> file = new HashMap<>();
+							file.put("id", threadFile.getId());
+							file.put("fileName", threadFile.getFileName());
+							file.put("fileType", threadFile.getFileType());
+							file.put("fileUrl", threadFile.getFileUrl());
+							file.put("createdAt", threadFile.getCreatedAt());
+							file.put("modifiedDate", threadFile.getModifiedDate());
+							allFiles.add(file);
 						}
-					} else if(threadType == Constants.ThreadType.EXTERNAL.getValue()) {
-						List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeywordForVendor(vendorOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
-						HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);// add distinct
+						VendorUser createdBy = vendorUserRepository.findByUserId(internalMessage.getUserId());
+						 
+						map.put("createdByUser", createdBy.getFirstName()+" "+createdBy.getLastName()); // this created by user search is missing
+						map.put("files",allFiles);
+						map.put("comments",getInternalThreadComments(internalMessage.getId()));
 						
-						for(ExternalMessage externalMessage : uniqueExternalMessages) {
-							
-							Map<String,Object> map = new HashMap<>();
-							ObjectMapper oMapper = new ObjectMapper();
-							map = oMapper.convertValue(externalMessage, Map.class);
-							
-							List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
-							List<Map<String,Object>> allFiles = new ArrayList();
-							for(ThreadFiles threadFile : threadFiles) {
-								Map<String,Object> file = new HashMap<>();
-								file.put("id", threadFile.getId());
-								file.put("fileName", threadFile.getFileName());
-								file.put("fileType", threadFile.getFileType());
-								file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
-								file.put("blobName", threadFile.getBlobName());
-								file.put("containerName", threadFile.getContainerName());
-//								file.put("fileUrl", threadFile.getFileUrl());
-								file.put("createdAt", threadFile.getCreatedAt());
-//								file.put("modifiedDate", threadFile.getModifiedDate());
-								allFiles.add(file);
-							}
-							
-							
-							/*if okay use SQL Result Set mapping query here when require optimization*/
-							if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
-								ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
-								ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
-								
-								map.put("createdByUser",clientUser.getFirstName() +" "+ clientUser.getLastName());
-								map.put("sourceOrganisationName",clientOrganisation.getOrganisationName());
-								
-							} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
-								VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
-								VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
-								
-								map.put("createdByUser",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
-								map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
-							}
-							
-							
-							if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
-								ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
-								
-								map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
-								
-							} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
-								VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
-								
-								map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
-							}
-							
-							map.put("files",allFiles);
-							map.put("comments",getExternalThreadComments(externalMessage.getId()));
-							
-							result.add(map);
-						}
-					}
+						result.add(map);
+					} 
 				} catch(Exception exp) {
 					return null;
 				}
 				
+				return result;
+			}
+			case 8:{
+				try {
+					List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeywordForVendor(vendorOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
+					HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);// add distinct
+					
+					for(ExternalMessage externalMessage : uniqueExternalMessages) {
+						
+						Map<String,Object> map = new HashMap<>();
+						ObjectMapper oMapper = new ObjectMapper();
+						map = oMapper.convertValue(externalMessage, Map.class);
+						
+						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+						List<Map<String,Object>> allFiles = new ArrayList();
+						for(ThreadFiles threadFile : threadFiles) {
+							Map<String,Object> file = new HashMap<>();
+							file.put("id", threadFile.getId());
+							file.put("fileName", threadFile.getFileName());
+							file.put("fileType", threadFile.getFileType());
+							file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+							file.put("blobName", threadFile.getBlobName());
+							file.put("containerName", threadFile.getContainerName());
+//							file.put("fileUrl", threadFile.getFileUrl());
+							file.put("createdAt", threadFile.getCreatedAt());
+//							file.put("modifiedDate", threadFile.getModifiedDate());
+							allFiles.add(file);
+						}
+						
+						
+						/*if okay use SQL Result Set mapping query here when require optimization*/
+						if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+							ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+							
+							map.put("createdByUser",clientUser.getFirstName() +" "+ clientUser.getLastName());
+							map.put("sourceOrganisationName",clientOrganisation.getOrganisationName());
+							
+						} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+							VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+							
+							map.put("createdByUser",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
+							map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
+						}
+						
+						
+						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
+							
+							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
+							
+						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
+							
+							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
+						}
+						
+						map.put("files",allFiles);
+						map.put("comments",getExternalThreadComments(externalMessage.getId()));
+						
+						result.add(map);
+					}
+				} catch(Exception exp) {
+					return null;
+				}
 				return result;
 			}
 		}

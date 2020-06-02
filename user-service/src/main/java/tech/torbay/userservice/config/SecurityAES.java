@@ -1,6 +1,5 @@
-package tech.torbay.securityservice.config;
+package tech.torbay.userservice.config;
 
-import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
@@ -11,24 +10,11 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import tech.torbay.securityservice.entity.User;
-
 public class SecurityAES {
 	
 	private static String secretKey = "@torbay.tech";
 	private static String salt = "contonuity";
-	 @Autowired
-	 private BCryptPasswordEncoder encoder;
 	 
-	public String encrypt1(String strToEncrypt) {
-		
-		return encoder.encode(strToEncrypt);
-	}
-	
 	public static String encrypt(String strToEncrypt)
 	{
 	    try

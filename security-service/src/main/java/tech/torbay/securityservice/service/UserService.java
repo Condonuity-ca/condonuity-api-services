@@ -19,6 +19,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
+import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
@@ -36,7 +37,7 @@ import tech.torbay.securityservice.repository.VendorUserRepository;
 
 @Component
 public class UserService {
-	
+
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
@@ -49,10 +50,9 @@ public class UserService {
 	VendorUserRepository vendorUserRepository;
 	@Autowired
 	AmenitiesRepository amenitiesRepository;
-	
 	@Autowired
-    private BCryptPasswordEncoder encoder;
-	
+	private BCryptPasswordEncoder encoder;
+
 	public List<User> findAll() {
 //		// TODO Auto-generated method stub
 		return Lists.newArrayList(userRepository.findAll());
@@ -68,90 +68,86 @@ public class UserService {
 		// TODO Auto-generated method stub
 		return userRepository.findByUserIdAndUserType(id, userType);
 	}
-	
-	
-	
-	public User resetPassword(Integer userId, Integer userType, String password, String firstName, String lastName, String phone) {
+
+	public User resetPassword(Integer userId, Integer userType, String password, String firstName, String lastName,
+			String phone) {
 		// TODO Auto-generated method stub
-		
+
 		// New User used to reset password after accept invite
-		
+
 		User userObj = userRepository.findByUserIdAndUserType(userId, userType);
-		if( userObj == null) 
-		{
+		if (userObj == null) {
 			new ResourceNotFoundException("User", "userId", userId);
 		}
-//		user.setPassword(/* SecurityAES.encrypt( */user.get("password")/* ) */);
-		userObj.setPassword(password);
-		
+//		userObj.setPassword(encoder.encode( password ) );
+		userObj.setPassword(SecurityAES.encrypt(password ) );
+//		userObj.setPassword(password);
+
 		try {
-			if(userType == Constants.UserType.CLIENT.getValue()) {
+			if (userType == Constants.UserType.CLIENT.getValue()) {
 				ClientUser clientUser = clientUserRepository.findByClientId(userId);
-				
+
 //				clientUser.setFirstName(firstName);
 //				clientUser.setLastName(lastName);
 				clientUser.setPhone(phone);
-				
+
 				clientUserRepository.save(clientUser);
-			} else if(userType == Constants.UserType.VENDOR.getValue()) {
+			} else if (userType == Constants.UserType.VENDOR.getValue()) {
 				VendorUser vendorUser = vendorUserRepository.findByUserId(userId);
-				
+
 //				vendorUser.setFirstName(firstName);
 //				vendorUser.setLastName(lastName);
-				
+
 				vendorUserRepository.save(vendorUser);
 			}
-		} catch(Exception exp) {
+		} catch (Exception exp) {
 			exp.printStackTrace();
 		}
-		
+
 		return userRepository.save(userObj);
 	}
 
 	public User Login(String username, String password) {
 		// TODO Auto-generated method stub
-		return userRepository.findByUsernameAndPassword(username, /* SecurityAES.encrypt( */password/* ) */);
+		return userRepository.findByUsernameAndPassword(username, SecurityAES.encrypt(password));
 	}
 
 	public List<ServiceCities> findAllServiceCities() {
 		// TODO Auto-generated method stub
 		return serviceCitiesRepository.findAll();
 	}
-	
+
 	public HashMap<String, Object> findAllProvinceCities() {
 		// TODO Auto-generated method stub
 		List<ServiceCities> serviceCities = serviceCitiesRepository.findAll();
 		List<String> provinces = serviceCitiesRepository.findAllCityProvinces();
-		
+
 		HashMap<String, Object> provinceCities = new HashMap();
-		
+
 		for (String province : provinces) {
-			List<HashMap<String, Object>> cities = serviceCities
-					.stream()
-					.filter(serviceCity -> serviceCity.getCityProvince().equals(province))
-					.map(city -> {
+			List<HashMap<String, Object>> cities = serviceCities.stream()
+					.filter(serviceCity -> serviceCity.getCityProvince().equals(province)).map(city -> {
 						ObjectMapper oMapper = new ObjectMapper();
-				        // object -> Map
+						// object -> Map
 						HashMap<String, Object> cityObj = oMapper.convertValue(city, HashMap.class);
 						cityObj.remove("cityProvince");
 						cityObj.remove("createdAt");
 						cityObj.remove("modifiedDate");
-				        cityObj.remove("status");
+						cityObj.remove("status");
 						return cityObj;
-					})
-					.collect(Collectors.toList());
-		
-			provinceCities.put(province,cities);
-        }
-		
+					}).collect(Collectors.toList());
+
+			provinceCities.put(province, cities);
+		}
+
 		return provinceCities;
 	}
 
 	public void updateTermsAcceptedTimestamp(Integer userId, Integer userType) {
 		// TODO Auto-generated method stub
 		User userObj = userRepository.findByUserIdAndUserType(userId, userType);
-		if( userObj != null) {
-			
+		if (userObj != null) {
+
 			Date date = new Date();
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -159,10 +155,10 @@ public class UserService {
 			df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 
 			String termsAcceptedDate = df.format(date);
-			
+
 			userObj.setTermsAcceptedDate(termsAcceptedDate);
 		}
-		
+
 		userRepository.save(userObj);
 	}
 
@@ -170,10 +166,9 @@ public class UserService {
 		// TODO Auto-generated method stub
 		return predefinedTagsRepository.findAll();
 	}
-	
+
 	public List<Amenities> findAllAmenities() {
 		// TODO Auto-generated method stub
 		return amenitiesRepository.findAll();
 	}
 }
-

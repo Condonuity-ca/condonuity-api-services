@@ -127,7 +127,7 @@ public class UserController {
 		User userInfo = userService.Login(user.getUsername(), user.getPassword());
 		try {
 			if(userInfo != null) {
-				String Token = getAuthToken(user.getUsername(), user.getPassword());
+				String Token = getAuthToken(user.getUsername(), userInfo.getPassword());
 				if(userInfo.getUserType() == 1) {
 					
 					ClientUser clientInfo = clientService.findById(userInfo.getUserId());
@@ -878,5 +878,11 @@ public class UserController {
 		 	return new ResponseEntity<Object>(list, HttpStatus.OK);
 		 }
 
+		}
+	
+		@PostMapping("/password/encrypt/{password}")
+		public ResponseEntity<Object> getEncryptPassword(@PathVariable("password") String password) {
+		
+		 	return new ResponseEntity<Object>(SecurityAES.encrypt(password), HttpStatus.OK);
 		}
 }

@@ -62,6 +62,17 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 					  @ColumnResult(name="first_name"),
 					  @ColumnResult(name="last_name")
 			  }
+			  ),
+	  @SqlResultSetMapping(
+			  name="vendorFavoriteProjectsSearch",
+			  entities={
+					  @EntityResult(entityClass=Project.class)
+			  },
+			  columns={
+					  @ColumnResult(name="management_company"),
+					  @ColumnResult(name="first_name"),
+					  @ColumnResult(name="last_name")
+			  }
 			  )
 	})
 @NamedNativeQuery(
@@ -91,9 +102,13 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 	    		"FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
-	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
+//	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
 	    		"LEFT JOIN condonuitydev.bids b ON b.project_id = pro.project_id " + 
-	    		"WHERE ( pro.status = 2 and ( vpi.vendor_organisation_id = (?1) or b.vendor_org_id = (?1))) " + 
+	    		"WHERE ( pro.status IN (?3) and "
+//	    		+ "( vpi.vendor_organisation_id = (?1) or"
+	    		+ " b.vendor_org_id = (?1)"
+//	    		+ ")"
+	    		+ ") " + 
 	    		"and ( concat ( " + 
 	    		"pro.project_name, '.', pro.tags, '.', pro.bid_end_date, '.', " + 
 	    		"pro.project_start_date, '.', pro.project_completion_deadline, '.', " + 
@@ -103,6 +118,26 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 	    		"or co.management_company LIKE (?2) " + 
 	    		"or CONCAT(TRIM(cu.first_name), ' ', TRIM(cu.last_name)) LIKE (?2) )", 
 	    resultSetMapping="vendorProjectsSearch")
+
+//if bid - add search
+@NamedNativeQuery(
+	    name="Project.VendorFavoriteProjectsSearch", 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name " + 
+	    		"FROM condonuitydev.projects pro " + 
+	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
+	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
+	    		"LEFT JOIN condonuitydev.bids b ON b.project_id = pro.project_id " + 
+	    		"WHERE ( pro.status IN (?3) and ( vpi.vendor_organisation_id = (?1) or b.vendor_org_id = (?1))) " + 
+	    		"and ( concat ( " + 
+	    		"pro.project_name, '.', pro.tags, '.', pro.bid_end_date, '.', " + 
+	    		"pro.project_start_date, '.', pro.project_completion_deadline, '.', " + 
+	    		"pro.estimated_budget, '.', pro.duration, '.', pro.description, '.', " + 
+	    		"pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) LIKE (?2) " + 
+	    		"or concat (cu.first_name, '.', cu.last_name) LIKE (?2) " + 
+	    		"or co.management_company LIKE (?2) " + 
+	    		"or CONCAT(TRIM(cu.first_name), ' ', TRIM(cu.last_name)) LIKE (?2) )", 
+	    resultSetMapping="vendorFavoriteProjectsSearch")
 
 public class Project {
 

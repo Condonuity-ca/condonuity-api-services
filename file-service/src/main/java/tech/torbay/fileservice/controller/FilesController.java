@@ -348,7 +348,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Client Registration File Uploaded Successfully");
 			map.put("containerName", Constants.Containers.CLIENT_REGISTRATION_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -382,7 +382,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Client Registration File Uploaded Successfully");
 			map.put("containerName", Constants.Containers.CLIENT_REGISTRATION_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -406,7 +406,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Project File Uploaded Successfully");
 			map.put("containerName", Constants.Containers.PROJECT_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -437,7 +437,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Project Files Uploaded Successfully");
 			map.put("containerName", Constants.Containers.PROJECT_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -476,7 +476,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Bid File Uploaded Successfully");
 			map.put("containerName", Constants.Containers.BID_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -508,7 +508,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Bid Files Uploaded Successfully");
 			map.put("containerName", Constants.Containers.BID_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -630,7 +630,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Message Internal Thread Files Uploaded Successfully");
 			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -660,7 +660,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Message Comment Files Uploaded Successfully");
 			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_COMMENT_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -690,7 +690,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Message External Thread Files Uploaded Successfully");
 			map.put("containerName", Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -720,7 +720,7 @@ public class FilesController {
 			map.put("statusMessage", "Success");
 			map.put("responseMessage", "Message Comment Files Uploaded Successfully");
 			map.put("containerName", Constants.Containers.MESSAGE_EXTERNAL_COMMENT_FILES.getValue());
-			map.put("resource", url);
+//			map.put("resource", url);
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {
 			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -813,7 +813,7 @@ public class FilesController {
 				map.put("statusMessage", "Success");
 				map.put("responseMessage", "Vendor Registration File Uploaded Successfully");
 				map.put("containerName", Constants.Containers.VENDOR_REGISTRATION_FILES.getValue());
-				map.put("resource", url);
+//				map.put("resource", url);
 				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 			} else {
 				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -847,7 +847,7 @@ public class FilesController {
 				map.put("statusMessage", "Success");
 				map.put("responseMessage", "Vendor Registration File Uploaded Successfully");
 				map.put("containerName", Constants.Containers.VENDOR_REGISTRATION_FILES.getValue());
-				map.put("resource", url);
+//				map.put("resource", url);
 				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 			} else {
 				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
@@ -878,7 +878,7 @@ public class FilesController {
 				map.put("statusMessage", "Success");
 				map.put("responseMessage", "Project Award Files Uploaded Successfully");
 				map.put("containerName", Constants.Containers.PROJECT_AWARD_FILES.getValue());
-				map.put("resource", url);
+//				map.put("resource", url);
 				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 			} else {
 				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());

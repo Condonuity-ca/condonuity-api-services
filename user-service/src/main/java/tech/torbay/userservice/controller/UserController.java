@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.userservice.config.SecurityAES;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.controller.UserController;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
@@ -63,7 +64,7 @@ public class UserController {
 		
 		Integer userId = Integer.parseInt(String.valueOf(requestData.get("userId")));
 		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
-		String password = String.valueOf(requestData.get("password"));
+		String password = SecurityAES.encrypt(String.valueOf(requestData.get("password")));
 		
 		
 		if (userService.resetPassword(userId, userType, password) == null) {
