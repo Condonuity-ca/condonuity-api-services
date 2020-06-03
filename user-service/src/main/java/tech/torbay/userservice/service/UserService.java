@@ -1214,13 +1214,17 @@ public class UserService {
 			case 1:
 				projectStatusCodes.add(ProjectPostType.UNPUBLISHED.getValue());//status = 1 or status = 2 - current projects status
 				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
+				
+				List<Object[]> currentprojects = projectRepository.findAllCurrentProjectsForVendorByKeyword(vendorOrganisationId, keyword);
+				
+				return getProjectsBundle(vendorOrganisationId, currentprojects);
 			case 2:
 				projectStatusCodes.add(ProjectPostType.COMPLETED.getValue());//status = 3 or status = 4 - current projects status
 				projectStatusCodes.add(ProjectPostType.TERMINATED.getValue());
 				
-				List<Object[]> current_R_Historyprojects = projectRepository.findAllProjectsForVendorByKeyword(vendorOrganisationId, keyword, projectStatusCodes);
+				List<Object[]> historyprojects = projectRepository.findAllHistoryProjectsForVendorByKeyword(vendorOrganisationId, keyword);
 				
-				return getProjectsBundle(vendorOrganisationId, current_R_Historyprojects);
+				return getProjectsBundle(vendorOrganisationId, historyprojects);
 			case 3:{
 				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
 				
@@ -1410,7 +1414,7 @@ public class UserService {
 	        String firstName = (String) record[2];
 	        String lastName = (String) record[3];
 	        
-	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+//	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
 	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
 				        .map(Integer::parseInt)
 				        .collect(Collectors.toList());
@@ -1433,7 +1437,7 @@ public class UserService {
 					map.put("isInterested", false);
 				}
 				result.add(map);
-	        }
+//	        }
 	        
 	        
 		 });
