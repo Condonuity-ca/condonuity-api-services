@@ -31,14 +31,35 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	@Query("select pro from Project pro where pro.projectId IN (?1)")
 	List<Project> getAllVendorProjects(List<Integer> ids);
 
-	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and delete_status = 1 and status IN (?3) " + 
-			"concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
+	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and delete_status = 1 " + 
+			"and ( pro.status= 1 or pro.status = 2)  " + 
+			"and concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
 			"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
 			"'.', pro.duration, '.', pro.description, " + 
 			"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
 			"LIKE (?2)"
 			, nativeQuery = true)
-	List<Project> findAllByKeyword(Integer clientOrganisationId, String keyword, List<Integer> status);
+	List<Project> findAllCurrentByKeyword(Integer clientOrganisationId, String keyword, List<Integer> status);
+	
+	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and delete_status = 1 " + 
+			"and ( pro.status= 3 or pro.status = 4)  " + 
+			"and concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
+			"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
+			"'.', pro.duration, '.', pro.description, " + 
+			"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
+			"LIKE (?2)"
+			, nativeQuery = true)
+	List<Project> findAllHistoryByKeyword(Integer clientOrganisationId, String keyword, List<Integer> status);
+	
+	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and delete_status = 1 " + 
+			"and ( pro.status= 2)  " + 
+			"and concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
+			"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
+			"'.', pro.duration, '.', pro.description, " + 
+			"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
+			"LIKE (?2)"
+			, nativeQuery = true)
+	List<Project> findAllMarketplaceByKeyword(Integer clientOrganisationId, String keyword, List<Integer> status);
 	
 	//SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = 1 and  
 //	 (pro.project_name LIKE '%remove%' or pro.description LIKE '%remove%' )

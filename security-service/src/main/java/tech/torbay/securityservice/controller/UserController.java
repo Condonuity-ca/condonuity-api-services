@@ -885,4 +885,10 @@ public class UserController {
 		
 		 	return new ResponseEntity<Object>(SecurityAES.encrypt(password), HttpStatus.OK);
 		}
+		
+		@PostMapping("/password/decrypt/{password}")
+		public ResponseEntity<Object> getDecryptPassword(@PathVariable("password") String password) {
+		
+		 	return new ResponseEntity<Object>(SecurityAES.decrypt(password), HttpStatus.OK);
+		}
 }

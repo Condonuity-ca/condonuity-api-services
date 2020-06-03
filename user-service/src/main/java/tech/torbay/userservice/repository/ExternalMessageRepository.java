@@ -24,31 +24,34 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
 
     @Query(value="SELECT DISTINCT em.* " + 
     		"FROM condonuitydev.external_message em " + 
+    		"INNER JOIN condonuitydev.external_message_organisations emo " + 
+    		"ON " + 
+    		"(em.id = emo.external_message_id) " + 
     		"INNER JOIN condonuitydev.client_organisation co " + 
     		"ON ( " + 
     		"(em.source_organisation_id = co.client_organisation_id and em.source_user_type = 1) " + 
     		"OR " + 
-    		"(em.target_organisation_id = co.client_organisation_id and em.target_user_type = 1)" + 
-    		")" + 
+    		"(emo.target_organisation_id = co.client_organisation_id and emo.target_user_type = 1)" + 
+    		") " + 
     		"LEFT JOIN condonuitydev.client_user cu " + 
     		"ON ( " + 
     		"(em.source_user_id = cu.client_id and em.source_user_type = 1) " + 
-    		")" + 
+    		") " + 
     		"LEFT JOIN condonuitydev.vendor_user vu " + 
     		"ON ( " + 
     		"(em.source_user_id = vu.user_id and em.source_user_type = 2) " + 
-    		")" + 
+    		") " + 
     		"LEFT JOIN condonuitydev.external_message_comment emc ON ( em.id = emc.thread_id) " +     		
     		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
     		"ON ( " + 
     		"(em.source_organisation_id = vo.vendor_organisation_id and em.source_user_type = 2) " + 
     		"OR " + 
-    		"(em.target_organisation_id = vo.vendor_organisation_id and em.target_user_type = 2)" + 
-    		")" + 
+    		"(emo.target_organisation_id = vo.vendor_organisation_id and emo.target_user_type = 2)" + 
+    		") " + 
     		"WHERE ( " + 
     		"(em.source_organisation_id = (?1) and em.source_user_type = (?2) ) " + 
     		"OR " + 
-    		"(em.target_organisation_id = (?1) and em.target_user_type = (?2) ) " + 
+    		"(emo.target_organisation_id = (?1) and emo.target_user_type = (?2) ) " + 
     		")" + 
     		"and " + 
     		"(" + 
@@ -88,32 +91,35 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
 
 	@Query(value="SELECT DISTINCT em.* " + 
     		"FROM condonuitydev.external_message em " + 
+    		"INNER JOIN condonuitydev.external_message_organisations emo " + 
+    		"ON " + 
+    		"(em.id = emo.external_message_id) " + 
     		"INNER JOIN condonuitydev.client_organisation co " + 
     		"ON ( " + 
     		"(em.source_organisation_id = co.client_organisation_id and em.source_user_type = 1) " + 
     		"OR " + 
-    		"(em.target_organisation_id = co.client_organisation_id and em.target_user_type = 1)" + 
-    		")" + 
+    		"(emo.target_organisation_id = co.client_organisation_id and emo.target_user_type = 1)" + 
+    		") " + 
     		"LEFT JOIN condonuitydev.client_user cu " + 
     		"ON ( " + 
     		"(em.source_user_id = cu.client_id and em.source_user_type = 1) " + 
-    		")" + 
+    		") " + 
     		"LEFT JOIN condonuitydev.vendor_user vu " + 
     		"ON ( " + 
     		"(em.source_user_id = vu.user_id and em.source_user_type = 2) " + 
-    		")" + 
+    		") " + 
     		"LEFT JOIN condonuitydev.external_message_comment emc ON ( em.id = emc.thread_id) " +     		
     		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
     		"ON ( " + 
     		"(em.source_organisation_id = vo.vendor_organisation_id and em.source_user_type = 2) " + 
     		"OR " + 
-    		"(em.target_organisation_id = vo.vendor_organisation_id and em.target_user_type = 2)" + 
-    		")" + 
+    		"(emo.target_organisation_id = vo.vendor_organisation_id and emo.target_user_type = 2)" + 
+    		") " + 
     		"WHERE ( " + 
     		"(em.source_organisation_id = (?1) and em.source_user_type = (?2) ) " + 
     		"OR " + 
-    		"(em.target_organisation_id = (?1) and em.target_user_type = (?2) ) " + 
-    		")" + 
+    		"(emo.target_organisation_id = (?1) and emo.target_user_type = (?2) ) " + 
+    		") " + 
     		"and " + 
     		"(" + 
     		"em.thread_description like (?3) or " + 

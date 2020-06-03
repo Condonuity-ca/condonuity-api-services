@@ -41,10 +41,13 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
     		"ON ( rr.project_id = pro.project_id) " + 
     		"where ( rr.client_id = (?1) and rr.client_organisation_id = (?2)) and " + 
     		"concat (rr.rating, '.', rr.review_comments, '.', rr.reply_comments, " + 
-    		"'.', rr.created_at, '.', rr.modified_date, '.', vo.company_name, " + 
+    		"'.', rr.created_at, '.', rr.modified_date) " +
+    		"LIKE (?3) or "+
+    		"concat ( vo.company_name, " + 
     		"'.', vo.legal_name, '.', vo.contact_person, '.', vo.address, '.', vo.city, " + 
-    		"'.', vo.province, '.', vo.email, '.', vo.website, '.', vo.logo_name, " + 
-    		"'.', pro.project_name, '.', pro.bid_end_date, '.', pro.project_start_date, '.', " + 
+    		"'.', vo.province, '.', vo.email, '.', vo.website, '.', vo.logo_name )" +
+    		"LIKE (?3) or " + 
+    		"concat ( pro.project_name, '.', pro.bid_end_date, '.', pro.project_start_date, " + 
     		"'.', pro.project_completion_deadline, '.', pro.estimated_budget, '.', pro.duration, " + 
     		"'.', pro.description, '.', pro.special_conditions, '.', pro.city) " + 
     		"LIKE (?3)", nativeQuery = true)

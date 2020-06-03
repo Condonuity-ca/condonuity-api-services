@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,56 +15,62 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tech.torbay.userservice.repository.CommentFilesRepository;
-import tech.torbay.userservice.repository.ExternalMessageCommentRepository;
-import tech.torbay.userservice.repository.ExternalMessageRepository;
-import tech.torbay.userservice.repository.InternalMessageCommentRepository;
-import tech.torbay.userservice.repository.InternalMessageRepository;
-import tech.torbay.userservice.repository.ThreadFilesRepository;
-import tech.torbay.userservice.entity.ExternalMessage;
-import tech.torbay.userservice.entity.ExternalMessageComment;
-import tech.torbay.userservice.repository.VendorBidRepository;
-import tech.torbay.userservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.userservice.Utils.Utils;
+import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.ProjectPostType;
 import tech.torbay.userservice.constants.Constants.ThreadType;
-import tech.torbay.userservice.entity.CommentFiles;
-import tech.torbay.userservice.entity.InternalMessage;
-import tech.torbay.userservice.entity.InternalMessageComment;
-import tech.torbay.userservice.entity.ThreadFiles;
-import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
+import tech.torbay.userservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.userservice.entity.ClientTask;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.ClientUserTasks;
+import tech.torbay.userservice.entity.CommentFiles;
+import tech.torbay.userservice.entity.ExternalMessage;
+import tech.torbay.userservice.entity.ExternalMessageComment;
+import tech.torbay.userservice.entity.ExternalMessageOrganisations;
+import tech.torbay.userservice.entity.InternalMessage;
+import tech.torbay.userservice.entity.InternalMessageComment;
 import tech.torbay.userservice.entity.PredefinedTags;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.ThreadFiles;
 import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
+import tech.torbay.userservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.userservice.entity.VendorProjectInterests;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
+import tech.torbay.userservice.repository.ClientOrganisationProfileImagesRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientTaskCommentsRepository;
 import tech.torbay.userservice.repository.ClientTaskRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.ClientUserTasksRepository;
+import tech.torbay.userservice.repository.CommentFilesRepository;
+import tech.torbay.userservice.repository.ExternalMessageCommentRepository;
+import tech.torbay.userservice.repository.ExternalMessageOrganisationsRepository;
+import tech.torbay.userservice.repository.ExternalMessageRepository;
+import tech.torbay.userservice.repository.InternalMessageCommentRepository;
+import tech.torbay.userservice.repository.InternalMessageRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.ThreadFilesRepository;
 import tech.torbay.userservice.repository.UserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
+import tech.torbay.userservice.repository.VendorBidRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
+import tech.torbay.userservice.repository.VendorOrganisationProfileImagesRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
+import tech.torbay.userservice.repository.VendorProjectInterestsRepository;
 import tech.torbay.userservice.repository.VendorTagsRepository;
 import tech.torbay.userservice.repository.VendorUserRepository;
 
@@ -123,6 +128,12 @@ public class UserService {
 	VendorBidRepository vendorBidRepository;
 	@Autowired
 	VendorProjectInterestsRepository vendorProjectInterestsRepository;
+	@Autowired
+	ClientOrganisationProfileImagesRepository clientOrganisationProfileImagesRepository;
+	@Autowired
+	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
+	@Autowired
+	ExternalMessageOrganisationsRepository externalMessageOrganisationsRepository;
 	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
@@ -153,50 +164,19 @@ public class UserService {
 			case 1:
 				projectStatusCodes.add(ProjectPostType.UNPUBLISHED.getValue());//status = 1 or status = 2 - current projects status
 				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
-			case 2:
+				
+				return getProjects(Constants.SearchType.CURRENT_PROJECTS.getValue(), actualKeyword, keyword, clientOrganisationId, projectStatusCodes);
+			case 2:{
 				projectStatusCodes.add(ProjectPostType.COMPLETED.getValue());//status = 3 or status = 4 - current projects status
 				projectStatusCodes.add(ProjectPostType.TERMINATED.getValue());
+				
+				return getProjects(Constants.SearchType.HISTORY_PROJECTS.getValue(), actualKeyword, keyword, clientOrganisationId, projectStatusCodes);
+			}
 			case 4:{
 				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
 				// check contract type
 				// check keyword has project tags				
-				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
-				ArrayList<Project> tagContainedProjects = new ArrayList();
-				if(tags != null && tags.size() > 0) {
-					for(PredefinedTags tag : tags) {
-						List<Project> projects = projectRepository.findAllByTagKeyword(clientOrganisationId, String.valueOf("%"+tag.getTagId()+"%"));
-						tagContainedProjects.addAll(new ArrayList<>(projects));
-					}
-				}
-				
-				List<Project> projects = projectRepository.findAllByKeyword(clientOrganisationId, keyword, projectStatusCodes);
-				for(Project project : projects) {
-					result.add(getProjectObject(project));
-				}
-				
-				if(tagContainedProjects != null && tagContainedProjects.size() > 0) {
-					for(Project project : tagContainedProjects) {
-						result.add(getProjectObject(project));
-					}
-				}
-				
-				HashSet<Map<String, Object>> resultSet = new HashSet(result);
-				result.clear();
-				result.addAll(resultSet);
-				
-				Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
-		            
-		            @Override
-		            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
-		                Integer o1 = (Integer) e1.get("projectId");
-		                Integer o2 = (Integer) e2.get("projectId");
-		                return o1.compareTo(o2);
-		            }
-		        };
-		        
-		        Collections.sort(result, valueComparator);
-		        
-				return result;
+				return getProjects(Constants.SearchType.MARKETPLACE_PROJECTS.getValue(), actualKeyword, keyword, clientOrganisationId, projectStatusCodes);
 			}
 			
 			case 5:{
@@ -290,6 +270,8 @@ public class UserService {
 				} catch(Exception exp) {
 					return null;
 				}
+				
+				return result;
 			}
 			case 8:{ 
 				// - changes
@@ -338,18 +320,18 @@ public class UserService {
 							map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
 						}
 						
-						
-						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
-							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
-							
-							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
-							
-						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
-							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
-							
-							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
-						}
-						
+						//Add Destination Organisation using external_message_organisations table
+//						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
+//							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
+//							
+//							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
+//							
+//						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
+//							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
+//							
+//							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
+//						}
+						map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
 						map.put("files",allFiles);
 						map.put("comments",getExternalThreadComments(externalMessage.getId()));
 						
@@ -504,6 +486,119 @@ public class UserService {
 		return null;
 	}
 	
+	private List<Map<String, Object>> getProjects(int searchType, String actualKeyword, String keyword, Integer clientOrganisationId, List<Integer> projectStatusCodes) {
+		List<Map<String, Object>> result = new ArrayList();
+		
+		List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
+		ArrayList<Project> tagContainedProjects = new ArrayList();
+		if(tags != null && tags.size() > 0) {
+			for(PredefinedTags tag : tags) {
+				List<Project> projects = projectRepository.findAllByTagKeyword(clientOrganisationId, String.valueOf("%"+tag.getTagId()+"%"));
+				tagContainedProjects.addAll(new ArrayList<>(projects));
+			}
+		}
+		List<Project> projects = new ArrayList();
+		switch(searchType) {
+			case 1:{
+				projects = projectRepository.findAllCurrentByKeyword(clientOrganisationId, keyword, projectStatusCodes);
+				break;
+			}
+			case 2:{
+				projects = projectRepository.findAllHistoryByKeyword(clientOrganisationId, keyword, projectStatusCodes);
+				break;
+			}
+			case 4:{
+				projects = projectRepository.findAllMarketplaceByKeyword(clientOrganisationId, keyword, projectStatusCodes);
+				break;
+			}
+		}
+		
+		for(Project project : projects) {
+			result.add(getProjectObject(project));
+		}
+		
+		if(tagContainedProjects != null && tagContainedProjects.size() > 0) {
+			for(Project project : tagContainedProjects) {
+				result.add(getProjectObject(project));
+			}
+		}
+		
+		HashSet<Map<String, Object>> resultSet = new HashSet(result);
+		result.clear();
+		result.addAll(resultSet);
+		
+		Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
+            
+            @Override
+            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
+                Integer o1 = (Integer) e1.get("projectId");
+                Integer o2 = (Integer) e2.get("projectId");
+                return o1.compareTo(o2);
+            }
+        };
+        
+        Collections.sort(result, valueComparator);
+        
+		return result;
+	}
+	
+	private List<Map<String,Object>> getExternalMessageTargetOrganisations(Integer externalMessageId) {
+		// TODO Auto-generated method stub
+		List<ExternalMessageOrganisations> TargetOrgs = externalMessageOrganisationsRepository.findAllByExternalMessageId(externalMessageId);
+		
+		List<Map<String,Object>> targetOrganisations = new ArrayList<>();
+		
+		for(ExternalMessageOrganisations extTargetOrg : TargetOrgs) {
+			
+			Map<String,Object> targetOrg = new HashMap<>();
+			
+			targetOrg.put("userType",extTargetOrg.getTargetUserType());
+			
+			if(extTargetOrg.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(extTargetOrg.getTargetOrganisationId());
+				targetOrg.put("organisationId",clientOrganisation.getClientOrganisationId());
+				targetOrg.put("managementCompany",clientOrganisation.getManagementCompany());
+				targetOrg.put("corporateNumber",clientOrganisation.getCorporateNumber());
+				targetOrg.put("organisationName",clientOrganisation.getOrganisationName());
+				targetOrg.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+				
+			} else if(extTargetOrg.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(extTargetOrg.getTargetOrganisationId());
+				targetOrg.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+				targetOrg.put("legalName",vendorOrganisation.getLegalName());
+				targetOrg.put("organisationName",vendorOrganisation.getCompanyName());
+				targetOrg.put("organisationLogoName",vendorOrganisation.getLogoName());
+				targetOrg.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+			}
+			
+			targetOrganisations.add(targetOrg);
+		}
+		
+		return targetOrganisations;
+	}
+
+	public String getClientOrganisationLogo(Integer id) {
+		// TODO Auto-generated method stub
+		ClientOrganisationProfileImages clientOrganisationProfileImages = clientOrganisationProfileImagesRepository.findByClientOrganisationId(id);
+		
+        if(clientOrganisationProfileImages != null)
+        	return clientOrganisationProfileImages.getFileUrl();
+        else
+        	return null;
+	}
+	
+	public String getVendorOrganisationLogo(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
+		
+        if(vendorOrgProfileImage != null)
+        	return vendorOrgProfileImage.getFileUrl();
+        else
+        	return null;
+	} 
+
 	private Map<String, Object> getClientTask(ClientTask clientTask) {
 		// TODO Auto-generated method stub
 		ObjectMapper oMapper = new ObjectMapper();
@@ -1278,17 +1373,17 @@ public class UserService {
 						}
 						
 						
-						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
-							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
-							
-							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
-							
-						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
-							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
-							
-							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
-						}
-						
+//						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
+//							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
+//							
+//							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
+//							
+//						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
+//							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
+//							
+//							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
+//						}
+						map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
 						map.put("files",allFiles);
 						map.put("comments",getExternalThreadComments(externalMessage.getId()));
 						
