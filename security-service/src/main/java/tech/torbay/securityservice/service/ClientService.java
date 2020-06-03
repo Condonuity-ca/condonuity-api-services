@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
+import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
@@ -151,7 +152,7 @@ public class ClientService {
 		
 
 		try {
-			clientOrganisation.setActiveStatus(DeleteStatus.ACTIVE.getValue());
+			clientOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
 			clientOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
 			clientOrganisation = clientOrganisationRepository.save(clientOrganisation);
 			

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.controller.SupportUserController;
@@ -291,4 +292,35 @@ public class SupportUserController {
 	    }
 	}
 	
+	@ApiOperation(value = "Get List of Client/ Vendor Unapproved Organisatiotn")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor Search Results Fetched Successfully"),
+            }
+    )
+	@GetMapping("/support/unapproved/organisations")
+	public ResponseEntity<Object> getUnApprovedVendorAndClientList() {
+		
+		Map<String, Object> results = supportUserService.getUnApprovedVendorAndClientList();
+        if (results == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch upapproved organisation list");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+//			if(userType == Constants.UserType.CLIENT.getValue()) {
+//				list.put("responseMessage", "UnApproved Client Organisation List Fetched Successfully");
+//			} else if(userType == Constants.UserType.VENDOR.getValue()) {
+//				list.put("responseMessage", "UnApproved Vendor Organisation List Fetched Successfully");
+//			}
+			list.put("responseMessage", "Un Approved Organisation List Fetched Successfully");
+			list.put("results", results);
+//			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
+	}
 }

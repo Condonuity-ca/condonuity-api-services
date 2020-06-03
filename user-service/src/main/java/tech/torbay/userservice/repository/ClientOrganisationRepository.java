@@ -35,6 +35,9 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 	@Query(value="UPDATE condonuitydev.client_organisation SET organisation_name = (?1) , corporate_number = (?2) WHERE client_organisation_id=(?3);", nativeQuery = true)
 	int setOrganisationNameAndCorporateNumberByClientOrganisationId(String corporationName, String corporationNumber, Integer clientOrganisationId);
 
+	@Query(value="Select co.* FROM condonuitydev.client_organisation co where co.active_status =(?1);", nativeQuery = true)
+	List<ClientOrganisation> findAllByActiveStatus(int activeStatus);
+
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.organisation_name or co.management_company LIKE '%29%';")
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.client_organisation_id = (?1) and ( co.organisation_name or co.management_company ) LIKE '%(?2)%';")
 }

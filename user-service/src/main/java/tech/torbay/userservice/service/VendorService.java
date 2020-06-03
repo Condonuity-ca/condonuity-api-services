@@ -440,6 +440,10 @@ public class VendorService {
 			String brands = String.valueOf(vendorOrganisationData.get("brands")); // string - abc,abc,acbc
 			String memberships = String.valueOf(vendorOrganisationData.get("memberships")); // string - abc,abc,acbc
 			
+			VendorOrganisation vendorOrg = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+			vendorOrganisation.setActiveStatus(vendorOrg.getActiveStatus());
+			vendorOrganisation.setDeleteStatus(vendorOrg.getDeleteStatus());
+			vendorOrganisation.setUserType(vendorOrg.getUserType());
 			vendorOrganisation = vendorOrganisationRepository.save(vendorOrganisation);
 			
 			

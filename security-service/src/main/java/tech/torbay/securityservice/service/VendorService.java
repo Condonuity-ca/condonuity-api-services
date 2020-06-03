@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
+import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorBrands;
 import tech.torbay.securityservice.entity.VendorInsurance;
@@ -114,7 +115,7 @@ public class VendorService {
 			
 			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
-			vendorOrganisation.setActiveStatus(DeleteStatus.ACTIVE.getValue());
+			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
 			vendorOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
 			VendorInsurance vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
 			

@@ -148,6 +148,33 @@ public class Constants {
 	    }
 	}
 	
+	public enum OrganisationAccountStatus {
+	    REGISTERED(0),
+	    ACTIVE(1),
+	    INACTIVE(2);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private OrganisationAccountStatus(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (OrganisationAccountStatus pageType : OrganisationAccountStatus.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static OrganisationAccountStatus valueOf(int pageType) {
+	        return (OrganisationAccountStatus) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	public enum DeleteStatus {
 	    NOT_AVAILABLE(0),
 	    ACTIVE(1),

@@ -234,6 +234,10 @@ public class ClientService {
 
 	public ClientOrganisation updateOrganisation(ClientOrganisation clientOrg) {
 		// TODO Auto-generated method stub
+		ClientOrganisation clientOrganisation =  clientOrganisationRepository.findByClientOrganisationId(clientOrg.getClientOrganisationId());
+		clientOrg.setActiveStatus(clientOrganisation.getActiveStatus());
+		clientOrg.setDeleteStatus(clientOrganisation.getDeleteStatus());
+		clientOrg.setUserType(Constants.UserType.CLIENT.getValue());
 		return clientOrganisationRepository.save(clientOrg);
 	}
 

@@ -43,6 +43,9 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	@Query(value = "SELECT vo.* FROM condonuitydev.vendor_organisation vo where vendor_organisation_id IN (?1)", nativeQuery = true)
 	List<VendorOrganisation> findAllByVendorOrganisationId(List<Integer> vendorIds);
 
+	@Query(value="Select vo.* FROM condonuitydev.vendor_organisation vo where vo.active_status =(?1);", nativeQuery = true)
+	List<VendorOrganisation> findAllByActiveStatus(int activeStatus);
+
 //	List<VendorOrganisation> findAllOrderByCompanyNameAsc();
 
 //	List<VendorOrganisation> findAllOrderByCompanyNameDesc();
