@@ -869,9 +869,11 @@ public class VendorService {
 		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
 		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
 		
-		List<UserLevelNotification> messagesNotifications = userLevelNotificationRepository.findAllMessagesNotifications(vendorOrganisationId);
+		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
+		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
 		
-		for (UserLevelNotification userLevelNotification : messagesNotifications) {
+		internalMessagesNotifications.addAll(externalMessagesNotifications);
+		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
 			Notification notification = new Notification();
 			notification.setId(userLevelNotification.getId());
 			notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());

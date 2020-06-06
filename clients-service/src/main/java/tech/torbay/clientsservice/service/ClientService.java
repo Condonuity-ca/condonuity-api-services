@@ -1104,11 +1104,13 @@ public class ClientService {
 //				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 				
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
-				List<UserLevelNotification> messagesNotifications = userLevelNotificationRepository.findAllMessagesNotifications(clientOrganisationId); 
+				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
+				List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(clientOrganisationId); 
 				List<UserLevelNotification> taskNotifications = userLevelNotificationRepository.findAllTaskNotifications(clientOrganisationId, clientId); 
 				
-				messagesNotifications.addAll(taskNotifications);
-				for (UserLevelNotification userLevelNotification : messagesNotifications) {
+				internalMessagesNotifications.addAll(taskNotifications);
+				internalMessagesNotifications.addAll(externalMessagesNotifications);
+				for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
 					Notification notification = new Notification();
 					notification.setId(userLevelNotification.getId());
 					notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());
