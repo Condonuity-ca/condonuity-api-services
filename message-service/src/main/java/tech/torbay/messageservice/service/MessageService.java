@@ -548,12 +548,14 @@ public class MessageService {
 		switch(notificationType) {
 			case 12 :{
 				message = "New Internal Message";
-				subContent = "New Message received";
+//				subContent = "New Message received - \""+internalMessage.getThreadSubject()+"\"";
+				subContent = "\""+internalMessage.getThreadSubject()+"\"";
 				break;
 			}
 			case 13	 :{
 				message = "Internal Message Updated";
-				subContent = "Message has updated";
+//				subContent = "Message has updated";
+				subContent = "\""+internalMessage.getThreadSubject()+"\"";
 				break;
 			}
 		}
@@ -581,8 +583,9 @@ public class MessageService {
 		String subContent = " received message comment in thread";
 		switch(notificationType) {
 			case 14	 :{
-				message = "New Comment";
-				subContent = "New comments on internal message thread";
+				message = "New Internal Message Comment";
+//				subContent = "New comments on internal message thread - \""+ internalMessageComment.getComment() +"\"";
+				subContent = "\""+ internalMessageComment.getComment() +"\"";
 				break;
 			}
 		}
@@ -613,12 +616,14 @@ public class MessageService {
 		switch(notificationType) {
 			case 15 :{
 				message = "New External Message";
-				subContent = "New Message received";
+//				subContent = "New Message received - \""+externalMessage.getThreadSubject()+"\"";
+				subContent = "\""+externalMessage.getThreadSubject()+"\"";
 				break;
 			}
 			case 16	 :{
 				message = "External Message Updated";
-				subContent = "Message has updated";
+//				subContent = "Message has updated";
+				subContent =  "\""+externalMessage.getThreadSubject()+"\"";
 				break;
 			}
 		}
@@ -647,8 +652,9 @@ public class MessageService {
 		String subContent = " received message comment in thread";
 		switch(notificationType) {
 			case 17	 :{
-				message = "New Comment";
-				subContent = "New comments on external message thread";
+				message = "New External Message Comment";
+//				subContent = "New comments on external message thread - \""+externalMessageComment.getComment()+"\"";
+				subContent = "\""+externalMessageComment.getComment()+"\"";
 				break;
 			}
 		}
