@@ -1,6 +1,7 @@
 package tech.torbay.userservice.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.ProjectPostType;
 import tech.torbay.userservice.constants.Constants.ThreadType;
+import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
@@ -38,6 +40,7 @@ import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.ThreadFiles;
 import tech.torbay.userservice.entity.User;
+import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
@@ -64,6 +67,7 @@ import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.ThreadFilesRepository;
+import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorBidRepository;
@@ -134,6 +138,8 @@ public class UserService {
 	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
 	@Autowired
 	ExternalMessageOrganisationsRepository externalMessageOrganisationsRepository;
+	@Autowired
+	UserProfileImagesRepository userProfileImagesRepository;
 	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
@@ -246,6 +252,54 @@ public class UserService {
 						Map<String,Object> map = new HashMap<>();
 						ObjectMapper oMapper = new ObjectMapper();
 						map = oMapper.convertValue(internalMessage, Map.class);
+						map.remove("userId");	
+						map.remove("organisationId");	
+						
+						Map<String,Object> user = new HashMap<>();
+						Map<String,Object> organisation = new HashMap<>();
+						
+						UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessage.getUserId(), internalMessage.getUserType());
+						
+						if(internalMessage.getUserType() == Constants.UserType.CLIENT.getValue()) {
+							
+							ClientUser clientUser = clientUserRepository.findByClientId(internalMessage.getUserId());
+							user.put("userId",clientUser.getClientId());
+							user.put("firstName",clientUser.getFirstName());
+							user.put("lastName",clientUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(internalMessage.getOrganisationId());
+							organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+							organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+							organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+							organisation.put("organisationName",clientOrganisation.getOrganisationName());
+							organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+							
+						} else if(internalMessage.getUserType() == Constants.UserType.VENDOR.getValue()) {
+							
+							VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessage.getUserId());
+							user.put("userId",vendorUser.getUserId());
+							user.put("firstName",vendorUser.getFirstName());
+							user.put("lastName",vendorUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(internalMessage.getOrganisationId());
+							organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+							organisation.put("legalName",vendorOrganisation.getLegalName());
+							organisation.put("organisationName",vendorOrganisation.getCompanyName());
+							organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+							organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+						}
+						
+						
+						map.put("user",user);
+						map.put("organisation",organisation);
 						
 						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
 						List<Map<String,Object>> allFiles = new ArrayList();
@@ -254,16 +308,19 @@ public class UserService {
 							file.put("id", threadFile.getId());
 							file.put("fileName", threadFile.getFileName());
 							file.put("fileType", threadFile.getFileType());
-							file.put("fileUrl", threadFile.getFileUrl());
+							file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+							file.put("blobName", threadFile.getBlobName());
+							file.put("containerName", threadFile.getContainerName());
+//							file.put("fileUrl", commentFile.getFileUrl());
 							file.put("createdAt", threadFile.getCreatedAt());
-							file.put("modifiedDate", threadFile.getModifiedDate());
+//							file.put("modifiedDate", commentFile.getModifiedDate());
 							allFiles.add(file);
 						}
 						ClientUser createdBy = clientUserRepository.findByClientId(internalMessage.getUserId());
 						 
 						map.put("createdByUser", createdBy.getFirstName()+" "+createdBy.getLastName()); // this created by user search is missing
 						map.put("files",allFiles);
-						map.put("comments",getInternalThreadComments(internalMessage.getId()));
+						map.put("comments",getInternalThreadComments(internalMessage.getId(), UserType.CLIENT.getValue(), clientUserId));
 						
 						result.add(map);
 					}
@@ -286,6 +343,58 @@ public class UserService {
 						Map<String,Object> map = new HashMap<>();
 						ObjectMapper oMapper = new ObjectMapper();
 						map = oMapper.convertValue(externalMessage, Map.class);
+						map.remove("sourceOrganisationId");	
+						map.remove("sourceUserId");	
+						map.remove("targetOrganisationId");
+						map.remove("targetUserType");
+						
+						Map<String,Object> user = new HashMap<>();
+						Map<String,Object> organisation = new HashMap<>();
+						
+						UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessage.getSourceUserId(), externalMessage.getSourceUserType());
+						
+						if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+							
+							ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+							user.put("userId",clientUser.getClientId());
+							user.put("firstName",clientUser.getFirstName());
+							user.put("lastName",clientUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+							organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+							organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+							organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+							organisation.put("organisationName",clientOrganisation.getOrganisationName());
+							organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+							
+						} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+							
+							VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+							user.put("userId",vendorUser.getUserId());
+							user.put("firstName",vendorUser.getFirstName());
+							user.put("lastName",vendorUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+							organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+							organisation.put("legalName",vendorOrganisation.getLegalName());
+							organisation.put("organisationName",vendorOrganisation.getCompanyName());
+							organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+							organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+						}
+						
+						
+						map.put("fromUser",user);
+						map.put("fromOrganisation",organisation);
+						
+						map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
 						
 						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
 						List<Map<String,Object>> allFiles = new ArrayList();
@@ -320,20 +429,9 @@ public class UserService {
 							map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
 						}
 						
-						//Add Destination Organisation using external_message_organisations table
-//						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
-//							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
-//							
-//							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
-//							
-//						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
-//							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
-//							
-//							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
-//						}
-						map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
+						
 						map.put("files",allFiles);
-						map.put("comments",getExternalThreadComments(externalMessage.getId()));
+						map.put("comments",getExternalThreadComments(externalMessage.getId(), UserType.CLIENT.getValue(), clientUserId));
 						
 						result.add(map);
 					}
@@ -604,14 +702,45 @@ public class UserService {
 		ObjectMapper oMapper = new ObjectMapper();
         Map<String, Object> map = oMapper.convertValue(clientTask, Map.class);
         
-        if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+        //old
+//        if(clientTask.getIsOther() == Constants.Availability.AVAILABLE.getValue()) {
+//        	// only other name available
+//        	map.put("assignedTo", new ArrayList());
+//        } else if(clientTask.getIsOther() == Constants.Availability.NOT_AVAILABLE.getValue()) {			        	
+//        	map.put("assignedTo", getClientUsers(clientTask.getId()));
+////        	map.put("assignee",getClientUsers(clientTask.getId()));
+//        }
+//        
+//        ClientUser createdBy = clientUserRepository.findByClientId(clientTask.getCreatedBy());
+//        ClientUser modifiedBy = clientUserRepository.findByClientId(clientTask.getModifiedBy());
+//        
+//        map.put("createdByUser",createdBy.getFirstName()+" "+createdBy.getLastName());
+//        map.put("modifiedByUser",modifiedBy.getFirstName()+" "+modifiedBy.getLastName());
+//        
+//        map.put("comments",getTaskComments(clientTask.getId()));
+        //new
+        List<Map<String, Object>> assignedClientUsers =new ArrayList();
+        if(clientTask.getIsOther() == Constants.TaskUsers.BOTH_USER_AND_NONUSER.getValue() || clientTask.getIsOther() == Constants.TaskUsers.OTHER_USER_ONLY.getValue()) {
         	// only other name available
-        	map.put("assignedTo", new ArrayList());
-        } else if(clientTask.getIsOther() == Constants.Availability.NOT_AVAILABLE.getValue()) {			        	
-        	map.put("assignedTo", getClientUsers(clientTask.getId()));
-//        	map.put("assignee",getClientUsers(clientTask.getId()));
+//        	map.put("assignedTo", new ArrayList());
+        	String othersNames = clientTask.getOthersName();
+        	List<String> othersUsers = Arrays.asList(othersNames.split(","));
+        	List<Map<String, Object>> otherClientUsers =new ArrayList();
+        	for(String othersUser: othersUsers) {
+				
+				Map<String, Object> other = new HashMap();
+				other.put("clientUserId", "");
+				other.put("clientUserName", othersUser);
+				otherClientUsers.add(other);
+			}
+        	assignedClientUsers.addAll(otherClientUsers);
+        } //need to check both cases
+        if(clientTask.getIsOther() == Constants.TaskUsers.BOTH_USER_AND_NONUSER.getValue() || clientTask.getIsOther() == Constants.TaskUsers.CLIENT_USER_ONLY.getValue()) {			        	
+//        	map.put("assignedTo", getClientUsers(clientTask.getId()));
+        	assignedClientUsers.addAll(getClientUsers(clientTask.getId()));
         }
         
+        map.put("assignedTo", assignedClientUsers);
         ClientUser createdBy = clientUserRepository.findByClientId(clientTask.getCreatedBy());
         ClientUser modifiedBy = clientUserRepository.findByClientId(clientTask.getModifiedBy());
         
@@ -619,6 +748,8 @@ public class UserService {
         map.put("modifiedByUser",modifiedBy.getFirstName()+" "+modifiedBy.getLastName());
         
         map.put("comments",getTaskComments(clientTask.getId()));
+        map.remove("isOther");
+        map.remove("othersName");
         
         return map;
 	}
@@ -903,7 +1034,7 @@ public class UserService {
 		return allTypeConstantsBasedContracts;
 	}
 	
-	private List<Map<String,Object>> getExternalThreadComments(Integer threadId) {
+	private List<Map<String,Object>> getExternalThreadComments(Integer threadId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(threadId);
 		
@@ -914,6 +1045,55 @@ public class UserService {
 			Map<String,Object> map = new HashMap<>();
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(externalMessageComment, Map.class);
+			map.remove("userId");
+			
+			Map<String,Object> user = new HashMap<>();
+			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessageComment.getUserId(), externalMessageComment.getUserType());
+			
+			if(externalMessageComment.getUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientUser clientUser = clientUserRepository.findByClientId(externalMessageComment.getUserId());
+				if(userId == clientUser.getClientId() && userType == externalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
+				user.put("userId",clientUser.getClientId());
+				user.put("firstName",clientUser.getFirstName());
+				user.put("lastName",clientUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessageComment.getOrganisationId());
+				user.put("organisationId",clientOrganisation.getClientOrganisationId());
+				user.put("organisationName",clientOrganisation.getOrganisationName());
+				
+				
+			} else if(externalMessageComment.getUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessageComment.getUserId());
+				if(userId == vendorUser.getUserId() && userType == externalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
+				user.put("userId",vendorUser.getUserId());
+				user.put("firstName",vendorUser.getFirstName());
+				user.put("lastName",vendorUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessageComment.getOrganisationId());
+				user.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+				user.put("organisationName",vendorOrganisation.getCompanyName());
+				
+			}
+			map.put("user",user);
 			
 			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(externalMessageComment.getId(), ThreadType.EXTERNAL.getValue());
 			List<Map<String,Object>> allFiles = new ArrayList();
@@ -936,7 +1116,7 @@ public class UserService {
 		return allComments;
 	}
 	
-	private List<Map<String,Object>> getInternalThreadComments(Integer threadId) {
+	private List<Map<String,Object>> getInternalThreadComments(Integer threadId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 		List<InternalMessageComment> internalMessageComments = internalMessageCommentRepository.findAllByThreadId(threadId);
 		
@@ -947,6 +1127,50 @@ public class UserService {
 			Map<String,Object> map = new HashMap<>();
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(internalMessageComment, Map.class);
+			map.remove("userId");	
+			
+			Map<String,Object> user = new HashMap<>();
+//			Map<String,Object> organisation = new HashMap<>();
+			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessageComment.getUserId(), internalMessageComment.getUserType());
+			
+			if(internalMessageComment.getUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientUser clientUser = clientUserRepository.findByClientId(internalMessageComment.getUserId());
+				if(userId == clientUser.getClientId() && userType == internalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
+				user.put("userId",clientUser.getClientId());
+				user.put("firstName",clientUser.getFirstName());
+				user.put("lastName",clientUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+			} else if(internalMessageComment.getUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessageComment.getUserId());
+				if(userId == vendorUser.getUserId() && userType == internalMessageComment.getUserType())
+					user.put("isCommented",true);
+				else
+					user.put("isCommented", false);
+				
+				user.put("userId",vendorUser.getUserId());
+				user.put("firstName",vendorUser.getFirstName());
+				user.put("lastName",vendorUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+			}
+			
+			
+			map.put("user",user);
+//			map.put("organisation",organisation);
 			
 			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(internalMessageComment.getId(), ThreadType.INTERNAL.getValue());
 			List<Map<String,Object>> allFiles = new ArrayList();
@@ -1305,6 +1529,54 @@ public class UserService {
 						Map<String,Object> map = new HashMap<>();
 						ObjectMapper oMapper = new ObjectMapper();
 						map = oMapper.convertValue(internalMessage, Map.class);
+						map.remove("userId");	
+						map.remove("organisationId");	
+						
+						Map<String,Object> user = new HashMap<>();
+						Map<String,Object> organisation = new HashMap<>();
+						
+						UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessage.getUserId(), internalMessage.getUserType());
+						
+						if(internalMessage.getUserType() == Constants.UserType.CLIENT.getValue()) {
+							
+							ClientUser clientUser = clientUserRepository.findByClientId(internalMessage.getUserId());
+							user.put("userId",clientUser.getClientId());
+							user.put("firstName",clientUser.getFirstName());
+							user.put("lastName",clientUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(internalMessage.getOrganisationId());
+							organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+							organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+							organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+							organisation.put("organisationName",clientOrganisation.getOrganisationName());
+							organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+							
+						} else if(internalMessage.getUserType() == Constants.UserType.VENDOR.getValue()) {
+							
+							VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessage.getUserId());
+							user.put("userId",vendorUser.getUserId());
+							user.put("firstName",vendorUser.getFirstName());
+							user.put("lastName",vendorUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(internalMessage.getOrganisationId());
+							organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+							organisation.put("legalName",vendorOrganisation.getLegalName());
+							organisation.put("organisationName",vendorOrganisation.getCompanyName());
+							organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+							organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+						}
+						
+						
+						map.put("user",user);
+						map.put("organisation",organisation);
 						
 						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
 						List<Map<String,Object>> allFiles = new ArrayList();
@@ -1313,16 +1585,19 @@ public class UserService {
 							file.put("id", threadFile.getId());
 							file.put("fileName", threadFile.getFileName());
 							file.put("fileType", threadFile.getFileType());
-							file.put("fileUrl", threadFile.getFileUrl());
+							file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+							file.put("blobName", threadFile.getBlobName());
+							file.put("containerName", threadFile.getContainerName());
+//							file.put("fileUrl", threadFile.getFileUrl());
 							file.put("createdAt", threadFile.getCreatedAt());
-							file.put("modifiedDate", threadFile.getModifiedDate());
+//							file.put("modifiedDate", threadFile.getModifiedDate());
 							allFiles.add(file);
 						}
 						VendorUser createdBy = vendorUserRepository.findByUserId(internalMessage.getUserId());
 						 
 						map.put("createdByUser", createdBy.getFirstName()+" "+createdBy.getLastName()); // this created by user search is missing
 						map.put("files",allFiles);
-						map.put("comments",getInternalThreadComments(internalMessage.getId()));
+						map.put("comments",getInternalThreadComments(internalMessage.getId(), UserType.VENDOR.getValue(), vendorUserId));
 						
 						result.add(map);
 					} 
@@ -1342,6 +1617,59 @@ public class UserService {
 						Map<String,Object> map = new HashMap<>();
 						ObjectMapper oMapper = new ObjectMapper();
 						map = oMapper.convertValue(externalMessage, Map.class);
+						map = oMapper.convertValue(externalMessage, Map.class);
+						map.remove("sourceOrganisationId");	
+						map.remove("sourceUserId");	
+						map.remove("targetOrganisationId");
+						map.remove("targetUserType");
+						
+						Map<String,Object> user = new HashMap<>();
+						Map<String,Object> organisation = new HashMap<>();
+						
+						UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessage.getSourceUserId(), externalMessage.getSourceUserType());
+						
+						if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+							
+							ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+							user.put("userId",clientUser.getClientId());
+							user.put("firstName",clientUser.getFirstName());
+							user.put("lastName",clientUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+							organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+							organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+							organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+							organisation.put("organisationName",clientOrganisation.getOrganisationName());
+							organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+							
+						} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+							
+							VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+							user.put("userId",vendorUser.getUserId());
+							user.put("firstName",vendorUser.getFirstName());
+							user.put("lastName",vendorUser.getLastName());
+							if(userProfileImage != null)
+								user.put("profileImageURL",userProfileImage.getFileUrl());
+							else
+								user.put("profileImageURL","");
+							
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+							organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+							organisation.put("legalName",vendorOrganisation.getLegalName());
+							organisation.put("organisationName",vendorOrganisation.getCompanyName());
+							organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+							organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+						}
+						
+						
+						map.put("fromUser",user);
+						map.put("fromOrganisation",organisation);
+						
+						map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
 						
 						List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
 						List<Map<String,Object>> allFiles = new ArrayList();
@@ -1377,19 +1705,8 @@ public class UserService {
 						}
 						
 						
-//						if(externalMessage.getTargetUserType() == Constants.UserType.CLIENT.getValue()) {
-//							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getTargetOrganisationId());
-//							
-//							map.put("destinationOrganisationName",clientOrganisation.getOrganisationName());
-//							
-//						} else if(externalMessage.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
-//							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getTargetOrganisationId());
-//							
-//							map.put("destinationOrganisationName",vendorOrganisation.getCompanyName());
-//						}
-						map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
 						map.put("files",allFiles);
-						map.put("comments",getExternalThreadComments(externalMessage.getId()));
+						map.put("comments",getExternalThreadComments(externalMessage.getId(), UserType.VENDOR.getValue(), vendorUserId));
 						
 						result.add(map);
 					}

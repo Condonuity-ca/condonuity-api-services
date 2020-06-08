@@ -22,6 +22,7 @@ public class ExternalMessageComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = 0;
     private Integer userId = 0;
+    private Integer organisationId = 0;
     private Integer userType = 0;
     private Integer threadId = 0;
     private String comment = "";
@@ -57,6 +58,14 @@ public class ExternalMessageComment {
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+	
+	public Integer getOrganisationId() {
+		return organisationId;
+	}
+
+	public void setOrganisationId(Integer organisationId) {
+		this.organisationId = organisationId;
 	}
 
 	public Integer getUserType() {
@@ -101,9 +110,9 @@ public class ExternalMessageComment {
 
 	@Override
 	public String toString() {
-		return "ExternalMessageComment [id=" + id + ", userId=" + userId + ", userType=" + userType + ", threadId="
-				+ threadId + ", comment=" + comment + ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + "]";
+		return "ExternalMessageComment [id=" + id + ", userId=" + userId + ", organisationId=" + organisationId
+				+ ", userType=" + userType + ", threadId=" + threadId + ", comment=" + comment + ", deleteStatus="
+				+ deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }
