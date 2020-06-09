@@ -17,9 +17,11 @@ import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
+import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.ServiceCities;
+import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.entity.VendorBrands;
@@ -41,6 +43,7 @@ import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
+import tech.torbay.userservice.repository.UserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorBrandsRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
@@ -55,8 +58,6 @@ import tech.torbay.userservice.repository.VendorRegistrationFilesRepository;
 import tech.torbay.userservice.repository.VendorServicesCitiesRepository;
 import tech.torbay.userservice.repository.VendorServicesRepository;
 import tech.torbay.userservice.repository.VendorUserRepository;
-import tech.torbay.userservice.entity.ClientRegistrationFiles;
-import tech.torbay.userservice.entity.ClientUser;
 
 @Component
 public class VendorService {
@@ -99,6 +100,8 @@ public class VendorService {
 	ServiceCitiesRepository servicesCitiesRepository;
 	@Autowired
 	VendorRegistrationFilesRepository vendorRegistrationFilesRepository;
+	@Autowired
+	UserRepository userRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -136,8 +139,18 @@ public class VendorService {
         
         return map;
 	}
+	
+	public VendorOrganisation getVendorOrgById (Integer vendorOrganisationId) {
+		return vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisationId);
+	}
 
-	public Object getVendorOrganisationById(Integer vendorOrganisationId) {
+	public VendorUser findByEmail(String email) {
+		// TODO Auto-generated method stub
+		VendorUser vendor = vendorUserRepository.findByEmail(email);
+		return vendor;
+	}
+	
+	public Map<String, Object> getVendorOrganisationById(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		
 		try {
@@ -369,6 +382,11 @@ public class VendorService {
         }
 	}
 	
+	public List<VendorUser> getAllVendorUsersInOrganisation(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		return vendorUserRepository.findAllByVendorOrganisationId(vendorOrganisationId);
+	}
+	
 	public List<Object> getAllVendorOrganisations() {
 		// TODO Auto-generated method stub
 		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAll();
@@ -520,8 +538,6 @@ public class VendorService {
 	public List<VendorUser> getVendorOrganisationUsersById(Integer id) {
 		// TODO Auto-generated method stub
 //		return vendorUserRepository.findByVendorOrganisationIdAndAccountStatus(id, Constants.UserAccountStatus.ACTIVE.getValue());
-		
-		
 		
 		return vendorUserRepository.findByVendorOrganisationId(id);
 	}
@@ -972,6 +988,35 @@ public class VendorService {
 		}
 		
 		return files;
+	}
+	
+	public VendorUser createVendorUser(VendorUser vendorUser) {
+		// TODO Auto-generated method stub
+		try {
+			
+			if(vendorUserRepository.save(vendorUser) != null){
+				
+				vendorUser = vendorUserRepository.findByEmail(vendorUser.getEmail());
+				
+				System.out.println(vendorUser.toString());
+				
+				User user = new User();
+				user.setUserId(vendorUser.getUserId());
+				user.setUsername(vendorUser.getEmail());
+				user.setUserType(Constants.UserType.VENDOR.getValue());
+				
+				System.out.println(user.toString());
+				
+				userRepository.save(user);
+				
+				return vendorUser;
+			} else {
+				return null;
+			}
+			} catch (Exception exp) {
+				exp.printStackTrace();
+				return null;
+			}
 	}
 }
 

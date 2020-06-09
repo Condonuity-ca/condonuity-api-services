@@ -3,10 +3,13 @@ package tech.torbay.userservice.constants;
 import java.util.HashMap;
 import java.util.Map;
 
-import tech.torbay.userservice.constants.Constants.DeleteStatus;
-
 public class Constants {
 
+	public static final Integer MAX_USER_COUNT = 12;
+	public static final String TIME_ZONE = "Europe/London";
+	public static final String USER_ACCOUNT_REMOVE_ALERT = "User Account Deleted From the System By Admin";
+	public static final String USER_ACCOUNT_ACTIVE_ALERT = "User Account Status Changed to Active By Admin";
+	public static final long EXPIRY_DURATION = 24;
 
 	public enum UserType {
 	    CLIENT(1),
@@ -97,8 +100,12 @@ public class Constants {
 	    BAD_REQUEST(3),
 	    NOT_FOUND(4),
 	    AUTHENTICATION_FAILED(5),
-		CONFLICT(6);
-		
+	    CONFLICT(6),
+		INACTIVE_USER(7),
+		ORGANISATION_NOT_FOUND(8),
+		NO_ACTIVE_ORGANISATION_FOUND(9), 
+		MAX_USERS_COUNT_ERROR(7);
+	    
 	    private int value;
 	    private static Map map = new HashMap<>();
 

@@ -42,4 +42,7 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 	@Query(value="UPDATE condonuitydev.vendor_user SET first_name = (?1) , last_name = (?2), user_role = (?3) WHERE user_id=(?4) AND vendor_organisation_id = (?5)", nativeQuery = true)
 	int setFirstNameAndLastNameAndUserRoleByVendorIdAndVendorOrganisationId(String firstName, String lastName, Integer userRole, Integer userId,
 			Integer organisationId);
+	
+	@Query(value = "select vu.* from condonuitydev.vendor_user vu where vu.vendor_organisation_id = (?1)  AND ( vu.account_status = 1 OR vu.account_status = 0 )", nativeQuery = true)//only active users
+	List<VendorUser> findAllByVendorOrganisationId(Integer vendorOrganisationId);
 }

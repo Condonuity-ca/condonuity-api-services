@@ -29,4 +29,6 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
 	@Transactional
 	@Query(value="UPDATE condonuitydev.client_user SET first_name = (?1), last_name = (?2) WHERE client_id=(?3)", nativeQuery = true)
 	int setFirstNameAndLastNameByClientId(String firstName, String lastName, Integer userId);
+    
+    boolean existsByEmail(String email);   
 }

@@ -18,7 +18,6 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.TaskStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
-import tech.torbay.userservice.constants.Constants.VendorRatingCategory;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.Amenities;
 import tech.torbay.userservice.entity.ClientAmenities;
@@ -36,6 +35,7 @@ import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.ServiceCities;
+import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserLevelNotification;
 import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
@@ -59,6 +59,7 @@ import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
 import tech.torbay.userservice.repository.UserLevelNotificationRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
+import tech.torbay.userservice.repository.UserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
@@ -110,6 +111,8 @@ public class ClientService {
 	ClientOrganisationProfileImagesRepository clientOrganisationProfileImageRepository;
 	@Autowired
 	ServiceCitiesRepository servicesCitiesRepository;
+	@Autowired
+	UserRepository userRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -121,12 +124,7 @@ public class ClientService {
 		ClientUser client = clientUserRepository.findByEmail(email);
 		return client;
 	}
-
-	public ClientUser addClientOrgAccountAssociation(ClientUser clientUser) {
-		// TODO Auto-generated method stub
-		return /* clientUser */null;
-	}
-
+	
 	public ClientUser addClient(ClientUser clientUser) {
 		// TODO Auto-generated method stub
 		return clientUserRepository.save(clientUser);
@@ -1411,6 +1409,132 @@ public class ClientService {
 		notification.setToOrganisationId(targetOrganisationId);
 		
 		userLevelNotificationRepository.save(notification);
+	}
+	
+	public ClientOrganisation getClientOrganisationById(Integer organisationId) {
+		// TODO Auto-generated method stub
+		return clientOrganisationRepository.findByClientOrganisationId(organisationId);
+	}
+	
+	public Integer getAllOrganisationsForClientUser(Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		
+		// check Active clients count
+		
+		return clientAssociations.size();
+	}
+	
+	public List<ClientAssociation> getAllClientUsersInOrganisation(Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientOrganisationId(clientOrganisationId);
+		
+		// check Active clients count
+		
+		return clientAssociations;
+	}
+	
+	public ClientUser addClientOrgAccountAssociation(Integer organisationId, Integer clientUserType, Integer userRole, ClientUser clientUser, Integer userAccountStatus, Integer userVerificationStatus) {
+		// TODO Auto-generated method stub
+		
+		//steps
+		//1 : Register if account does not exist
+		//2 : 
+		
+		//check if client - organisation association exist or not
+		//exist - no new association required
+		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUser.getClientId(),organisationId);
+		if( clientAssociation != null) {
+			//1.already has association, if you want resend invitation send here
+			//2.reset association
+			//3.deleted user also can re-invite here
+			
+		} else {
+		//else create new association
+		
+			clientAssociation = new ClientAssociation();
+		}
+		clientAssociation.setClientOrganisationId(organisationId);
+		clientAssociation.setClientId(clientUser.getClientId());
+		clientAssociation.setClientUserType(clientUserType);
+		clientAssociation.setUserRole(userRole);
+		clientAssociation.setAccountVerificationStatus(userVerificationStatus/* Constants.VerificationStatus.NOT_VERIFIED.getValue() */);
+		clientAssociation.setUserAccountStatus(userAccountStatus/* Constants.UserAccountStatus.ACTIVE.getValue() */);
+		clientAssociation.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue()/* Constants.UserAccountStatus.ACTIVE.getValue() */);
+		
+		//2.1.3
+		if(clientAssociationRepository.save(clientAssociation) != null) {
+			return clientUser;
+		}
+	
+		
+		return null;
+	}
+	
+	public ClientUser addClientAndAssociation(Integer organisationId, Integer clientUserType, Integer userRole, ClientUser clientUser) {
+		// TODO Auto-generated method stub
+		
+		//Steps
+		//1. check client email Already exist or not
+		//2. if exist 
+		//	2.1 - insert client - organization associate record and account activation status as hold
+		//		- 2.1.1 - Insert Client if client record not found
+		//		- 2.1.2 - Insert User Account for Login
+		//		- 2.1.3 - Insert Client - Organization Association
+		//	2.2 - send invite accept email - (need to accept terms and condition)
+		//	2.3 - POST /api/client/invite/accept - exist - change status to active registration status, verification status when click the link
+		//	2.4 - No need to reset password 
+		//3. if not
+		//	3.1 - insert client - organization associate record and account activation status as hold
+		//		- 3.1.1 - Insert Client
+		//		- 3.1.2 - Insert User Account fot Login
+		//		- 3.1.3 - Insert Client - Organization Association
+		//	3.2 - send new invite to register/reset password email - (need to accept terms and condition)
+		//	3.3	- POST /api/client/invite/accept - new - change status to active registration status, verification status when click the link
+		//	3.4 - POST /api/user/resetPassword - New User need to reset password
+		
+		if(!clientUserRepository.existsByEmail(clientUser.getEmail())) {
+			//2.1.1
+			if(clientUserRepository.save(clientUser) != null){
+				
+				clientUser = clientUserRepository.findByEmail(clientUser.getEmail());
+				
+				if(clientUser != null) {
+					
+					User user = new User();
+					user.setUserId(clientUser.getClientId());
+					user.setUsername(clientUser.getEmail());
+					user.setUserType(Constants.UserType.CLIENT.getValue());
+					
+					//2.1.2
+					if(userRepository.save(user) != null) {
+						
+						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue()) != null) {
+							return clientUser;
+						} else {
+//							clientUserRepository.deleteById(clientUser.getClientId());
+//							userRepository.deleteByUserIdAndUserType(clientUser.getClientId(),Constants.UserType.CLIENT.getValue());
+						}
+					} else {
+//						clientUserRepository.deleteById(clientUser.getClientId());
+						return null;
+					}
+					
+					// Send Email
+					// with Data UserId, UserType, User Already Exist, No need to reset password
+				} else {
+					
+				}
+			} else {
+				return null;
+			}
+		} else {
+			return addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INACTIVE.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue());
+		}
+		
+		return clientUser;
 	}
 }
 

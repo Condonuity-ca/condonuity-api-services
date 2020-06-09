@@ -141,6 +141,12 @@ public class UserService {
 	@Autowired
 	UserProfileImagesRepository userProfileImagesRepository;
 	
+	public User findByEmail(String email) {
+		// TODO Auto-generated method stub
+		User user = userRepository.findByUsername(email);
+		return user;
+	}
+	
 	public Object resetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
 		User userObj = userRepository.findByUserIdAndUserType(userId, userType);

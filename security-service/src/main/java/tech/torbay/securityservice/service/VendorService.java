@@ -115,7 +115,8 @@ public class VendorService {
 			
 			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
-			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
+//			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
+			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.ACTIVE.getValue());
 			vendorOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
 			VendorInsurance vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
 			
