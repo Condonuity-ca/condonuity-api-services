@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.DeleteStatus;
+import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.email.SpringBootEmail;
 import tech.torbay.userservice.entity.Amenities;
@@ -25,6 +26,7 @@ import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.ServiceCities;
+import tech.torbay.userservice.entity.SupportUserLogs;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorOrganisationProfileImages;
@@ -42,6 +44,7 @@ import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
+import tech.torbay.userservice.repository.SupportUserLogsRepository;
 import tech.torbay.userservice.repository.UserRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorOrganisationProfileImagesRepository;
@@ -89,9 +92,13 @@ public class SupportUserService {
 	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
 	@Autowired
 	PredefinedTagsRepository predefinedTagsRepository;
+	@Autowired
+	SupportUserLogsRepository supportUserLogsRepository;
 	
 	public boolean updateOrganisationActivationStatus(Integer organisationId, Integer userType, Integer activeStatus, Integer supportUserId) {
 		// TODO Auto-generated method stub
+		
+		updateLogs(supportUserId, "Organisation", activeStatus, organisationId, userType);
 		
 		if(userType == UserType.CLIENT.getValue()) {
 			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(organisationId);
@@ -136,10 +143,39 @@ public class SupportUserService {
 	}
 
 
+	private void updateLogs(Integer supportUserId, String category, Integer activeStatus, Integer logCategoryId,
+			Integer userType) {
+		// TODO Auto-generated method stub
+		SupportUserLogs supportUserLogs= new SupportUserLogs();
+		supportUserLogs.setSupportUserId(supportUserId);
+		supportUserLogs.setLogCategory(category);
+		supportUserLogs.setLogCategoryId(String.valueOf(logCategoryId));
+		supportUserLogs.setLogUserType(userType);
+		String organisationType = "";
+		if(userType == UserType.CLIENT.getValue()) {
+			organisationType = "Client : ";
+		} else if (userType == UserType.VENDOR.getValue()) {
+			organisationType = "Vendor : ";
+		}
+		
+		String logs = "";
+		if(activeStatus == UserAccountStatus.ACTIVE.getValue()) {
+			logs = organisationType + category + " status Activated By Support User (ID : "+supportUserId+")";
+		} else if(activeStatus == UserAccountStatus.INACTIVE.getValue()){
+			logs = organisationType + category + " status De-Activated By Support User (ID : "+supportUserId+")";
+		} else {
+			logs = organisationType + category + "updated By Support User (ID : "+supportUserId+")";
+		}
+		supportUserLogs.setLogs(logs);
+		
+		supportUserLogsRepository.save(supportUserLogs);
+	}
+
+
 	public boolean updateUserActivationStatus(Integer userId, Integer organisationId, Integer userType,
 			Integer activeStatus, Integer supportUserId) {
 		// TODO Auto-generated method stub
-		
+		updateLogs(supportUserId, "User", activeStatus, userId, userType);
 		String emailContent = "";
 		if(activeStatus == DeleteStatus.ACTIVE.getValue()) {
 			emailContent = Constants.USER_ACCOUNT_ACTIVE_ALERT;
@@ -217,6 +253,7 @@ public class SupportUserService {
 		int isUpdated = projectReviewRatingRepository.setStatusById(activeStatus, reviewRatingId);
 						
 		if(isUpdated > 0) {
+			updateLogs(supportUserId, "Review", activeStatus, reviewRatingId, UserType.CLIENT.getValue());
 			return true;
 		}
 		return false;
@@ -229,6 +266,7 @@ public class SupportUserService {
 		int isUpdated = clientOrganisationRepository.setOrganisationNameAndCorporateNumberByClientOrganisationId(corporationName, corporationNumber, clientOrganisationId);
 		
 		if(isUpdated > 0) {
+			updateLogs(supportUserId, "ClientOrganisation", 0, clientOrganisationId, UserType.CLIENT.getValue());
 			return true;
 		}
 		return false;
@@ -240,6 +278,7 @@ public class SupportUserService {
 		int isUpdated = projectRepository.setDeleteStatusByProjectId(deleteStatus, projectId);
 		
 		if(isUpdated > 0) {
+			updateLogs(supportUserId, "Projects", deleteStatus, projectId, UserType.CLIENT.getValue());
 			return true;
 		}
 		return false;
@@ -251,6 +290,7 @@ public class SupportUserService {
 		int isUpdated = externalMessageRepository.setDeleteStatusById(activeStatus, externalMessageId);
 		
 		if(isUpdated > 0) {
+			updateLogs(supportUserId, "ExternalMessage", activeStatus, externalMessageId, 0);
 			return true;
 		}
 		return false;
@@ -261,6 +301,7 @@ public class SupportUserService {
 		int isUpdated = externalMessageCommentRepository.setDeleteStatusById(activeStatus, externalMessageCommentId);
 		
 		if(isUpdated > 0) {
+			updateLogs(supportUserId, "ExternalMessageComment", activeStatus, externalMessageCommentId, 0);
 			return true;
 		}
 		return false;
@@ -269,6 +310,9 @@ public class SupportUserService {
 	public boolean updateUserProfile(Integer userId, Integer organisationId, Integer userType,
 			String firstName, String lastName, Integer userRole, Integer clientUserType, Integer supportUserId) {
 		// TODO Auto-generated method stub
+		
+		updateLogs(supportUserId, "UserProfile", 0 , userId, userType);
+		
 		if(userType == UserType.CLIENT.getValue()) {
 			int isUpdated = clientUserRepository.setFirstNameAndLastNameByClientId(firstName, lastName, userId);
 			int isUpdatedRoleAndUserType = clientAssociationRepository.setUserRoleAndClientUserTypeByClientIdAndClientOrganisationId(userRole, clientUserType, userId, organisationId);		

@@ -751,6 +751,14 @@ public class VendorService {
 		vendorUser.setAccountStatus(UserAccountStatus.INACTIVE.getValue());
 		return vendorUserRepository.save(vendorUser);
 	}
+	
+	public int getUsersCountByOrganisationId(Integer vendorId) {
+		// TODO Auto-generated method stub
+		VendorUser vendorUser = vendorUserRepository.findByUserId(vendorId);
+		List<VendorUser> users = vendorUserRepository.findAllActiveUsersByVendorOrganisationId(vendorUser.getVendorOrganisationId());
+		
+		return users.size();
+	}
 
 	public Object updateVendorUserRole(Map<String, Object> requestData) {
 		// TODO Auto-generated method stub

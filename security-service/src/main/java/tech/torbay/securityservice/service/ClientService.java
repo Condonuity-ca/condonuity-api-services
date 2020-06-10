@@ -75,6 +75,8 @@ public class ClientService {
 		
 		//2.1.3
 		if(clientAssociationRepository.save(clientAssociation) != null) {
+			
+			
 			return clientUser;
 		}
 	
@@ -155,16 +157,20 @@ public class ClientService {
 //			clientOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
 			clientOrganisation.setActiveStatus(OrganisationAccountStatus.ACTIVE.getValue());
 			clientOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
-			clientOrganisation = clientOrganisationRepository.save(clientOrganisation);
+			ClientOrganisation clientOrganisationObj = clientOrganisationRepository.save(clientOrganisation);
 			
-			if(clientOrganisation != null) {
+			if(clientOrganisationObj != null) {
+				ClientUser clientUser = clientUserRepository.findByClientId(clientId);
+				
+				clientUser.setPrimaryOrgId(clientOrganisationObj.getClientOrganisationId());
+				clientUserRepository.save(clientUser);
 				
 				// Update client User - account activation status verified with account association
-				addClientOrgAccountAssociation(clientOrganisation.getClientOrganisationId(), 
+				addClientOrgAccountAssociation(clientOrganisationObj.getClientOrganisationId(), 
 						Constants.ClientUserType.BOARD_MEMBER.getValue(),
-						Constants.UserRole.ADMIN.getValue(), clientUserRepository.findByClientId(clientId), Constants.UserAccountStatus.ACTIVE.getValue(), Constants.VerificationStatus.VERIFIED.getValue());
+						Constants.UserRole.ADMIN.getValue(), clientUser, Constants.UserAccountStatus.ACTIVE.getValue(), Constants.VerificationStatus.VERIFIED.getValue());
 				
-				return clientOrganisation;
+				return clientOrganisationObj;
 				
 			} else {
 				return null;

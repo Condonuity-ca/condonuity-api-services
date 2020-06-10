@@ -668,10 +668,14 @@ public class ClientService {
         
         ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(id, clientOrgId);
         
-        clientObj.put("clientUserType", clientAssociate.getClientUserType());
-        clientObj.put("userRole", clientAssociate.getUserRole());
-        clientObj.put("userAccountStatus", clientAssociate.getUserAccountStatus());
-        clientObj.put("clientOrganisationId", clientOrgId);
+        if(clientAssociate != null) {
+	        clientObj.put("clientUserType", clientAssociate.getClientUserType());
+	        clientObj.put("userRole", clientAssociate.getUserRole());
+	        clientObj.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+	        clientObj.put("clientOrganisationId", clientOrgId);
+        } else {
+        	return null;
+        }
 
         return clientObj;
 	}
@@ -682,12 +686,20 @@ public class ClientService {
 		ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(id, clientOrgId);
 //		clientAssociate.setAccountVerificationStatus(); --> Need to check , is it has changes?
 		clientAssociate.setUserAccountStatus(UserAccountStatus.INACTIVE.getValue());
+//		clientAssociate.setDeleteStatus(UserAccountStatus.INACTIVE.getValue());
 		
 		String userInactiveDate = Utils.getDateTime();
 		
 		clientAssociate.setUserInactiveDate(userInactiveDate);
 		
 		return clientAssociationRepository.save(clientAssociate);
+	}
+	
+	public int getUsersCountByOrganisationId(Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		List<ClientAssociation> clientAssociate = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(clientOrgId);
+		
+		return clientAssociate.size();
 	}
 
 	public Object saveClientUserRole(Map<String, Object> requestData) {

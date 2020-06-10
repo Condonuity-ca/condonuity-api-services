@@ -171,21 +171,30 @@ public class VendorController {
 		Integer vendorId = Integer.parseInt(String.valueOf(requestData.get("vendorId")));
 		
 		VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId);
-		
 		HashMap<String, Object> response = new HashMap();
-		if(vendorUser != null) {
-			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-			response.put("statusMessage", "Success");
-			response.put("responseMessage", "Vendor User deleted successfully");
-			
-			return new ResponseEntity<Object>(response, HttpStatus.OK);
-		} else {
-			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+    	
+    	if(vendorService.getUsersCountByOrganisationId(vendorId) > 1) {
+    		if(vendorUser != null) {
+    			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+    			response.put("statusMessage", "Success");
+    			response.put("responseMessage", "Vendor User deleted successfully");
+    			
+    			return new ResponseEntity<Object>(response, HttpStatus.OK);
+    		} else {
+    			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+    			response.put("statusMessage", "Failed");
+    			response.put("responseMessage", "Database Error");
+
+    			return new ResponseEntity<Object>(response, HttpStatus.OK);
+    		}
+    	} else {
+    		response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
 			response.put("statusMessage", "Failed");
-			response.put("responseMessage", "Database Error");
+			response.put("responseMessage", "Organisation requires atleast 1 Active User");
 
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
-		}
+    	}
+		
 	}
 	
 	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")

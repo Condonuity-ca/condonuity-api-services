@@ -123,24 +123,35 @@ public class ClientController {
     	Integer clientUserId = Integer.parseInt(String.valueOf(requestData.get("clientUserId")));
     	Integer clientOrgId = Integer.parseInt(String.valueOf(requestData.get("clientOrgId")));
     	
+    	HashMap<String, Object> list = new HashMap();
     	
-    	Object client = clientService.deleteClientUserById(clientUserId, clientOrgId);
-		
-		HashMap<String, Object> list = new HashMap();
-		if(client != null) {
-			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-			list.put("statusMessage", "Success");
-			list.put("responseMessage", "Client User deleted successfully");
-			
-			return new ResponseEntity<Object>(list, HttpStatus.OK);
-		} else {
-			
-			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+    	if(clientService.getUsersCountByOrganisationId(clientOrgId) > 1) {
+    		
+    		Object client = clientService.deleteClientUserById(clientUserId, clientOrgId);
+    		
+    		if(client != null) {
+    			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+    			list.put("statusMessage", "Success");
+    			list.put("responseMessage", "Client User deleted successfully");
+    			
+    			return new ResponseEntity<Object>(list, HttpStatus.OK);
+    		} else {
+    			
+    			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+    			list.put("statusMessage", "Failed");
+    			list.put("responseMessage", "Database Error");
+
+    			return new ResponseEntity<Object>(list, HttpStatus.OK);
+    		}
+    	} else {
+    		list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
 			list.put("statusMessage", "Failed");
-			list.put("responseMessage", "Database Error");
+			list.put("responseMessage", "Organisation requires atleast 1 Active User");
 
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
-		}
+    	}
+    	
+    	
 	}
 	
     @ApiOperation(value = "Fetching A Client Details In an Organisation")
