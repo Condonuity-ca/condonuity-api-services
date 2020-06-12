@@ -100,6 +100,20 @@ public class SupportUserService {
 		
 		updateLogs(supportUserId, "Organisation", activeStatus, organisationId, userType);
 		
+		String emailContentOrganisation = "";
+		String emailContentUSER = "";
+		if(activeStatus == DeleteStatus.ACTIVE.getValue()) {
+			emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_ACTIVE_ALERT;
+		} else if (activeStatus == DeleteStatus.INACTIVE.getValue()) {
+			emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_REMOVE_ALERT;
+		}
+		
+		if(activeStatus == DeleteStatus.ACTIVE.getValue()) {
+			emailContentUSER = Constants.USER_ACCOUNT_ACTIVE_ALERT;
+		} else if (activeStatus == DeleteStatus.INACTIVE.getValue()) {
+			emailContentUSER = Constants.USER_ACCOUNT_REMOVE_ALERT;
+		}
+		
 		if(userType == UserType.CLIENT.getValue()) {
 			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(organisationId);
 			switch(activeStatus) {
@@ -117,19 +131,6 @@ public class SupportUserService {
 			
 			//Update via Email and User as Inactive
 			if(ClientOrganisationObj != null) {
-				String emailContentOrganisation = "";
-				String emailContentUSER = "";
-				if(activeStatus == DeleteStatus.ACTIVE.getValue()) {
-					emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_ACTIVE_ALERT;
-				} else if (activeStatus == DeleteStatus.INACTIVE.getValue()) {
-					emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_REMOVE_ALERT;
-				}
-				
-				if(activeStatus == DeleteStatus.ACTIVE.getValue()) {
-					emailContentUSER = Constants.USER_ACCOUNT_ACTIVE_ALERT;
-				} else if (activeStatus == DeleteStatus.INACTIVE.getValue()) {
-					emailContentUSER = Constants.USER_ACCOUNT_REMOVE_ALERT;
-				}
 				
 				SendOrganisationAlertEmailForRemovalFromSystem(ClientOrganisationObj.getManagementEmail(), ClientOrganisationObj.getOrganisationName(), emailContentOrganisation );
 				
@@ -143,8 +144,6 @@ public class SupportUserService {
 					org.add(ClientOrganisationObj.getOrganisationName());
 					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
 				}
-				
-				
 				
 				return true;
 			}
@@ -165,7 +164,17 @@ public class SupportUserService {
 			
 			if(vendorOrganisationObj != null) {
 				
+				SendOrganisationAlertEmailForRemovalFromSystem(vendorOrganisationObj.getEmail(), vendorOrganisationObj.getCompanyName(), emailContentOrganisation );
+				
 				vendorUserRepository.setDeleteStatusByVendorOrganisationId(activeStatus, organisationId);
+				
+				List<VendorUser> vendorUsers = vendorUserRepository.findAllActiveUsersByVendorOrganisationId(organisationId);
+				
+				for(VendorUser vendorUser : vendorUsers) {
+					List<String> org = new ArrayList<>();
+					org.add(vendorOrganisationObj.getCompanyName());
+					SendUserAlertEmailForRemovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER );
+				}
 				return true;
 			}
 		}

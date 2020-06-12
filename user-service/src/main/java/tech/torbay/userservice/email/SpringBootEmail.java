@@ -278,7 +278,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 				
 		        helper.setTo(userEmail);
 		        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
-		        helper.setSubject("User Account Status Update");
+		        helper.setSubject("Organisation Account Status Update");
 
 		        // default = text/plain
 		        //helper.setText("Check attachment for image!");
@@ -291,7 +291,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+organisationName+"</div>\r\n" +
-						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your Organisation Account Status Update Alert \n"+String.join(", ", organisationName) +"</div>\r\n" +
+						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your Organisation Account Status Update Alert \n</div>\r\n" +
 		        		
 		         "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#fff;height:40px;color:#d84d34;padding:20px 40px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
