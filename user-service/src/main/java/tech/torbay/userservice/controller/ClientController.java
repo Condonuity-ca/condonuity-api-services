@@ -194,8 +194,35 @@ public class ClientController {
             }
     )
 	@GetMapping("/client/orgs")
-	public ResponseEntity<Object> getAllClientOrganisations() {
-		List<Object> list = clientService.getAllClientOrganisations();
+	public ResponseEntity<Object> getAllActiveClientOrganisations() {
+		List<Object> list = clientService.getAllActiveClientOrganisations();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Client Organisations details fetched successfully");
+			response.put("clientOrganisations", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful All Client Details")
+            }
+    )
+	@GetMapping("/client/support/orgs")
+	public ResponseEntity<Object> getAllClientOrganisationsForSupportUser() {
+		List<Object> list = clientService.getAllClientOrganisationsForSupportUser();
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {

@@ -114,8 +114,38 @@ public class SupportUserService {
 			}
 			
 			ClientOrganisation ClientOrganisationObj = clientOrganisationRepository.save(clientOrganisation);
+			
+			//Update via Email and User as Inactive
 			if(ClientOrganisationObj != null) {
+				String emailContentOrganisation = "";
+				String emailContentUSER = "";
+				if(activeStatus == DeleteStatus.ACTIVE.getValue()) {
+					emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_ACTIVE_ALERT;
+				} else if (activeStatus == DeleteStatus.INACTIVE.getValue()) {
+					emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_REMOVE_ALERT;
+				}
+				
+				if(activeStatus == DeleteStatus.ACTIVE.getValue()) {
+					emailContentUSER = Constants.USER_ACCOUNT_ACTIVE_ALERT;
+				} else if (activeStatus == DeleteStatus.INACTIVE.getValue()) {
+					emailContentUSER = Constants.USER_ACCOUNT_REMOVE_ALERT;
+				}
+				
+				SendOrganisationAlertEmailForRemovalFromSystem(ClientOrganisationObj.getManagementEmail(), ClientOrganisationObj.getOrganisationName(), emailContentOrganisation );
+				
 				clientAssociationRepository.setDeleteStatusByClientOrganisationId(activeStatus, organisationId);
+				
+				List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(organisationId);
+				for (ClientAssociation clientAssociation : clientAssociations) {
+					
+					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
+					List<String> org = new ArrayList<>();
+					org.add(ClientOrganisationObj.getOrganisationName());
+					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
+				}
+				
+				
+				
 				return true;
 			}
 		} else if(userType == UserType.VENDOR.getValue()) {
@@ -235,6 +265,24 @@ public class SupportUserService {
 		
 		try {
 			springBootEmail.sendUserAlertEmailForRemovalFromSystem(userEmail, firstName+" "+lastName, organisationName , content);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
+	
+	private void SendOrganisationAlertEmailForRemovalFromSystem(String userEmail, String organisationName,String content) {
+		// TODO Auto-generated method stub
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+		
+		try {
+			springBootEmail.sendOrganisationAlertEmailForRemovalFromSystem(userEmail, organisationName , content);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

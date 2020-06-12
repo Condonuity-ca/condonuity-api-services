@@ -204,8 +204,35 @@ public class VendorController {
             }
     )
 	@GetMapping("/vendor/orgs")
-	public ResponseEntity<Object> getAllVendorOrganisations() {
-		List<Object> list = vendorService.getAllVendorOrganisations();
+	public ResponseEntity<Object> getAllActiveVendorOrganisations() {
+		List<Object> list = vendorService.getAllActiveVendorOrganisations();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
+			response.put("vendorOrgs", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
+            }
+    )
+	@GetMapping("/vendor/support/orgs")
+	public ResponseEntity<Object> getAllVendorOrganisationsForSupportUser() {
+		List<Object> list = vendorService.getAllVendorOrganisationsForSupportUser();
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {

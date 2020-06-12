@@ -371,9 +371,9 @@ public class ClientService {
 		return true;
 	}
 
-	public List<Object> getAllClientOrganisations() {
+	public List<Object> getAllActiveClientOrganisations() {
 		// TODO Auto-generated method stub
-		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAll();
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
 		
 		List<Object> clientOrganisations = new ArrayList();
 		
@@ -406,11 +406,62 @@ public class ClientService {
     			
 		return clientOrganisations;
 	}
+	
+	public List<Object> getAllClientOrganisationsForSupportUser() {
+		// TODO Auto-generated method stub
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAll();
+		
+		List<Object> clientOrganisations = new ArrayList();
+		
+		for(ClientOrganisation clientOrg : clientOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+	        if(clientOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(clientOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
+	        
+	        int activeStatus = clientOrg.getActiveStatus();
+	        int deleteStatus = clientOrg.getDeleteStatus();
+	        
+	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+	        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+	 	        	map.put("accountStatus","Registered");
+	 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+	 	        	map.put("accountStatus","Active");
+	 	        } 
+	        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+	        	map.put("accountStatus","Deleted");
+	        } else {
+	        	map.put("accountStatus","Deleted");
+	        }
+	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+	        map.put("amenities", amenitiesInfo);
+	        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());
+	        if(logo != null)
+	        	map.put("organisationLogo", logo);
+	        else
+	        	map.put("organisationLogo", "");
+			clientOrganisations.add(map);
+		}
+		
+    			
+		return clientOrganisations;
+	}
 
 	public List<Object> getAllClientOrganisationsByVendorOrgId(Integer vendorOrgId) {
 		// TODO Auto-generated method stub
 		
-		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAll();
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
 		
 		List<Object> clientOrganisations = new ArrayList();
 		
