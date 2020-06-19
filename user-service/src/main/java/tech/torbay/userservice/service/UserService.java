@@ -18,9 +18,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.Invalid;
 import tech.torbay.userservice.constants.Constants.ProjectPostType;
 import tech.torbay.userservice.constants.Constants.ThreadType;
+import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
+import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
@@ -38,6 +41,7 @@ import tech.torbay.userservice.entity.InternalMessageComment;
 import tech.torbay.userservice.entity.PredefinedTags;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.ServiceCities;
 import tech.torbay.userservice.entity.ThreadFiles;
 import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserProfileImages;
@@ -66,6 +70,7 @@ import tech.torbay.userservice.repository.InternalMessageRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.ServiceCitiesRepository;
 import tech.torbay.userservice.repository.ThreadFilesRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserRepository;
@@ -80,6 +85,10 @@ import tech.torbay.userservice.repository.VendorUserRepository;
 
 @Component
 public class UserService {
+	
+	
+	@Autowired
+	ClientService clientService;
 	
 	
 	@Autowired
@@ -140,6 +149,8 @@ public class UserService {
 	ExternalMessageOrganisationsRepository externalMessageOrganisationsRepository;
 	@Autowired
 	UserProfileImagesRepository userProfileImagesRepository;
+	@Autowired
+	ServiceCitiesRepository servicesCitiesRepository;
 	
 	public User findByEmail(String email) {
 		// TODO Auto-generated method stub
@@ -1765,6 +1776,368 @@ public class UserService {
 	        
 		 });
 		return result;
+	}
+
+	public Object getSupportUserSearchResults(Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		Integer searchType = Integer.parseInt(String.valueOf(requestData.get("searchType")));
+		String actualKeyword = String.valueOf(requestData.get("keyword"));
+		
+		String keyword = "%"+actualKeyword+"%";
+		
+		Map<String, Object> resultObj = new HashMap();
+		List<Map<String, Object>> resultList = new ArrayList();
+		
+		List<Integer> projectStatusCodes = new ArrayList();
+		
+//		ORGANISATION(1),
+//		USER(2),
+//		PROJECT(3),
+//		REVIWES(4),
+//		MESSAGES(5);
+		switch(searchType) {
+			case 1:{
+				resultObj.put("clientOrganisations",getClientOrganisationsByKeyword(keyword));
+				resultObj.put("vendorOrganisations",getVendorOrganisationsByKeyword(keyword));
+				
+				return resultObj;
+			}
+			case 2:{
+				resultObj.put("clientUsers",getClientUsersByKeyword(keyword));
+				resultObj.put("vendorUsers",getVendorUsersByKeyword(keyword));
+				
+				return resultObj;
+			}
+			case 3:{
+				//Handled only for Marketplace Projects
+				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
+				// check contract type
+				// check keyword has project tags				
+				return getSupportSearchProjects(Constants.SearchType.MARKETPLACE_PROJECTS.getValue(), actualKeyword, keyword,  projectStatusCodes);
+			}
+			case 4:{
+				// use vendor ratings 
+				
+				return getSearchedReviewsRatings(keyword);
+			}
+			case 5:{
+				
+			}
+		}
+		
+		return null;
+	}
+
+	private List<Object> getVendorUsersByKeyword(String keyword) {
+		// TODO Auto-generated method stub
+		List<VendorUser> vendorUsers = vendorUserRepository.findAllByKeyword(keyword);
+		List<Object> searchedVendorUsers = new ArrayList();
+		
+		for(VendorUser vendorUser : vendorUsers) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorUser, Map.class);
+	        
+	        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
+	        
+	        if(userProfileImage != null) {
+	        	map.put("profileImageURL",userProfileImage.getFileUrl());
+	        } else {
+	        	map.put("profileImageURL","");
+	        }
+	        
+	        searchedVendorUsers.add(map);
+		}
+		
+		
+		return searchedVendorUsers;
+	}
+
+	private List<Object> getClientUsersByKeyword(String keyword) {
+		// TODO Auto-generated method stub
+		List<ClientUser> clientUsers = clientUserRepository.findAllByKeyword(keyword);
+		List<Object> searchedClientUsers = new ArrayList();
+		
+		for(ClientUser clientUser : clientUsers) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
+	        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
+	        
+	        try {
+	        	if(userProfileImage != null)
+	        		map.put("profileImageURL",userProfileImage.getFileUrl());
+	        	else {
+	        		map.put("profileImageURL","");
+	        	}
+	        } catch(Exception exp) {
+	        	exp.printStackTrace();
+	        }
+	        List<Object> orgs = clientService.getAllCorporateAccounts(clientUser.getClientId());
+	        
+	        map.put("corporateAccounts", orgs);
+	        
+	        searchedClientUsers.add(map);
+		}
+		return searchedClientUsers;
+	}
+
+	public List<Object> getVendorOrganisationsByKeyword(String keyword) {
+		// TODO Auto-generated method stub
+		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllByKeyword(keyword);
+		
+		List<Object> vendorOrganisations = new ArrayList();
+		
+		for(VendorOrganisation vendorOrg : vendorOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        
+	        
+	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
+	        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
+	        } else {
+	        	map.put("vendorTags","");
+	        }
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
+	        
+	        int activeStatus = vendorOrg.getActiveStatus();
+	        int deleteStatus = vendorOrg.getDeleteStatus();
+	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+	        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+	 	        	map.put("accountStatus","Registered");
+	 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+	 	        	map.put("accountStatus","Active");
+	 	        } 
+	        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+	        	map.put("accountStatus","Deleted");
+	        } else {
+	        	map.put("accountStatus","Deleted");
+	        }
+	       
+	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        try {
+		        String logo = getVendorOrganisationLogo(vendorOrg.getVendorOrganisationId());
+		        if(logo != null)
+		        	map.put("vendorProfileImageUrl", logo);
+		        else
+		        	map.put("vendorProfileImageUrl", "");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
+	        }
+	        vendorOrganisations.add(map);
+		}
+		
+		return vendorOrganisations;
+	}
+
+	public List<Object> getClientOrganisationsByKeyword(String keyword) {
+		// TODO Auto-generated method stub
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAllByKeyword(keyword);
+		
+		List<Object> clientOrganisations = new ArrayList();
+		
+		for(ClientOrganisation clientOrg : clientOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+	        if(clientOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(clientOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
+	        
+	        int activeStatus = clientOrg.getActiveStatus();
+	        int deleteStatus = clientOrg.getDeleteStatus();
+	        
+	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+	        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+	 	        	map.put("accountStatus","Registered");
+	 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+	 	        	map.put("accountStatus","Active");
+	 	        } 
+	        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+	        	map.put("accountStatus","Deleted");
+	        } else {
+	        	map.put("accountStatus","Deleted");
+	        }
+	        List<Map<String, Object>> amenitiesInfo = clientService.getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+	        map.put("amenities", amenitiesInfo);
+	        String logo = getClientOrganisationLogo(clientOrg.getClientOrganisationId());
+	        if(logo != null)
+	        	map.put("organisationLogo", logo);
+	        else
+	        	map.put("organisationLogo", "");
+			clientOrganisations.add(map);
+		}
+		
+    			
+		return clientOrganisations;
+	}
+
+	private List<Map<String, Object>> getSupportSearchProjects(int searchType, String actualKeyword, String keyword, List<Integer> projectStatusCodes) {
+		List<Map<String, Object>> result = new ArrayList();
+		
+		List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
+		ArrayList<Project> tagContainedProjects = new ArrayList();
+		if(tags != null && tags.size() > 0) {
+			for(PredefinedTags tag : tags) {
+				List<Project> projects = projectRepository.findAllByTagKeyword(String.valueOf("%"+tag.getTagId()+"%"));
+				tagContainedProjects.addAll(new ArrayList<>(projects));
+			}
+		}
+		List<Project> projects = new ArrayList();
+		switch(searchType) {
+//			case 1:{
+//				projects = projectRepository.findAllCurrentByKeyword(clientOrganisationId, keyword, projectStatusCodes);
+//				break;
+//			}
+//			case 2:{
+//				projects = projectRepository.findAllHistoryByKeyword(clientOrganisationId, keyword, projectStatusCodes);
+//				break;
+//			}
+			case 4:{
+				projects = projectRepository.findAllMarketplaceByKeyword(keyword, projectStatusCodes);
+//				break;
+			}
+		}
+		
+		
+		for(Project project : projects) {
+			result.add(getProjectObject(project));
+		}
+		
+		if(tagContainedProjects != null && tagContainedProjects.size() > 0) {
+			for(Project project : tagContainedProjects) {
+				result.add(getProjectObject(project));
+			}
+		}
+		
+		HashSet<Map<String, Object>> resultSet = new HashSet(result);
+		result.clear();
+		result.addAll(resultSet);
+		
+		Comparator<Map<String, Object>> valueComparator = new Comparator<Map<String, Object>>() {
+            
+            @Override
+            public int compare(Map<String, Object> e1, Map<String, Object> e2) {
+                Integer o1 = (Integer) e1.get("projectId");
+                Integer o2 = (Integer) e2.get("projectId");
+                return o1.compareTo(o2);
+            }
+        };
+        
+        Collections.sort(result, valueComparator);
+        
+		return result;
+	}
+	
+	private Object getSearchedReviewsRatings(String keyword) {
+		// TODO Auto-generated method stub
+		 try {
+			 List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByKeyword(keyword);
+			 
+			 List<Object> vendorAllReviews = new ArrayList();
+			 
+			 for (ProjectReviewRating vendorReviewsForProject : projectReviewsForVendors) {
+				 ObjectMapper objMapper = new ObjectMapper();
+				 Map<String, Object> mappedObj = objMapper.convertValue(vendorReviewsForProject, Map.class);
+				 ClientUser clientUser = clientUserRepository.findByClientId(vendorReviewsForProject.getClientId());
+				 mappedObj.put("clientName",clientUser.getFirstName()+" "+clientUser.getLastName());
+				 VendorUser vendorUser = vendorUserRepository.findByUserId(vendorReviewsForProject.getVendorId());
+				 if(vendorUser != null) {
+					 mappedObj.put("vendorName",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
+				 } else {
+					 mappedObj.put("vendorName","");
+				 }
+				 // required Organisation Names so added
+				 if(vendorReviewsForProject.getClientOrganisationId() != 0) {
+					 ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(vendorReviewsForProject.getClientOrganisationId());
+					 mappedObj.put("clientOrganisationName",clientOrganisation.getOrganisationName());
+				 } else {
+					 mappedObj.put("clientOrganisationName","");
+				 }
+				 
+				 if(vendorReviewsForProject.getVendorOrganisationId() != 0) {
+					 VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorReviewsForProject.getVendorOrganisationId());
+					 mappedObj.put("vendorOrganisationName",vendorOrganisation.getCompanyName());
+				 } else {
+					 mappedObj.put("vendorOrganisationName","");
+				 }
+				 
+				 mappedObj.put("categoryRating",getDetailedRatingForReview(vendorReviewsForProject.getId()));
+				 List<Map<String, Object>> vendorCategoryRatings = getDetailedRatingForReview(vendorReviewsForProject.getId());
+					
+					Float overAllRatingCalculation=0.0f;
+					for(Map<String,Object> rating : vendorCategoryRatings) {
+						
+						VendorCategoryRatings vendorRating = new VendorCategoryRatings();
+						
+						Integer ratingCategory = (Integer) rating.get("ratingCategory");
+						Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
+						
+						switch(ratingCategory) {
+							case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+								break;
+							}
+							case 2/*VendorRatingCategory.PROFESSIONALISM.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+								break;
+							}
+							case 3/*VendorRatingCategory.ACCURACY.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+								break;
+							}
+							case 4/*VendorRatingCategory.QUALITY.getValue()*/ :{
+								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+								break;
+							}
+						}
+					}
+					mappedObj.put("rating", overAllRatingCalculation);
+				 vendorAllReviews.add(mappedObj);
+			 }
+			 
+			 return vendorAllReviews;
+		 } catch(Exception exp){
+			 exp.printStackTrace();
+			 return null;
+		 }
+	}
+	
+	private List<Map<String,Object>> getDetailedRatingForReview(Integer reviewRatingId) {
+		// TODO Auto-generated method stub4
+		List<VendorCategoryRatings> vendorCategoryRatings = vendorCategoryRatingsRepository.findAllByReviewRatingId(reviewRatingId);
+		
+		List<Map<String,Object>> categoryRating = new ArrayList();
+		
+		for(VendorCategoryRatings vendorCategoryRating : vendorCategoryRatings){
+			Map<String,Object> map = new HashMap();
+			map.put("ratingCategory", vendorCategoryRating.getRatingCategory());
+			map.put("rating", vendorCategoryRating.getRating());
+			categoryRating.add(map);
+		}
+		return categoryRating;
 	}
 
 }

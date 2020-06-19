@@ -793,6 +793,35 @@ public class Constants {
 		}
 	}
 	
+	public enum SupportSearchType {
+		ORGANISATION(1),
+		USER(2),
+		PROJECT(3),
+		REVIWES(4),
+		MESSAGES(5);
+		
+		private int value;
+		private static Map map = new HashMap<>();
+		
+		private SupportSearchType(int value) {
+			this.value = value;
+		}
+		
+		static {
+			for (SupportSearchType pageType : SupportSearchType.values()) {
+				map.put(pageType.value, pageType);
+			}
+		}
+		
+		public static SupportSearchType valueOf(int pageType) {
+			return (SupportSearchType) map.get(pageType);
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
 	public enum ThreadType {
 	    INTERNAL(1),
 	    EXTERNAL(2);
@@ -866,6 +895,31 @@ public class Constants {
 
 	    public static ProjectInterestStatus valueOf(int pageType) {
 	        return (ProjectInterestStatus) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
+	public enum Invalid {
+		ID(0);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private Invalid(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (Invalid pageType : Invalid.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static Invalid valueOf(int pageType) {
+	        return (Invalid) map.get(pageType);
 	    }
 
 	    public int getValue() {

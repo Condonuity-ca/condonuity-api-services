@@ -61,6 +61,16 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 			, nativeQuery = true)
 	List<Project> findAllMarketplaceByKeyword(Integer clientOrganisationId, String keyword, List<Integer> status);
 	
+	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where delete_status = 1 " + 
+			"and ( pro.status= 2)  " + 
+			"and concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
+			"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
+			"'.', pro.duration, '.', pro.description, " + 
+			"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
+			"LIKE (?1)"
+			, nativeQuery = true)
+	List<Project> findAllMarketplaceByKeyword(String keyword, List<Integer> status);
+	
 	//SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = 1 and  
 //	 (pro.project_name LIKE '%remove%' or pro.description LIKE '%remove%' )
 	
@@ -87,5 +97,10 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	@Transactional
 	@Query(value="update condonuitydev.projects set delete_status = (?1) where project_id = (?2);", nativeQuery = true)
 	int setDeleteStatusByProjectId(Integer deleteStatus, Integer projectId);
+	
+	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where " + 
+			"pro.tags LIKE (?1)"
+			, nativeQuery = true)
+	List<Project> findAllByTagKeyword(String keyword);
 }
 

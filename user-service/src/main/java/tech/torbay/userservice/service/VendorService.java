@@ -133,8 +133,11 @@ public class VendorService {
         Map<String, Object> map = oMapper.convertValue(vendorUser, Map.class);
         
         UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
-        
-        map.put("profileImageURL",userProfileImage.getFileUrl());
+        if(userProfileImage != null) {
+        	map.put("profileImageURL",userProfileImage.getFileUrl());
+        } else {
+        	map.put("profileImageURL","");
+        }
 //        map.put("",""); blobName
         
         return map;
@@ -237,6 +240,7 @@ public class VendorService {
 				 } else {
 					 mappedObj.put("vendorName","");
 				 }
+				 //not required Organisation Names for now UI perspective so not added
 				 mappedObj.put("categoryRating",getDetailedRatingForReview(vendorReviewsForProject.getId()));
 				 List<Map<String, Object>> vendorCategoryRatings = getDetailedRatingForReview(vendorReviewsForProject.getId());
 					

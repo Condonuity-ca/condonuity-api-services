@@ -31,4 +31,12 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
 	int setFirstNameAndLastNameByClientId(String firstName, String lastName, Integer userId);
     
     boolean existsByEmail(String email);   
+    
+    @Query(value = "SELECT cu.* FROM condonuitydev.client_user cu where " + 
+			"concat (cu.first_name, '.', cu.last_name, '.', cu.email, '.', " +
+			"cu.phone, '.', cu.city, '.', " +
+			"cu.created_at, '.', cu.modified_date)" + 
+			" LIKE (?1) "
+			, nativeQuery = true)
+    List<ClientUser> findAllByKeyword(String keyword);
 }

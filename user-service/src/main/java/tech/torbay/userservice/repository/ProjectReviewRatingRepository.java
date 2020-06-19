@@ -63,4 +63,22 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
 	@Query(value="UPDATE condonuitydev.project_reviews_ratings SET status = (?1) WHERE id=(?2);", nativeQuery = true)
 	int setStatusById(Integer status, Integer reviewRatingId);
 
+	@Query(value = "SELECT rr.* " + 
+    		"FROM condonuitydev.project_reviews_ratings rr " + 
+    		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
+    		"ON ( rr.vendor_organisation_id = vo.vendor_organisation_id) " + 
+    		"LEFT JOIN condonuitydev.projects pro " + 
+    		"ON ( rr.project_id = pro.project_id) " + 
+    		"where " + 
+    		"concat (rr.rating LIKE (?1) or rr.review_comments LIKE (?1) or rr.reply_comments LIKE (?1) or " + 
+    		"rr.created_at LIKE (?1) or rr.modified_date  LIKE (?1)) " +
+    		"or "+
+    		"concat ( vo.company_name LIKE (?1) or " + 
+    		"vo.legal_name LIKE (?1) or vo.contact_person LIKE (?1) or vo.address LIKE (?1) or vo.city LIKE (?1) or " + 
+    		"vo.province LIKE (?1) or vo.email LIKE (?1) or vo.website LIKE (?1) or vo.logo_name LIKE (?1) )" +
+    		"or " + 
+    		"concat ( pro.project_name LIKE (?1) or pro.bid_end_date LIKE (?1) or pro.project_start_date LIKE (?1) or " + 
+    		"pro.project_completion_deadline LIKE (?1) or pro.estimated_budget LIKE (?1) or pro.duration LIKE (?1) or " + 
+    		"pro.description LIKE (?1) or pro.special_conditions LIKE (?1) or pro.city LIKE (?1)) " , nativeQuery = true)
+	List<ProjectReviewRating> findAllByKeyword(String keyword);
 }

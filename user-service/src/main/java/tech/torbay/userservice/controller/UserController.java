@@ -134,4 +134,31 @@ public class UserController {
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
         }
 	}
+	
+	@ApiOperation(value = "Get Vendor Search Result Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Support Search Results Fetched Successfully"),
+            }
+    )
+	@PostMapping("/support/search")
+	public ResponseEntity<Object> getSupportUserSearchResults(@RequestBody Map<String, Object> requestData) {
+		
+		Object results = userService.getSupportUserSearchResults(requestData);
+        if (results == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch search results");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Support Search Results Fetched Successfully");
+			list.put("results", results);
+//			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
+	}
 }

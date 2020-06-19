@@ -147,7 +147,11 @@ public class ClientService {
         UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
         
         try {
-        map.put("profileImageURL",userProfileImage.getFileUrl());
+        	if(userProfileImage != null) {
+            	map.put("profileImageURL",userProfileImage.getFileUrl());
+            } else {
+            	map.put("profileImageURL","");
+            }
         } catch(Exception exp) {
         	exp.printStackTrace();
         }
