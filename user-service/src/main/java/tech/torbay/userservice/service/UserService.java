@@ -1626,7 +1626,7 @@ public class UserService {
 			}
 			case 8:{
 				try {
-					List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeywordForVendor(vendorOrganisationId, Constants.UserType.CLIENT.getValue(), keyword);
+					List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserTypeAndKeywordForVendor(vendorOrganisationId, Constants.UserType.VENDOR.getValue(), keyword);
 					HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);// add distinct
 					
 					for(ExternalMessage externalMessage : uniqueExternalMessages) {
@@ -1822,7 +1822,7 @@ public class UserService {
 				return getSearchedReviewsRatings(keyword);
 			}
 			case 5:{
-				
+				return getExternalMessagesSearchResults(keyword);
 			}
 		}
 		
@@ -2138,6 +2138,196 @@ public class UserService {
 			categoryRating.add(map);
 		}
 		return categoryRating;
+	}
+
+	private Object getExternalMessagesSearchResults(String keyword) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> resultList = new ArrayList();
+		
+		try {
+			List<ExternalMessage> externalMessages = externalMessageRepository.findAllByKeyword(keyword);
+			HashSet<ExternalMessage> uniqueExternalMessages = new HashSet(externalMessages);// add distinct
+			
+			for(ExternalMessage externalMessage : uniqueExternalMessages) {
+				
+				Map<String,Object> map = new HashMap<>();
+				ObjectMapper oMapper = new ObjectMapper();
+				map = oMapper.convertValue(externalMessage, Map.class);
+				map = oMapper.convertValue(externalMessage, Map.class);
+				map.remove("sourceOrganisationId");	
+				map.remove("sourceUserId");	
+				map.remove("targetOrganisationId");
+				map.remove("targetUserType");
+				
+				Map<String,Object> user = new HashMap<>();
+				Map<String,Object> organisation = new HashMap<>();
+				
+				UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessage.getSourceUserId(), externalMessage.getSourceUserType());
+				
+				if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+					
+					ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+					user.put("userId",clientUser.getClientId());
+					user.put("firstName",clientUser.getFirstName());
+					user.put("lastName",clientUser.getLastName());
+					if(userProfileImage != null)
+						user.put("profileImageURL",userProfileImage.getFileUrl());
+					else
+						user.put("profileImageURL","");
+					
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+					organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+					organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+					organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+					organisation.put("organisationName",clientOrganisation.getOrganisationName());
+					organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+					
+				} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+					
+					VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+					user.put("userId",vendorUser.getUserId());
+					user.put("firstName",vendorUser.getFirstName());
+					user.put("lastName",vendorUser.getLastName());
+					if(userProfileImage != null)
+						user.put("profileImageURL",userProfileImage.getFileUrl());
+					else
+						user.put("profileImageURL","");
+					
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+					organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+					organisation.put("legalName",vendorOrganisation.getLegalName());
+					organisation.put("organisationName",vendorOrganisation.getCompanyName());
+					organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+					organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+				}
+				
+				
+				map.put("fromUser",user);
+				map.put("fromOrganisation",organisation);
+				
+				map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
+				
+				List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+				List<Map<String,Object>> allFiles = new ArrayList();
+				for(ThreadFiles threadFile : threadFiles) {
+					Map<String,Object> file = new HashMap<>();
+					file.put("id", threadFile.getId());
+					file.put("fileName", threadFile.getFileName());
+					file.put("fileType", threadFile.getFileType());
+					file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+					file.put("blobName", threadFile.getBlobName());
+					file.put("containerName", threadFile.getContainerName());
+//					file.put("fileUrl", threadFile.getFileUrl());
+					file.put("createdAt", threadFile.getCreatedAt());
+//					file.put("modifiedDate", threadFile.getModifiedDate());
+					allFiles.add(file);
+				}
+				
+				
+				/*if okay use SQL Result Set mapping query here when require optimization*/
+				if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+					ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+					
+					map.put("createdByUser",clientUser.getFirstName() +" "+ clientUser.getLastName());
+					map.put("sourceOrganisationName",clientOrganisation.getOrganisationName());
+					
+				} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+					VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+					
+					map.put("createdByUser",vendorUser.getFirstName() +" "+ vendorUser.getLastName());
+					map.put("sourceOrganisationName",vendorOrganisation.getCompanyName());
+				}
+				
+				
+				map.put("files",allFiles);
+				map.put("comments",getExternalThreadCommentsForSupportUser(externalMessage.getId()));
+				
+				resultList.add(map);
+			}
+		} catch(Exception exp) {
+			return null;
+		}
+		
+		return resultList;
+	}
+	
+	private List<Map<String,Object>> getExternalThreadCommentsForSupportUser(Integer threadId) {
+		// TODO Auto-generated method stub
+		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(threadId);
+		
+		List<Map<String,Object>> allComments = new ArrayList();
+		
+		for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+			
+			Map<String,Object> map = new HashMap<>();
+			ObjectMapper oMapper = new ObjectMapper();
+			map = oMapper.convertValue(externalMessageComment, Map.class);
+			map.remove("userId");
+			
+			Map<String,Object> user = new HashMap<>();
+			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessageComment.getUserId(), externalMessageComment.getUserType());
+			
+			if(externalMessageComment.getUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientUser clientUser = clientUserRepository.findByClientId(externalMessageComment.getUserId());
+				user.put("isCommented", false);
+					
+				
+				user.put("userId",clientUser.getClientId());
+				user.put("firstName",clientUser.getFirstName());
+				user.put("lastName",clientUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessageComment.getOrganisationId());
+				user.put("organisationId",clientOrganisation.getClientOrganisationId());
+				user.put("organisationName",clientOrganisation.getOrganisationName());
+				
+				
+			} else if(externalMessageComment.getUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessageComment.getUserId());
+				user.put("isCommented", false);
+				
+				user.put("userId",vendorUser.getUserId());
+				user.put("firstName",vendorUser.getFirstName());
+				user.put("lastName",vendorUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessageComment.getOrganisationId());
+				user.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+				user.put("organisationName",vendorOrganisation.getCompanyName());
+				
+			}
+			map.put("user",user);
+			
+			List<CommentFiles> commentFiles = commentFilesRepository.findAllByCommentIdAndThreadType(externalMessageComment.getId(), ThreadType.EXTERNAL.getValue());
+			List<Map<String,Object>> allFiles = new ArrayList();
+			for(CommentFiles commentFile : commentFiles) {
+				Map<String,Object> file = new HashMap<>();
+				file.put("id", commentFile.getId());
+				file.put("fileName", commentFile.getFileName());
+				file.put("fileType", commentFile.getFileType());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(commentFile.getFileSize())));
+				file.put("blobName", commentFile.getBlobName());
+				file.put("containerName", commentFile.getContainerName());
+//				file.put("fileUrl", commentFile.getFileUrl());
+				file.put("createdAt", commentFile.getCreatedAt());
+//				file.put("modifiedDate", commentFile.getModifiedDate());
+				allFiles.add(file);
+			}
+			map.put("files","[]"/*allFiles*/);
+			allComments.add(map);
+		}
+		return allComments;
 	}
 
 }

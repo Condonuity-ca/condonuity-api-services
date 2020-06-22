@@ -161,4 +161,62 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
 	@Query(value="update condonuitydev.external_message set delete_status = (?1) where id = (?2);", nativeQuery = true)
 	int setDeleteStatusById(Integer activeStatus, Integer externalMessageId);
 
+	 @Query(value="SELECT DISTINCT em.* " + 
+	    		"FROM condonuitydev.external_message em " + 
+	    		"INNER JOIN condonuitydev.external_message_organisations emo " + 
+	    		"ON " + 
+	    		"(em.id = emo.external_message_id) " + 
+	    		"INNER JOIN condonuitydev.client_organisation co " + 
+	    		"ON ( " + 
+	    		"(em.source_organisation_id = co.client_organisation_id and em.source_user_type = 1) " + 
+	    		"OR " + 
+	    		"(emo.target_organisation_id = co.client_organisation_id and emo.target_user_type = 1)" + 
+	    		") " + 
+	    		"LEFT JOIN condonuitydev.client_user cu " + 
+	    		"ON ( " + 
+	    		"(em.source_user_id = cu.client_id and em.source_user_type = 1) " + 
+	    		") " + 
+	    		"LEFT JOIN condonuitydev.vendor_user vu " + 
+	    		"ON ( " + 
+	    		"(em.source_user_id = vu.user_id and em.source_user_type = 2) " + 
+	    		") " + 
+	    		"LEFT JOIN condonuitydev.external_message_comment emc ON ( em.id = emc.thread_id) " +     		
+	    		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
+	    		"ON ( " + 
+	    		"(em.source_organisation_id = vo.vendor_organisation_id and em.source_user_type = 2) " + 
+	    		"OR " + 
+	    		"(emo.target_organisation_id = vo.vendor_organisation_id and emo.target_user_type = 2)" + 
+	    		") " + 
+	    		"WHERE " + 
+	    		"concat (" + 
+	    		"em.thread_description like (?1) or " + 
+	    		"em.thread_subject like (?1) or " + 
+	    		"em.created_at like (?1) or " + 
+	    		"em.modified_date like (?1) or " + 
+	    		"co.organisation_name like (?1) or " + 
+	    		"co.management_company like (?1) or " + 
+	    		"co.corporate_number like (?1) or " + 
+	    		"co.registration_date like (?1) or " + 
+	    		"co.address like (?1) or " + 
+	    		"co.city like (?1) or " + 
+	    		"co.province like (?1) or " + 
+	    		"vo.legal_name like (?1) or " + 
+	    		"vo.company_name like (?1) or " + 
+	    		"vo.address like (?1) or " + 
+	    		"vo.city like (?1) or " + 
+	    		"vo.province like (?1) or " + 
+	    		"vo.logo_name like (?1) or " + 
+	    		"vo.expertise_category like (?1) or " + 
+	    		"vo.website like (?1) or " + 
+	    		"cu.first_name like (?1) or " +
+	    		"cu.last_name like (?1) or " +
+	    		"cu.legal_name like (?1) or " +
+	    		"vu.first_name like (?1) or " +
+	    		"vu.last_name like (?1) or " +
+	    		"vu.email like (?1) or " +
+	    		"emc.comment like (?1) or " +
+	    		"emc.created_at like (?1) or " +
+	    		"emc.modified_date like (?1)" +
+	    		")", nativeQuery =true)
+		List<ExternalMessage> findAllByKeyword(String keyword);
 }
