@@ -881,7 +881,7 @@ public class ProjectController {
             }
     )
 	@PostMapping("/projects/award")
-	public ResponseEntity<Object> postProjectReview(@RequestBody ProjectAwards projectAwards) {
+	public ResponseEntity<Object> postProjectAward(@RequestBody ProjectAwards projectAwards) {
 		ProjectAwards projectAwardsObj = projectService.projectAwarding(projectAwards);
         if (projectAwardsObj == null) {
      

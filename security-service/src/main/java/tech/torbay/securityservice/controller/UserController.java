@@ -473,12 +473,20 @@ public class UserController {
 			String phone = "";
 			try {
 				firstName = String.valueOf(requestData.get("firstName"));
-				lastName = String.valueOf(requestData.get("lastName"));
-				phone = String.valueOf(requestData.get("phone"));
 			} catch(Exception exp) {
 				exp.printStackTrace();
 				firstName = "";
+			}
+			try {
+				lastName = String.valueOf(requestData.get("lastName"));
+			} catch(Exception exp) {
+				exp.printStackTrace();
 				lastName = "";
+			}
+			try {
+				phone = String.valueOf(requestData.get("phone"));
+			} catch(Exception exp) {
+				exp.printStackTrace();
 				phone = "";
 			}
 			

@@ -20,10 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
+import tech.torbay.projectservice.constants.Constants.BidPostType;
 import tech.torbay.projectservice.constants.Constants.DeleteStatus;
+import tech.torbay.projectservice.constants.Constants.ProjectPostType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.UserType;
 import tech.torbay.projectservice.entity.BidFiles;
+import tech.torbay.projectservice.entity.ClientOrganisation;
 import tech.torbay.projectservice.entity.ClientUser;
 import tech.torbay.projectservice.entity.Notification;
 import tech.torbay.projectservice.entity.PredefinedTags;
@@ -109,9 +112,11 @@ public class ProjectService {
 		
 		 projects.stream().forEach((record) -> {
 	        Project project = (Project) record[0];
-	        String condoName = (String) record[1];
-	        String firstName = (String) record[2];
-	        String lastName = (String) record[3];
+	        String managementCompany = (String) record[1];
+	        String condoName = (String) record[2];
+	        String condoCity = (String) record[3];
+	        String firstName = (String) record[4];
+	        String lastName = (String) record[5];
 	        
 	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
 	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
@@ -128,7 +133,9 @@ public class ProjectService {
 				
 				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
 				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("managementCompany", managementCompany);
 				map.put("condoName", condoName);
+				map.put("condoCity", condoCity);
 				map.put("projectCreatedBy", firstName+" "+lastName);
 				
 						
@@ -547,7 +554,9 @@ public class ProjectService {
 			vendorBids.stream().forEach((record) -> {
 		        VendorBid vendorBid = (VendorBid) record[0]; 
 		        Project project = (Project) record[1];
-		        String companyName = (String) record[2];
+		        String managementCompany = (String) record[2];
+		        String condoName = (String) record[3];
+		        String condoCity = (String) record[4];
 		        
 		        Map<String,Object> projectMap = new HashMap<>();
 		        Map<String,Object> vendorBidMap = new HashMap<>();
@@ -569,11 +578,15 @@ public class ProjectService {
 					} catch(Exception exp) {
 						exp.printStackTrace();
 					}
-					projectMap.put("condoName", companyName);
+					projectMap.put("managementCompany", managementCompany);
+					projectMap.put("condoName", condoName);
+					projectMap.put("condoCity", condoCity);
 //					projectMap.put("projectCreatedBy", firstName+" "+lastName);
 					projectMap.put("vendorBid", vendorBid);
 							
+					if(vendorBid.getBidStatus() == BidPostType.PUBLISHED.getValue()) {
 					allProjects.add(projectMap);
+					}
 				}
 				
 			 });
@@ -590,7 +603,7 @@ public class ProjectService {
 	
 	public List<Map<String, Object>> getVendorHistoryProjects(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		
+		// Only vendor bided and completed projects only comes under vendor history - (excluded - vendor interests)
 		try {
 			checkIsProjectsClosed();
 			
@@ -601,7 +614,9 @@ public class ProjectService {
 			vendorBids.stream().forEach((record) -> {
 		        VendorBid vendorBid = (VendorBid) record[0]; 
 		        Project project = (Project) record[1];
-		        String companyName = (String) record[2];
+		        String managementCompany = (String) record[2];
+		        String condoName = (String) record[3];
+		        String condoCity = (String) record[4];
 		        
 		        Map<String,Object> projectMap = new HashMap<>();
 		        Map<String,Object> vendorBidMap = new HashMap<>();
@@ -624,7 +639,9 @@ public class ProjectService {
 					} catch(Exception exp) {
 						exp.printStackTrace();
 					}
-					projectMap.put("condoName", companyName);
+					projectMap.put("managementCompany", managementCompany);
+					projectMap.put("condoName", condoName);
+					projectMap.put("condoCity", condoCity);
 //					projectMap.put("projectCreatedBy", firstName+" "+lastName);
 					projectMap.put("vendorBid", vendorBid);
 							
@@ -674,12 +691,18 @@ public class ProjectService {
 				ObjectMapper oMapper = new ObjectMapper();
 		        // object -> Map
 		        Map<String, Object> map = oMapper.convertValue(project, Map.class);
+		        ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+		        map.put("managementCompany", clientOrganisation.getManagementCompany());
+		        map.put("condoName", clientOrganisation.getOrganisationName());
+		        map.put("condoCity", clientOrganisation.getCity());
 		        
-		        List<VendorBid> vendorBid = vendorBidRepository.findVendorBidByProjectId(project.getProjectId());
+		        VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(project.getProjectId(), vendorOrganisationId);
 		        
-//				if(vendorBid == null || vendorBid.size() == 0) {// once bidded its moved to current projects
+				if(vendorBid == null || vendorBid.getBidStatus() == BidPostType.UNPUBLISHED.getValue()) {// once bided and published its moved to current projects until its under favorite
 					favoriteProjects.add(map);
-//				}
+				} 
+					
+					
 			}// only vendor bided projects comes under history favorite projects only in favorite list once bided then only comes for future reference
 			
 		}
@@ -700,9 +723,11 @@ public class ProjectService {
 		
 		 projects.stream().forEach((record) -> {
 	        Project project = (Project) record[0];
-	        String condoName = (String) record[1];
-	        String firstName = (String) record[2];
-	        String lastName = (String) record[3];
+	        String managementCompany = (String) record[1];
+	        String condoName = (String) record[2];
+	        String condoCity = (String) record[3];
+	        String firstName = (String) record[4];
+	        String lastName = (String) record[5];
 	        
 	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
 	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
@@ -1023,6 +1048,7 @@ public class ProjectService {
 		
 		Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
 		project.setAwardedBidId(projectAwards.getAwardedBidId());
+		project.setStatus(ProjectPostType.COMPLETED.getValue());//once awarded moved to closed
 		projectRepository.save(project);
 		
 		return projectAwardsObj;

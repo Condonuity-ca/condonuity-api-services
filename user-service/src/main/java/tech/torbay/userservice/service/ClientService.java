@@ -198,7 +198,7 @@ public class ClientService {
 //		        	
 //		        } // Need to check this flow
 		        
-//		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) { 
+		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) { 
 				// Front end need to handle inactive organisation in list
 		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
@@ -206,7 +206,7 @@ public class ClientService {
 			        map.put("userActiveFrom", clientAssociate.getCreatedAt());
 			        map.put("userActiveTo", clientAssociate.getUserInactiveDate());
 			        clientOrgs.add(map);
-//		        }
+		        }
 		        
 				
 			}
@@ -846,6 +846,13 @@ public class ClientService {
 			projectReview.put("reviewDate", projectReviewRating.getCreatedAt());
 			projectReview.put("reviewComments", projectReviewRating.getReviewComments());
 			projectReview.put("replyComments", projectReviewRating.getReplyComments());
+			
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrganisationId);
+			ClientUser clientUser = clientUserRepository.findByClientId(projectReviewRating.getClientId());
+			projectReview.put("condoName", clientOrganisation.getOrganisationName());
+			projectReview.put("condoCity", clientOrganisation.getCity());
+			projectReview.put("clientUserFirstName", clientUser.getFirstName());
+			projectReview.put("clientUserLastName", clientUser.getLastName());
 			projectReview.put("vendorOrganisation", vendorOrganisation);
 			
 			List<Map<String, Object>> vendorCategoryRatings = getVendorCategoryRatings(projectReviewRating.getId());

@@ -33,7 +33,9 @@ import tech.torbay.projectservice.constants.Constants;
 	    		  @EntityResult(entityClass=Project.class)
 	    		  },
 	      columns={
-	    		  @ColumnResult(name="management_company")
+	    		  @ColumnResult(name="management_company"),
+	    		  @ColumnResult(name="organisation_name"),
+	    		  @ColumnResult(name="city")
 	    		  }
 	  ),
 	  @SqlResultSetMapping(
@@ -43,13 +45,15 @@ import tech.torbay.projectservice.constants.Constants;
 		    		  @EntityResult(entityClass=Project.class)
 		    		  },
 		      columns={
-		    		  @ColumnResult(name="management_company")
+		    		  @ColumnResult(name="management_company"),
+		    		  @ColumnResult(name="organisation_name"),
+		    		  @ColumnResult(name="city")
 		    		  }
 		  )
 	})
 @NamedNativeQuery(
 	    name="VendorBid.CurrentProject", 
-	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
+	    query="SELECT vb.*, pro.*, co.management_company, co.organisation_name, co.city FROM condonuitydev.bids vb " + 
 	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 2 AND pro.delete_status = 1"/*Constants.ProjectPostType.PUBLISHED.getValue()*/, 
@@ -58,7 +62,7 @@ import tech.torbay.projectservice.constants.Constants;
 
 @NamedNativeQuery(
 	    name="VendorBid.HistoryProject", 
-	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
+	    query="SELECT vb.*, pro.*, co.management_company, co.organisation_name, co.city FROM condonuitydev.bids vb " + 
 	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"WHERE vb.vendor_org_id = (?1) AND ( pro.status = 3 OR pro.status = 4 ) AND pro.delete_status = 1", 

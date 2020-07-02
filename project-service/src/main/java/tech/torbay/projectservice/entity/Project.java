@@ -37,6 +37,8 @@ import tech.torbay.projectservice.constants.Constants.DeleteStatus;
 	    		  },
 	      columns={
 	    		  @ColumnResult(name="management_company"),
+	    		  @ColumnResult(name="organisation_name"),
+	    		  @ColumnResult(name="city"),
 	    		  @ColumnResult(name="first_name"),
 	    		  @ColumnResult(name="last_name")
 	    		  }
@@ -44,7 +46,7 @@ import tech.torbay.projectservice.constants.Constants.DeleteStatus;
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
-	    query="SELECT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    query="SELECT pro.*, co.management_company, co.organisation_name, co.city, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and pro.delete_status = 1;", 
 	    resultSetMapping="marketPlace")
