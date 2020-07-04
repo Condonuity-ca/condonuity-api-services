@@ -2,11 +2,7 @@ package tech.torbay.securityservice.service;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -14,13 +10,16 @@ import com.google.common.collect.Lists;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
+import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.repository.ClientAssociationRepository;
 import tech.torbay.securityservice.repository.ClientOrganisationRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
+import tech.torbay.securityservice.repository.RegistrationLogsRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 
 @Component
@@ -34,6 +33,8 @@ public class ClientService {
 	UserRepository userRepository;
 	@Autowired
 	ClientAssociationRepository clientAssociationRepository;
+	@Autowired
+	RegistrationLogsRepository registrationLogsRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -169,7 +170,12 @@ public class ClientService {
 				addClientOrgAccountAssociation(clientOrganisationObj.getClientOrganisationId(), 
 						Constants.ClientUserType.BOARD_MEMBER.getValue(),
 						Constants.UserRole.ADMIN.getValue(), clientUser, Constants.UserAccountStatus.ACTIVE.getValue(), Constants.VerificationStatus.VERIFIED.getValue());
-				
+				// for client multiple organisation registration , we implement this logs
+				RegistrationLogs registrationLogs = new RegistrationLogs();
+				registrationLogs.setUserId(clientId);
+				registrationLogs.setUserType(UserType.CLIENT.getValue());
+				registrationLogs.setOrganisationId(clientOrganisationObj.getClientOrganisationId());
+				registrationLogsRepository.save(registrationLogs);
 				return clientOrganisationObj;
 				
 			} else {

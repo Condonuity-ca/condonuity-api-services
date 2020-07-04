@@ -969,4 +969,29 @@ public class Constants {
 	    }
 	}
 
+	public enum AllocationStatus {
+		NOT_ALLOCATED(0),
+		ALLOCATED(1);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private AllocationStatus(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (AllocationStatus pageType : AllocationStatus.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static AllocationStatus valueOf(int pageType) {
+	        return (AllocationStatus) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
 }

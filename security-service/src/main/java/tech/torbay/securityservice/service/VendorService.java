@@ -13,6 +13,10 @@ import com.google.common.collect.Lists;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
+import tech.torbay.securityservice.constants.Constants.UserType;
+import tech.torbay.securityservice.entity.AvailableVendorProfiles;
+import tech.torbay.securityservice.entity.AvailableVendorProfilesRepository;
+import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.VendorBrands;
 import tech.torbay.securityservice.entity.VendorInsurance;
@@ -24,6 +28,7 @@ import tech.torbay.securityservice.entity.VendorProducts;
 import tech.torbay.securityservice.entity.VendorServices;
 import tech.torbay.securityservice.entity.VendorServicesCities;
 import tech.torbay.securityservice.entity.VendorUser;
+import tech.torbay.securityservice.repository.RegistrationLogsRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorBrandsRepository;
 import tech.torbay.securityservice.repository.VendorLicensesRepository;
@@ -57,6 +62,10 @@ public class VendorService {
 	VendorMembershipsRepository vendorMembershipsRepository;
 	@Autowired
 	VendorInsuranceRepository vendorInsuranceRepository;
+	@Autowired
+	AvailableVendorProfilesRepository availableVendorProfilesRepository;
+	@Autowired
+	RegistrationLogsRepository registrationLogsRepository;
 
 	public List<VendorUser> findAll() {
 //		// TODO Auto-generated method stub
@@ -182,7 +191,24 @@ public class VendorService {
 			    for(String membership: vmemberships) {
 			    	vendorMembershipsRepository.save(new VendorMemberships(vendorOrganisation.getVendorOrganisationId(),membership,""));
 			    }
-			    
+			    try {
+			    	String vendorProfileId = String.valueOf(vendorOrganisationData.get("vendorProfileId")); // ids - 1,2,3
+			    	
+			    	if(vendorProfileId != null && !vendorProfileId.equals("null") && vendorProfileId.trim().length() > 0) {
+				    	AvailableVendorProfiles availableVendorProfile = availableVendorProfilesRepository.findByVendorProfileId(Integer.parseInt(vendorProfileId));
+				    	availableVendorProfile.setAllocatedVendorOrgId(vendorOrganisation.getVendorOrganisationId());
+				    	availableVendorProfilesRepository.save(availableVendorProfile);
+			    	}
+			    	
+			    	// for client multiple organisation registration , we implement this logs
+					RegistrationLogs registrationLogs = new RegistrationLogs();
+					registrationLogs.setUserId(vendorUserId);
+					registrationLogs.setUserType(UserType.VENDOR.getValue());
+					registrationLogs.setOrganisationId(vendorOrganisation.getVendorOrganisationId());
+					registrationLogsRepository.save(registrationLogs);
+			    } catch(Exception exp) {
+			    	exp.printStackTrace();
+			    }
 				return vendorOrganisation;
 			}
 		} catch(Exception exp) {

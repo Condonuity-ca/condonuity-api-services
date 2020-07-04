@@ -239,8 +239,8 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		try {
 			
-			vendorBid.setVendorProjectDuration(calculateDuration(vendorBid.getVendorProjectDuration(), vendorBid.getVendorStartDate(),vendorBid.getVendorEndDate()));
-			
+//			vendorBid.setVendorProjectDuration(calculateDuration(vendorBid.getVendorProjectDuration(), vendorBid.getVendorStartDate(),vendorBid.getVendorEndDate()));
+			// only project startdate and duration given as input
 			return vendorBidRepository.save(vendorBid);
 		} catch (Exception exp) {
 			exp.printStackTrace();

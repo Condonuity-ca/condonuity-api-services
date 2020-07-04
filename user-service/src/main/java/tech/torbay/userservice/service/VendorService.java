@@ -17,6 +17,7 @@ import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
+import tech.torbay.userservice.entity.AvailableVendorProfiles;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
@@ -38,6 +39,7 @@ import tech.torbay.userservice.entity.VendorServices;
 import tech.torbay.userservice.entity.VendorServicesCities;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
+import tech.torbay.userservice.repository.AvailableVendorProfilesRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
@@ -102,6 +104,8 @@ public class VendorService {
 	VendorRegistrationFilesRepository vendorRegistrationFilesRepository;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	AvailableVendorProfilesRepository availableVendorProfilesRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -1090,5 +1094,50 @@ public class VendorService {
 				return null;
 			}
 	}
+	
+	public List<Object> getAllVendorProfilesForVendorRegistration() {
+		// TODO Auto-generated method stub
+				List<AvailableVendorProfiles> vendorOrgsAll = availableVendorProfilesRepository.findAll();
+				
+				List<Object> vendorOrganisations = new ArrayList();
+				
+				for(AvailableVendorProfiles vendorOrg : vendorOrgsAll) {
+					ObjectMapper oMapper = new ObjectMapper();
+			        // object -> Map
+			        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+			        
+			        
+			        if(vendorOrg.getCity() != null && vendorOrg.getCity().length() > 0) {
+			        	try {
+			        		Integer city = Integer.parseInt(vendorOrg.getCity());
+			        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+			        		map.put("city",serviceCity.getCityName());
+			        	} catch(Exception exp) {
+			        		map.put("city",vendorOrg.getCity());
+			        	}
+			        	
+			        } else {
+			        	map.put("city","");
+					}
+			        
+			        int activeStatus = vendorOrg.getActiveStatus();
+//			        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+//			        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+//			 	        	map.put("accountStatus","Registered");
+//			 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+//			 	        	map.put("accountStatus","Active");
+//			 	        } 
+//			        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+//			        	map.put("accountStatus","Deleted");
+//			        } else {
+//			        	map.put("accountStatus","Deleted");
+//			        }
+			       
+			        vendorOrganisations.add(map);
+				}
+				
+				return vendorOrganisations;
+	}
+	
 }
 

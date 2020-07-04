@@ -389,6 +389,13 @@ public class ClientController {
         
 	}
 	
+	@ApiOperation(value = "New Client Organisation Registration For Existing Client")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful New Client Organisation Registered For Existing Client")
+            }
+    )
+	@PostMapping("/client/org/multiple/register/") // its reusable for new and existing client organisation registration
 	private ResponseEntity<Object> registerClientOrganisation(Integer clientId, ClientOrganisation organisation) {
 		// TODO Auto-generated method stub
 		if(clientService.checkOrganisationNameAvailable(organisation.getOrganisationName())) {

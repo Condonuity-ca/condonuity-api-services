@@ -3,6 +3,7 @@ package tech.torbay.securityservice.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.SupportUser;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
@@ -10,16 +11,11 @@ import tech.torbay.securityservice.entity.VendorUser;
 import java.util.List;
 
 @Repository
-public interface SupportUserRepository extends JpaRepository<SupportUser, Integer> {
+public interface RegistrationLogsRepository extends JpaRepository<RegistrationLogs, Integer> {
 
-    List<SupportUser> findAll();
+    List<RegistrationLogs> findAll();
     
-    SupportUser findByEmail(String email);
+	RegistrationLogs save(RegistrationLogs registrationLogs);
 
-	@SuppressWarnings("unchecked")
-	SupportUser save(SupportUser supportUser);
-
-//	SupportUser findById(Integer id);
-	
-	SupportUser findOneById(Integer id);
+	RegistrationLogs findOneById(Integer id);
 }
