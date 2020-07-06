@@ -165,7 +165,8 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		try {
 			
-			List<ClientAssociation> clientOrgIds = clientAssociationRepository.findClientOrganisationIdByClientId(clientUserId);
+//			List<ClientAssociation> clientOrgIds = clientAssociationRepository.findClientOrganisationIdByClientId(clientUserId);
+			List<ClientAssociation> clientOrgIds = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(clientUserId);
 			System.out.print(clientOrgIds.toString());
 			
 			List<Integer> ids = clientOrgIds.stream()

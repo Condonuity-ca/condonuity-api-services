@@ -18,6 +18,7 @@ import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.AvailableVendorProfiles;
+import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
@@ -40,6 +41,7 @@ import tech.torbay.userservice.entity.VendorServicesCities;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.AvailableVendorProfilesRepository;
+import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
@@ -106,6 +108,8 @@ public class VendorService {
 	UserRepository userRepository;
 	@Autowired
 	AvailableVendorProfilesRepository availableVendorProfilesRepository;
+	@Autowired
+	ClientOrganisationRepository clientOrganisationRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -238,6 +242,11 @@ public class VendorService {
 				 Map<String, Object> mappedObj = objMapper.convertValue(vendorReviewsForProject, Map.class);
 				 ClientUser clientUser = clientUserRepository.findByClientId(vendorReviewsForProject.getClientId());
 				 mappedObj.put("clientName",clientUser.getFirstName()+" "+clientUser.getLastName());
+				 ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(vendorReviewsForProject.getClientOrganisationId());
+				 if(clientOrganisation != null) {
+					 mappedObj.put("clientOrganisationName",clientOrganisation.getOrganisationName());
+					 mappedObj.put("clientManagementCompany",clientOrganisation.getManagementCompany());
+				 }
 				 VendorUser vendorUser = vendorUserRepository.findByUserId(vendorReviewsForProject.getVendorId());
 				 if(vendorUser != null) {
 					 mappedObj.put("vendorName",vendorUser.getFirstName() +" "+ vendorUser.getLastName());

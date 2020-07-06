@@ -198,6 +198,21 @@ public class ProjectService {
 
 		map.put("projectFiles",GetProjectFiles(projectId));
 		
+		String managementCompany = "";
+        String condoName = "";
+        String condoCity = "";
+        
+        ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+        if(clientOrganisation !=null) {
+        	managementCompany = clientOrganisation.getManagementCompany();
+        	condoName = clientOrganisation.getOrganisationName();
+        	condoCity = clientOrganisation.getCity();
+        }
+		
+        map.put("managementCompany",managementCompany);
+        map.put("condoName",condoName);
+        map.put("condoCity",condoCity);
+        
 		return map;
 	}
 
