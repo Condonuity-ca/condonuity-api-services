@@ -1379,6 +1379,13 @@ public class UserService {
         
         map.put("tags",predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
         
+        ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+		
+        map.put("condoName", clientOrganisation.getOrganisationName());
+        map.put("condoCity", getCityName(clientOrganisation.getCity()));
+        map.put("city", getCityName(clientOrganisation.getCity()));
+//		
+        
 		return map;
 	}
 	
@@ -1546,6 +1553,19 @@ public class UserService {
 				for(ClientOrganisation clientOrganisation : clientOrganisations) {
 					ObjectMapper oMapper = new ObjectMapper();
 			        Map<String, Object> map = oMapper.convertValue(clientOrganisation, Map.class);
+			        
+			        if(clientOrganisation.getCity() != null ) {
+			        	try {
+			        		Integer city = Integer.parseInt(clientOrganisation.getCity());
+			        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+			        		map.put("city",serviceCity.getCityName());
+			        	} catch(Exception exp) {
+			        		map.put("city","");
+			        	}
+			        	
+			        } else {
+			        	map.put("city","");
+					}
 			        result.add(map);
 				}
 				return result;
@@ -1775,7 +1795,10 @@ public class UserService {
 				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
 				map.put("condoName", condoName);
 				map.put("projectCreatedBy", firstName+" "+lastName);
-				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+//				projectReview.put("condoName", clientOrganisation.getOrganisationName());
+				map.put("condoCity", getCityName(clientOrganisation.getCity()));
+				map.put("city", getCityName(clientOrganisation.getCity()));
 				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorOrganisationId( project.getProjectId(), vendorOrganisationId);
 				
 				if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
@@ -1789,6 +1812,22 @@ public class UserService {
 	        
 		 });
 		return result;
+	}
+	
+	private String getCityName(String cityId) {
+		// TODO Auto-generated method stub
+		if(cityId != null ) {
+        	try {	
+        		Integer city = Integer.parseInt(cityId);
+        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+        		return serviceCity.getCityName();
+        	} catch(Exception exp) {
+        		return "";
+        	}
+        	
+        } else {
+        	return "";
+		}
 	}
 
 	public Object getSupportUserSearchResults(Map<String, Object> requestData) {

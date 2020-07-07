@@ -138,7 +138,11 @@ public class ProjectService {
 				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
 				map.put("managementCompany", managementCompany);
 				map.put("condoName", condoName);
-				map.put("condoCity", getCityName(condoCity));
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+//				projectReview.put("condoName", clientOrganisation.getOrganisationName());
+				map.put("condoCity", getCityName(clientOrganisation.getCity()));
+				map.put("city", getCityName(clientOrganisation.getCity()));
+//				map.put("condoCity", getCityName(condoCity));
 				map.put("projectCreatedBy", firstName+" "+lastName);
 				
 						
