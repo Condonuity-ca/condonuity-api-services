@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,7 @@ import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.BidPostType;
 import tech.torbay.projectservice.constants.Constants.DeleteStatus;
+import tech.torbay.projectservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.projectservice.constants.Constants.ProjectPostType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.UserType;
@@ -35,6 +34,7 @@ import tech.torbay.projectservice.entity.ProjectAwards;
 import tech.torbay.projectservice.entity.ProjectFiles;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
+import tech.torbay.projectservice.entity.ServiceCities;
 import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorOrganisation;
@@ -52,6 +52,7 @@ import tech.torbay.projectservice.repository.ProjectProductsRepository;
 import tech.torbay.projectservice.repository.ProjectQARepository;
 import tech.torbay.projectservice.repository.ProjectRepository;
 import tech.torbay.projectservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.projectservice.repository.ServiceCitiesRepository;
 import tech.torbay.projectservice.repository.VendorBidRepository;
 import tech.torbay.projectservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.projectservice.repository.VendorOrganisationProfileImagesRepository;
@@ -98,6 +99,8 @@ public class ProjectService {
 	ProjectAwardFilesRepository projectAwardFilesRepository;
 	@Autowired
 	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
+	@Autowired
+	ServiceCitiesRepository servicesCitiesRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -135,7 +138,7 @@ public class ProjectService {
 				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
 				map.put("managementCompany", managementCompany);
 				map.put("condoName", condoName);
-				map.put("condoCity", condoCity);
+				map.put("condoCity", getCityName(condoCity));
 				map.put("projectCreatedBy", firstName+" "+lastName);
 				
 						
@@ -206,12 +209,13 @@ public class ProjectService {
         if(clientOrganisation !=null) {
         	managementCompany = clientOrganisation.getManagementCompany();
         	condoName = clientOrganisation.getOrganisationName();
-        	condoCity = clientOrganisation.getCity();
+        	condoCity = getCityName(clientOrganisation.getCity());
         }
 		
         map.put("managementCompany",managementCompany);
         map.put("condoName",condoName);
         map.put("condoCity",condoCity);
+        map.put("city",condoCity);
         
 		return map;
 	}
@@ -309,6 +313,11 @@ public class ProjectService {
 			
 			project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
 			
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+//			projectReview.put("condoName", clientOrganisation.getOrganisationName());
+//			projectReview.put("condoCity", clientOrganisation.getCity());
+			project.setCity(getCityName(clientOrganisation.getCity()));
+			
 			
 			Map<String,Object> map = new HashMap<>();
 			
@@ -320,7 +329,6 @@ public class ProjectService {
 			map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
 			map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
 			
-					
 			allProjects.add(map);
 		}
 		
@@ -469,6 +477,11 @@ public class ProjectService {
 			        .map(Integer::parseInt)
 			        .collect(Collectors.toList());
 			
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+//			projectReview.put("condoName", clientOrganisation.getOrganisationName());
+//			projectReview.put("condoCity", clientOrganisation.getCity());
+			project.setCity(getCityName(clientOrganisation.getCity()));
+			
 			project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
 		}
 		
@@ -595,7 +608,11 @@ public class ProjectService {
 					}
 					projectMap.put("managementCompany", managementCompany);
 					projectMap.put("condoName", condoName);
-					projectMap.put("condoCity", condoCity);
+//					projectMap.put("condoCity", getCityName(condoCity));
+//					projectMap.put("city", getCityName(condoCity));
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+					projectMap.put("condoCity", getCityName(clientOrganisation.getCity()));
+					projectMap.put("city", getCityName(clientOrganisation.getCity()));
 //					projectMap.put("projectCreatedBy", firstName+" "+lastName);
 					projectMap.put("vendorBid", vendorBid);
 							
@@ -656,7 +673,11 @@ public class ProjectService {
 					}
 					projectMap.put("managementCompany", managementCompany);
 					projectMap.put("condoName", condoName);
-					projectMap.put("condoCity", condoCity);
+//					projectMap.put("condoCity", getCityName(condoCity));
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+					
+					projectMap.put("condoCity", getCityName(clientOrganisation.getCity())/*getCityName(condoCity)*/);
+					projectMap.put("city", getCityName(clientOrganisation.getCity())/*getCityName(condoCity)*/);
 //					projectMap.put("projectCreatedBy", firstName+" "+lastName);
 					projectMap.put("vendorBid", vendorBid);
 							
@@ -678,11 +699,27 @@ public class ProjectService {
 		
 	}
 
+	private String getCityName(String cityId) {
+		// TODO Auto-generated method stub
+		if(cityId != null ) {
+        	try {	
+        		Integer city = Integer.parseInt(cityId);
+        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+        		return serviceCity.getCityName();
+        	} catch(Exception exp) {
+        		return "";
+        	}
+        	
+        } else {
+        	return "";
+		}
+	}
+
 	public List<Map<String, Object>> getVendorFavoriteProjects(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		checkIsProjectsClosed();
 		
-		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorOrganisationId(vendorOrganisationId);
+		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorOrganisationIdAndInterestStatus(vendorOrganisationId, ProjectInterestStatus.LIKE.getValue());
 		
 		List<Integer> projectIds = vendorProjectInterests.stream()
                 .map(VendorProjectInterests::getProjectId).collect(Collectors.toList());
@@ -709,7 +746,8 @@ public class ProjectService {
 		        ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
 		        map.put("managementCompany", clientOrganisation.getManagementCompany());
 		        map.put("condoName", clientOrganisation.getOrganisationName());
-		        map.put("condoCity", clientOrganisation.getCity());
+		        map.put("condoCity", getCityName(clientOrganisation.getCity()));
+		        map.put("city", getCityName(clientOrganisation.getCity()));
 		        
 		        VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(project.getProjectId(), vendorOrganisationId);
 		        
@@ -760,6 +798,13 @@ public class ProjectService {
 				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
 				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
 				map.put("condoName", condoName);
+				
+				//condoCity has query issue
+				// so get by org obj
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+				
+				map.put("condoCity", getCityName(clientOrganisation.getCity())/*getCityName(condoCity)*/);
+				map.put("city", getCityName(clientOrganisation.getCity())/*getCityName(condoCity)*/);
 				map.put("projectCreatedBy", firstName+" "+lastName);
 				
 				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorOrganisationId( project.getProjectId(), vendorOrganisationId);
@@ -786,6 +831,10 @@ public class ProjectService {
 		checkIsProjectsClosed();
 		
 		Project project = projectRepository.findByProjectId(projectId); 
+		
+		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+				
+		project.setCity(getCityName(clientOrganisation.getCity()));
 		
 		List<Integer> ids = Stream.of(project.getTags().split(","))
 		        .map(Integer::parseInt)

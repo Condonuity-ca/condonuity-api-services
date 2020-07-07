@@ -24,4 +24,6 @@ public interface VendorProjectInterestsRepository extends JpaRepository<VendorPr
 
 	List<VendorProjectInterests> findByVendorOrganisationId(Integer id);
 	
+	List<VendorProjectInterests> findByVendorOrganisationIdAndInterestStatus(Integer id, Integer interestStatus);
+	
 }

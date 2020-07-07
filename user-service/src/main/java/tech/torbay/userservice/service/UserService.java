@@ -254,6 +254,19 @@ public class UserService {
 				for(ClientOrganisation clientOrganisation : clientOrganisations) {
 					ObjectMapper oMapper = new ObjectMapper();
 			        Map<String, Object> map = oMapper.convertValue(clientOrganisation, Map.class);
+			        
+			        if(clientOrganisation.getCity() != null ) {
+			        	try {
+			        		Integer city = Integer.parseInt(clientOrganisation.getCity());
+			        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+			        		map.put("city",serviceCity.getCityName());
+			        	} catch(Exception exp) {
+			        		map.put("city","");
+			        	}
+			        	
+			        } else {
+			        	map.put("city","");
+					}
 			        result.add(map);
 				}
 				
