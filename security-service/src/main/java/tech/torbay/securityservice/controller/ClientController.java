@@ -395,8 +395,8 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "Successful New Client Organisation Registered For Existing Client")
             }
     )
-	@PostMapping("/client/org/multiple/register/") // its reusable for new and existing client organisation registration
-	private ResponseEntity<Object> registerClientOrganisation(Integer clientId, ClientOrganisation organisation) {
+	@PostMapping("/client/org/multiple/register/{clientUserId}") // its reusable for new and existing client organisation registration
+	private ResponseEntity<Object> registerClientOrganisation(@PathVariable("clientUserId") Integer clientUserId,@RequestBody ClientOrganisation organisation) {
 		// TODO Auto-generated method stub
 		if(clientService.checkOrganisationNameAvailable(organisation.getOrganisationName())) {
 			ResponseMessage responseMessage = new ResponseMessage(
@@ -406,7 +406,7 @@ public class ClientController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
-		ClientOrganisation clientorganisation = clientService.addClientOrganisation(clientId, organisation);
+		ClientOrganisation clientorganisation = clientService.addClientOrganisation(clientUserId, organisation);
         if (clientorganisation == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -423,8 +423,8 @@ public class ClientController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Organisation Registered for verification");
 			list.put("clientOrganisationId",clientorganisation.getClientOrganisationId());
-			list.put("clientId",clientId);
-			User userInfo = userService.findByIdAndUserType(clientId, UserType.CLIENT.getValue());
+			list.put("clientId",clientUserId);
+			User userInfo = userService.findByIdAndUserType(clientUserId, UserType.CLIENT.getValue());
 			try {
 				list.put("authToken",getAuthToken(userInfo.getUsername(), userInfo.getPassword()));
 			} catch (Exception e) {
