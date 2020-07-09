@@ -392,7 +392,7 @@ public class SupportUserController {
 					
 					list.put("statusCode", APIStatusCode.CONFLICT.getValue());
 					list.put("statusMessage", "Failed");
-					list.put("responseMessage", "Vendor User Record Already Exists");
+					list.put("responseMessage", "Client User Record Already Exists");
 					list.put("userId",existUser.getUserId());
 					list.put("userType",existUser.getUserType());
 					

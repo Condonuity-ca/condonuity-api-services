@@ -166,7 +166,7 @@ public class ClientService {
 		try {
 			
 //			List<ClientAssociation> clientOrgIds = clientAssociationRepository.findClientOrganisationIdByClientId(clientUserId);
-			List<ClientAssociation> clientOrgIds = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(clientUserId);
+			List<ClientAssociation> clientOrgIds = clientAssociationRepository.findAllActiveUsersByClientUserId(clientUserId);
 			System.out.print(clientOrgIds.toString());
 			
 			List<Integer> ids = clientOrgIds.stream()
@@ -199,7 +199,7 @@ public class ClientService {
 //		        	
 //		        } // Need to check this flow
 		        
-		        if(clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) { 
+		        if(clientAssociate != null && clientAssociate.getUserAccountStatus() != Constants.UserAccountStatus.INACTIVE.getValue()) { 
 				// Front end need to handle inactive organisation in list
 		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
@@ -208,7 +208,6 @@ public class ClientService {
 			        map.put("userActiveTo", clientAssociate.getUserInactiveDate());
 			        clientOrgs.add(map);
 		        }
-		        
 				
 			}
 			

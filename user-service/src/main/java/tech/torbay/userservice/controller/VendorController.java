@@ -675,7 +675,7 @@ public class VendorController {
                     @ApiResponse(code = 200, message = "All Vendor profiles fetched successfully in Condonuity Application")
             }
     )
-	@GetMapping("/vendor/available/orgs")
+	@GetMapping("/vendor/available/profiles")
 	public ResponseEntity<Object> getAllVendorProfilesForVendorRegistration() {
 		List<Object> list = vendorService.getAllVendorProfilesForVendorRegistration();
 		

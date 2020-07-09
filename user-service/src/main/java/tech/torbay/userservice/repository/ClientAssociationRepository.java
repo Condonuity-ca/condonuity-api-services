@@ -56,4 +56,6 @@ public interface ClientAssociationRepository extends JpaRepository<ClientAssocia
 	@Query(value = "select ca.* from condonuitydev.client_association ca where client_organisation_id = (?1)  AND ( user_account_status = 1 )", nativeQuery = true)//only active users
     List<ClientAssociation> findAllActiveUsersByClientOrganisationId(Integer clientOrganisationId);
 	
+	@Query(value = "select ca.* from condonuitydev.client_association ca where client_id = (?1)  AND ( user_account_status = 1 )", nativeQuery = true)//only active users
+    List<ClientAssociation> findAllActiveUsersByClientUserId(Integer clientUserId);
 }
