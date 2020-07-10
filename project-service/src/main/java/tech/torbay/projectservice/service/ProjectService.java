@@ -723,10 +723,21 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		checkIsProjectsClosed();
 		
+		
+		//favorite projects
 		List<VendorProjectInterests> vendorProjectInterests =  vendorProjectInterestsRepository.findByVendorOrganisationIdAndInterestStatus(vendorOrganisationId, ProjectInterestStatus.LIKE.getValue());
 		
-		List<Integer> projectIds = vendorProjectInterests.stream()
+		List<Integer> interestProjectIds = vendorProjectInterests.stream()
                 .map(VendorProjectInterests::getProjectId).collect(Collectors.toList());
+		
+		//bidded and Saved projects
+		List<VendorBid> vendorBids = vendorBidRepository.findSavedVendorBidByVendorOrgId(vendorOrganisationId);
+		
+		List<Integer> bidProjectIds = vendorBids.stream()
+                .map(VendorBid::getProjectId).collect(Collectors.toList());
+		
+		List<Integer> projectIds = interestProjectIds;
+		projectIds.addAll(bidProjectIds);
 		
 		List<Project> allInterestedProjects = new ArrayList();
 		if(projectIds != null && projectIds.size() > 0) {

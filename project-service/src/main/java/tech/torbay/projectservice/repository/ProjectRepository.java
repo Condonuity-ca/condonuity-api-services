@@ -32,7 +32,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	
 	Project findOneByProjectId(Integer projectId);
 
-	@Query("select pro from Project pro where pro.projectId IN (?1) and pro.deleteStatus = 1")
+	@Query("select pro from Project pro where pro.projectId IN (?1) and pro.deleteStatus = 1 and pro.status = 2")
 	List<Project> getAllVendorProjects(List<Integer> ids);
 
 	@Transactional

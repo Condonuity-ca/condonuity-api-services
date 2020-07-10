@@ -31,4 +31,7 @@ public interface VendorBidRepository extends JpaRepository<VendorBid, Integer> {
 	
 	VendorBid findVendorBidByProjectIdAndVendorOrgId(Integer projectId, Integer vendorOrgId);
 	
+	@Query(value="SELECT b.* FROM condonuitydev.bids b WHERE vendor_org_id = (?1) AND bid_status = 1", nativeQuery = true)
+	List<VendorBid> findSavedVendorBidByVendorOrgId(Integer vendorOrgId);
+	
 }
