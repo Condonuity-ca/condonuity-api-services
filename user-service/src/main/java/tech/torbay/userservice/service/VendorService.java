@@ -242,6 +242,14 @@ public class VendorService {
 				 Map<String, Object> mappedObj = objMapper.convertValue(vendorReviewsForProject, Map.class);
 				 ClientUser clientUser = clientUserRepository.findByClientId(vendorReviewsForProject.getClientId());
 				 mappedObj.put("clientName",clientUser.getFirstName()+" "+clientUser.getLastName());
+				 
+				 UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.VENDOR.getValue());
+			        if(userProfileImage != null) {
+			        	mappedObj.put("clientUserProfileImage",userProfileImage.getFileUrl());
+			        } else {
+			        	mappedObj.put("clientUserProfileImage","");
+			        }
+			        
 				 ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(vendorReviewsForProject.getClientOrganisationId());
 				 if(clientOrganisation != null) {
 					 mappedObj.put("clientOrganisationName",clientOrganisation.getOrganisationName());

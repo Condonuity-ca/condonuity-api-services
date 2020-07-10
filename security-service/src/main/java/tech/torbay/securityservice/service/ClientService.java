@@ -155,8 +155,8 @@ public class ClientService {
 		
 
 		try {
-//			clientOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
-			clientOrganisation.setActiveStatus(OrganisationAccountStatus.ACTIVE.getValue());
+			clientOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
+//			clientOrganisation.setActiveStatus(OrganisationAccountStatus.ACTIVE.getValue());//support user will activate the organisation
 			clientOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
 			ClientOrganisation clientOrganisationObj = clientOrganisationRepository.save(clientOrganisation);
 			
