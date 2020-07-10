@@ -893,6 +893,21 @@ public class ProjectService {
 			map.put("isInterested", false);
 		}
 		
+		String managementCompany = "";
+        String condoName = "";
+        String condoCity = "";
+        
+        if(clientOrganisation !=null) {
+        	managementCompany = clientOrganisation.getManagementCompany();
+        	condoName = clientOrganisation.getOrganisationName();
+        	condoCity = getCityName(clientOrganisation.getCity());
+        }
+		
+        map.put("managementCompany",managementCompany);
+        map.put("condoName",condoName);
+        map.put("condoCity",condoCity);
+        map.put("city",condoCity);
+        
 		map.put("projectFiles",GetProjectFiles(projectId));
 		
 		return map;

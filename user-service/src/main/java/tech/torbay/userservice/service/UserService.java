@@ -1342,6 +1342,7 @@ public class UserService {
         } else {
         	map.put("vendorTags","");
         }
+        map.put("city",getCityName(vendorOrg.getCity()));
         map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
         if(userWish != null) {
         	map.put("isPreferred", "true");
@@ -1361,6 +1362,7 @@ public class UserService {
         } else {
         	map.put("vendorTags","");
         }
+        map.put("city",getCityName(vendorOrg.getCity()));
         map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
         
         return map;
