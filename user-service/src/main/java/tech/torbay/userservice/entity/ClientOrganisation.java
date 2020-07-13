@@ -79,17 +79,16 @@ public class ClientOrganisation {
 		return modifiedDate;
 	}
 
-
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	
-	@OneToMany(
-	        mappedBy = "clientOrganisation",
-	        cascade = CascadeType.ALL,
-	        orphanRemoval = true
-	    )
-	    private List<ClientAssociation> clientUsers = new ArrayList<>();
+	// user association removal issue happening , so the issue fixes checking by removing this
+//	@OneToMany(
+//	        mappedBy = "clientOrganisation",
+//	        cascade = CascadeType.REFRESH,
+//			orphanRemoval = false
+//	    )
+//	    private List<ClientAssociation> clientUsers = new ArrayList<>();
 	
 //	@OneToMany(mappedBy = "clientOrganisation")
 //    private Set<ClientAssociation> clientUsers = new HashSet<ClientAssociation>();
@@ -150,7 +149,7 @@ public class ClientOrganisation {
 				+ ", units=" + units + ", votingUnits=" + votingUnits + ", managerName=" + managerName
 				+ ", managerEmail=" + managerEmail + ", managerPhone=" + managerPhone + ", activeStatus=" + activeStatus
 				+ ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
-				+ ", clientUsers=" + clientUsers + "]";
+				+ ", clientUsers=" + ""/* clientUsers */ + "]";
 	}
 	
 	

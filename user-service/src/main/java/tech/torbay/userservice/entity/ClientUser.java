@@ -63,12 +63,12 @@ public class ClientUser {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-    @OneToMany(
-            mappedBy = "clientUser",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-        )
-        private List<ClientAssociation> clientOrganisations = new ArrayList<>();
+//    @OneToMany(
+//            mappedBy = "clientUser",
+//            cascade = CascadeType.REFRESH,
+//            orphanRemoval = false
+//        )
+//        private List<ClientAssociation> clientOrganisations = new ArrayList<>();
     
 //    @OneToMany(mappedBy = "clientUser")
 //    private Set<ClientAssociation> clientOrganisations = new HashSet<ClientAssociation>();

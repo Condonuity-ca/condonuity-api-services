@@ -48,40 +48,53 @@ public class ClientAssociation {
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
     
-	@ManyToOne(/* fetch = FetchType.LAZY */)
-    @MapsId("client_id")
-    @JoinColumn(name = "client_id", referencedColumnName = "client_id", insertable = false, updatable = false )
-    ClientUser clientUser;
- 
-	@ManyToOne(/* fetch = FetchType.LAZY */)
-    @MapsId("client_organisation_id")
-    @JoinColumn(name = "client_organisation_id", referencedColumnName = "client_organisation_id", insertable = false, updatable = false )
-    ClientOrganisation clientOrganisation;
+//	@ManyToOne(/* fetch = FetchType.LAZY */)
+//    @MapsId("client_id")
+//    @JoinColumn(name = "client_id", referencedColumnName = "client_id", insertable = false, updatable = false )
+//    ClientUser clientUser;
+// 
+//	@ManyToOne(/* fetch = FetchType.LAZY */)
+//    @MapsId("client_organisation_id")
+//    @JoinColumn(name = "client_organisation_id", referencedColumnName = "client_organisation_id", insertable = false, updatable = false )
+//    ClientOrganisation clientOrganisation;
     
-	public ClientUser getClientUser() {
-		return clientUser;
-	}
-	public void setClientUser(ClientUser clientUser) {
-		this.clientUser = clientUser;
-	}
-	public ClientOrganisation getClientOrganisation() {
-		return clientOrganisation;
-	}
-	public void setClientOrganisation(ClientOrganisation clientOrganisation) {
-		this.clientOrganisation = clientOrganisation;
-	}
-	public Integer getClientOrganisationId() {
-		return clientOrganisation.getClientOrganisationId();
+//	public ClientUser getClientUser() {
+//		return clientUser;
+//	}
+//	public void setClientUser(ClientUser clientUser) {
+//		this.clientUser = clientUser;
+//	}
+//	public ClientOrganisation getClientOrganisation() {
+//		return clientOrganisation;
+//	}
+//	public void setClientOrganisation(ClientOrganisation clientOrganisation) {
+//		this.clientOrganisation = clientOrganisation;
+//	}
+//	public Integer getClientOrganisationId() {
+//		return clientOrganisation.getClientOrganisationId();
+//	}
+//	public void setClientOrganisationId(Integer clientOrganisationId) {
+//		this.clientOrganisation.setClientOrganisationId(clientOrganisationId);
+//	}
+//	public Integer getClientId() {
+//		return clientUser.getClientId();
+//	}
+//	public void setClientId(Integer clientId) {
+//		this.clientUser.setClientId(clientId);
+//	}
+    public Integer getClientOrganisationId() {
+		return this.clientOrganisationId;
 	}
 	public void setClientOrganisationId(Integer clientOrganisationId) {
-		this.clientOrganisation.setClientOrganisationId(clientOrganisationId);
+		this.clientOrganisationId = clientOrganisationId;
 	}
 	public Integer getClientId() {
-		return clientUser.getClientId();
+		return clientId;
 	}
 	public void setClientId(Integer clientId) {
-		this.clientUser.setClientId(clientId);
+		this.clientId = clientId;
 	}
+	
 	public ClientAssociateId getId() {
 		return id;
 	}
@@ -150,33 +163,33 @@ public class ClientAssociation {
 	public ClientAssociation() {
 		// TODO Auto-generated constructor stub
 	}
-	public ClientAssociation(ClientOrganisation clientOrganisation, ClientUser clientUser) {
-        this.clientOrganisation = clientOrganisation;
-        this.clientUser = clientUser;
-        this.id = new ClientAssociateId(clientOrganisation.getClientOrganisationId(), clientUser.getClientId());
-    }
-	
-	public ClientAssociation( Integer clientId, Integer clientOrganisationId) {
-        this.clientOrganisation.setClientOrganisationId(clientOrganisationId);
-        this.clientUser.setClientId(clientId);
-        this.id = new ClientAssociateId(clientOrganisation.getClientOrganisationId(), clientUser.getClientId());
-    }
-	
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
- 
-        if (o == null || getClass() != o.getClass())
-            return false;
- 
-        ClientAssociation that = (ClientAssociation) o;
-        return Objects.equals(clientOrganisation, that.clientOrganisation) &&
-               Objects.equals(clientUser, that.clientUser);
-    }
- 
-    @Override
-    public int hashCode() {
-        return Objects.hash(clientOrganisation, clientUser);
-    }
+//	public ClientAssociation(ClientOrganisation clientOrganisation, ClientUser clientUser) {
+//        this.clientOrganisation = clientOrganisation;
+//        this.clientUser = clientUser;
+//        this.id = new ClientAssociateId(clientOrganisation.getClientOrganisationId(), clientUser.getClientId());
+//    }
+//	
+//	public ClientAssociation( Integer clientId, Integer clientOrganisationId) {
+//        this.clientOrganisation.setClientOrganisationId(clientOrganisationId);
+//        this.clientUser.setClientId(clientId);
+//        this.id = new ClientAssociateId(clientOrganisation.getClientOrganisationId(), clientUser.getClientId());
+//    }
+//	
+//	@Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+// 
+//        if (o == null || getClass() != o.getClass())
+//            return false;
+// 
+//        ClientAssociation that = (ClientAssociation) o;
+//        return Objects.equals(clientOrganisation, that.clientOrganisation) &&
+//               Objects.equals(clientUser, that.clientUser);
+//    }
+// 
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(clientOrganisation, clientUser);
+//    }
     
 }
