@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.AvailableVendorProfiles;
@@ -738,7 +739,7 @@ public class VendorService {
 	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
 	        map.put("isPreferred", "false");
 	        
-	        List<UserWishList> userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
+	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
 	        
 	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
 	        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
@@ -758,8 +759,10 @@ public class VendorService {
 	        	map.put("city","");
 			}
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
-	        if(userWish != null) {
+	        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
 	        	map.put("isPreferred", "true");
+	        } else {
+	        	map.put("isPreferred", "false");
 	        }
 	        try {
 		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
@@ -807,13 +810,26 @@ public class VendorService {
 		}
 	}
 
-	public UserWishList addClientAsFavourite(UserWishList userWishList) {
+	public UserWishList addClientAsFavourite(Map<String, Object> userWishList) {
 		// TODO Auto-generated method stub
 		
-		userWishList.setWisherUserType(Constants.UserType.VENDOR.getValue());
-		userWishList.setFavouriteUserType(Constants.UserType.CLIENT.getValue());
+		Integer favouriteOrgId = (Integer) userWishList.get("favouriteOrgId");
+		Integer wisherOrgId = (Integer) userWishList.get("wisherOrgId");
+		Integer wisherUserId = (Integer) userWishList.get("wisherUserId");
+		Integer interestStatus = (Integer) userWishList.get("interestStatus");
 		
-		return userWishListRepository.save(userWishList);
+		UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(wisherOrgId, Constants.UserType.VENDOR.getValue(), favouriteOrgId, Constants.UserType.CLIENT.getValue());
+		if(userWish == null) {
+			userWish = new UserWishList();
+		} 
+		userWish.setWisherUserType(Constants.UserType.VENDOR.getValue());
+		userWish.setFavouriteUserType(Constants.UserType.CLIENT.getValue());
+		userWish.setFavouriteOrgId(favouriteOrgId);
+		userWish.setWisherOrgId(wisherOrgId);
+		userWish.setWisherUserId(wisherUserId);
+		userWish.setInterestStatus(interestStatus);
+		
+		return userWishListRepository.save(userWish);
 	}
 
 	public String getVendorTags(List<VendorTags> vendorTags) {

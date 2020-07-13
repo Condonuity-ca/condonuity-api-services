@@ -3,6 +3,8 @@ package tech.torbay.userservice.entity;
 import javax.persistence.*;
 
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -21,6 +23,7 @@ public class UserWishList {
 	private Integer wisherUserType = 0;
 	private Integer favouriteOrgId = 0;
 	private Integer favouriteUserType = 0;
+	private Integer interestStatus = ProjectInterestStatus.UN_LIKE.getValue();
     
 	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -78,6 +81,14 @@ public class UserWishList {
 		this.favouriteUserType = favouriteUserType;
 	}
 
+	public Integer getInterestStatus() {
+		return interestStatus;
+	}
+
+	public void setInterestStatus(Integer interestStatus) {
+		this.interestStatus = interestStatus;
+	}
+
 	public String getCreatedAt() {
 		return createdAt;
 	}
@@ -98,7 +109,8 @@ public class UserWishList {
 	public String toString() {
 		return "UserWishList [id=" + id + ", wisherOrgId=" + wisherOrgId + ", wisherUserId=" + wisherUserId
 				+ ", wisherUserType=" + wisherUserType + ", favouriteOrgId=" + favouriteOrgId + ", favouriteUserType="
-				+ favouriteUserType + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ favouriteUserType + ", interestStatus=" + interestStatus + ", createdAt=" + createdAt
+				+ ", modifiedDate=" + modifiedDate + "]";
 	}
     
 }

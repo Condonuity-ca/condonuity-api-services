@@ -18,7 +18,7 @@ public interface UserWishListRepository extends JpaRepository<UserWishList, Inte
     
     List<UserWishList> findByWisherOrgIdAndWisherUserType(Integer wisherOrgId, Integer wisherUserType);
     
-    List<UserWishList> findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(Integer wisherOrgId, Integer wisherUserType, Integer favouriteOrgId, Integer favouriteUserType);
+    UserWishList findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(Integer wisherOrgId, Integer wisherUserType, Integer favouriteOrgId, Integer favouriteUserType);
 
     UserWishList save(UserWishList vendorUser);
 

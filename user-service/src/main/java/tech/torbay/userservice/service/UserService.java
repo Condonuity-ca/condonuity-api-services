@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.Invalid;
+import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.ProjectPostType;
 import tech.torbay.userservice.constants.Constants.ThreadType;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
@@ -1338,7 +1339,7 @@ public class UserService {
         Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
         map.put("isPreferred", "false");
         
-        List<UserWishList> userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrganisationId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
+        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrganisationId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
         
         if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
         	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
@@ -1347,8 +1348,10 @@ public class UserService {
         }
         map.put("city",getCityName(vendorOrg.getCity()));
         map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
-        if(userWish != null) {//check if you found error
+        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
         	map.put("isPreferred", "true");
+        } else {
+        	map.put("isPreferred", "false");
         }
         map.put("vendorProfileImageUrl",getOrganisationLogo(vendorOrg.getVendorOrganisationId(), UserType.VENDOR.getValue()));
         

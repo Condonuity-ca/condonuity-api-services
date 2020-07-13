@@ -473,9 +473,9 @@ public class ClientController {
     )
 	@PostMapping("/client/org/preference/add")
 	public ResponseEntity<Object> addClientAsFavourite(
-			@RequestBody UserWishList userWishList) {
+			@RequestBody Map<String, Object> requestData) {
 		
-		UserWishList userWishListObj = clientService.addVendorAsFavourite(userWishList);
+		UserWishList userWishListObj = clientService.addVendorAsFavourite(requestData);
         if (userWishListObj == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
