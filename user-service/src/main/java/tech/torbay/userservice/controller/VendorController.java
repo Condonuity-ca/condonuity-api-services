@@ -111,7 +111,7 @@ public class VendorController {
     )
 	@GetMapping("/vendor/org/account/{id}")
 	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("id") Integer id) {
-		List<VendorUser> vendorUsers = vendorService.getVendorOrganisationUsersById(id);
+		List<Map<String, Object>> vendorUsers = vendorService.getVendorOrganisationUsersById(id);
 		List<OrganisationPayment> paymentBillingDetails = vendorService.getPaymentBillingDetails(id);
 		
 		HashMap<String, Object> response = new HashMap();

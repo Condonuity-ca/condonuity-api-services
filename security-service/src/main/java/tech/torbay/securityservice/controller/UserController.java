@@ -142,6 +142,7 @@ public class UserController {
 										list.put("statusMessage", "Success");
 										list.put("responseMessage", "Client details fetched successfully");
 										list.put("userDetails", clientInfo);
+										list.put("userProfileImage", userService.getUserProfileImage(clientInfo.getClientId(), UserType.CLIENT.getValue()));
 										list.put("authToken", Token);
 										
 										return new ResponseEntity<>(list, HttpStatus.OK);
@@ -209,6 +210,7 @@ public class UserController {
 									list.put("statusMessage", "Success");
 									list.put("responseMessage", "Vendor User details fetched successfully");
 									list.put("userDetails", vendorUserInfo);
+									list.put("userProfileImage", userService.getUserProfileImage(vendorUserInfo.getUserId(), UserType.VENDOR.getValue()));
 									list.put("authToken", Token);
 									return new ResponseEntity<>(list, HttpStatus.OK);
 								} else {

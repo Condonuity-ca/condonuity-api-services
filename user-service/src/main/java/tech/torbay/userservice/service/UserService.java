@@ -267,6 +267,9 @@ public class UserService {
 			        } else {
 			        	map.put("city","");
 					}
+			        List<Map<String, Object>> amenitiesInfo = clientService.getAmenitiesByOrgId(clientOrganisation.getClientOrganisationId());
+			        map.put("amenities", amenitiesInfo);
+			        map.put("organisationLogo", getOrganisationLogo(clientOrganisation.getClientOrganisationId(), UserType.CLIENT.getValue()));
 			        result.add(map);
 				}
 				
@@ -1344,9 +1347,10 @@ public class UserService {
         }
         map.put("city",getCityName(vendorOrg.getCity()));
         map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
-        if(userWish != null) {
+        if(userWish != null) {//check if you found error
         	map.put("isPreferred", "true");
         }
+        map.put("vendorProfileImageUrl",getOrganisationLogo(vendorOrg.getVendorOrganisationId(), UserType.VENDOR.getValue()));
         
         return map;
 	}
@@ -1364,7 +1368,7 @@ public class UserService {
         }
         map.put("city",getCityName(vendorOrg.getCity()));
         map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
-        
+        map.put("vendorProfileImageUrl",getOrganisationLogo(vendorOrg.getVendorOrganisationId(), UserType.VENDOR.getValue()));
         return map;
 	}
 
@@ -1568,6 +1572,9 @@ public class UserService {
 			        } else {
 			        	map.put("city","");
 					}
+			        List<Map<String, Object>> amenitiesInfo = clientService.getAmenitiesByOrgId(clientOrganisation.getClientOrganisationId());
+			        map.put("amenities", amenitiesInfo);
+			        map.put("organisationLogo", getOrganisationLogo(clientOrganisation.getClientOrganisationId(), UserType.CLIENT.getValue()));
 			        result.add(map);
 				}
 				return result;
@@ -2384,4 +2391,26 @@ public class UserService {
 		return allComments;
 	}
 
+	public String getOrganisationLogo(int userId, int userType) {
+		try {
+			if( userType == UserType.VENDOR.getValue()) {
+				VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(userId);
+				
+				if(vendorOrgProfileImage != null)
+		        	return vendorOrgProfileImage.getFileUrl();
+			} else if(userType == UserType.CLIENT.getValue()) {
+				ClientOrganisationProfileImages clientOrgProfileImage =  clientOrganisationProfileImagesRepository.findByClientOrganisationId(userId);
+				
+				if(clientOrgProfileImage != null)
+		        	return clientOrgProfileImage.getFileUrl();
+			}
+			
+	        
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return "";
+        }
+		
+		return "";
+	}
 }

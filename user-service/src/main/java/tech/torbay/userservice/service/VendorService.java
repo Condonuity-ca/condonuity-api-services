@@ -140,15 +140,26 @@ public class VendorService {
         // object -> Map
         Map<String, Object> map = oMapper.convertValue(vendorUser, Map.class);
         
-        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
-        if(userProfileImage != null) {
-        	map.put("profileImageURL",userProfileImage.getFileUrl());
-        } else {
-        	map.put("profileImageURL","");
-        }
+        map.put("profileImageURL",getUserProfileImageURL(userId));
 //        map.put("",""); blobName
         
         return map;
+	}
+	
+	private String getUserProfileImageURL(Integer vendorId) {
+		// TODO Auto-generated method stub
+		UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorId, Constants.UserType.VENDOR.getValue());
+        
+        try {
+        	if(userProfileImage != null) {
+            	return userProfileImage.getFileUrl();
+            } else {
+            	return "";
+            }
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return "";
+        }
 	}
 	
 	public VendorOrganisation getVendorOrgById (Integer vendorOrganisationId) {
@@ -620,11 +631,22 @@ public class VendorService {
 		return vendorOrganisationData;
 	}
 
-	public List<VendorUser> getVendorOrganisationUsersById(Integer id) {
+	public List<Map<String, Object>> getVendorOrganisationUsersById(Integer id) {
 		// TODO Auto-generated method stub
 //		return vendorUserRepository.findByVendorOrganisationIdAndAccountStatus(id, Constants.UserAccountStatus.ACTIVE.getValue());
 		
-		return vendorUserRepository.findByVendorOrganisationId(id);
+		List<VendorUser> users = vendorUserRepository.findByVendorOrganisationId(id);
+		List<Map<String, Object>> vendorUsers = new ArrayList<>();
+		for(VendorUser vendorUser : users) {
+			ObjectMapper objMapper = new ObjectMapper();
+			Map<String, Object> map = objMapper.convertValue(vendorUser, Map.class);
+			
+			map.put("userProfileImage",getUserProfileImageURL(vendorUser.getUserId()));
+			
+			vendorUsers.add(map);
+		}
+		
+		return vendorUsers;
 	}
 
 	public List<VendorPortfolio> getVendorPortfolio(Integer vendorOrganisationId) {

@@ -2,11 +2,9 @@ package tech.torbay.securityservice.service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -15,9 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
@@ -26,12 +22,14 @@ import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
+import tech.torbay.securityservice.entity.UserProfileImages;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
 import tech.torbay.securityservice.repository.AmenitiesRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.repository.PredefinedTagsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
+import tech.torbay.securityservice.repository.UserProfileImagesRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorUserRepository;
 
@@ -52,6 +50,8 @@ public class UserService {
 	AmenitiesRepository amenitiesRepository;
 	@Autowired
 	private BCryptPasswordEncoder encoder;
+	@Autowired
+	UserProfileImagesRepository userProfileImagesRepository;
 
 	public List<User> findAll() {
 //		// TODO Auto-generated method stub
@@ -170,5 +170,21 @@ public class UserService {
 	public List<Amenities> findAllAmenities() {
 		// TODO Auto-generated method stub
 		return amenitiesRepository.findAll();
+	}
+
+	public String getUserProfileImage(Integer userId, int userType) {
+		// TODO Auto-generated method stub
+		UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(userId, userType);
+		
+		 try {
+	        	if(userProfileImage != null) {
+	            	return userProfileImage.getFileUrl();
+	            } else {
+	            	return "";
+	            }
+	        } catch(Exception exp) {
+	        	exp.printStackTrace();
+	        	return "";
+	        }
 	}
 }

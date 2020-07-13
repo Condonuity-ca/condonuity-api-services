@@ -144,20 +144,28 @@ public class ClientService {
         // object -> Map
         Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
         
-        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
+        map.put("profileImageURL",getUserProfileImageURL(clientUser.getClientId()));
         
-        try {
-        	if(userProfileImage != null) {
-            	map.put("profileImageURL",userProfileImage.getFileUrl());
-            } else {
-            	map.put("profileImageURL","");
-            }
-        } catch(Exception exp) {
-        	exp.printStackTrace();
-        }
+        
 //        map.put("",""); blobName
         
         return map;
+	}
+
+	private String getUserProfileImageURL(Integer clientId) {
+		// TODO Auto-generated method stub
+		UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientId, Constants.UserType.CLIENT.getValue());
+        
+        try {
+        	if(userProfileImage != null) {
+            	return userProfileImage.getFileUrl();
+            } else {
+            	return "";
+            }
+        } catch(Exception exp) {
+        	exp.printStackTrace();
+        	return "";
+        }
 	}
 
 	public List<Object> getAllCorporateAccounts(Integer clientUserId) {
@@ -333,6 +341,7 @@ public class ClientService {
 		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
 			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+			        map.put("userProfileImage", getUserProfileImageURL(clientAssociate.getClientId()));
 			        clientList.add(map);
 		        }
 			}
@@ -728,6 +737,7 @@ public class ClientService {
 	        clientObj.put("userRole", clientAssociate.getUserRole());
 	        clientObj.put("userAccountStatus", clientAssociate.getUserAccountStatus());
 	        clientObj.put("clientOrganisationId", clientOrgId);
+	        clientObj.put("userProfileImage",getUserProfileImageURL(id));
         } else {
         	return null;
         }
