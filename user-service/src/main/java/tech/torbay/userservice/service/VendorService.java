@@ -35,6 +35,7 @@ import tech.torbay.userservice.entity.VendorMemberships;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.userservice.entity.VendorPortfolio;
+import tech.torbay.userservice.entity.VendorPortfolioFiles;
 import tech.torbay.userservice.entity.VendorProducts;
 import tech.torbay.userservice.entity.VendorRegistrationFiles;
 import tech.torbay.userservice.entity.VendorServices;
@@ -57,6 +58,7 @@ import tech.torbay.userservice.repository.VendorLicensesRepository;
 import tech.torbay.userservice.repository.VendorMembershipsRepository;
 import tech.torbay.userservice.repository.VendorOrganisationProfileImagesRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
+import tech.torbay.userservice.repository.VendorPortfolioFilesRepository;
 import tech.torbay.userservice.repository.VendorPortfolioRepository;
 import tech.torbay.userservice.repository.VendorProductsRepository;
 import tech.torbay.userservice.repository.VendorRegistrationFilesRepository;
@@ -111,6 +113,8 @@ public class VendorService {
 	AvailableVendorProfilesRepository availableVendorProfilesRepository;
 	@Autowired
 	ClientOrganisationRepository clientOrganisationRepository;
+	@Autowired
+	VendorPortfolioFilesRepository vendorPortfolioFilesRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -650,9 +654,22 @@ public class VendorService {
 		return vendorUsers;
 	}
 
-	public List<VendorPortfolio> getVendorPortfolio(Integer vendorOrganisationId) {
+	public List<Map<String, Object>> getVendorPortfolio(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		return vendorPortfolioRepository.findByVendorOrganisationId(vendorOrganisationId);
+		List<VendorPortfolio> vendorPortfolios = vendorPortfolioRepository.findByVendorOrganisationId(vendorOrganisationId);
+		List<Map<String, Object>> portfolios = new ArrayList<>();
+		
+		for (VendorPortfolio vendorPortfolio : vendorPortfolios) {
+			ObjectMapper objMapper = new ObjectMapper();
+			Map<String, Object> map = objMapper.convertValue(vendorPortfolio, Map.class);
+			
+			
+			
+			map.put("portfolioFiles",getVendorPortfolioFiles(vendorPortfolio.getId()));
+			
+			portfolios.add(map);
+		}
+		return portfolios;
 	}
 
 	public VendorPortfolio addVendorPortfolio(VendorPortfolio vendorPortfolio) {
@@ -1114,6 +1131,29 @@ public class VendorService {
 			obj.put("containerName", registrationFile.getContainerName());
 //			obj.put("fileUrl", registrationFile.getFileUrl());
 			obj.put("createdAt", registrationFile.getCreatedAt());
+			
+			files.add(obj);
+		}
+		
+		return files;
+	}
+	
+	public List<Map<String, Object>> getVendorPortfolioFiles(Integer vendorPortfolioId) {
+		// TODO Auto-generated method stub
+		List<VendorPortfolioFiles> vendorPortfolioFiles = vendorPortfolioFilesRepository.findAllByVendorPortfolioId(vendorPortfolioId);
+		
+		List<Map<String, Object>> files = new ArrayList();
+		for(VendorPortfolioFiles portfolioFile : vendorPortfolioFiles) {
+			Map<String, Object> obj = new HashMap<>();
+			
+			obj.put("id", portfolioFile.getId());
+			obj.put("fileName", portfolioFile.getFileName());
+			obj.put("fileType", portfolioFile.getFileType());
+			obj.put("fileSize", Utils.formatFileSize(Long.parseLong(portfolioFile.getFileSize())));
+			obj.put("blobName", portfolioFile.getBlobName());
+			obj.put("containerName", portfolioFile.getContainerName());
+//			obj.put("fileUrl", registrationFile.getFileUrl());
+			obj.put("createdAt", portfolioFile.getCreatedAt());
 			
 			files.add(obj);
 		}

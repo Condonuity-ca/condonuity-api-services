@@ -888,4 +888,35 @@ public class FilesController {
 			}
 			
 		}
+		
+		// multiple vendor portfolio files upload
+		@PostMapping("/uploads/vendor/portfolio/{portfolioId}")
+		public ResponseEntity<Map<String, Object>> uploadVendorPortfolioFiles(@PathVariable("portfolioId") Integer portfolioId,
+				@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
+
+			Map<String, Object> map = new HashMap<>();
+			if(!isValidFileSelected(multipartFiles)) {
+				map.put("statusCode", StatusCode.FILE_NOT_FOUND.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Please select any files to upload");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+			List<URI> url = azureBlobService.uploadVendorPortfolioFiles(portfolioId, Constants.Containers.VENDOR_PORTFOLIO_FILES.getValue(), multipartFiles);
+			
+			if(url != null) {
+				map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+				map.put("statusMessage", "Success");
+				map.put("responseMessage", "Vendor Portfolio Files Uploaded Successfully");
+				map.put("containerName", Constants.Containers.VENDOR_PORTFOLIO_FILES.getValue());
+//				map.put("resource", url);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			} else {
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to upload files");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+		}
 }

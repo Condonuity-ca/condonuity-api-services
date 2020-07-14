@@ -103,7 +103,8 @@ public class Constants {
 	    MESSAGE_INTERNAL_THREAD_FILES("internalthreadfiles"),
 		MESSAGE_EXTERNAL_THREAD_FILES("externalthreadfiles"),
 		MESSAGE_INTERNAL_COMMENT_FILES("internalcommentfiles"),
-		MESSAGE_EXTERNAL_COMMENT_FILES("externalcommentfiles");
+		MESSAGE_EXTERNAL_COMMENT_FILES("externalcommentfiles"),
+		VENDOR_PORTFOLIO_FILES("vendorportfoliofiles");
 
 	    private String value;
 	    private static Map map = new HashMap<>();

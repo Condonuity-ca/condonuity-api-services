@@ -79,7 +79,7 @@ public class VendorController {
 	@GetMapping("/vendor/org/{id}")
 	public ResponseEntity<Object> getOrganisationById(@PathVariable("id") Integer vendorOrganisationId) {
 		Object vendorOrganisation = vendorService.getVendorOrganisationById(vendorOrganisationId);
-		List<VendorPortfolio> vendorPortfolio = vendorService.getVendorPortfolio(vendorOrganisationId);
+		List<Map<String, Object>> vendorPortfolio = vendorService.getVendorPortfolio(vendorOrganisationId);
 		List<VendorInsurance> vendorInsurance = vendorService.getVendorInsurance(vendorOrganisationId);
 		List<Map<String, Object>> vendorRegistrationFiles = vendorService.getVendorRegistrationFiles(vendorOrganisationId);
 		
@@ -617,7 +617,7 @@ public class VendorController {
                     @ApiResponse(code = 200, message = "vendor Portfolio Sorted")
             }
     )
-	@GetMapping("/vendor/org/portfolio/{orgId}/{sortby}")
+	@GetMapping("/vendor/org/portfolio/{orgId}/{sortby}")//Dont add portfolio files bcoz we dont use sort api
 	public ResponseEntity<Object> sortVendorPortfolio(@PathVariable("orgId") Integer orgId, @PathVariable("sortby") Integer sortby) {
 				
 		List<VendorPortfolio> list = vendorService.sortVendorPortfolio(orgId, sortby);

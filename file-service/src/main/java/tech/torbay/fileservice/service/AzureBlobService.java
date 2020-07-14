@@ -36,6 +36,7 @@ import tech.torbay.fileservice.entity.ProjectFiles;
 import tech.torbay.fileservice.entity.ThreadFiles;
 import tech.torbay.fileservice.entity.UserProfileImages;
 import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
+import tech.torbay.fileservice.entity.VendorPortfolioFiles;
 import tech.torbay.fileservice.entity.VendorRegistrationFiles;
 import tech.torbay.fileservice.repository.BidFilesRepository;
 import tech.torbay.fileservice.repository.ClientOrganisationProfileImagesRepository;
@@ -46,6 +47,7 @@ import tech.torbay.fileservice.repository.ProjectFilesRepository;
 import tech.torbay.fileservice.repository.ThreadFilesRepository;
 import tech.torbay.fileservice.repository.UserProfileImagesRepository;
 import tech.torbay.fileservice.repository.VendorOrganisationProfileImagesRepository;
+import tech.torbay.fileservice.repository.VendorPortfolioFilesRepository;
 import tech.torbay.fileservice.repository.VendorRegistrationFilesRepository;
 
 @Component
@@ -76,6 +78,8 @@ public class AzureBlobService {
 	VendorRegistrationFilesRepository vendorRegistrationFilesRepository;
 	@Autowired
 	ProjectAwardFilesRepository projectAwardFilesRepository;
+	@Autowired
+	VendorPortfolioFilesRepository vendorPortfolioFilesRepository;
 	
 	boolean URI_ACCESS_REQUIRED = true;
 	boolean URI_ACCESS_NOT_REQUIRED = false;
@@ -913,26 +917,83 @@ public class AzureBlobService {
 	}
 	
 	// multiple file upload
-		public List<URI> uploadProjectAwardFiles(Integer projectAwardId, String containerName, MultipartFile[] multipartFiles) {
-			// TODO Auto-generated method stub
-			try {
-				List<URI> uris = new ArrayList();
-				
-				for(MultipartFile multipartFile : multipartFiles) {
-					uris.add(uploadProjectAwardFile(projectAwardId, containerName, multipartFile));
-				}
-				
-				
-				return uris;
-			} catch(Exception exp) {
-				exp.printStackTrace();
+	public List<URI> uploadProjectAwardFiles(Integer projectAwardId, String containerName, MultipartFile[] multipartFiles) {
+		// TODO Auto-generated method stub
+		try {
+			List<URI> uris = new ArrayList();
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				uris.add(uploadProjectAwardFile(projectAwardId, containerName, multipartFile));
 			}
 			
-			return null;
+			
+			return uris;
+		} catch(Exception exp) {
+			exp.printStackTrace();
 		}
 		
-		// single file upload
-		public URI uploadProjectAwardFile(Integer projectAwardId, String containerName, MultipartFile multipartFile) {
+		return null;
+	}
+	
+	// single file upload
+	public URI uploadProjectAwardFile(Integer projectAwardId, String containerName, MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+		try {
+			createContainer(containerName);
+			UUID uuid = UUID.randomUUID();
+			String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
+			String blobName = uuid.toString()+"."+extension;
+
+			URI uri = uploads(containerName, multipartFile, blobName, URI_ACCESS_NOT_REQUIRED);
+			
+			String fileName = multipartFile.getOriginalFilename();
+			String fileType = multipartFile.getContentType();
+			String fileSize = String.valueOf(multipartFile.getSize());
+			
+			ProjectAwardFiles projectAwardFiles = new ProjectAwardFiles();
+			projectAwardFiles.setProjectAwardId(projectAwardId);
+			projectAwardFiles.setContainerName(containerName);
+			projectAwardFiles.setBlobName(blobName);
+			projectAwardFiles.setFileName(fileName);
+			projectAwardFiles.setFileType(fileType);
+			projectAwardFiles.setFileSize(fileSize);
+			projectAwardFiles.setFileUrl(uri.toString());
+			
+			ProjectAwardFiles projectAwardFilesObj = projectAwardFilesRepository.save(projectAwardFiles);
+			if(projectAwardFilesObj != null) {
+				return uri;
+			} else {
+				return null;
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	// multiple file upload
+	public List<URI> uploadVendorPortfolioFiles(Integer vendorPortfolioId, String containerName, MultipartFile[] multipartFiles) {
+		// TODO Auto-generated method stub
+		try {
+			List<URI> uris = new ArrayList();
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				uris.add(uploadVendorPortfolioFiles(vendorPortfolioId, containerName, multipartFile));
+			}
+			
+			
+			return uris;
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	// single file upload
+		public URI uploadVendorPortfolioFiles(Integer vendorPortfolioId, String containerName, MultipartFile multipartFile) {
 			// TODO Auto-generated method stub
 			try {
 				createContainer(containerName);
@@ -946,17 +1007,17 @@ public class AzureBlobService {
 				String fileType = multipartFile.getContentType();
 				String fileSize = String.valueOf(multipartFile.getSize());
 				
-				ProjectAwardFiles projectAwardFiles = new ProjectAwardFiles();
-				projectAwardFiles.setProjectAwardId(projectAwardId);
-				projectAwardFiles.setContainerName(containerName);
-				projectAwardFiles.setBlobName(blobName);
-				projectAwardFiles.setFileName(fileName);
-				projectAwardFiles.setFileType(fileType);
-				projectAwardFiles.setFileSize(fileSize);
-				projectAwardFiles.setFileUrl(uri.toString());
+				VendorPortfolioFiles vendorPortfolioFiles = new VendorPortfolioFiles();
+				vendorPortfolioFiles.setVendorPortfolioId(vendorPortfolioId);
+				vendorPortfolioFiles.setContainerName(containerName);
+				vendorPortfolioFiles.setBlobName(blobName);
+				vendorPortfolioFiles.setFileName(fileName);
+				vendorPortfolioFiles.setFileType(fileType);
+				vendorPortfolioFiles.setFileSize(fileSize);
+				vendorPortfolioFiles.setFileUrl(uri.toString());
 				
-				ProjectAwardFiles projectAwardFilesObj = projectAwardFilesRepository.save(projectAwardFiles);
-				if(projectAwardFilesObj != null) {
+				vendorPortfolioFiles = vendorPortfolioFilesRepository.save(vendorPortfolioFiles);
+				if(vendorPortfolioFiles != null) {
 					return uri;
 				} else {
 					return null;
