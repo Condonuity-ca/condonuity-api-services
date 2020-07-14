@@ -517,20 +517,28 @@ public class VendorController {
 			@RequestBody VendorPortfolio vendorPortfolio) {
 		
         VendorPortfolio vendorPortfolioObj= vendorService.addVendorPortfolio(vendorPortfolio);
+        
+
+		HashMap<String, Object> response = new HashMap();
+		
         if (vendorPortfolioObj == null) {
-        	ResponseMessage responseMessage = new ResponseMessage(
-        			APIStatusCode.REQUEST_FAILED.getValue(),
-	        		"Failed",
-	        		"Failed to create Vendor Portfolio");
-        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        	
+        	response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Failed to create Vendor Portfolio");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
         } else {
-	        HttpHeaders headers = new HttpHeaders();
+//	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
-	        ResponseMessage responseMessage = new ResponseMessage(
-	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
-	        		"Success",
-	        		"Vendor Portfolio Created Successfully");
-			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+//			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.CREATED);
+			
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor Portfolio Created Successfully");
+			response.put("portfolioId", vendorPortfolioObj.getId());
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
         }
 	}
 	
