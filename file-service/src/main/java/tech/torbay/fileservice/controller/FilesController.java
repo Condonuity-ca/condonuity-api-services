@@ -244,10 +244,11 @@ public class FilesController {
 		    	String fileName = blobName;
 		    	// Try to determine file's content type
 		        String contentType = Files.getFileExtension(Files.getFileExtension(blobName));
-		         
+		        print("0contentType :"+contentType);
 		    	if(fileInformation != null) {
 			    	fileName = fileInformation.get("fileName");
 			    	contentType = fileInformation.get("fileType");
+			    	print("1contentType :"+contentType);
 		    	}
 		    	
 		    	InputStream input =  blobFile.openInputStream();
@@ -267,6 +268,7 @@ public class FilesController {
 		         if (contentType == null) {
 		             contentType = "application/octet-stream";
 		         }
+		         print("2contentType :"+contentType);
 	            ByteArrayResource resource = new ByteArrayResource(IOUtils.toByteArray(input));
 	            long contentLength = resource.contentLength();
 	            
@@ -280,8 +282,8 @@ public class FilesController {
 		        print("contentLength :"+contentLength);
 		        print("fileName :"+fileName);
 		        print("header :"+header.toString());
-		        print("contentType :"+contentType);
-		        print("MediaType.parseMediaType(contentType) :"+MediaType.parseMediaType(contentType));
+		        print("3contentType :"+contentType);
+//		        print("MediaType.parseMediaType(contentType) :"+MediaType.parseMediaType(contentType));
 		        
 		        return ResponseEntity.ok()
 			             .contentLength(contentLength)

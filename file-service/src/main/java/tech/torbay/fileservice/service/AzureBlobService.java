@@ -911,6 +911,13 @@ public class AzureBlobService {
 				map.put("fileType", projectAwardFiles.getFileType());
 				return map;
 			}
+			case "vendorportfoliofiles":{
+				VendorPortfolioFiles vendorPortfolioFiles = vendorPortfolioFilesRepository.findByBlobName(blobName);
+				Map<String, String> map = new HashMap();
+				map.put("fileName", vendorPortfolioFiles.getFileName());
+				map.put("fileType", vendorPortfolioFiles.getFileType());
+				return map;
+			}
 		}
 		return null;
 		

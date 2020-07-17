@@ -193,7 +193,7 @@ public class ClientService {
 				ObjectMapper oMapper = new ObjectMapper();
 		        // object -> Map
 		        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
-				if(clientOrg.getClientOrganisationId() == clientPrimaryOrgId) {
+				if(clientOrg.getClientOrganisationId().equals(clientPrimaryOrgId)) {
 					map.put("isPrimary", "true");
 				} else {
 					map.put("isPrimary","false");
