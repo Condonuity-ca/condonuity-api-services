@@ -1228,5 +1228,18 @@ public class ProjectService {
 		 return map;
 	}
 
+	public Project inactiveProject(Integer projectId) {
+		// TODO Auto-generated method stub
+		try {
+			Project project = projectRepository.findByProjectId(projectId);
+			
+			project.setDeleteStatus(DeleteStatus.INACTIVE.getValue());
+			return projectRepository.save(project);
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+	}
+
 }
 

@@ -911,5 +911,41 @@ public class ProjectController {
 		// TODO Auto-generated method stub
 		projectService.sendProjectAwardNotification(projectAwardsObj, notificationType.getValue());
 	}
+     
+    @ApiOperation(value = "Client Project Inactive Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Inactivated Successfully")
+            }
+    )
+	@PutMapping("/client/project/inactive/{projectId}")
+	public ResponseEntity<Object> inactiveProject(@PathVariable("projectId") Integer projectId) {
+		
+		if(!projectService.checkIsProjectExists(projectId)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.NOT_FOUND.getValue(),
+            		"Failed",
+        			"Project Not Found");
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		Project project = projectService.inactiveProject(projectId);
+        if (project == null) {
+     
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_FAILED.getValue(),
+            		"Failed",
+        			"Failed to delete Project");
+        	
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Project inactivated successfully");
+        	SendProjectNotification(project, NotificationType.PROJECT_UPDATE);
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        }
         
+	}
 } 
