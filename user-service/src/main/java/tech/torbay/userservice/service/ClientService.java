@@ -215,6 +215,11 @@ public class ClientService {
 			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
 			        map.put("userActiveFrom", clientAssociate.getCreatedAt());
 			        map.put("userActiveTo", clientAssociate.getUserInactiveDate());
+			        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());
+			        if(logo != null)
+			        	map.put("organisationLogo", logo);
+			        else
+			        	map.put("organisationLogo", "");
 			        clientOrgs.add(map);
 		        }
 				
@@ -275,7 +280,7 @@ public class ClientService {
         if(logo != null)
         	map.put("organisationLogo", logo);
         else
-        	map.put("organisationLogo", logo);
+        	map.put("organisationLogo", "");
         
         return map;
 	}

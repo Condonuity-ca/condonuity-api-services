@@ -29,7 +29,7 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
     @Query("update ProjectReviewRating rr set rr.replyComments = :reply_comments where rr.id = :id")
     ProjectReviewRating setReplyComments(@Param("id") Integer id, @Param("reply_comments") String replyComments);
     
-    List<ProjectReviewRating> findAllByVendorOrganisationId(Integer vendorOrganisationId);
+    List<ProjectReviewRating> findAllByVendorOrganisationIdAndStatus(Integer vendorOrganisationId, Integer activeStatus);
     
     List<ProjectReviewRating> findAllByClientIdAndClientOrganisationId(Integer clientId, Integer clientOrganisationId);
 

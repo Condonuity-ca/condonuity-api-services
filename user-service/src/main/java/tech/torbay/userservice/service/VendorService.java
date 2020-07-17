@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
 import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
@@ -249,7 +250,7 @@ public class VendorService {
 	private Object getVendorReviewsRatings(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		 try {
-			 List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByVendorOrganisationId(vendorOrganisationId);
+			 List<ProjectReviewRating> projectReviewsForVendors = projectReviewRatingRepository.findAllByVendorOrganisationIdAndStatus(vendorOrganisationId, DeleteStatus.ACTIVE.getValue());
 			 
 			 List<Object> vendorAllReviews = new ArrayList();
 			 
@@ -336,7 +337,7 @@ public class VendorService {
 
 	private Object getVendorDetailedRatings(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrganisationId);
+		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndStatus(vendorOrganisationId, DeleteStatus.ACTIVE.getValue());
 		
         try {
         	double sumCategoryResponsiveness = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
@@ -373,7 +374,7 @@ public class VendorService {
 
 	private Double getVendorCategoryRatings(Integer vendorOrgId) {
 		// TODO Auto-generated method stub
-		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrgId);
+		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndStatus(vendorOrgId, DeleteStatus.ACTIVE.getValue());
 		
         try {
         	// Case1

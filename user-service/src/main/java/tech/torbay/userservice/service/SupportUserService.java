@@ -513,7 +513,7 @@ public class SupportUserService {
 	
 	private Double getVendorCategoryRatings(Integer vendorOrgId) {
 		// TODO Auto-generated method stub
-		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationId(vendorOrgId);
+		List<VendorCategoryRatings> vendorRatings = vendorCategoryRatingsRepository.findByVendorOrganisationIdAndStatus(vendorOrgId, DeleteStatus.ACTIVE.getValue());
 		
         try {
         	// Case1

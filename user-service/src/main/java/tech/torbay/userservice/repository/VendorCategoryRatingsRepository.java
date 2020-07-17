@@ -1,6 +1,7 @@
 package tech.torbay.userservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
@@ -13,6 +14,13 @@ import java.util.List;
 public interface VendorCategoryRatingsRepository extends JpaRepository<VendorCategoryRatings, Integer> {
 
     List<VendorCategoryRatings> findAll();
+    
+    @Query(value = "SELECT vcr.* FROM condonuitydev.vendor_category_ratings vcr "
+    		+ "INNER JOIN condonuitydev.project_reviews_ratings prr ON prr.id = vcr.review_rating_id "
+    		+ "where vcr.vendor_organisation_id = (?1) and " + 
+			"prr.status = (?2)"
+			, nativeQuery = true)
+    List<VendorCategoryRatings> findByVendorOrganisationIdAndStatus(Integer vendorId, Integer activeStatus);
     
     List<VendorCategoryRatings> findByVendorOrganisationId(Integer vendorId);
     
