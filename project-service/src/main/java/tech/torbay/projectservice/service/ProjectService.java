@@ -21,6 +21,7 @@ import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.BidPostType;
 import tech.torbay.projectservice.constants.Constants.DeleteStatus;
 import tech.torbay.projectservice.constants.Constants.ProjectInterestStatus;
+import tech.torbay.projectservice.constants.Constants.ProjectPostTo;
 import tech.torbay.projectservice.constants.Constants.ProjectPostType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.UserType;
@@ -35,6 +36,7 @@ import tech.torbay.projectservice.entity.ProjectFiles;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.ServiceCities;
+import tech.torbay.projectservice.entity.UserWishList;
 import tech.torbay.projectservice.entity.VendorBid;
 import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorOrganisation;
@@ -53,6 +55,7 @@ import tech.torbay.projectservice.repository.ProjectQARepository;
 import tech.torbay.projectservice.repository.ProjectRepository;
 import tech.torbay.projectservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.projectservice.repository.ServiceCitiesRepository;
+import tech.torbay.projectservice.repository.UserWishListRepository;
 import tech.torbay.projectservice.repository.VendorBidRepository;
 import tech.torbay.projectservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.projectservice.repository.VendorOrganisationProfileImagesRepository;
@@ -101,6 +104,8 @@ public class ProjectService {
 	VendorOrganisationProfileImagesRepository vendorOrganisationProfileImagesRepository;
 	@Autowired
 	ServiceCitiesRepository servicesCitiesRepository;
+	@Autowired
+	UserWishListRepository userWishListRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -830,8 +835,17 @@ public class ProjectService {
 					map.put("isInterested", false);
 				}
 				
-						
-				allProjects.add(map);
+				if(project.getPostType() == ProjectPostTo.ALL.getValue()) {
+					allProjects.add(map);
+				} else if(project.getPostType() == ProjectPostTo.MARKED.getValue()){
+					UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(project.getClientOrganisationId(), Constants.UserType.CLIENT.getValue(), vendorOrganisationId, Constants.UserType.VENDOR.getValue() );
+					if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
+						allProjects.add(map);
+			        } else {
+//			        	map.put("isPreferred", "false");//client not preferred this vendor for project posting
+			        }
+				}
+				
 	        }
 	        
 	        
