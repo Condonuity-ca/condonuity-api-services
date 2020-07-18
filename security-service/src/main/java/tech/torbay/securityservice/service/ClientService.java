@@ -46,7 +46,7 @@ public class ClientService {
 		return clientUserRepository.findByEmail(email);
 	}
 
-	public ClientUser addClientOrgAccountAssociation(Integer organisationId, Integer clientUserType, Integer userRole, ClientUser clientUser, Integer userAccountStatus, Integer userVerificationStatus) {
+	public ClientUser addClientOrgAccountAssociation(Integer organisationId, Integer clientUserType, Integer userRole, ClientUser clientUser, Integer userAccountStatus, Integer userVerificationStatus, int deleteStatus) {
 		// TODO Auto-generated method stub
 		
 		//steps
@@ -72,7 +72,7 @@ public class ClientService {
 		clientAssociation.setUserRole(userRole);
 		clientAssociation.setAccountVerificationStatus(userVerificationStatus/* Constants.VerificationStatus.NOT_VERIFIED.getValue() */);
 		clientAssociation.setUserAccountStatus(userAccountStatus/* Constants.UserAccountStatus.ACTIVE.getValue() */);
-		clientAssociation.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue()/* Constants.UserAccountStatus.ACTIVE.getValue() */);
+		clientAssociation.setDeleteStatus(deleteStatus/* Constants.UserAccountStatus.ACTIVE.getValue() */);
 		
 		//2.1.3
 		if(clientAssociationRepository.save(clientAssociation) != null) {
@@ -123,7 +123,7 @@ public class ClientService {
 					//2.1.2
 					if(userRepository.save(user) != null) {
 						
-						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue()) != null) {
+						if(addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue(), Constants.DeleteStatus.ACTIVE.getValue()) != null) {
 							return clientUser;
 						} else {
 //							clientUserRepository.deleteById(clientUser.getClientId());
@@ -143,7 +143,7 @@ public class ClientService {
 				return null;
 			}
 		} else {
-			return addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INACTIVE.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue());
+			return addClientOrgAccountAssociation(organisationId, clientUserType, userRole, clientUser, Constants.UserAccountStatus.INACTIVE.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue(), Constants.DeleteStatus.ACTIVE.getValue());
 		}
 		
 		return clientUser;
@@ -169,7 +169,10 @@ public class ClientService {
 				// Update client User - account activation status verified with account association
 				addClientOrgAccountAssociation(clientOrganisationObj.getClientOrganisationId(), 
 						Constants.ClientUserType.BOARD_MEMBER.getValue(),
-						Constants.UserRole.ADMIN.getValue(), clientUser, Constants.UserAccountStatus.ACTIVE.getValue(), Constants.VerificationStatus.VERIFIED.getValue());
+						Constants.UserRole.ADMIN.getValue(), clientUser, 
+						Constants.UserAccountStatus.ACTIVE.getValue(), 
+						Constants.VerificationStatus.VERIFIED.getValue(), 
+						Constants.DeleteStatus.INACTIVE.getValue());// login restrict until organisation verification done
 				// for client multiple organisation registration , we implement this logs
 				RegistrationLogs registrationLogs = new RegistrationLogs();
 				registrationLogs.setUserId(clientId);
@@ -313,6 +316,11 @@ public class ClientService {
 		}
 		
 		return false;
+	}
+
+	public List<RegistrationLogs> checkRegistrationLog(Integer clientUserId) {
+		// TODO Auto-generated method stub
+		return registrationLogsRepository.findByUserIdAndUserType(clientUserId,UserType.CLIENT.getValue());
 	}
 }
 

@@ -354,40 +354,42 @@ public class ProjectService {
 		return projectQARepository.save(projectQA);
 	}
 
-	public List<Map<String,Object>> getAllBidsByProjectId(Integer id) {
+	public List<Map<String,Object>> getAllBidsByProjectId(Integer projectId) {
 		// TODO Auto-generated method stub
-		
-		List<VendorBid> vendorBids = vendorBidRepository.findVendorBidByProjectId(id);
-		
 		List<Map<String,Object>> allBids = new ArrayList();
 		
-		for(VendorBid vendorBid : vendorBids) {
+		Project project = projectRepository.findByProjectId(projectId);
+		if(project.getStatus().equals(3) || project.getStatus().equals(4) ) {
+			List<VendorBid> vendorBids = vendorBidRepository.findVendorBidByProjectId(projectId);
 			
-			Map<String,Object> map = new HashMap<>();
-			
-			ObjectMapper oMapper = new ObjectMapper();
-			
-			map = oMapper.convertValue(vendorBid, Map.class);
-			
-			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorBid.getVendorOrgId());
-			
-			map.put("bidFiles",GetVendorBidFiles(vendorBid.getId()));
-			try {
-		        String logo = getOrganisationLogo(vendorBid.getVendorOrgId());
-		        if(logo != null)
-		        	map.put("vendorOrganisationProfileImage",logo);
-		        else
-		        	map.put("vendorOrganisationProfileImage","");
-	        } catch(Exception exp) {
-		        	exp.printStackTrace();
-	        }
-			
-			map.put("organisationName",vendorOrganisation.getCompanyName());
-			map.put("legalName",vendorOrganisation.getLegalName());
-			map.put("rating",getVendorCategoryRatings(vendorBid.getVendorOrgId()));
-			
-					
-			allBids.add(map);
+			for(VendorBid vendorBid : vendorBids) {
+				
+				Map<String,Object> map = new HashMap<>();
+				
+				ObjectMapper oMapper = new ObjectMapper();
+				
+				map = oMapper.convertValue(vendorBid, Map.class);
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorBid.getVendorOrgId());
+				
+				map.put("bidFiles",GetVendorBidFiles(vendorBid.getId()));
+				try {
+			        String logo = getOrganisationLogo(vendorBid.getVendorOrgId());
+			        if(logo != null)
+			        	map.put("vendorOrganisationProfileImage",logo);
+			        else
+			        	map.put("vendorOrganisationProfileImage","");
+		        } catch(Exception exp) {
+			        	exp.printStackTrace();
+		        }
+				
+				map.put("organisationName",vendorOrganisation.getCompanyName());
+				map.put("legalName",vendorOrganisation.getLegalName());
+				map.put("rating",getVendorCategoryRatings(vendorBid.getVendorOrgId()));
+				
+						
+				allBids.add(map);
+			}
 		}
 		
 		return allBids;
@@ -665,7 +667,7 @@ public class ProjectService {
 				ObjectMapper oMapper = new ObjectMapper();
 				
 				
-				if (project.getStatus() == Constants.ProjectPostType.COMPLETED.getValue() || project.getStatus() == Constants.ProjectPostType.TERMINATED.getValue() /* && check project bid end date, start, completion date */) {
+				if (project.getStatus() == Constants.ProjectPostType.COMPLETED.getValue() || project.getStatus() == Constants.ProjectPostType.CANCELLED.getValue() /* && check project bid end date, start, completion date */) {
 					
 					List<Integer> ids = Stream.of(project.getTags().trim().split(","))
 					        .map(Integer::parseInt)
@@ -1233,7 +1235,7 @@ public class ProjectService {
 		try {
 			Project project = projectRepository.findByProjectId(projectId);
 			
-			project.setDeleteStatus(DeleteStatus.INACTIVE.getValue());
+			project.setStatus(ProjectPostType.CANCELLED.getValue());
 			return projectRepository.save(project);
 		} catch (Exception exp) {
 			exp.printStackTrace();

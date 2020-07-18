@@ -41,6 +41,7 @@ import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.service.ClientService;
@@ -289,7 +290,7 @@ public class ClientController {
 				if(clientUsers.size() < Constants.MAX_USER_COUNT) {
 					
 					//add- new client org associate with invite status
-					clientService.addClientOrgAccountAssociation(organisationId, clientUserType, userRole, existClient, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue());
+					clientService.addClientOrgAccountAssociation(organisationId, clientUserType, userRole, existClient, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue(), Constants.DeleteStatus.ACTIVE.getValue());
 					
 					sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
 					
@@ -375,6 +376,7 @@ public class ClientController {
 		Map<String, Object> userData;
 		try {
 			userData = Utils.convertJsonToHashMap(decryptedUser);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -662,5 +664,50 @@ public class ClientController {
 	        		"Vendor User Record Not Found");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
+	}
+	
+	@ApiOperation(value = "Client Already registered an Organisation or Not check")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Organisation Duplicate registration check")
+            }
+    )
+	@PostMapping("/client/org/register/hash")
+	public ResponseEntity<Object> checkDuplicateRegistration(
+			@RequestParam("hash") String hash) {
+		
+		String decryptedUser = SecurityAES.decrypt(hash);
+
+		System.out.println("decrypt hash :"+hash);
+		
+		Map<String, Object> userData;
+		try {
+			userData = Utils.convertJsonToHashMap(decryptedUser);
+			Integer clientUserId = Integer.parseInt(String.valueOf(userData.get("userId")));
+			
+			List<RegistrationLogs> registrationLogs = clientService.checkRegistrationLog(clientUserId);
+			if(registrationLogs != null && registrationLogs.size() > 0) {
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        			"Failed",
+	        			"Client User Already Registered Organisation using Hash");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			} else {
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        			"Success",
+	        			"Client User Not Registered any Organisation using Hash");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.BAD_REQUEST.getValue(),
+        			"Failed",
+        			"Failed to Parse Request - Bad Request");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		
 	}
 }

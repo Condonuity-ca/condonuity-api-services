@@ -151,7 +151,7 @@ public class Constants {
 		UNPUBLISHED(1),
 		PUBLISHED(2),
 		COMPLETED(3),
-		TERMINATED(4);// Cancelled or Terminated
+		CANCELLED(4);// Cancelled or Terminated
 
 	    private int value;
 	    private static Map map = new HashMap<>();
@@ -204,7 +204,8 @@ public class Constants {
 	public enum BidPostType {
 		UNPUBLISHED(1),
 		PUBLISHED(2),
-		AWARDED(3);
+		AWARDED(3),
+		PULLED(4);
 
 	    private int value;
 	    private static Map map = new HashMap<>();
