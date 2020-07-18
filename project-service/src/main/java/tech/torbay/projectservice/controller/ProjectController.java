@@ -516,6 +516,43 @@ public class ProjectController {
         
 	}
 	
+	@ApiOperation(value = "Project Bid Pull Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Bid Pulled Successfully")
+            }
+    )
+	@PutMapping("/vendor/bid/pull/{bidId}")
+	public ResponseEntity<Object> pullProjectBid(@PathVariable("bidId") Integer bidId) {
+		
+		if(projectService.checkIsProjectBiddingClosedByBidId(bidId)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.PROJECT_BID_END_DATE_CROSSED.getValue(),
+            		"Failed",
+        			"Project Bid End Date Finished");
+			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		
+		VendorBid vendorBid = projectService.pullVendorBid(bidId);
+        if (vendorBid == null) {
+     
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Failed",
+        			"Failed to Pull Project Bid");
+        	 
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+        	ResponseMessage responseMessage = new ResponseMessage(
+            		StatusCode.REQUEST_SUCCESS.getValue(),
+            		"Success",
+            		"Project Bid Pulled successfully");
+        	SendBidNotification(vendorBid, NotificationType.BID_UPDATE);
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        }
+        
+	}
+	
 	@ApiOperation(value = "Fetching A Project Details with All Bids, Questions and Answers")
     @ApiResponses(
             value = {

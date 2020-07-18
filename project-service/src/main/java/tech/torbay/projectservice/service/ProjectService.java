@@ -534,6 +534,13 @@ public class ProjectService {
 		vendorBid.setBidStatus(Constants.BidPostType.PUBLISHED.getValue());
 		return vendorBidRepository.save(vendorBid);
 	}
+	
+	public VendorBid pullVendorBid(Integer bidId) {
+		// TODO Auto-generated method stub
+		VendorBid vendorBid = vendorBidRepository.findOneById(bidId);
+		vendorBid.setBidStatus(Constants.BidPostType.PULLED.getValue());
+		return vendorBidRepository.save(vendorBid);
+	}
 
 	public ProjectReviewRating postProjectReview(ProjectReviewRating projectReviewRating) {
 		// TODO Auto-generated method stub
