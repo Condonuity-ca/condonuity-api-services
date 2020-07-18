@@ -58,8 +58,8 @@ public class UserController {
                     @ApiResponse(code = 200, message = "Existing User password reset successfully")
             }
     )
-	@PostMapping("/user/resetExistPassword")
-	private ResponseEntity<Object> ResetPassword(@RequestBody Map<String, Object> requestData) {
+	@PostMapping("/user/changePassword")
+	private ResponseEntity<Object> changePassword(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
 		
 		Integer userId = Integer.parseInt(String.valueOf(requestData.get("userId")));
@@ -71,13 +71,13 @@ public class UserController {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
-	        		"Failed to reset password");
+	        		"Failed to change password");
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    } else {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
-	        		"Password reset successfully");
+	        		"Password changed successfully");
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}

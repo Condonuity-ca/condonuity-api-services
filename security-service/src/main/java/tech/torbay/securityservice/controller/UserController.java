@@ -541,7 +541,7 @@ public class UserController {
 			} else {
 				System.out.println("decrypt hash :"+hash);
 				
-				return ResetPassword(userId, userType, password, firstName, lastName, phone);
+				return ResetPassword(userId, userType, password);
 			} 
 			
 		} catch(Exception exp) {
@@ -554,9 +554,9 @@ public class UserController {
 		}
 	}
 	
-	private ResponseEntity<Object> ResetPassword(Integer userId, Integer userType, String password, String firstName, String lastName, String phone) {
+	private ResponseEntity<Object> ResetPassword(Integer userId, Integer userType, String password) {
 		// TODO Auto-generated method stub
-		if (userService.resetPassword(userId, userType, password, firstName, lastName, phone) == null) {
+		if (userService.resetExistPassword(userId, userType, password) == null) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",

@@ -106,6 +106,23 @@ public class UserService {
 
 		return userRepository.save(userObj);
 	}
+	
+	public User resetExistPassword(Integer userId, Integer userType, String password) {
+		// TODO Auto-generated method stub
+
+		// New User used to reset password after accept invite
+
+		User userObj = userRepository.findByUserIdAndUserType(userId, userType);
+		if (userObj == null) {
+			new ResourceNotFoundException("User", "userId", userId);
+		}
+//		userObj.setPassword(encoder.encode( password ) );
+		userObj.setPassword(SecurityAES.encrypt(password ) );
+//		userObj.setPassword(password);
+
+
+		return userRepository.save(userObj);
+	}
 
 	public User Login(String username, String password) {
 		// TODO Auto-generated method stub
