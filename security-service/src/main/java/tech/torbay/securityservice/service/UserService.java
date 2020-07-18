@@ -87,16 +87,16 @@ public class UserService {
 			if (userType == Constants.UserType.CLIENT.getValue()) {
 				ClientUser clientUser = clientUserRepository.findByClientId(userId);
 
-//				clientUser.setFirstName(firstName);
-//				clientUser.setLastName(lastName);
+				clientUser.setFirstName(firstName);
+				clientUser.setLastName(lastName);
 				clientUser.setPhone(phone);
 
 				clientUserRepository.save(clientUser);
 			} else if (userType == Constants.UserType.VENDOR.getValue()) {
 				VendorUser vendorUser = vendorUserRepository.findByUserId(userId);
 
-//				vendorUser.setFirstName(firstName);
-//				vendorUser.setLastName(lastName);
+				vendorUser.setFirstName(firstName);
+				vendorUser.setLastName(lastName);
 
 				vendorUserRepository.save(vendorUser);
 			}
