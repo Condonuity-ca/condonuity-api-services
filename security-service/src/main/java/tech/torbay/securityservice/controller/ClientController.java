@@ -674,14 +674,17 @@ public class ClientController {
     )
 	@PostMapping("/client/org/register/hash")
 	public ResponseEntity<Object> checkDuplicateRegistration(
-			@RequestParam("hash") String hash) {
+			@RequestBody Map<String, Object> requestData) {
 		
-		String decryptedUser = SecurityAES.decrypt(hash);
-
-		System.out.println("decrypt hash :"+hash);
-		
-		Map<String, Object> userData;
 		try {
+			String hash = String.valueOf(requestData.get("hash"));
+			
+			String decryptedUser = SecurityAES.decrypt(hash);
+
+			System.out.println("decrypt hash :"+hash);
+			
+			Map<String, Object> userData;
+			
 			userData = Utils.convertJsonToHashMap(decryptedUser);
 			Integer clientUserId = Integer.parseInt(String.valueOf(userData.get("userId")));
 			
