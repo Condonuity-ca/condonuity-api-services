@@ -74,7 +74,7 @@ public class Project {
     private String projectStartDate = "";
     @NotNull
     private String projectCompletionDeadline = "";
-    @NotEmpty(message = "Project Estimation Budget must not be empty")
+//    @NotEmpty(message = "Project Estimation Budget must not be empty")
     private String estimatedBudget = "";
     private String duration = "";
     private String description = "";
