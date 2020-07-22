@@ -386,8 +386,8 @@ public class ClientController {
         			"Failed to Parse Request - Bad Request");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
-		
-		return registerClientOrganisation(Integer.parseInt(String.valueOf(userData.get("userId"))), organisation);
+		boolean isExisting = false;
+		return commonOrganisationRegister(Integer.parseInt(String.valueOf(userData.get("userId"))), organisation, isExisting);
         
 	}
 	
@@ -400,6 +400,12 @@ public class ClientController {
 	@PostMapping("/client/org/multiple/register/{clientUserId}") // its reusable for new and existing client organisation registration
 	private ResponseEntity<Object> registerClientOrganisation(@PathVariable("clientUserId") Integer clientUserId,@RequestBody ClientOrganisation organisation) {
 		// TODO Auto-generated method stub
+		boolean isExisting = true;
+		return commonOrganisationRegister(clientUserId, organisation, isExisting);
+	}
+	
+	private ResponseEntity<Object> commonOrganisationRegister(Integer clientUserId, ClientOrganisation organisation, boolean isExisting) {
+		// TODO Auto-generated method stub
 		if(clientService.checkOrganisationNameAvailable(organisation.getOrganisationName())) {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.CONFLICT.getValue(),
@@ -408,7 +414,7 @@ public class ClientController {
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		
-		ClientOrganisation clientorganisation = clientService.addClientOrganisation(clientUserId, organisation);
+		ClientOrganisation clientorganisation = clientService.addClientOrganisation(clientUserId, organisation, isExisting);
         if (clientorganisation == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -438,7 +444,7 @@ public class ClientController {
             
         }
 	}
-	
+
 	private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {
 		
 		RestTemplate restTemplate = new RestTemplate();
@@ -521,7 +527,8 @@ public class ClientController {
 			@RequestBody ClientOrganisation organisation ,
 			UriComponentsBuilder builder) {
 		
-		return registerClientOrganisation(clientId, organisation);
+		boolean isExisting = false;
+		return commonOrganisationRegister(clientId, organisation, isExisting);
 		
 	}
 	private void sendClientEmailVerification(ClientUser clientUser) {

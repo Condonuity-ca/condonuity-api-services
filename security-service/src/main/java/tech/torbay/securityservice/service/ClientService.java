@@ -149,7 +149,7 @@ public class ClientService {
 		return clientUser;
 	}
 
-	public ClientOrganisation addClientOrganisation(Integer clientId, ClientOrganisation clientOrganisation) {
+	public ClientOrganisation addClientOrganisation(Integer clientId, ClientOrganisation clientOrganisation, boolean isExisting) {
 		// TODO Auto-generated method stub
 		
 		
@@ -165,14 +165,19 @@ public class ClientService {
 				
 				clientUser.setPrimaryOrgId(clientOrganisationObj.getClientOrganisationId());
 				clientUserRepository.save(clientUser);
-				
+				int deleteStatus = 0;
+				if(isExisting) {
+					deleteStatus = Constants.DeleteStatus.ACTIVE.getValue();
+				} else {
+					deleteStatus = Constants.DeleteStatus.INACTIVE.getValue();
+				}
 				// Update client User - account activation status verified with account association
 				addClientOrgAccountAssociation(clientOrganisationObj.getClientOrganisationId(), 
 						Constants.ClientUserType.BOARD_MEMBER.getValue(),
 						Constants.UserRole.ADMIN.getValue(), clientUser, 
 						Constants.UserAccountStatus.ACTIVE.getValue(), 
 						Constants.VerificationStatus.VERIFIED.getValue(), 
-						Constants.DeleteStatus.INACTIVE.getValue());// login restrict until organisation verification done
+						deleteStatus);// login restrict until organisation verification done
 				// for client multiple organisation registration , we implement this logs
 				RegistrationLogs registrationLogs = new RegistrationLogs();
 				registrationLogs.setUserId(clientId);

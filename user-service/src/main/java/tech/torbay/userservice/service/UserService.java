@@ -2416,4 +2416,92 @@ public class UserService {
 		
 		return "";
 	}
+	
+	public Object getApplicationUserSearchResults(Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		String email = String.valueOf(requestData.get("email"));
+		String firstName = String.valueOf(requestData.get("firstName"));
+		String lastName = String.valueOf(requestData.get("lastName"));
+		String phone = String.valueOf(requestData.get("phone"));
+		int userType = Integer.parseInt(String.valueOf(requestData.get("userType")));
+		
+		String emailKeyword = "%"+email+"%";
+		String fnameKeyword = "%"+firstName+"%";
+		String lnameKeyword = "%"+lastName+"%";
+		String phoneKeyword = "%"+phone+"%";
+		
+		Map<String, Object> resultObj = new HashMap();
+		List<Map<String, Object>> resultList = new ArrayList();
+		
+		List<Integer> projectStatusCodes = new ArrayList();
+		
+		if(userType == 1) {
+			resultObj.put("clientUsers",getClientUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword, phoneKeyword));
+			resultObj.put("vendorUsers","[]");
+			return resultObj;
+		} else if(userType == 2) {
+			resultObj.put("clientUsers","[]");
+			resultObj.put("vendorUsers",getVendorUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword));
+			return resultObj;
+		} else {
+			resultObj.put("clientUsers",getClientUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword, phoneKeyword));
+			resultObj.put("vendorUsers",getVendorUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword));
+			return resultObj;
+		}
+	}
+	
+	private List<Object> getClientUsersByKeywords(String emailKeyword,String fnameKeyword,String lnameKeyword,String phoneKeyword) {
+		// TODO Auto-generated method stub
+		List<ClientUser> clientUsers = clientUserRepository.findAllByKeywords(emailKeyword, fnameKeyword, lnameKeyword, phoneKeyword);
+		List<Object> searchedClientUsers = new ArrayList();
+		
+		for(ClientUser clientUser : clientUsers) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
+	        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
+	        
+	        try {
+	        	if(userProfileImage != null)
+	        		map.put("profileImageURL",userProfileImage.getFileUrl());
+	        	else {
+	        		map.put("profileImageURL","");
+	        	}
+	        } catch(Exception exp) {
+	        	exp.printStackTrace();
+	        }
+	        List<Object> orgs = clientService.getAllCorporateAccounts(clientUser.getClientId());
+	        
+	        map.put("corporateAccounts", orgs);
+	        
+	        searchedClientUsers.add(map);
+		}
+		return searchedClientUsers;
+	}
+
+	private List<Object> getVendorUsersByKeywords(String emailKeyword,String fnameKeyword,String lnameKeyword) {
+		// TODO Auto-generated method stub
+		List<VendorUser> vendorUsers = vendorUserRepository.findAllByKeywords(emailKeyword, fnameKeyword, lnameKeyword);
+		List<Object> searchedVendorUsers = new ArrayList();
+		
+		for(VendorUser vendorUser : vendorUsers) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorUser, Map.class);
+	        
+	        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
+	        
+	        if(userProfileImage != null) {
+	        	map.put("profileImageURL",userProfileImage.getFileUrl());
+	        } else {
+	        	map.put("profileImageURL","");
+	        }
+	        
+	        searchedVendorUsers.add(map);
+		}
+		
+		return searchedVendorUsers;
+	}
+	
 }
