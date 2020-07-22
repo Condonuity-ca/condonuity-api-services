@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
 import tech.torbay.userservice.constants.Constants.Invalid;
 import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.ProjectPostType;
@@ -2423,8 +2424,13 @@ public class UserService {
 		String email = String.valueOf(requestData.get("email"));
 		String firstName = String.valueOf(requestData.get("firstName"));
 		String lastName = String.valueOf(requestData.get("lastName"));
-		String phone = String.valueOf(requestData.get("phone"));
-		int userType = Integer.parseInt(String.valueOf(requestData.get("userType")));
+		String phone = "";
+		try {
+			phone = String.valueOf(requestData.get("phone"));
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		String userType = String.valueOf(requestData.get("userType"));
 		
 		String emailKeyword = "%"+email+"%";
 		String fnameKeyword = "%"+firstName+"%";
@@ -2436,72 +2442,146 @@ public class UserService {
 		
 		List<Integer> projectStatusCodes = new ArrayList();
 		
-		if(userType == 1) {
-			resultObj.put("clientUsers",getClientUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword, phoneKeyword));
+		if(userType.equals("1")) {
+			resultObj.put("clientUsers",getClientUsersByKeywords(email, firstName, lastName, phone));
 			resultObj.put("vendorUsers","[]");
 			return resultObj;
-		} else if(userType == 2) {
+		} else if(userType.equals("2")) {
 			resultObj.put("clientUsers","[]");
-			resultObj.put("vendorUsers",getVendorUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword));
+			resultObj.put("vendorUsers",getVendorUsersByKeywords(email, firstName, lastName));
 			return resultObj;
 		} else {
-			resultObj.put("clientUsers",getClientUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword, phoneKeyword));
-			resultObj.put("vendorUsers",getVendorUsersByKeywords(emailKeyword, fnameKeyword, lnameKeyword));
+			resultObj.put("clientUsers",getClientUsersByKeywords(email, firstName, lastName, phone));
+			resultObj.put("vendorUsers",getVendorUsersByKeywords(email, firstName, lastName));
 			return resultObj;
 		}
 	}
 	
 	private List<Object> getClientUsersByKeywords(String emailKeyword,String fnameKeyword,String lnameKeyword,String phoneKeyword) {
-		// TODO Auto-generated method stub
-		List<ClientUser> clientUsers = clientUserRepository.findAllByKeywords(emailKeyword, fnameKeyword, lnameKeyword, phoneKeyword);
 		List<Object> searchedClientUsers = new ArrayList();
 		
+//		List<ClientUser> clientUsers = clientUserRepository.findAllByDeleteStatus(DeleteStatus.ACTIVE.getValue());
+		List<ClientUser> clientUsers = clientUserRepository.findAll();
+		
 		for(ClientUser clientUser : clientUsers) {
-			ObjectMapper oMapper = new ObjectMapper();
-	        // object -> Map
-	        Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
-	        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
-	        
-	        try {
-	        	if(userProfileImage != null)
-	        		map.put("profileImageURL",userProfileImage.getFileUrl());
-	        	else {
-	        		map.put("profileImageURL","");
+			
+	        boolean isEmailContain = false;
+	        boolean isFNameContain = false;
+	        boolean isLNameContain = false;
+	        boolean isPhoneContain = false;
+	        int paramCount = 4;
+	        if(emailKeyword.trim().length() > 0) {
+	        	if(clientUser.getEmail().contains(emailKeyword.trim())) {
+	        		isEmailContain = true;
 	        	}
-	        } catch(Exception exp) {
-	        	exp.printStackTrace();
+			} else {
+				isEmailContain = true;
+				paramCount--;
+			}
+	        if(fnameKeyword.trim().length() > 0) {
+	        	if(clientUser.getFirstName().contains(fnameKeyword.trim())) {
+	        		isFNameContain = true;
+	        	}
+			} else {
+				isFNameContain = true;
+				paramCount--;
+			}
+	        if(lnameKeyword.trim().length() > 0) {
+	        	if(clientUser.getLastName().contains(lnameKeyword.trim())) {
+	        		isLNameContain = true;
+	        	}
+			} else {
+				isLNameContain = true;
+				paramCount--;
+			}
+	        if(phoneKeyword.trim().length() > 0) {
+	        	if(clientUser.getPhone().contains(phoneKeyword.trim())) {
+	        		isPhoneContain = true;
+	        	}
+			} else {
+				isPhoneContain = true;
+				paramCount--;
+			}
+	        
+	        if(isEmailContain && isFNameContain && isLNameContain && isPhoneContain && paramCount > 0) {
+	        	ObjectMapper oMapper = new ObjectMapper();
+		        // object -> Map
+		        Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
+		        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientUser.getClientId(), Constants.UserType.CLIENT.getValue());
+		        
+		        try {
+		        	if(userProfileImage != null)
+		        		map.put("profileImageURL",userProfileImage.getFileUrl());
+		        	else {
+		        		map.put("profileImageURL","");
+		        	}
+		        } catch(Exception exp) {
+		        	exp.printStackTrace();
+		        }
+		        List<Object> orgs = clientService.getAllCorporateAccounts(clientUser.getClientId());
+		        
+		        map.put("corporateAccounts", orgs);
+
+	        	searchedClientUsers.add(map);
 	        }
-	        List<Object> orgs = clientService.getAllCorporateAccounts(clientUser.getClientId());
-	        
-	        map.put("corporateAccounts", orgs);
-	        
-	        searchedClientUsers.add(map);
-		}
+		} 
 		return searchedClientUsers;
 	}
-
+	
 	private List<Object> getVendorUsersByKeywords(String emailKeyword,String fnameKeyword,String lnameKeyword) {
-		// TODO Auto-generated method stub
-		List<VendorUser> vendorUsers = vendorUserRepository.findAllByKeywords(emailKeyword, fnameKeyword, lnameKeyword);
+		List<VendorUser> vendorUsers = vendorUserRepository.findAllByDeleteStatus(DeleteStatus.ACTIVE.getValue());
 		List<Object> searchedVendorUsers = new ArrayList();
 		
 		for(VendorUser vendorUser : vendorUsers) {
-			ObjectMapper oMapper = new ObjectMapper();
-	        // object -> Map
-	        Map<String, Object> map = oMapper.convertValue(vendorUser, Map.class);
+			boolean isEmailContain = false;
+	        boolean isFNameContain = false;
+	        boolean isLNameContain = false;
+	        int paramCount = 3;
+	        if(emailKeyword.trim().length() > 0) {
+	        	if(vendorUser.getEmail().contains(emailKeyword.trim())) {
+	        		isEmailContain = true;
+	        	}
+			} else {
+				isEmailContain = true;
+				paramCount--;
+			}
+	        if(fnameKeyword.trim().length() > 0) {
+	        	if(vendorUser.getFirstName().contains(fnameKeyword.trim())) {
+	        		isFNameContain = true;
+	        	}
+			} else {
+				isFNameContain = true;
+				paramCount--;
+			}
+	        if(lnameKeyword.trim().length() > 0) {
+	        	if(vendorUser.getLastName().contains(lnameKeyword.trim())) {
+	        		isLNameContain = true;
+	        	}
+			} else {
+				isLNameContain = true;
+				paramCount--;
+			}
 	        
-	        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
-	        
-	        if(userProfileImage != null) {
-	        	map.put("profileImageURL",userProfileImage.getFileUrl());
-	        } else {
-	        	map.put("profileImageURL","");
+	        if(isEmailContain && isFNameContain && isLNameContain && paramCount > 0) {
+	        	ObjectMapper oMapper = new ObjectMapper();
+		        // object -> Map
+		        Map<String, Object> map = oMapper.convertValue(vendorUser, Map.class);
+		        
+		        UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
+		        
+		        if(userProfileImage != null) {
+		        	map.put("profileImageURL",userProfileImage.getFileUrl());
+		        } else {
+		        	map.put("profileImageURL","");
+		        }
+		        map.remove("vendorOrganisationId");
+		        map.put("vendorOrganisation",vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId()));
+		        
+		        searchedVendorUsers.add(map);
 	        }
-	        
-	        searchedVendorUsers.add(map);
+			
 		}
 		
 		return searchedVendorUsers;
 	}
-	
 }

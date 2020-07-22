@@ -55,9 +55,5 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 			, nativeQuery = true)
 	List<VendorUser> findAllByKeyword(String keyword);
 
-	@Query(value = "SELECT vu.* FROM condonuitydev.vendor_user vu where " + 
-			"concat (vu.first_name, '.', vu.last_name, '.', vu.email, '.', vu.created_at, '.', vu.modified_date)" + 
-			" LIKE (?1) "
-			, nativeQuery = true)
-	List<VendorUser> findAllByKeywords(String emailKeyword, String fnameKeyword, String lnameKeyword);
+	List<VendorUser> findAllByDeleteStatus(int value);
 }
