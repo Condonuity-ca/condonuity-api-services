@@ -147,12 +147,19 @@ public class UserController {
 										
 										return new ResponseEntity<>(list, HttpStatus.OK);
 									} else {
-										ResponseMessage responseMessage = new ResponseMessage(
-												APIStatusCode.INACTIVE_USER.getValue(),
-								        		"Failed",
-								        		"User Account Deleted");
-										return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+//										ResponseMessage responseMessage = new ResponseMessage(
+//												APIStatusCode.INACTIVE_USER.getValue(),
+//								        		"Failed",
+//								        		"User Account Deleted");
+//										return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+										HashMap<String, Object> list = new HashMap();
+										list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+										list.put("statusMessage", "Failed");
+										list.put("responseMessage", "User Account Deleted");
+										list.put("userId", clientInfo.getClientId());
+										list.put("userType", UserType.CLIENT.getValue());
 										
+										return new ResponseEntity<>(list, HttpStatus.OK);
 									}
 									
 								} else {
@@ -219,19 +226,34 @@ public class UserController {
 									list.put("authToken", Token);
 									return new ResponseEntity<>(list, HttpStatus.OK);
 								} else {
-									ResponseMessage responseMessage = new ResponseMessage(
-											APIStatusCode.INACTIVE_USER.getValue(),
-							        		"Failed",
-							        		"User Account Deleted");
-									return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+//									ResponseMessage responseMessage = new ResponseMessage(
+//											APIStatusCode.INACTIVE_USER.getValue(),
+//							        		"Failed",
+//							        		"User Account Deleted");
+//									return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+									
+									HashMap<String, Object> list = new HashMap();
+									list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+									list.put("statusMessage", "Failed");
+									list.put("responseMessage", "User Account Deleted");
+									list.put("userId", vendorUserInfo.getUserId());
+									list.put("userType", vendorUserInfo.getUserType());
+									return new ResponseEntity<>(list, HttpStatus.OK);
 								}
 								
 							} else {
-								ResponseMessage responseMessage = new ResponseMessage(
-										APIStatusCode.INACTIVE_USER.getValue(),
-						        		"Failed",
-						        		"Inactive User Information");
-								return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+//								ResponseMessage responseMessage = new ResponseMessage(
+//										APIStatusCode.INACTIVE_USER.getValue(),
+//						        		"Failed",
+//						        		"Inactive User Information");
+//								return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+								HashMap<String, Object> list = new HashMap();
+								list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+								list.put("statusMessage", "Failed");
+								list.put("responseMessage", "Inactive User Information");
+								list.put("userId", vendorUserInfo.getUserId());
+								list.put("userType", vendorUserInfo.getUserType());
+								return new ResponseEntity<>(list, HttpStatus.OK);
 							}
 						} else {
 //							ResponseMessage responseMessage = new ResponseMessage(

@@ -170,10 +170,10 @@ public class VendorController {
 		
 		Integer vendorId = Integer.parseInt(String.valueOf(requestData.get("vendorId")));
 		
-		VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId);
 		HashMap<String, Object> response = new HashMap();
     	
     	if(vendorService.getUsersCountByOrganisationId(vendorId) > 1) {
+    		VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId);
     		if(vendorUser != null) {
     			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
     			response.put("statusMessage", "Success");

@@ -772,7 +772,7 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		
 		ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(id, clientOrgId);
-//		clientAssociate.setAccountVerificationStatus(); --> Need to check , is it has changes?
+//		clientAssociate.setAccountVerificationStatus(); --> Need to check , is it has changes? -no
 		clientAssociate.setUserAccountStatus(UserAccountStatus.INACTIVE.getValue());
 //		clientAssociate.setDeleteStatus(UserAccountStatus.INACTIVE.getValue());
 		
@@ -793,8 +793,8 @@ public class ClientService {
 	public Object saveClientUserRole(Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
 		Integer clientUserId = Integer.parseInt(String.valueOf(requestData.get("clientUserId")));
-		String firstName = String.valueOf(requestData.get("firstName"));
-		String lastName = String.valueOf(requestData.get("lastName"));
+//		String firstName = String.valueOf(requestData.get("firstName"));
+//		String lastName = String.valueOf(requestData.get("lastName"));
     	Integer clientOrgId = Integer.parseInt(String.valueOf(requestData.get("clientOrgId")));
     	Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
     	Integer clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
@@ -809,8 +809,8 @@ public class ClientService {
     	
     	ClientUser client = clientUserRepository.findByClientId(clientUserId);
     	
-    	client.setFirstName(firstName);
-    	client.setLastName(lastName);
+//    	client.setFirstName(firstName);
+//    	client.setLastName(lastName);
     	
     	clientUserRepository.save(client);
     	
