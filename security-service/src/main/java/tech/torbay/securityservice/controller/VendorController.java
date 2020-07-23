@@ -333,6 +333,7 @@ public class VendorController {
 				
 				vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
 				vendorUser.setAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+				vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
 				
 				vendorUser = vendorService.saveVendorUser(vendorUser);
 				
@@ -388,10 +389,24 @@ public class VendorController {
 	        		"Vendor User Already Exists");
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		} else {
+			User existUser= userService.findByEmail(vendorUser.getEmail());
+			if(existUser != null && existUser.getUserType() == UserType.VENDOR.getValue()) {
+				HashMap<String, Object> list = new HashMap();
+				
+				list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+				list.put("statusMessage", "Failed");
+				list.put("responseMessage", "Client User Record Already Exists");
+				list.put("userId",existUser.getUserId());
+				list.put("userType",existUser.getUserType());
+				
+	        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+			}
+
 			List<VendorUser> vendorUsers = vendorService.getAllVendorUsersInOrganisation(vendorUser.getVendorOrganisationId());
 			if(vendorUsers.size() < Constants.MAX_USER_COUNT) {
 				vendorUser.setUserType(Constants.UserType.VENDOR.getValue());
 				vendorUser.setAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
+				vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
 				VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
 				VendorOrganisation vendorOrg = vendorService.getVendorOrganisationById(vendorUser.getVendorOrganisationId());
 				

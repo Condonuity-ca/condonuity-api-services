@@ -152,14 +152,19 @@ public class UserController {
 								        		"Failed",
 								        		"User Account Deleted");
 										return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+										
 									}
 									
 								} else {
-									ResponseMessage responseMessage = new ResponseMessage(
-											APIStatusCode.NO_ACTIVE_ORGANISATION_FOUND.getValue(),
-							        		"Failed",
-							        		"There is no active Organisation for this Client");
-									return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+									HashMap<String, Object> list = new HashMap();
+									list.put("statusCode", APIStatusCode.NO_ACTIVE_ORGANISATION_FOUND.getValue());
+									list.put("statusMessage", "Failed");
+									list.put("responseMessage", "There is no active Organisation for this Client");
+									list.put("userDetails", clientInfo);
+									list.put("userProfileImage", userService.getUserProfileImage(clientInfo.getClientId(), UserType.CLIENT.getValue()));
+									list.put("authToken", Token);
+									
+									return new ResponseEntity<>(list, HttpStatus.OK);
 								}
 						} else {
 //								ResponseMessage responseMessage = new ResponseMessage(
@@ -304,11 +309,20 @@ public class UserController {
 					}
 				}
 			} else {
-				ResponseMessage responseMessage = new ResponseMessage(
-						APIStatusCode.AUTHENTICATION_FAILED.getValue(),
-		        		"Failed",
-		        		"Invalid Credentials");
-				return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+//				ResponseMessage responseMessage = new ResponseMessage(
+//						APIStatusCode.AUTHENTICATION_FAILED.getValue(),
+//		        		"Failed",
+//		        		"Invalid Credentials");
+//				return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+				User userObj = userService.findByEmail(user.getUsername());
+				HashMap<String, Object> list = new HashMap();
+				list.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue());
+				list.put("statusMessage", "Failed");
+				list.put("responseMessage", "Invalid Credentials");
+				list.put("userId", userObj.getUserId());
+				list.put("userType", userObj.getUserType());
+				
+				return new ResponseEntity<>(list, HttpStatus.OK);
 			}
 		} catch(Exception exp) {
 			exp.printStackTrace();
@@ -399,7 +413,7 @@ public class UserController {
 //						response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
 //						Action
 						try {
-							sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());
+//							sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());// no need
 						} catch(Exception exp) {
 							exp.printStackTrace();
 						}
