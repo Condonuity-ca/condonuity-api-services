@@ -59,7 +59,7 @@ public class Utils {
 		Date date = new Date();
 		
 		long apiExpiryDateTime = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE))
-				/* .plusHours(Constants.EXPIRY_DURATION) */.toInstant().toEpochMilli();
+				 .plusDays(Constants.EXPIRY_DURATION_IN_DAYS) .toInstant().toEpochMilli();
 		
 //		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		df.setTimeZone(TimeZone.getTimeZone(Constants.TIME_ZONE));
@@ -68,6 +68,33 @@ public class Utils {
 		System.out.println("apiExpiryDateTime :"+ apiExpiryDateTime);
 		
 		return String.valueOf(apiExpiryDateTime);
+	}
+
+	public static boolean checkLinkIsExpired(String expiryTime) {
+		
+		try {
+			Date date = new Date();
+			
+			long todayDateTimeInMillis = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE))
+					/* .plusHours(Constants.EXPIRY_DURATION) */.toInstant().toEpochMilli();
+			
+			long expiryTimeInMillis = Long.parseLong(expiryTime);
+	//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	//		df.setTimeZone(TimeZone.getTimeZone(Constants.TIME_ZONE));
+	//		String apiExpiryDateTime = df.format(localDateTime);
+			
+			System.out.println("todayDateTimeInMillis :"+ todayDateTimeInMillis);
+			System.out.println("expiryTimeInMillis :"+ expiryTimeInMillis);
+			
+			if(todayDateTimeInMillis > expiryTimeInMillis) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return true;
+		}
 	}
 
 }

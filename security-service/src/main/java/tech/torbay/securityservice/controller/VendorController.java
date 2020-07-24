@@ -451,7 +451,15 @@ public class VendorController {
 		// TODO Auto-generated method stub
 //		String content = securityAES.getRegisterEncodedURL(vendorUser.getEmail(), vendorUser.getUserId(), Constants.UserType.VENDOR.getValue());
 		
-		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
+		HashMap<String, Object> userObj = new HashMap();
+		
+		userObj.put("email", vendorUser.getEmail());
+		userObj.put("userId", vendorUser.getUserId());
+		userObj.put("userType", Constants.UserType.VENDOR.getValue());
+		userObj.put("expiry", Utils.getLinkValidityTime());
+		
+//		String responseJsonString = Utils.ClasstoJsonString(vendorUser);
+		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
 		
 		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()
@@ -487,6 +495,7 @@ public class VendorController {
 		userObj.put("userType", Constants.UserType.VENDOR.getValue());
 		userObj.put("organisationId", organisationId);
 		userObj.put("organisationName", organisationName);
+		userObj.put("expiry", Utils.getLinkValidityTime());
 		
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		
@@ -521,7 +530,7 @@ public class VendorController {
             }
     )
 	@PostMapping("/vendor/user/registration/email")
-	public ResponseEntity<Object> vendorUserExists(@RequestBody VendorUser vendor) {
+	public ResponseEntity<Object> resendRegistrationEmail(@RequestBody VendorUser vendor) {
 		VendorUser vendorUser = vendorService.findByVendorUserId(vendor.getUserId());
 		
 		if(vendorUser != null ) {

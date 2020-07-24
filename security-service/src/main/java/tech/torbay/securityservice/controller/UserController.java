@@ -57,6 +57,7 @@ import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
+import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.SupportUser;
 import tech.torbay.securityservice.entity.User;
@@ -429,9 +430,11 @@ public class UserController {
 						
 						HashMap<String, Object> response = new HashMap();
 						
-						response.put("statusCode", APIStatusCode.AUTHENTICATION_FAILED.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);
+						response.put("statusCode", APIStatusCode.RESET_PASSWORD.getValue());
 						response.put("statusMessage", "User need to set New Password");
 						response.put("responseMessage", "Please reset your password");
+						response.put("userId", user.getUserId());
+						response.put("userType", user.getUserType());
 //						response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
 //						Action
 						try {
@@ -936,5 +939,61 @@ public class UserController {
 		public ResponseEntity<Object> getDecryptPassword(@PathVariable("password") String password) {
 		
 		 	return new ResponseEntity<Object>(SecurityAES.decrypt(password), HttpStatus.OK);
+		}
+		
+		@ApiOperation(value = "Client Already registered an Organisation or Not check")
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(code = 200, message = "Client Organisation Duplicate registration check")
+	            }
+	    )
+		@PostMapping("user/org/register/hash")
+		public ResponseEntity<Object> checkDuplicateRegistration(
+				@RequestBody Map<String, Object> requestData) {
+			
+			try {
+				String hash = String.valueOf(requestData.get("hash"));
+				
+				String decryptedUser = SecurityAES.decrypt(hash);
+
+				System.out.println("decrypt hash :"+hash);
+				
+				Map<String, Object> userData;
+				
+				userData = Utils.convertJsonToHashMap(decryptedUser);
+				String expiry = String.valueOf(userData.get("expiry"));
+				Integer clientUserId = Integer.parseInt(String.valueOf(userData.get("userId")));
+				
+				if (Utils.checkLinkIsExpired(expiry)) {
+					ResponseMessage responseMessage = new ResponseMessage(
+		        			APIStatusCode.LINK_EXPIRED.getValue(),
+		        			"Failed",
+		        			"Registration/Invite Link Expired");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+				}
+				List<RegistrationLogs> registrationLogs = clientService.checkRegistrationLog(clientUserId);
+				if(registrationLogs != null && registrationLogs.size() > 0) {
+					ResponseMessage responseMessage = new ResponseMessage(
+		        			APIStatusCode.REQUEST_FAILED.getValue(),
+		        			"Failed",
+		        			"Client User Already Registered Organisation using Hash");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(
+		        			APIStatusCode.REQUEST_SUCCESS.getValue(),
+		        			"Success",
+		        			"Client User Not Registered any Organisation using Hash");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.BAD_REQUEST.getValue(),
+	        			"Failed",
+	        			"Failed to Parse Request - Bad Request");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+			
 		}
 }

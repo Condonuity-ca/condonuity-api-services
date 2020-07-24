@@ -541,6 +541,7 @@ public class ClientController {
 		userObj.put("email", clientUser.getEmail());
 		userObj.put("userId", clientUser.getClientId());
 		userObj.put("userType", Constants.UserType.CLIENT.getValue());
+		userObj.put("expiry", Utils.getLinkValidityTime());
 		
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
@@ -579,6 +580,7 @@ public class ClientController {
 		userObj.put("userType", Constants.UserType.CLIENT.getValue());
 		userObj.put("organisationId", organisationId);
 		userObj.put("organisationName", organisationName);
+		userObj.put("expiry", Utils.getLinkValidityTime());
 		
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		
@@ -619,6 +621,7 @@ public class ClientController {
 		userObj.put("userType", Constants.UserType.CLIENT.getValue());
 		userObj.put("organisationId", organisationId);
 		userObj.put("organisationName", organisationName);
+		userObj.put("expiry", Utils.getLinkValidityTime());
 		
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		
@@ -654,7 +657,7 @@ public class ClientController {
             }
     )
 	@PostMapping("/client/user/registration/email")
-	public ResponseEntity<Object> vendorUserExists(@RequestBody ClientUser client) {
+	public ResponseEntity<Object> resendRegistrationEmail(@RequestBody ClientUser client) {
 		ClientUser clientUser = clientService.findById(client.getClientId());
 		
 		if(clientUser != null ) {

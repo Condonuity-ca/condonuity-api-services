@@ -8,7 +8,7 @@ public class Constants {
 	
 	public static final Integer MAX_USER_COUNT = 12;
 	public static final String TIME_ZONE = "Europe/London";
-	public static final long EXPIRY_DURATION = 24;
+	public static final long EXPIRY_DURATION_IN_DAYS = 7;
 
 	public enum UserType {
 	    CLIENT(1),
@@ -116,7 +116,9 @@ public class Constants {
 		INACTIVE_USER(7),
 		ORGANISATION_NOT_FOUND(8),
 		NO_ACTIVE_ORGANISATION_FOUND(9), 
-		MAX_USERS_COUNT_ERROR(7);
+		MAX_USERS_COUNT_ERROR(7),
+		RESET_PASSWORD(5),
+		LINK_EXPIRED(5);
 	    
 	    private int value;
 	    private static Map map = new HashMap<>();
