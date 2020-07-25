@@ -947,7 +947,7 @@ public class UserController {
 	                    @ApiResponse(code = 200, message = "Client Organisation Duplicate registration check")
 	            }
 	    )
-		@PostMapping("user/org/register/hash")
+		@PostMapping("/user/org/register/hash")
 		public ResponseEntity<Object> checkDuplicateRegistration(
 				@RequestBody Map<String, Object> requestData) {
 			

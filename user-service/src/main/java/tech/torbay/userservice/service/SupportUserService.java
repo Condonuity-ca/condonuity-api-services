@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.DeleteStatus;
+import tech.torbay.userservice.constants.Constants.OrganisationAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.email.SpringBootEmail;
@@ -94,6 +95,92 @@ public class SupportUserService {
 	PredefinedTagsRepository predefinedTagsRepository;
 	@Autowired
 	SupportUserLogsRepository supportUserLogsRepository;
+	
+	public boolean updateOrganisationApprovalStatus(Integer organisationId, Integer userType, Integer approvalStatus, Integer supportUserId) {
+		// TODO Auto-generated method stub
+		
+		updateLogs(supportUserId, "Organisation", approvalStatus, organisationId, userType);
+		
+		String emailContentOrganisation = "";
+		String emailContentUSER = "";
+		if(approvalStatus == OrganisationAccountStatus.APPROVED.getValue()) {
+			emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_APPROVAL_ALERT;
+		} else if (approvalStatus == OrganisationAccountStatus.REJECTED.getValue()) {
+			emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_REJECT_ALERT;
+		}
+		
+		if(approvalStatus == DeleteStatus.ACTIVE.getValue()) {
+			emailContentUSER = Constants.USER_ACCOUNT_ACTIVE_ALERT;
+		} else if (approvalStatus == DeleteStatus.INACTIVE.getValue()) {
+			emailContentUSER = Constants.USER_ACCOUNT_REMOVE_ALERT;
+		}
+		
+		if(userType == UserType.CLIENT.getValue()) {
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(organisationId);
+			switch(approvalStatus) {
+				case 1:{//DeleteStatus.ACTIVE.getValue()
+					clientOrganisation.setActiveStatus(OrganisationAccountStatus.APPROVED.getValue());
+					break;
+				}
+				case 2:{//DeleteStatus.INACTIVE.getValue()
+					clientOrganisation.setActiveStatus(OrganisationAccountStatus.REJECTED.getValue());
+					break;
+				}
+			}
+			
+			ClientOrganisation ClientOrganisationObj = clientOrganisationRepository.save(clientOrganisation);
+			
+			//Update via Email and User as Inactive
+			if(ClientOrganisationObj != null) {
+				
+				SendOrganisationAlertEmailForRemovalFromSystem(ClientOrganisationObj.getManagementEmail(), ClientOrganisationObj.getOrganisationName(), emailContentOrganisation );
+				
+				clientAssociationRepository.setDeleteStatusByClientOrganisationId(approvalStatus, organisationId);
+				
+				List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(organisationId);
+				for (ClientAssociation clientAssociation : clientAssociations) {
+					
+					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
+					List<String> org = new ArrayList<>();
+					org.add(ClientOrganisationObj.getOrganisationName());
+					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
+				}
+				
+				return true;
+			}
+		} else if(userType == UserType.VENDOR.getValue()) {
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(organisationId);
+			switch(approvalStatus) {
+				case 1:{//DeleteStatus.ACTIVE.getValue()
+					vendorOrganisation.setActiveStatus(OrganisationAccountStatus.APPROVED.getValue());
+					break;
+				}
+				case 2:{//DeleteStatus.INACTIVE.getValue()
+					vendorOrganisation.setActiveStatus(OrganisationAccountStatus.REJECTED.getValue());
+					break;
+				}
+			}
+			
+			VendorOrganisation vendorOrganisationObj = vendorOrganisationRepository.save(vendorOrganisation);
+			
+			if(vendorOrganisationObj != null) {
+				
+				SendOrganisationAlertEmailForRemovalFromSystem(vendorOrganisationObj.getEmail(), vendorOrganisationObj.getCompanyName(), emailContentOrganisation );
+				
+				vendorUserRepository.setDeleteStatusByVendorOrganisationId(approvalStatus, organisationId);
+				
+				List<VendorUser> vendorUsers = vendorUserRepository.findAllActiveUsersByVendorOrganisationId(organisationId);
+				
+				for(VendorUser vendorUser : vendorUsers) {
+					List<String> org = new ArrayList<>();
+					org.add(vendorOrganisationObj.getCompanyName());
+					SendUserAlertEmailForRemovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER );
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public boolean updateOrganisationActivationStatus(Integer organisationId, Integer userType, Integer activeStatus, Integer supportUserId) {
 		// TODO Auto-generated method stub

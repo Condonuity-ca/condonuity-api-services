@@ -62,6 +62,37 @@ public class SupportUserController {
                     @ApiResponse(code = 200, message = "Organisation Activation / De-Activation implementation")
             }
     )
+	@PutMapping("/support/organisation/approval/status")
+	private ResponseEntity<Object> UpdateOragnisationApprovalStatus(@RequestBody Map<String, Object> requestData) {
+		// TODO Auto-generated method stub
+		
+		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
+		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
+		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("approvalStatus")));
+		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
+		
+		
+		if (!supportUserService.updateOrganisationApprovalStatus(organisationId, userType, activeStatus, supportUserId)) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to update approval of Organisation");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Orgnisation Approved Successfully");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    }
+	}
+	
+	@ApiOperation(value = "Organisation Activation / De-Activation implementation by Support User and alerts using Email")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Organisation Activation / De-Activation implementation")
+            }
+    )
 	@PutMapping("/support/organisation/status")
 	private ResponseEntity<Object> UpdateOragnisationActivationStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub

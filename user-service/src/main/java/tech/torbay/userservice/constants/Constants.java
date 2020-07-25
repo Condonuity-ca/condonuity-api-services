@@ -11,6 +11,8 @@ public class Constants {
 	public static final String USER_ACCOUNT_ACTIVE_ALERT = "User Account Status Changed to Active By Admin";
 	public static final String ORGANISATION_ACCOUNT_REMOVE_ALERT = "Organisation Account Deleted From the System By Admin";
 	public static final String ORGANISATION_ACCOUNT_ACTIVE_ALERT = "Organisation Account Status Changed to Active By Admin";
+	public static final String ORGANISATION_ACCOUNT_APPROVAL_ALERT = "Organisation Account Status Changed to APPROVED By Admin";
+	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT = "Organisation Account Status Changed to REJECTED By Admin";
 	public static final long EXPIRY_DURATION = 24;
 
 	public enum UserType {
@@ -159,8 +161,8 @@ public class Constants {
 	
 	public enum OrganisationAccountStatus {
 	    REGISTERED(0),
-	    ACTIVE(1),
-	    INACTIVE(2);
+	    APPROVED(1),
+	    REJECTED(2);
 
 	    private int value;
 	    private static Map map = new HashMap<>();

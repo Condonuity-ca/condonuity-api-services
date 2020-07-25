@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
+import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
@@ -97,6 +98,7 @@ public class UserService {
 
 				vendorUser.setFirstName(firstName);
 				vendorUser.setLastName(lastName);
+//				vendorUser.setAccountVerificationStatus(UserAccountStatus.ACTIVE.getValue());// no need until org register
 
 				vendorUserRepository.save(vendorUser);
 			}
