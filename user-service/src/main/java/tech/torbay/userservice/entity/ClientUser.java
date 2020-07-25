@@ -24,6 +24,7 @@ import javax.validation.constraints.Email;
 import org.hibernate.annotations.NaturalId;
 
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
 
 @Entity
 @Table(name="client_user")
@@ -62,6 +63,8 @@ public class ClientUser {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
+    
+    private Integer deleteStatus = DeleteStatus.NOT_AVAILABLE.getValue();
     
 //    @OneToMany(
 //            mappedBy = "clientUser",
@@ -187,12 +190,20 @@ public class ClientUser {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+
 	@Override
 	public String toString() {
 		return "ClientUser [clientId=" + clientId + ", email=" + email + ", firstName=" + firstName + ", LastName="
 				+ LastName + ", legalName=" + legalName + ", city=" + city + ", phone=" + phone + ", countryCode="
 				+ countryCode + ", userType=" + userType + ", primaryOrgId=" + primaryOrgId + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + "]";
+				+ ", modifiedDate=" + modifiedDate + ", deleteStatus=" + deleteStatus + "]";
 	}
 	
 

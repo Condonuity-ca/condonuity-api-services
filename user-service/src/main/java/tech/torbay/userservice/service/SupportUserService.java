@@ -298,7 +298,7 @@ public class SupportUserService {
 	}
 
 
-	public boolean updateUserActivationStatus(Integer userId, Integer organisationId, Integer userType,
+	public boolean updateUserActivationStatus(Integer userId, /* Integer organisationId, */ Integer userType,
 			Integer activeStatus, Integer supportUserId) {
 		// TODO Auto-generated method stub
 		updateLogs(supportUserId, "User", activeStatus, userId, userType);
@@ -314,6 +314,7 @@ public class SupportUserService {
 //			int isUpdated = clientAssociationRepository.setDeleteStatusByClientIdAndClientOrganisationId(activeStatus, userId, organisationId);
 			//all-organisations
 			int isUpdated = clientAssociationRepository.setDeleteStatusByClientId(activeStatus, userId);
+			int isUpdatedUser = clientUserRepository.setDeleteStatusByClientId(activeStatus, userId);
 			
 			if(isUpdated > 0) {
 				ClientUser clientUser = clientUserRepository.findByClientId(userId);
@@ -325,7 +326,8 @@ public class SupportUserService {
 				
 			}
 		} else if(userType == UserType.VENDOR.getValue()) {
-			int isUpdated = vendorUserRepository.setDeleteStatusByVendorIdAndVendorOrganisationId(activeStatus, userId, organisationId);
+			int isUpdated = vendorUserRepository.setDeleteStatusByVendorId/* AndVendorOrganisationId */(activeStatus,
+					userId/* , organisationId */);
 			
 			if(isUpdated > 0) {
 				VendorUser vendorUser = vendorUserRepository.findByUserId(userId);

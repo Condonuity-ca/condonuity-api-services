@@ -133,7 +133,18 @@ public class UserController {
 					
 					ClientUser clientInfo = clientService.findById(userInfo.getUserId());
 					logger.info("clientInfo : "+clientInfo);
-					if(clientInfo != null) { 
+					if(clientInfo != null ) {
+						
+						if(clientInfo.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+							HashMap<String, Object> list = new HashMap();
+							list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+							list.put("statusMessage", "Failed");
+							list.put("responseMessage", "User Account Deleted");
+							list.put("userId", clientInfo.getClientId());
+							list.put("userType", UserType.CLIENT.getValue());
+							
+							return new ResponseEntity<>(list, HttpStatus.OK);
+						}
 						if(clientService.getAllOrganisationsForClientUser(clientInfo.getClientId()) > 0) {
 								
 								if(clientService.checkIsClientActiveAtlestOneAccount(clientInfo.getClientId())) {

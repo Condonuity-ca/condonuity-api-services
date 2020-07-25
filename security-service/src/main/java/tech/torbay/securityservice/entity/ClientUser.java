@@ -21,6 +21,7 @@ import javax.validation.constraints.NotEmpty;
 import org.hibernate.annotations.NaturalId;
 
 import tech.torbay.securityservice.constants.Constants;
+import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 
 @Entity
 @Table(name="client_user")
@@ -52,6 +53,8 @@ public class ClientUser {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
+    
+    private Integer deleteStatus = DeleteStatus.NOT_AVAILABLE.getValue();
 //    @ManyToMany(cascade = CascadeType.ALL)
 //    @JoinTable(
 //    		name = "client_association", joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "client_id"), 
@@ -69,7 +72,14 @@ public class ClientUser {
 //    @OneToMany(mappedBy = "clientUser", cascade = CascadeType.ALL)
 //    private Set<ClientAssociation> clientAssociations;
     
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "client_association",
             joinColumns = {@JoinColumn(name = "client_id")},

@@ -98,7 +98,7 @@ public class UserService {
 
 				vendorUser.setFirstName(firstName);
 				vendorUser.setLastName(lastName);
-//				vendorUser.setAccountVerificationStatus(UserAccountStatus.ACTIVE.getValue());// no need until org register
+				vendorUser.setAccountVerificationStatus(UserAccountStatus.ACTIVE.getValue());// no need until org register
 
 				vendorUserRepository.save(vendorUser);
 			}

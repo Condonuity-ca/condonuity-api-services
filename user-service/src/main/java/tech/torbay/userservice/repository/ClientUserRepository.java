@@ -39,5 +39,10 @@ public interface ClientUserRepository extends JpaRepository<ClientUser, Integer>
 			" LIKE (?1) "
 			, nativeQuery = true)
     List<ClientUser> findAllByKeyword(String keyword);
+
+    @Modifying
+	@Transactional
+	@Query(value="UPDATE condonuitydev.client_user SET delete_status = (?1) WHERE client_id=(?2)", nativeQuery = true)
+	int setDeleteStatusByClientId(Integer activeStatus, Integer userId);
     
 }

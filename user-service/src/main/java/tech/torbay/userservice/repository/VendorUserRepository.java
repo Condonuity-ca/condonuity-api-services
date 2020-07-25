@@ -56,4 +56,10 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 	List<VendorUser> findAllByKeyword(String keyword);
 
 	List<VendorUser> findAllByDeleteStatus(int value);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE condonuitydev.vendor_user SET delete_status = (?1) WHERE user_id=(?2)", nativeQuery = true)
+	int setDeleteStatusByVendorId(Integer activeStatus, Integer userId);
+
 }

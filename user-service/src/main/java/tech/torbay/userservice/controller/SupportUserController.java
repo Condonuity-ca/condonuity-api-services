@@ -128,14 +128,14 @@ public class SupportUserController {
 	private ResponseEntity<Object> UpdateUserActivationStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
 		
-		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
+//		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 		Integer userId = Integer.parseInt(String.valueOf(requestData.get("userId")));
 		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
 		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
 		
 		
-		if (!supportUserService.updateUserActivationStatus(userId, organisationId, userType, activeStatus, supportUserId)) {
+		if (!supportUserService.updateUserActivationStatus(userId, /* organisationId, */ userType, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
