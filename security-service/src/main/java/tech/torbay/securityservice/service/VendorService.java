@@ -146,7 +146,7 @@ public class VendorService {
 				vendorUser.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 				vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
 				vendorUser.setAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
-				vendorUser.setDeleteStatus(Constants.DeleteStatus.INACTIVE.getValue());// login restrict until organisation verification done
+				vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());// login restrict until organisation verification done
 				
 				vendorUserRepository.save(vendorUser);
 				

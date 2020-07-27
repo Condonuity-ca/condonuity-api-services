@@ -49,6 +49,7 @@ import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
+import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.constants.Constants.VerificationStatus;
@@ -227,45 +228,71 @@ public class UserController {
 					if (vendorUserInfo != null ) {
 					
 						if(vendorUserInfo.getVendorOrganisationId() != null && vendorUserInfo.getVendorOrganisationId()  > 0) {
-							if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
-								if(vendorUserInfo.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
-									HashMap<String, Object> list = new HashMap();
-									list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
-									list.put("statusMessage", "Success");
-									list.put("responseMessage", "Vendor User details fetched successfully");
-									list.put("userDetails", vendorUserInfo);
-									list.put("userProfileImage", userService.getUserProfileImage(vendorUserInfo.getUserId(), UserType.VENDOR.getValue()));
-									list.put("authToken", Token);
-									return new ResponseEntity<>(list, HttpStatus.OK);
-								} else {
-//									ResponseMessage responseMessage = new ResponseMessage(
-//											APIStatusCode.INACTIVE_USER.getValue(),
-//							        		"Failed",
-//							        		"User Account Deleted");
-//									return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-									
-									HashMap<String, Object> list = new HashMap();
-									list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
-									list.put("statusMessage", "Failed");
-									list.put("responseMessage", "User Account Deleted");
-									list.put("userId", vendorUserInfo.getUserId());
-									list.put("userType", vendorUserInfo.getUserType());
-									return new ResponseEntity<>(list, HttpStatus.OK);
-								}
-								
-							} else {
-//								ResponseMessage responseMessage = new ResponseMessage(
-//										APIStatusCode.INACTIVE_USER.getValue(),
-//						        		"Failed",
-//						        		"Inactive User Information");
-//								return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-								HashMap<String, Object> list = new HashMap();
-								list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
-								list.put("statusMessage", "Failed");
-								list.put("responseMessage", "Inactive User Information");
-								list.put("userId", vendorUserInfo.getUserId());
-								list.put("userType", vendorUserInfo.getUserType());
-								return new ResponseEntity<>(list, HttpStatus.OK);
+							if(vendorOrgInfo.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+								if(vendorOrgInfo.getActiveStatus() == OrganisationAccountStatus.ACTIVE.getValue()) {
+									if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+										if(vendorUserInfo.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+											HashMap<String, Object> list = new HashMap();
+											list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+											list.put("statusMessage", "Success");
+											list.put("responseMessage", "Vendor User details fetched successfully");
+											list.put("userDetails", vendorUserInfo);
+											list.put("userProfileImage", userService.getUserProfileImage(vendorUserInfo.getUserId(), UserType.VENDOR.getValue()));
+											list.put("authToken", Token);
+											return new ResponseEntity<>(list, HttpStatus.OK);
+										} else {
+//											ResponseMessage responseMessage = new ResponseMessage(
+//													APIStatusCode.INACTIVE_USER.getValue(),
+//									        		"Failed",
+//									        		"User Account Deleted");
+//											return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+											
+											HashMap<String, Object> list = new HashMap();
+											list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+											list.put("statusMessage", "Failed");
+											list.put("responseMessage", "User Account Deleted");
+											list.put("userId", vendorUserInfo.getUserId());
+											list.put("userType", vendorUserInfo.getUserType());
+											return new ResponseEntity<>(list, HttpStatus.OK);
+										}
+										
+									} else {
+//										ResponseMessage responseMessage = new ResponseMessage(
+//												APIStatusCode.INACTIVE_USER.getValue(),
+//								        		"Failed",
+//								        		"Inactive User Information");
+//										return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+										HashMap<String, Object> list = new HashMap();
+										list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+										list.put("statusMessage", "Failed");
+										list.put("responseMessage", "Inactive User Information");
+										list.put("userId", vendorUserInfo.getUserId());
+										list.put("userType", vendorUserInfo.getUserType());
+										return new ResponseEntity<>(list, HttpStatus.OK);
+									}
+
+								 } else {
+									 	HashMap<String, Object> list = new HashMap();
+										list.put("statusCode", APIStatusCode.NO_ACTIVE_ORGANISATION_FOUND.getValue());
+										list.put("statusMessage", "Failed");
+										list.put("responseMessage", "There is no active Organisation for this Vendor");
+										list.put("userDetails", vendorUserInfo);
+										list.put("userProfileImage", userService.getUserProfileImage(vendorUserInfo.getUserId(), UserType.CLIENT.getValue()));
+										list.put("authToken", Token);
+										
+										return new ResponseEntity<>(list, HttpStatus.OK);
+								 }
+						
+						} else {
+							//organisation account deleted
+							HashMap<String, Object> list = new HashMap();
+							list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+							list.put("statusMessage", "Failed");
+							list.put("responseMessage", "Inactive Organisation Information");
+							list.put("userId", vendorUserInfo.getUserId());
+							list.put("userType", vendorUserInfo.getUserType());
+							list.put("organisationId", vendorUserInfo.getVendorOrganisationId());
+							return new ResponseEntity<>(list, HttpStatus.OK);
 							}
 						} else {
 //							ResponseMessage responseMessage = new ResponseMessage(
@@ -276,8 +303,7 @@ public class UserController {
 							// or
 							// send registration mail again to proceed registration
 							
-							
-							/*Hash Generation*/
+ 							/*Hash Generation*/
 							HashMap<String, Object> userObj = new HashMap();
 							
 							userObj.put("email", userInfo.getUsername());
