@@ -26,6 +26,8 @@ import tech.torbay.userservice.constants.Constants.ThreadType;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
+import tech.torbay.userservice.entity.Amenities;
+import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
@@ -55,6 +57,8 @@ import tech.torbay.userservice.entity.VendorProjectInterests;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
+import tech.torbay.userservice.repository.AmenitiesRepository;
+import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
 import tech.torbay.userservice.repository.ClientOrganisationProfileImagesRepository;
@@ -153,6 +157,12 @@ public class UserService {
 	UserProfileImagesRepository userProfileImagesRepository;
 	@Autowired
 	ServiceCitiesRepository servicesCitiesRepository;
+	@Autowired
+	ClientOrganisationProfileImagesRepository clientOrganisationProfileImageRepository;
+	@Autowired
+	ClientAmenitiesRepository clientAmenitiesRepository;
+	@Autowired
+	AmenitiesRepository amenitiesRepository;
 	
 	public User findByEmail(String email) {
 		// TODO Auto-generated method stub
@@ -1861,6 +1871,8 @@ public class UserService {
 //		PROJECT(3),
 //		REVIWES(4),
 //		MESSAGES(5);
+		//Un-ApprovedSearch- Client - 6
+		//Un-ApprovedSearch- Vendor - 7
 		switch(searchType) {
 			case 1:{
 				resultObj.put("clientOrganisations",getClientOrganisationsByKeyword(keyword));
@@ -1889,11 +1901,131 @@ public class UserService {
 			case 5:{
 				return getExternalMessagesSearchResults(keyword);
 			}
+			case 6:{
+				resultObj.put("clientOrganisations",getUnApprovedOrganisationsList(UserType.CLIENT.getValue(), keyword));
+				return resultObj;
+			}
+			case 7:{
+				resultObj.put("vendorOrganisations",getUnApprovedOrganisationsList(UserType.VENDOR.getValue(), keyword));
+				
+				return resultObj;
+			}
 		}
 		
 		return null;
 	}
+	
+	public List<Map<String, Object>> getUnApprovedOrganisationsList(int userType, String keyword) {
+		// TODO Auto-generated method stub
+		
+		Map<String, Object> result = new HashMap();
+		
+		List<Map<String, Object>>  upApprovedOrganisationsList = new ArrayList();
+		
+		if(userType == UserType.CLIENT.getValue()) {
+			//Get Client Organisations List
+			List<ClientOrganisation> unApprovedclientOrgs = clientOrganisationRepository.findUnApprovedOrganisationsByKeyword(keyword);
+			
+			for(ClientOrganisation clientOrg : unApprovedclientOrgs) {
+				ObjectMapper oMapper = new ObjectMapper();
+		        // object -> Map
+		        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+		        if(clientOrg.getCity() != null ) {
+		        	try {
+		        		Integer city = Integer.parseInt(clientOrg.getCity());
+		        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+		        		map.put("city",serviceCity.getCityName());
+		        	} catch(Exception exp) {
+		        		map.put("city","");
+		        	}
+		        	
+		        } else {
+		        	map.put("city","");
+				}
+		        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+		        map.put("amenities", amenitiesInfo);
+		        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());
+		        if(logo != null)
+		        	map.put("organisationLogo", logo);
+		        else
+		        	map.put("organisationLogo", "");
+		        
+		        upApprovedOrganisationsList.add(map);
+			}
+			
+		} else if(userType == UserType.VENDOR.getValue()) {
+			//Get Vendor Organisations List
+			List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findUnApprovedOrganisationsByKeyword(keyword);
+			
+			List<Map<String, Object>> vendorOrganisations = new ArrayList();
+			
+			for(VendorOrganisation vendorOrg : vendorOrgsAll) {
+				ObjectMapper oMapper = new ObjectMapper();
+		        // object -> Map
+		        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+		        
+		        
+		        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
+		        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
+		        } else {
+		        	map.put("vendorTags","");
+		        }
+		        if(vendorOrg.getCity() != null ) {
+		        	try {
+		        		Integer city = Integer.parseInt(vendorOrg.getCity());
+		        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+		        		map.put("city",serviceCity.getCityName());
+		        	} catch(Exception exp) {
+		        		map.put("city","");
+		        	}
+		        	
+		        } else {
+		        	map.put("city","");
+				}
+		        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+		        try {
+			        String logo = getVendorOrganisationLogo(vendorOrg.getVendorOrganisationId());
+			        if(logo != null)
+			        	map.put("vendorProfileImageUrl", logo);
+			        else
+			        	map.put("vendorProfileImageUrl", "");
+		        } catch(Exception exp) {
+			        	exp.printStackTrace();
+		        }
+		        upApprovedOrganisationsList.add(map);
+			}
+		}
+		
+		return upApprovedOrganisationsList;
+	}
+	
+	public String getOrganisationLogo(Integer id) {
+		// TODO Auto-generated method stub
+		ClientOrganisationProfileImages clientOrganisationProfileImages = clientOrganisationProfileImageRepository.findByClientOrganisationId(id);
+		
+        if(clientOrganisationProfileImages != null)
+        	return clientOrganisationProfileImages.getFileUrl();
+        else
+        	return null;
+	}
+	
+	public List<Map<String, Object>> getAmenitiesByOrgId(Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		List<ClientAmenities> amenities = clientAmenitiesRepository.findAllByClientOrganisationId(clientOrgId);
+		List<Map<String, Object>> clientAmenities = new ArrayList();
+		for(ClientAmenities clientAmenity : amenities) {
 
+			Map<String, Object> map = new HashMap<>();
+			Amenities amenity = amenitiesRepository.findOneById(clientAmenity.getAmenityId());
+			map.put("amenityId",clientAmenity.getAmenityId());
+			map.put("amenityName",amenity.getAmenitiesName());
+			map.put("amenityLogo",amenity.getLogo());
+			clientAmenities.add(map);
+		}
+		
+		return clientAmenities;
+	}
+	
 	private List<Object> getVendorUsersByKeyword(String keyword) {
 		// TODO Auto-generated method stub
 		List<VendorUser> vendorUsers = vendorUserRepository.findAllByKeyword(keyword);
