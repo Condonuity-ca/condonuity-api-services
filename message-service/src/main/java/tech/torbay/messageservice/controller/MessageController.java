@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.messageservice.constants.Constants;
 import tech.torbay.messageservice.constants.Constants.APIStatusCode;
+import tech.torbay.messageservice.constants.Constants.Availability;
 import tech.torbay.messageservice.entity.ExternalMessage;
 import tech.torbay.messageservice.entity.ExternalMessageComment;
 import tech.torbay.messageservice.entity.InternalMessage;
@@ -29,6 +30,7 @@ import tech.torbay.messageservice.entity.InternalMessageComment;
 import tech.torbay.messageservice.service.MessageService;
 import tech.torbay.messageservice.statusmessage.ResponseMessage;
 import tech.torbay.messageservice.constants.Constants.NotificationType;
+import tech.torbay.messageservice.constants.Constants.UserType;
 
 @RestController
 @RequestMapping("/api")
@@ -86,6 +88,38 @@ public class MessageController {
 		// TODO Auto-generated method stub
 		
 		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(organisationId, userType, userId);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (internalMessages != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Internal Message Threads Fetched Successfully");
+			list.put("internalMessages", internalMessages);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message threads");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Get Threads from Internal Message Board implementation For Support User")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Threads fetched successfully")
+            }
+    )
+	@GetMapping("/internal/messages/{userType}/{organisationId}")
+	private ResponseEntity<Object> getInternalMessagesForSupportUser(@PathVariable("userType") Integer userType, 
+			@PathVariable("organisationId") Integer organisationId
+			) {
+		// TODO Auto-generated method stub
+		
+		List<Map<String,Object>> internalMessages = messageService.getInternalMessages(organisationId, userType, Availability.INFO_NOT_AVAILABLE.getValue());
 		
 		HashMap<String, Object> list = new HashMap();
 		
@@ -187,6 +221,38 @@ public class MessageController {
 		// TODO Auto-generated method stub
 		
 		List<Map<String,Object>> externalMessages = messageService.getExternalMessages(organisationId, userType, userId);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (externalMessages != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "External Message Threads Fetched Successfully");
+			list.put("externalMessages", externalMessages);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message threads");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Get Threads from External Message Board implementation For Support User")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Threads fetched successfully")
+            }
+    )
+	@GetMapping("/external/messages/{userType}/{organisationId}")
+	private ResponseEntity<Object> getExternalMessages(@PathVariable("userType") Integer userType, 
+			@PathVariable("organisationId") Integer organisationId
+			) {
+		// TODO Auto-generated method stub
+		
+		List<Map<String,Object>> externalMessages = messageService.getExternalMessages(organisationId, userType, Availability.INFO_NOT_AVAILABLE.getValue());
 		
 		HashMap<String, Object> list = new HashMap();
 		

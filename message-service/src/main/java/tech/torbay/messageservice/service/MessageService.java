@@ -181,7 +181,7 @@ public class MessageService {
 		
 		return allMessages;
 	}
-
+	
 	public String getClientOrganisationLogo(Integer id) {
 		// TODO Auto-generated method stub
 		ClientOrganisationProfileImages clientOrganisationProfileImages = clientOrganisationProfileImageRepository.findByClientOrganisationId(id);
@@ -278,7 +278,6 @@ public class MessageService {
 		}
 		return allComments;
 	}
-	
 	
 	public ExternalMessage createExternalThread(Map<String, Object> externalMessageData) {
 		// TODO Auto-generated method stub
@@ -420,7 +419,7 @@ public class MessageService {
 		
 		return allMessages;
 	}
-
+	
 	private List<Map<String,Object>> getExternalMessageTargetOrganisations(Integer externalMessageId) {
 		// TODO Auto-generated method stub
 		List<ExternalMessageOrganisations> TargetOrgs = externalMessageOrganisationsRepository.findAllByExternalMessageId(externalMessageId);

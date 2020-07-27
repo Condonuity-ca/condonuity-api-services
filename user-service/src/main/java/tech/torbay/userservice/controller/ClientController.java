@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
+import tech.torbay.userservice.constants.Constants.Availability;
 import tech.torbay.userservice.constants.Constants.NotificationType;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
@@ -585,6 +586,40 @@ public class ClientController {
 		
 		// if organisation based reviews
 		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
+		
+		
+        if (clientAllReviews == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to Fetch Client Reviews");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        
+	        HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "All Client Reviews Fetched Successfully");
+			list.put("reviews", clientAllReviews);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Fetching Client All Submitted Reviews Implementation For Support User")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client All submitted reviews fetched Successfully"),
+            }
+    )
+	@GetMapping("/client/reviews/{clientOrganisationId}")
+	public ResponseEntity<Object> getClientAllMyReviews(
+			@PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+		//if client user based reviews
+//		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
+		
+		// if organisation based reviews
+		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(Availability.INFO_NOT_AVAILABLE.getValue(), clientOrganisationId);
 		
 		
         if (clientAllReviews == null) {
