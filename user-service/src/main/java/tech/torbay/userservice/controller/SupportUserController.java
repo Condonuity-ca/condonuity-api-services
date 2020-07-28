@@ -82,7 +82,7 @@ public class SupportUserController {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_SUCCESS.getValue(),
 	        		"Success",
-	        		"Orgnisation Approved Successfully");
+	        		"Orgnisation Approval Status Updated Successfully");
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}

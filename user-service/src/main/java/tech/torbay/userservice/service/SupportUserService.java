@@ -141,6 +141,9 @@ public class SupportUserService {
 				for (ClientAssociation clientAssociation : clientAssociations) {
 					
 					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
+					
+					clientUser.setDeleteStatus(approvalStatus);
+					clientUserRepository.save(clientUser);
 					List<String> org = new ArrayList<>();
 					org.add(ClientOrganisationObj.getOrganisationName());
 					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );

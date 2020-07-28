@@ -224,10 +224,11 @@ public class UserController {
 					}
 				} else if(userInfo.getUserType() == 2) {
 					VendorUser vendorUserInfo = vendorService.findByVendorUserId(userInfo.getUserId());
-					VendorOrganisation vendorOrgInfo = new VendorOrganisation();
+					
 					if (vendorUserInfo != null ) {
 					
 						if(vendorUserInfo.getVendorOrganisationId() != null && vendorUserInfo.getVendorOrganisationId()  > 0) {
+							VendorOrganisation vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
 							if(vendorOrgInfo.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
 								if(vendorOrgInfo.getActiveStatus() == OrganisationAccountStatus.ACTIVE.getValue()) {
 									if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
