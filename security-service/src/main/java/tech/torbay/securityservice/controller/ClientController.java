@@ -325,7 +325,8 @@ public class ClientController {
 			if(existUser == null && clientUsers.size() < Constants.MAX_USER_COUNT) {
 				// Add Client and user-org Association 
 				ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, clientUserObj);
-		        
+		        clientService.setPrimaryOrganisationId(clientUser, organisationId);
+				
 		        if (clientUser == null ) {
 		        	ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);

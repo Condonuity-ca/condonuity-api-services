@@ -1907,7 +1907,6 @@ public class UserService {
 			}
 			case 7:{
 				resultObj.put("vendorOrganisations",getUnApprovedOrganisationsList(UserType.VENDOR.getValue(), keyword));
-				
 				return resultObj;
 			}
 		}

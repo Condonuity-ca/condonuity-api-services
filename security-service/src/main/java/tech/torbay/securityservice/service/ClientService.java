@@ -327,5 +327,13 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		return registrationLogsRepository.findByUserIdAndUserType(clientUserId,UserType.CLIENT.getValue());
 	}
+
+	public void setPrimaryOrganisationId(ClientUser clientUser, Integer organisationId) {
+		// TODO Auto-generated method stub
+		
+		ClientUser clientUserObj = clientUserRepository.findByClientId(clientUser.getClientId());
+		clientUserObj.setPrimaryOrgId(organisationId);
+		clientUserRepository.save(clientUserObj);
+	}
 }
 

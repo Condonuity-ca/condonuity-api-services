@@ -289,7 +289,6 @@ public class VendorService {
 						
 						Integer ratingCategory = (Integer) rating.get("ratingCategory");
 						Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
-						
 						switch(ratingCategory) {
 							case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
 								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
@@ -405,10 +404,10 @@ public class VendorService {
         	long qualityCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).count();
         	
         	
-        	double overAllRating = (sumCategoryResponsiveness/responsivenessCount * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
-        			(sumCategoryProfessionalism/responsivenessCount * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
-        			(sumCategoryAccuracy/accuracyCount * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
-        			(sumCategoryQuality/qualityCount * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+        	double overAllRating = ((sumCategoryResponsiveness/responsivenessCount )* Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100) +
+        			((sumCategoryProfessionalism/responsivenessCount) * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
+        			((sumCategoryAccuracy/accuracyCount) * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
+        			((sumCategoryQuality/qualityCount) * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
         	
         	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue() "+ sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
         	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue() "+ sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
