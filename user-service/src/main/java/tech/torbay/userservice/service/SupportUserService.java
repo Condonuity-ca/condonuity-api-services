@@ -249,7 +249,7 @@ public class SupportUserService {
 				
 				SendOrganisationAlertEmailForRemovalFromSystem(ClientOrganisationObj.getManagementEmail(), ClientOrganisationObj.getOrganisationName(), emailContentOrganisation );
 				
-				clientAssociationRepository.setDeleteStatusByClientOrganisationId(activeStatus, organisationId);
+				clientAssociationRepository.setUserAccountStatusByClientOrganisationId(activeStatus, organisationId);
 				
 				List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(organisationId);
 				for (ClientAssociation clientAssociation : clientAssociations) {
@@ -281,7 +281,7 @@ public class SupportUserService {
 				
 				SendOrganisationAlertEmailForRemovalFromSystem(vendorOrganisationObj.getEmail(), vendorOrganisationObj.getCompanyName(), emailContentOrganisation );
 				
-				vendorUserRepository.setDeleteStatusByVendorOrganisationId(activeStatus, organisationId);
+				vendorUserRepository.setAccountStatusByVendorOrganisationId(activeStatus, organisationId);
 				
 				List<VendorUser> vendorUsers = vendorUserRepository.findAllActiveUsersByVendorOrganisationId(organisationId);
 				

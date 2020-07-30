@@ -252,6 +252,10 @@ public class ClientService {
 		clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
 		clientAssociation.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
 		
+		ClientUser clientUser = clientUserRepository.findByClientId(clientId);
+		clientUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+		clientUserRepository.save(clientUser);
+		
 		return clientAssociationRepository.save(clientAssociation);
 	}
 

@@ -34,6 +34,11 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 	
 	@Modifying
 	@Transactional
+	@Query(value="UPDATE condonuitydev.vendor_user SET account_status = (?1) WHERE vendor_organisation_id=(?2) ", nativeQuery = true)
+	int setAccountStatusByVendorOrganisationId(Integer activeStatus, Integer organisationId);
+	
+	@Modifying
+	@Transactional
 	@Query(value="UPDATE condonuitydev.vendor_user SET delete_status = (?1) WHERE user_id=(?2) AND vendor_organisation_id = (?3)", nativeQuery = true)
 	int setDeleteStatusByVendorIdAndVendorOrganisationId(Integer activeStatus, Integer userId, Integer vendorOrganisationId);
 

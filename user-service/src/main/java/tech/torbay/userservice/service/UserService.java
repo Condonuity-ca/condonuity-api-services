@@ -2660,7 +2660,7 @@ public class UserService {
 	}
 	
 	private List<Object> getVendorUsersByKeywords(String emailKeyword,String fnameKeyword,String lnameKeyword) {
-		List<VendorUser> vendorUsers = vendorUserRepository.findAllByDeleteStatus(DeleteStatus.ACTIVE.getValue());
+		List<VendorUser> vendorUsers = vendorUserRepository.findAll();
 		List<Object> searchedVendorUsers = new ArrayList();
 		
 		for(VendorUser vendorUser : vendorUsers) {

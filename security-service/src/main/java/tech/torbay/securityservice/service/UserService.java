@@ -91,6 +91,7 @@ public class UserService {
 				clientUser.setFirstName(firstName);
 				clientUser.setLastName(lastName);
 				clientUser.setPhone(phone);
+				clientUser.setDeleteStatus(UserAccountStatus.ACTIVE.getValue());
 
 				clientUserRepository.save(clientUser);
 			} else if (userType == Constants.UserType.VENDOR.getValue()) {
