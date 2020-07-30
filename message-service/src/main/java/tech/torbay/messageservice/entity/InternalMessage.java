@@ -5,6 +5,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import tech.torbay.messageservice.constants.Constants.DeleteStatus;
+
 @Entity
 @Table(name = "internal_message")
 public class InternalMessage {
@@ -29,6 +31,16 @@ public class InternalMessage {
     @Basic(optional = false)
     @Column(name = "modified_date", insertable = false, updatable = false)
     private String modifiedDate;
+    
+    private Integer deleteStatus = DeleteStatus.ACTIVE.getValue();
+
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
 
 	public Integer getId() {
 		return id;
@@ -98,7 +110,8 @@ public class InternalMessage {
 	public String toString() {
 		return "InternalMessage [id=" + id + ", organisationId=" + organisationId + ", userId=" + userId + ", userType="
 				+ userType + ", threadSubject=" + threadSubject + ", threadDescription=" + threadDescription
-				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + ", deleteStatus=" + deleteStatus
+				+ "]";
 	}
 
 }

@@ -16,6 +16,8 @@ public interface InternalMessageRepository extends JpaRepository<InternalMessage
     
     InternalMessage findOneById(Integer id);
     
-    List<InternalMessage> findAllByOrganisationIdAndUserType(Integer organisationId, Integer userType);
+    List<InternalMessage> findAllByOrganisationIdAndUserTypeAndDeleteStatus(Integer organisationId, Integer userType, Integer deleteStatus);
+
+	List<InternalMessage> findAllByOrganisationIdAndUserType(Integer organisationId, Integer userType);
 	
 }

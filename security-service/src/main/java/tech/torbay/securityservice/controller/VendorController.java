@@ -109,7 +109,10 @@ public class VendorController {
         } else {
 	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
-			
+	        VendorUser vendorUser = vendorService.findByVendorUserId(vendorId);
+	        if(vendorUser != null) {
+	        	sendVendorOrganisationVerificationPendingAlert(vendorUser.getEmail());
+	        }
 			 HashMap<String, Object> list = new HashMap();
 				
 				list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
@@ -128,6 +131,26 @@ public class VendorController {
         }
 	}
 	
+	private void sendVendorOrganisationVerificationPendingAlert(String email) {
+		// TODO Auto-generated method stub
+		
+		String content = "Thank you for registering with Condonuity. Currently our team is reviewing your account details. You would get a confirmation once the account review is completed successfully..!"; 
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+		try {
+			springBootEmail.sendRegistrationAlertForVerificationPending(email);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
 	
 	private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {
 		

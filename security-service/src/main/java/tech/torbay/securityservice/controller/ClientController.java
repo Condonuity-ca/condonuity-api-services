@@ -423,9 +423,14 @@ public class ClientController {
         			"Failed to Register Client Organisation");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
+        	ClientUser clientUser = clientService.findById(clientUserId);
+        	if(clientUser != null) {
+        		sendClientOrganisationVerificationPendingAlert(clientUser.getEmail());
+        	}
         	HttpHeaders headers = new HttpHeaders();
 //            headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(organisation.getClientOrganisationId()).toUri());
             
+        	
             HashMap<String, Object> list = new HashMap();
 			
 			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
@@ -436,6 +441,7 @@ public class ClientController {
 			User userInfo = userService.findByIdAndUserType(clientUserId, UserType.CLIENT.getValue());
 			try {
 				list.put("authToken",getAuthToken(userInfo.getUsername(), userInfo.getPassword()));
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -444,6 +450,27 @@ public class ClientController {
         	return new ResponseEntity<Object>(list,HttpStatus.OK);
             
         }
+	}
+	
+	private void sendClientOrganisationVerificationPendingAlert(String email) {
+		// TODO Auto-generated method stub
+		
+		String content = "Thank you for registering with Condonuity. Currently our team is reviewing your account details. You would get a confirmation once the account review is completed successfully..!"; 
+		
+		System.out.println("Sending Email...");
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+		try {
+			springBootEmail.sendRegistrationAlertForVerificationPending(email);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
 	}
 
 	private String getAuthToken(String username, String password) throws JsonParseException, JsonMappingException, IOException {

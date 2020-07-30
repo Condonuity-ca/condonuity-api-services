@@ -322,4 +322,61 @@ public class MessageController {
 		// TODO Auto-generated method stub
 		messageService.sendExternalMessageCommentNotification(externalMessageComment, notificationType.getValue());
 	}
+	
+	/*Support User Messages*/
+	@ApiOperation(value = "Get All Internal Messages (Both ACTIVE/INACTIVE) Based On VendorOrganisationId for Support User")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Fetch all internal messages by Organisation Id implementation")
+            }
+    )
+	@GetMapping("/support/messages/internal/{userType}/{organisationId}")
+	private ResponseEntity<Object> GetAllInternalMessagesByOrgId(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> internalMessages = messageService.getInternalMessagesForSupportUser(userType, organisationId);
+		HashMap<String, Object> list = new HashMap();
+		
+		if (internalMessages != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "All Active/InActive Internal Message Threads Fetched Successfully");
+			list.put("internalMessages", internalMessages);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message threads");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Get All External Messages (Both ACTIVE/INACTIVE) Based On VendorOrganisationId for Support User")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Fetch all extenal messages by Organisation Id implementation")
+            }
+    )
+	@GetMapping("/support/messages/external/{userType}/{organisationId}")
+	private ResponseEntity<Object> GetAllExternalMessagesByOrgId(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> externalMessages = messageService.getExternalMessagesForSupportUser(userType, organisationId);
+		HashMap<String, Object> list = new HashMap();
+		
+		if (externalMessages != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "All Active/Inactive External Message Threads Fetched Successfully");
+			list.put("externalMessages", externalMessages);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message threads");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
 }

@@ -93,6 +93,41 @@ public class SpringBootEmail {
 
     }
 	
+	public void sendRegistrationAlertForVerificationPending(String toEmail) throws MessagingException, IOException {
+		
+		javaMailSender = getJavaMailSender();
+
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+		
+        helper.setTo(toEmail);
+        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        helper.setSubject("Welcome to Condonuity");
+
+        helper.setText("<div style=\"width: 100%;\">\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"</div>\r\n" +
+        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
+        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
+        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Thank you for registering with Condonuity.</div>\r\n" +
+				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Currently our team is reviewing your account details. You would get a confirmation once the account review is completed successfully..!" +"</div>\r\n" +
+        		
+        "<div style=\"font-size: 16px;color:#97a3b4;\"> \n</div>\r\n" +
+        "</div>\r\n" +				
+				"</div>", true);
+        
+
+		// hard coded a file path
+        //FileSystemResource file = new FileSystemResource(new File("path/android.png"));
+
+        // Add attachment Here
+//        helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
+
+        javaMailSender.send(msg);
+
+    }
 	
 //	@Bean
 //	public JavaMailSender getJavaMailSender() {

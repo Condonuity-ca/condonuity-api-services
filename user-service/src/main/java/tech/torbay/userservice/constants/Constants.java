@@ -11,8 +11,8 @@ public class Constants {
 	public static final String USER_ACCOUNT_ACTIVE_ALERT = "User Account Status Changed to Active By Admin";
 	public static final String ORGANISATION_ACCOUNT_REMOVE_ALERT = "Organisation Account Deleted From the System By Admin";
 	public static final String ORGANISATION_ACCOUNT_ACTIVE_ALERT = "Organisation Account Status Changed to Active By Admin";
-	public static final String ORGANISATION_ACCOUNT_APPROVAL_ALERT = "Organisation Account Status Changed to APPROVED By Admin";
-	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT = "Organisation Account Status Changed to REJECTED By Admin";
+	public static final String ORGANISATION_ACCOUNT_APPROVAL_ALERT = "Congratulations..! Your account is validated successfully. \nYou may start using the application using the credentials you have already created.";
+	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT = "Account Alert..!  Your account is validation rejected. \nPlease contact condonuity support team for further clarification.";
 	public static final long EXPIRY_DURATION = 24;
 
 	public enum UserType {

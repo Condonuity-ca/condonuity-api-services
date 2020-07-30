@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -668,4 +669,59 @@ public class SupportUserController {
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
         }
 	}
+	
+	@ApiOperation(value = "Get All Reviews (Both ACTIVE/INACTIVE) Based On VendorOrganisationId for Support User")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Fetch all Reviews by Organisation Id implementation")
+            }
+    )
+	@GetMapping("/support/reviews/vendor/{vendorOrganisationId}")
+	private ResponseEntity<Object> GetAllReviewsForVendor(@PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		Map<String,Object> allReviews = supportUserService.GetAllReviewsForVendor(vendorOrganisationId);
+		if (allReviews == null) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch reviews for this organisation");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Vendor Organisation details fetched successfully with All Active /Inactive Reviews");
+			list.put("vendorOrganisation", allReviews);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+	    }
+	}
+	
+	@ApiOperation(value = "Get All Client Reviews (Both ACTIVE/INACTIVE) Based On clientOrganisationId for Support User")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Fetch all Client Reviews by Organisation Id implementation")
+            }
+    )
+	@GetMapping("/support/reviews/client/{clientOrganisationId}")
+	private ResponseEntity<Object> GetAllReviewsForClient(@PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> allReviews = supportUserService.GetAllReviewsForClient(clientOrganisationId);
+		if (allReviews == null) {
+	    	ResponseMessage responseMessage = new ResponseMessage(
+	    			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to fetch reviews for this organisation");
+	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	    } else {
+	    	HashMap<String, Object> list = new HashMap();
+	        list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Organisation reviews fetched successfully with All Active /Inactive Reviews");
+			list.put("clientReviews", allReviews);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+	    }
+	}
+	
 }

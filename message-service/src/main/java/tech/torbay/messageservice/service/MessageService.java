@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.messageservice.Utils.Utils;
 import tech.torbay.messageservice.constants.Constants;
+import tech.torbay.messageservice.constants.Constants.Availability;
 import tech.torbay.messageservice.constants.Constants.DeleteStatus;
 import tech.torbay.messageservice.constants.Constants.ThreadType;
 import tech.torbay.messageservice.entity.ClientOrganisation;
@@ -97,9 +98,9 @@ public class MessageService {
 	public List<Map<String,Object>> getInternalMessages(Integer organisationId, Integer userType, Integer userId) {
 		// TODO Auto-generated method stub
 
-		List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);
+		List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserTypeAndDeleteStatus(organisationId, userType, DeleteStatus.ACTIVE.getValue());
 		
-		List<Map<String,Object>> allMessages = new ArrayList();
+		List<Map<String,Object>> allMessages = new ArrayList<>();
 		
 		for(InternalMessage internalMessage : internalMessages) {
 			
@@ -679,4 +680,187 @@ public class MessageService {
 
 	}
 
+	public List<Map<String,Object>> getInternalMessagesForSupportUser(Integer organisationId, Integer userType) {
+		// TODO Auto-generated method stub
+
+		List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);
+		
+		List<Map<String,Object>> allMessages = new ArrayList();
+		
+		for(InternalMessage internalMessage : internalMessages) {
+			
+			Map<String,Object> map = new HashMap<>();
+			ObjectMapper oMapper = new ObjectMapper();
+			map = oMapper.convertValue(internalMessage, Map.class);
+			map.remove("userId");	
+			map.remove("organisationId");	
+			
+			Map<String,Object> user = new HashMap<>();
+			Map<String,Object> organisation = new HashMap<>();
+			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessage.getUserId(), internalMessage.getUserType());
+			
+			if(internalMessage.getUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientUser clientUser = clientUserRepository.findByClientId(internalMessage.getUserId());
+				user.put("userId",clientUser.getClientId());
+				user.put("firstName",clientUser.getFirstName());
+				user.put("lastName",clientUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(internalMessage.getOrganisationId());
+				organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+				organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+				organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+				organisation.put("organisationName",clientOrganisation.getOrganisationName());
+				organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+				
+			} else if(internalMessage.getUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessage.getUserId());
+				user.put("userId",vendorUser.getUserId());
+				user.put("firstName",vendorUser.getFirstName());
+				user.put("lastName",vendorUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(internalMessage.getOrganisationId());
+				organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+				organisation.put("legalName",vendorOrganisation.getLegalName());
+				organisation.put("organisationName",vendorOrganisation.getCompanyName());
+				organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+				organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+			}
+			
+			
+			map.put("user",user);
+			map.put("organisation",organisation);
+			
+			
+			List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
+			List<Map<String,Object>> allFiles = new ArrayList();
+			for(ThreadFiles threadFile : threadFiles) {
+				Map<String,Object> file = new HashMap<>();
+				
+				file.put("id", threadFile.getId());
+				file.put("fileName", threadFile.getFileName());
+				file.put("fileType", threadFile.getFileType());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+				file.put("blobName", threadFile.getBlobName());
+				file.put("containerName", threadFile.getContainerName());
+//				file.put("fileUrl", commentFile.getFileUrl());
+				file.put("createdAt", threadFile.getCreatedAt());
+//				file.put("modifiedDate", commentFile.getModifiedDate());
+				allFiles.add(file);
+			}
+			
+			map.put("files",allFiles);
+			map.put("comments",getInternalThreadComments(internalMessage.getId(), userType, Availability.INFO_NOT_AVAILABLE.getValue()));
+			
+			allMessages.add(map);
+		}
+		
+		return allMessages;
+	}
+	
+	public List<Map<String,Object>> getExternalMessagesForSupportUser(Integer organisationId, Integer userType) {
+		// TODO Auto-generated method stub
+
+		List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);
+		
+		HashSet<ExternalMessage> resultSet = new HashSet(externalMessages);
+		externalMessages.clear();
+		externalMessages.addAll(resultSet);
+		
+		List<Map<String,Object>> allMessages = new ArrayList();
+		
+		for(ExternalMessage externalMessage : externalMessages) {
+			
+			Map<String,Object> map = new HashMap<>();
+			ObjectMapper oMapper = new ObjectMapper();
+			map = oMapper.convertValue(externalMessage, Map.class);
+			map.remove("sourceOrganisationId");	
+			map.remove("sourceUserId");	
+			map.remove("targetOrganisationId");
+			map.remove("targetUserType");
+			
+			Map<String,Object> user = new HashMap<>();
+			Map<String,Object> organisation = new HashMap<>();
+			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessage.getSourceUserId(), externalMessage.getSourceUserType());
+			
+			if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+				
+				ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+				user.put("userId",clientUser.getClientId());
+				user.put("firstName",clientUser.getFirstName());
+				user.put("lastName",clientUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+				organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+				organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+				organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+				organisation.put("organisationName",clientOrganisation.getOrganisationName());
+				organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+				
+			} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+				user.put("userId",vendorUser.getUserId());
+				user.put("firstName",vendorUser.getFirstName());
+				user.put("lastName",vendorUser.getLastName());
+				if(userProfileImage != null)
+					user.put("profileImageURL",userProfileImage.getFileUrl());
+				else
+					user.put("profileImageURL","");
+				
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+				organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+				organisation.put("legalName",vendorOrganisation.getLegalName());
+				organisation.put("organisationName",vendorOrganisation.getCompanyName());
+				organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+				organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+			}
+			
+			
+			map.put("fromUser",user);
+			map.put("fromOrganisation",organisation);
+			
+			map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
+			
+			List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+			List<Map<String,Object>> allFiles = new ArrayList();
+			for(ThreadFiles threadFile : threadFiles) {
+				Map<String,Object> file = new HashMap<>();
+				file.put("id", threadFile.getId());
+				file.put("fileName", threadFile.getFileName());
+				file.put("fileType", threadFile.getFileType());
+				file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+				file.put("blobName", threadFile.getBlobName());
+				file.put("containerName", threadFile.getContainerName());
+//				file.put("fileUrl", threadFile.getFileUrl());
+				file.put("createdAt", threadFile.getCreatedAt());
+//				file.put("modifiedDate", threadFile.getModifiedDate());
+				allFiles.add(file);
+			}
+			
+			map.put("files",allFiles);
+			map.put("comments",getExternalThreadComments(externalMessage.getId(), userType, Availability.INFO_NOT_AVAILABLE.getValue()));
+			
+			allMessages.add(map);
+		}
+		
+		return allMessages;
+	}
+	
+	
 }

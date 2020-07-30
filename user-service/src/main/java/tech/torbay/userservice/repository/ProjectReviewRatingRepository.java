@@ -81,4 +81,8 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
     		"pro.project_completion_deadline LIKE (?1) or pro.estimated_budget LIKE (?1) or pro.duration LIKE (?1) or " + 
     		"pro.description LIKE (?1) or pro.special_conditions LIKE (?1) or pro.city LIKE (?1)) " , nativeQuery = true)
 	List<ProjectReviewRating> findAllByKeyword(String keyword);
+
+	List<ProjectReviewRating> findAllByVendorOrganisationId(Integer vendorOrganisationId);
+
+	List<ProjectReviewRating> findAllByClientOrganisationId(Integer clientOrganisationId);
 }
