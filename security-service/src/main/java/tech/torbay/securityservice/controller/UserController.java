@@ -150,6 +150,7 @@ public class UserController {
 								
 								if(clientService.checkIsClientActiveAtlestOneAccount(clientInfo.getClientId())) {
 									if(clientService.checkIsClientAccountActive(clientInfo.getClientId())) {
+										clientInfo = clientService.checkIsPrimaryOrganisationActive(clientInfo);
 										HashMap<String, Object> list = new HashMap();
 										list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 										list.put("statusMessage", "Success");

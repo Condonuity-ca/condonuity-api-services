@@ -836,6 +836,7 @@ public class ProjectService {
 				map.put("city", getCityName(clientOrganisation.getCity())/*getCityName(condoCity)*/);
 				map.put("projectCreatedBy", firstName+" "+lastName);
 				
+				//Vendor Project Interest for All Open Projects
 				VendorProjectInterests vendorProjectInterests = vendorProjectInterestsRepository.findByProjectIdAndVendorOrganisationId( project.getProjectId(), vendorOrganisationId);
 				
 				if(vendorProjectInterests != null && vendorProjectInterests.getInterestStatus() == Constants.ProjectInterestStatus.LIKE.getValue()) {
@@ -844,6 +845,8 @@ public class ProjectService {
 					map.put("isInterested", false);
 				}
 				
+				
+				//Client Preferred vendor Check
 				if(project.getPostType() == ProjectPostTo.ALL.getValue()) {
 					allProjects.add(map);
 				} else if(project.getPostType() == ProjectPostTo.MARKED.getValue()){

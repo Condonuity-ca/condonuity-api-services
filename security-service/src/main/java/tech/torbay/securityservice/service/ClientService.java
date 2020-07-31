@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.constants.Constants;
+import tech.torbay.securityservice.constants.Constants.Availability;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
@@ -315,6 +316,27 @@ public class ClientService {
 			}
 		}
 		return true;
+	}
+	
+	public ClientUser checkIsPrimaryOrganisationActive(ClientUser clientInfo) {
+		// TODO Auto-generated method stub
+		ClientOrganisation clientOrg = getClientOrganisationById(clientInfo.getPrimaryOrgId());
+		if(clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() 
+				&& clientOrg.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() ) {
+			return clientInfo;
+		} else {
+			List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientInfo.getClientId());
+			
+			for (ClientAssociation clientAssociation : clientAssociations) {
+				if(clientAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+					clientInfo.setPrimaryOrgId(clientAssociation.getClientOrganisationId());
+					return clientInfo;
+				}
+			}
+		}
+		
+		clientInfo.setPrimaryOrgId(Availability.INFO_NOT_AVAILABLE.getValue());
+		return clientInfo;
 	}
 
 	public boolean checkOrganisationNameAvailable(String organisationName) {

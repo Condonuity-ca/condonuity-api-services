@@ -848,6 +848,7 @@ public class AzureBlobService {
 				Map<String, String> map = new HashMap();
 				map.put("fileName", vendorRegistrationFiles.getFileName());
 				map.put("fileType", vendorRegistrationFiles.getFileType());
+				return map;
 			}
 			case "projectfiles":{
 				ProjectFiles projectFiles = projectFilesRepository.findByBlobName(blobName);

@@ -127,17 +127,25 @@ public class SupportUserService {
 		updateLogs(supportUserId, "Organisation", approvalStatus, organisationId, userType);
 		
 		String emailContentOrganisation = "";
+		String subjectOrganisation = "";
 		String emailContentUSER = "";
+		String subjectUser = "";
 		if(approvalStatus == OrganisationAccountStatus.APPROVED.getValue()) {
 			emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_APPROVAL_ALERT;
+			subjectOrganisation = Constants.ORGANISATION_ACCOUNT_APPROVAL_ALERT_SUBJECT;
 		} else if (approvalStatus == OrganisationAccountStatus.REJECTED.getValue()) {
 			emailContentOrganisation = Constants.ORGANISATION_ACCOUNT_REJECT_ALERT;
+			subjectOrganisation = Constants.ORGANISATION_ACCOUNT_REJECT_ALERT_SUBJECT;
 		}
 		
 		if(approvalStatus == DeleteStatus.ACTIVE.getValue()) {
-			emailContentUSER = Constants.USER_ACCOUNT_ACTIVE_ALERT;
+//			emailContentUSER = Constants.USER_ACCOUNT_ACTIVE_ALERT;
+			emailContentUSER = Constants.ORGANISATION_ACCOUNT_APPROVAL_ALERT;
+			subjectUser = Constants.ORGANISATION_ACCOUNT_APPROVAL_ALERT_SUBJECT;
 		} else if (approvalStatus == DeleteStatus.INACTIVE.getValue()) {
-			emailContentUSER = Constants.USER_ACCOUNT_REMOVE_ALERT;
+//			emailContentUSER = Constants.USER_ACCOUNT_REMOVE_ALERT;
+			emailContentUSER = Constants.ORGANISATION_ACCOUNT_REJECT_ALERT;
+			subjectUser = Constants.ORGANISATION_ACCOUNT_REJECT_ALERT_SUBJECT;
 		}
 		
 		if(userType == UserType.CLIENT.getValue()) {
@@ -158,7 +166,7 @@ public class SupportUserService {
 			//Update via Email and User as Inactive
 			if(ClientOrganisationObj != null) {
 				
-				SendOrganisationAlertEmailForRemovalFromSystem(ClientOrganisationObj.getManagementEmail(), ClientOrganisationObj.getOrganisationName(), emailContentOrganisation );
+				SendOrganisationAlertForApprovalFromSystem(ClientOrganisationObj.getManagementEmail(), ClientOrganisationObj.getOrganisationName(), emailContentOrganisation, subjectOrganisation );
 				
 				clientAssociationRepository.setDeleteStatusByClientOrganisationId(approvalStatus, organisationId);
 				
@@ -171,7 +179,7 @@ public class SupportUserService {
 					clientUserRepository.save(clientUser);
 					List<String> org = new ArrayList<>();
 					org.add(ClientOrganisationObj.getOrganisationName());
-					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
+					SendUserAlertForApprovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER, subjectUser );
 				}
 				
 				return true;
@@ -193,7 +201,7 @@ public class SupportUserService {
 			
 			if(vendorOrganisationObj != null) {
 				
-				SendOrganisationAlertEmailForRemovalFromSystem(vendorOrganisationObj.getEmail(), vendorOrganisationObj.getCompanyName(), emailContentOrganisation );
+				SendOrganisationAlertForApprovalFromSystem(vendorOrganisationObj.getEmail(), vendorOrganisationObj.getCompanyName(), emailContentOrganisation, subjectOrganisation );
 				
 				vendorUserRepository.setDeleteStatusByVendorOrganisationId(approvalStatus, organisationId);
 				
@@ -202,7 +210,7 @@ public class SupportUserService {
 				for(VendorUser vendorUser : vendorUsers) {
 					List<String> org = new ArrayList<>();
 					org.add(vendorOrganisationObj.getCompanyName());
-					SendUserAlertEmailForRemovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER );
+					SendUserAlertForApprovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER, subjectUser );
 				}
 				return true;
 			}
@@ -420,7 +428,42 @@ public class SupportUserService {
 		}
 		System.out.println("Done");
 	}
+	
+	private void SendOrganisationAlertForApprovalFromSystem(String userEmail, String organisationName,String content, String subject) {
+		// TODO Auto-generated method stub
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+		
+		try {
+			springBootEmail.SendOrganisationAlertForApprovalFromSystem(userEmail, organisationName , content, subject);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
 
+	private void SendUserAlertForApprovalFromSystem(String userEmail,String firstName,String lastName,List<String> organisationName,String content, String subject) {
+		// TODO Auto-generated method stub
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+		
+		try {
+			springBootEmail.SendUserAlertForApprovalFromSystem(userEmail, firstName+" "+lastName, organisationName , content, subject);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
+	}
 
 	public boolean updateReviewActivationStatus(Integer reviewRatingId, Integer activeStatus, Integer supportUserId) {
 		// TODO Auto-generated method stub
