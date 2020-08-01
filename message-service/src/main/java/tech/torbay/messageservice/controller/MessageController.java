@@ -107,6 +107,72 @@ public class MessageController {
 		}
 	}
 	
+	@ApiOperation(value = "Get Threads from Client Internal Message Board implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Threads fetched successfully")
+            }
+    )
+	@GetMapping("/internal/message/{userType}/{userId}/{messageId}")
+	private ResponseEntity<Object> getInternalMessageByMessageId(
+			@PathVariable("messageId") Integer messageId,
+			@PathVariable("userType") Integer userType,
+			@PathVariable("userId") Integer userId) {
+		// TODO Auto-generated method stub
+		
+		Map<String,Object> internalMessages = messageService.getInternalMessage(messageId, userId, userType);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (internalMessages != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Internal Message Thread Fetched Successfully");
+			list.put("internalMessage", internalMessages);
+			list.put("internalMessageId", messageId);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message thread");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Get Threads from Client Internal Message Board implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Threads fetched successfully")
+            }
+    )
+	@GetMapping("/internal/message/{messageId}")
+	private ResponseEntity<Object> getInternalMessageByMessageId(
+			@PathVariable("messageId") Integer messageId) {
+		// TODO Auto-generated method stub
+		
+		Map<String,Object> internalMessages = messageService.getInternalMessage(messageId);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (internalMessages != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Internal Message Thread Fetched Successfully");
+			list.put("internalMessage", internalMessages);
+			list.put("internalMessageId", messageId);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message thread");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
 	@ApiOperation(value = "Get Threads from Internal Message Board implementation For Support User")
     @ApiResponses(
             value = {
@@ -229,6 +295,71 @@ public class MessageController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "External Message Threads Fetched Successfully");
 			list.put("externalMessages", externalMessages);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message threads");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Get Threads from External Message Board implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Threads fetched successfully")
+            }
+    )
+	@GetMapping("/external/message/{userType}/{userId}/{messageId}")
+	private ResponseEntity<Object> getExternalMessagebyMessageId(@PathVariable("messageId") Integer messageId, 
+			@PathVariable("userId") Integer userId,
+			@PathVariable("userType") Integer userType
+			) {
+		// TODO Auto-generated method stub
+		
+		Map<String,Object> externalMessage = messageService.getExternalMessage(messageId, userType, userId);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (externalMessage != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "External Message Threads Fetched Successfully");
+			list.put("externalMessage", externalMessage);
+			list.put("externalMessageId", messageId);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Failed to fetch message threads");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Get Threads from External Message Board implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Threads fetched successfully")
+            }
+    )
+	@GetMapping("/external/message/{messageId}")
+	private ResponseEntity<Object> getExternalMessages(@PathVariable("messageId") Integer messageId ) {
+		// TODO Auto-generated method stub
+		
+		Map<String,Object> externalMessage = messageService.getExternalMessage(messageId);
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if (externalMessage != null) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "External Message Threads Fetched Successfully");
+			list.put("externalMessage", externalMessage);
+			list.put("externalMessageId", messageId);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {

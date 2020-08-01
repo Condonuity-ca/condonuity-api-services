@@ -861,6 +861,329 @@ public class MessageService {
 		
 		return allMessages;
 	}
+
+	public Map<String, Object> getInternalMessage(Integer messageId, Integer userId, Integer userType) {
+		// TODO Auto-generated method stub
+		
+		InternalMessage internalMessage = internalMessageRepository.findOneById(messageId);
+		Map<String,Object> map = new HashMap<>();
+		ObjectMapper oMapper = new ObjectMapper();
+		map = oMapper.convertValue(internalMessage, Map.class);
+		map.remove("userId");	
+		map.remove("organisationId");	
+		
+		Map<String,Object> user = new HashMap<>();
+		Map<String,Object> organisation = new HashMap<>();
+		
+		UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessage.getUserId(), internalMessage.getUserType());
+		
+		if(internalMessage.getUserType() == Constants.UserType.CLIENT.getValue()) {
+			
+			ClientUser clientUser = clientUserRepository.findByClientId(internalMessage.getUserId());
+			user.put("userId",clientUser.getClientId());
+			user.put("firstName",clientUser.getFirstName());
+			user.put("lastName",clientUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(internalMessage.getOrganisationId());
+			organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+			organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+			organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+			organisation.put("organisationName",clientOrganisation.getOrganisationName());
+			organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+			
+		} else if(internalMessage.getUserType() == Constants.UserType.VENDOR.getValue()) {
+			
+			VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessage.getUserId());
+			user.put("userId",vendorUser.getUserId());
+			user.put("firstName",vendorUser.getFirstName());
+			user.put("lastName",vendorUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(internalMessage.getOrganisationId());
+			organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+			organisation.put("legalName",vendorOrganisation.getLegalName());
+			organisation.put("organisationName",vendorOrganisation.getCompanyName());
+			organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+			organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+		}
+		
+		
+		map.put("user",user);
+		map.put("organisation",organisation);
+		
+		
+		List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
+		List<Map<String,Object>> allFiles = new ArrayList();
+		for(ThreadFiles threadFile : threadFiles) {
+			Map<String,Object> file = new HashMap<>();
+			
+			file.put("id", threadFile.getId());
+			file.put("fileName", threadFile.getFileName());
+			file.put("fileType", threadFile.getFileType());
+			file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+			file.put("blobName", threadFile.getBlobName());
+			file.put("containerName", threadFile.getContainerName());
+//			file.put("fileUrl", commentFile.getFileUrl());
+			file.put("createdAt", threadFile.getCreatedAt());
+//			file.put("modifiedDate", commentFile.getModifiedDate());
+			allFiles.add(file);
+		}
+		
+		map.put("files",allFiles);
+		map.put("comments",getInternalThreadComments(internalMessage.getId(), userType, userId));
+		
+		return map;
+	}
 	
+	public Map<String, Object> getInternalMessage(Integer messageId) {
+		// TODO Auto-generated method stub
+		
+		InternalMessage internalMessage = internalMessageRepository.findOneById(messageId);
+		Map<String,Object> map = new HashMap<>();
+		ObjectMapper oMapper = new ObjectMapper();
+		map = oMapper.convertValue(internalMessage, Map.class);
+		map.remove("userId");	
+		map.remove("organisationId");	
+		
+		Map<String,Object> user = new HashMap<>();
+		Map<String,Object> organisation = new HashMap<>();
+		
+		UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(internalMessage.getUserId(), internalMessage.getUserType());
+		
+		if(internalMessage.getUserType() == Constants.UserType.CLIENT.getValue()) {
+			
+			ClientUser clientUser = clientUserRepository.findByClientId(internalMessage.getUserId());
+			user.put("userId",clientUser.getClientId());
+			user.put("firstName",clientUser.getFirstName());
+			user.put("lastName",clientUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(internalMessage.getOrganisationId());
+			organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+			organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+			organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+			organisation.put("organisationName",clientOrganisation.getOrganisationName());
+			organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+			
+		} else if(internalMessage.getUserType() == Constants.UserType.VENDOR.getValue()) {
+			
+			VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessage.getUserId());
+			user.put("userId",vendorUser.getUserId());
+			user.put("firstName",vendorUser.getFirstName());
+			user.put("lastName",vendorUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(internalMessage.getOrganisationId());
+			organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+			organisation.put("legalName",vendorOrganisation.getLegalName());
+			organisation.put("organisationName",vendorOrganisation.getCompanyName());
+			organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+			organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+		}
+		
+		
+		map.put("user",user);
+		map.put("organisation",organisation);
+		
+		
+		List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(internalMessage.getId(), ThreadType.INTERNAL.getValue());
+		List<Map<String,Object>> allFiles = new ArrayList();
+		for(ThreadFiles threadFile : threadFiles) {
+			Map<String,Object> file = new HashMap<>();
+			
+			file.put("id", threadFile.getId());
+			file.put("fileName", threadFile.getFileName());
+			file.put("fileType", threadFile.getFileType());
+			file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+			file.put("blobName", threadFile.getBlobName());
+			file.put("containerName", threadFile.getContainerName());
+//			file.put("fileUrl", commentFile.getFileUrl());
+			file.put("createdAt", threadFile.getCreatedAt());
+//			file.put("modifiedDate", commentFile.getModifiedDate());
+			allFiles.add(file);
+		}
+		
+		map.put("files",allFiles);
+		map.put("comments",getInternalThreadComments(internalMessage.getId(), Constants.Availability.INFO_NOT_AVAILABLE.getValue(), Constants.Availability.INFO_NOT_AVAILABLE.getValue()));
+		
+		return map;
+	}
+
+	public Map<String, Object> getExternalMessage(Integer messageId, Integer userType, Integer userId) {
+		// TODO Auto-generated method stub
+		
+		ExternalMessage externalMessage = externalMessageRepository.findOneById(messageId);
+		Map<String,Object> map = new HashMap<>();
+		ObjectMapper oMapper = new ObjectMapper();
+		map = oMapper.convertValue(externalMessage, Map.class);
+		map.remove("sourceOrganisationId");	
+		map.remove("sourceUserId");	
+		map.remove("targetOrganisationId");
+		map.remove("targetUserType");
+		
+		Map<String,Object> user = new HashMap<>();
+		Map<String,Object> organisation = new HashMap<>();
+		
+		UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessage.getSourceUserId(), externalMessage.getSourceUserType());
+		
+		if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+			
+			ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+			user.put("userId",clientUser.getClientId());
+			user.put("firstName",clientUser.getFirstName());
+			user.put("lastName",clientUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+			organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+			organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+			organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+			organisation.put("organisationName",clientOrganisation.getOrganisationName());
+			organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+			
+		} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+			
+			VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+			user.put("userId",vendorUser.getUserId());
+			user.put("firstName",vendorUser.getFirstName());
+			user.put("lastName",vendorUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+			organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+			organisation.put("legalName",vendorOrganisation.getLegalName());
+			organisation.put("organisationName",vendorOrganisation.getCompanyName());
+			organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+			organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+		}
+		
+		
+		map.put("fromUser",user);
+		map.put("fromOrganisation",organisation);
+		
+		map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
+		
+		List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+		List<Map<String,Object>> allFiles = new ArrayList();
+		for(ThreadFiles threadFile : threadFiles) {
+			Map<String,Object> file = new HashMap<>();
+			file.put("id", threadFile.getId());
+			file.put("fileName", threadFile.getFileName());
+			file.put("fileType", threadFile.getFileType());
+			file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+			file.put("blobName", threadFile.getBlobName());
+			file.put("containerName", threadFile.getContainerName());
+//			file.put("fileUrl", threadFile.getFileUrl());
+			file.put("createdAt", threadFile.getCreatedAt());
+//			file.put("modifiedDate", threadFile.getModifiedDate());
+			allFiles.add(file);
+		}
+		
+		map.put("files",allFiles);
+		map.put("comments",getExternalThreadComments(externalMessage.getId(), userType, userId));
+		
+		return map;
+	}
+	
+	public Map<String, Object> getExternalMessage(Integer messageId) {
+		// TODO Auto-generated method stub
+		
+		ExternalMessage externalMessage = externalMessageRepository.findOneById(messageId);
+		Map<String,Object> map = new HashMap<>();
+		ObjectMapper oMapper = new ObjectMapper();
+		map = oMapper.convertValue(externalMessage, Map.class);
+		map.remove("sourceOrganisationId");	
+		map.remove("sourceUserId");	
+		map.remove("targetOrganisationId");
+		map.remove("targetUserType");
+		
+		Map<String,Object> user = new HashMap<>();
+		Map<String,Object> organisation = new HashMap<>();
+		
+		UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(externalMessage.getSourceUserId(), externalMessage.getSourceUserType());
+		
+		if(externalMessage.getSourceUserType() == Constants.UserType.CLIENT.getValue()) {
+			
+			ClientUser clientUser = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+			user.put("userId",clientUser.getClientId());
+			user.put("firstName",clientUser.getFirstName());
+			user.put("lastName",clientUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+			organisation.put("organisationId",clientOrganisation.getClientOrganisationId());
+			organisation.put("managementCompany",clientOrganisation.getManagementCompany());
+			organisation.put("corporateNumber",clientOrganisation.getCorporateNumber());
+			organisation.put("organisationName",clientOrganisation.getOrganisationName());
+			organisation.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
+			
+		} else if(externalMessage.getSourceUserType() == Constants.UserType.VENDOR.getValue()) {
+			
+			VendorUser vendorUser = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+			user.put("userId",vendorUser.getUserId());
+			user.put("firstName",vendorUser.getFirstName());
+			user.put("lastName",vendorUser.getLastName());
+			if(userProfileImage != null)
+				user.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				user.put("profileImageURL","");
+			
+			VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+			organisation.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+			organisation.put("legalName",vendorOrganisation.getLegalName());
+			organisation.put("organisationName",vendorOrganisation.getCompanyName());
+			organisation.put("organisationLogoName",vendorOrganisation.getLogoName());
+			organisation.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+		}
+		
+		
+		map.put("fromUser",user);
+		map.put("fromOrganisation",organisation);
+		
+		map.put("targetOrganisations",getExternalMessageTargetOrganisations(externalMessage.getId()));
+		
+		List<ThreadFiles> threadFiles = threadFilesRepository.findAllByThreadIdAndThreadType(externalMessage.getId(), ThreadType.EXTERNAL.getValue());
+		List<Map<String,Object>> allFiles = new ArrayList();
+		for(ThreadFiles threadFile : threadFiles) {
+			Map<String,Object> file = new HashMap<>();
+			file.put("id", threadFile.getId());
+			file.put("fileName", threadFile.getFileName());
+			file.put("fileType", threadFile.getFileType());
+			file.put("fileSize", Utils.formatFileSize(Long.parseLong(threadFile.getFileSize())));
+			file.put("blobName", threadFile.getBlobName());
+			file.put("containerName", threadFile.getContainerName());
+//			file.put("fileUrl", threadFile.getFileUrl());
+			file.put("createdAt", threadFile.getCreatedAt());
+//			file.put("modifiedDate", threadFile.getModifiedDate());
+			allFiles.add(file);
+		}
+		
+		map.put("files",allFiles);
+		map.put("comments",getExternalThreadComments(externalMessage.getId(), Constants.Availability.INFO_NOT_AVAILABLE.getValue(), Constants.Availability.INFO_NOT_AVAILABLE.getValue()));
+		
+		return map;
+	}
 	
 }
