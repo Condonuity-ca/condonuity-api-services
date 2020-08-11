@@ -921,4 +921,26 @@ public class FilesController {
 			}
 			
 		}
+		
+		@DeleteMapping("/delete/portfolio/files")
+		public ResponseEntity<Map<String, Object>> deletePortfolioFiles(@RequestBody List<Integer> fileIds) {
+			
+			boolean isDeleted = azureBlobService.deletePortfolioFiles(fileIds);
+			
+			if(isDeleted) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+				map.put("statusMessage", "Success");
+				map.put("responseMessage", "Portfolio Files Deleted SuccessFully");
+				
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			} else {
+				Map<String, Object> map = new HashMap<>();
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to delete the portfolio files");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+		}
 }

@@ -1037,4 +1037,29 @@ public class AzureBlobService {
 			
 			return null;
 		}
+		
+		
+		public boolean deletePortfolioFiles(List<Integer> fileIds) {
+			// TODO Auto-generated method stub
+			try {
+				for(Integer fileId : fileIds) {
+					
+					VendorPortfolioFiles vendorPortfolioFiles = vendorPortfolioFilesRepository.findOneById(fileId);
+					
+					String containerName = vendorPortfolioFiles.getContainerName();
+					String blobName = vendorPortfolioFiles.getBlobName();
+					
+					if(deleteBlob(containerName, blobName)) {
+						vendorPortfolioFilesRepository.deleteById(fileId);
+					}
+					
+				}
+				
+				return true;
+				
+			} catch(Exception exp) {
+				exp.printStackTrace();
+				return false;
+			}
+		}
 }

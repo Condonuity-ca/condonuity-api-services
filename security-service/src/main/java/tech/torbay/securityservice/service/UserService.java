@@ -172,7 +172,7 @@ public class UserService {
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 			// Use Madrid's time zone to format the date in
-			df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+			df.setTimeZone(TimeZone.getTimeZone(Constants.TIME_ZONE));
 
 			String termsAcceptedDate = df.format(date);
 

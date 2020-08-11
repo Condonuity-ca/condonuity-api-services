@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
@@ -971,9 +976,33 @@ public class UserController {
 		@PostMapping("/password/encrypt/{password}")
 		public ResponseEntity<Object> getEncryptPassword(@PathVariable("password") String password) {
 		
+			System.out.println("default "+dateTimeToDate("2020-08-03 6:45:34",TimeZone.getTimeZone("UTC")));
+			System.out.println("TimeZone.getDefault() "+TimeZone.getDefault());
 		 	return new ResponseEntity<Object>(SecurityAES.encrypt(password), HttpStatus.OK);
 		}
 		
+		private static String dateTimeToDate(String timestamp, TimeZone timeZone) {
+			 Date date;
+			try {
+				date = parseDateTime(timestamp);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+			//ZoneId zoneId = ZoneId.of("UTC+08:00");
+			//TimeZone timeZone = TimeZone.getTimeZone(zoneId);
+			TimeZone timeZoneReq = TimeZone.getTimeZone("Asia/Calcutta");
+			
+			 return date.toInstant().atZone(timeZone.toZoneId()).withZoneSameInstant(timeZoneReq.toZoneId()).toString();
+		}
+		
+		private static Date parseDateTime(String timestamp) throws ParseException {
+			// TODO Auto-generated method stub
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp);
+		}
+
+
 		@PostMapping("/password/decrypt/{password}")
 		public ResponseEntity<Object> getDecryptPassword(@PathVariable("password") String password) {
 		

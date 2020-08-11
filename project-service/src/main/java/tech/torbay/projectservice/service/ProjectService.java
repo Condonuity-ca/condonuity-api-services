@@ -359,7 +359,7 @@ public class ProjectService {
 		List<Map<String,Object>> allBids = new ArrayList();
 		
 		Project project = projectRepository.findByProjectId(projectId);
-		if(project.getStatus().equals(3) || project.getStatus().equals(4) ) {
+//		if(project.getStatus().equals(3) || project.getStatus().equals(4) ) {
 			List<VendorBid> vendorBids = vendorBidRepository.findVendorBidByProjectId(projectId);
 			
 			for(VendorBid vendorBid : vendorBids) {
@@ -390,7 +390,7 @@ public class ProjectService {
 						
 				allBids.add(map);
 			}
-		}
+//		}
 		
 		return allBids;
 	}
@@ -745,7 +745,7 @@ public class ProjectService {
                 .map(VendorProjectInterests::getProjectId).collect(Collectors.toList());
 		
 		//bidded and Saved projects
-		List<VendorBid> vendorBids = vendorBidRepository.findSavedVendorBidByVendorOrgId(vendorOrganisationId);
+		List<VendorBid> vendorBids = vendorBidRepository.findSavedOrPulledVendorBidByVendorOrgId(vendorOrganisationId);
 		
 		List<Integer> bidProjectIds = vendorBids.stream()
                 .map(VendorBid::getProjectId).collect(Collectors.toList());
@@ -780,7 +780,7 @@ public class ProjectService {
 		        
 		        VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(project.getProjectId(), vendorOrganisationId);
 		        
-				if(vendorBid == null || vendorBid.getBidStatus() == BidPostType.UNPUBLISHED.getValue()) {// once bided and published its moved to current projects until its under favorite
+				if(vendorBid == null || vendorBid.getBidStatus() == BidPostType.UNPUBLISHED.getValue() || vendorBid.getBidStatus() == BidPostType.PULLED.getValue()) {// once bided and published its moved to current projects until its under favorite
 					favoriteProjects.add(map);
 				} 
 					
@@ -1251,6 +1251,58 @@ public class ProjectService {
 			exp.printStackTrace();
 			return null;
 		}
+	}
+
+	public List<Map<String,Object>>  getAllProjectInMarketPlaceForSupportUser() {
+//		// TODO Auto-generated method stub
+		
+		checkIsProjectsClosed();
+		
+		List<Object[]> projects = projectRepository.findAllProjectsInMarketPlaceForSupportUser();
+		
+		List<Map<String,Object>> allProjects = new ArrayList();
+		
+		 projects.stream().forEach((record) -> {
+	        Project project = (Project) record[0];
+	        String managementCompany = (String) record[1];
+	        String condoName = (String) record[2];
+	        String condoCity = (String) record[3];
+	        String firstName = (String) record[4];
+	        String lastName = (String) record[5];
+	        
+	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+				        .map(Integer::parseInt)
+				        .collect(Collectors.toList());
+		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		       
+		        Map<String,Object> map = new HashMap<>();
+				
+				ObjectMapper oMapper = new ObjectMapper();
+				
+				map = oMapper.convertValue(project, Map.class);
+				
+				
+				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("managementCompany", managementCompany);
+				map.put("condoName", condoName);
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+//				projectReview.put("condoName", clientOrganisation.getOrganisationName());
+				map.put("condoCity", getCityName(clientOrganisation.getCity()));
+				map.put("city", getCityName(clientOrganisation.getCity()));
+//				map.put("condoCity", getCityName(condoCity));
+				map.put("projectCreatedBy", firstName+" "+lastName);
+				
+						
+				allProjects.add(map);
+	        }
+	        
+	        
+		 });
+		 
+		 
+		return allProjects;
 	}
 
 }

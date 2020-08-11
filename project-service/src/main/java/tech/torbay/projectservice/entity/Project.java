@@ -42,7 +42,20 @@ import tech.torbay.projectservice.constants.Constants.DeleteStatus;
 	    		  @ColumnResult(name="first_name"),
 	    		  @ColumnResult(name="last_name")
 	    		  }
-	  )
+	  ),
+	  @SqlResultSetMapping(
+		      name="marketPlaceSupportUser",
+		      entities={
+		    		  @EntityResult(entityClass=Project.class)
+		    		  },
+		      columns={
+		    		  @ColumnResult(name="management_company"),
+		    		  @ColumnResult(name="organisation_name"),
+		    		  @ColumnResult(name="city"),
+		    		  @ColumnResult(name="first_name"),
+		    		  @ColumnResult(name="last_name")
+		    		  }
+		  )
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
@@ -50,6 +63,12 @@ import tech.torbay.projectservice.constants.Constants.DeleteStatus;
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and pro.delete_status = 1;", 
 	    resultSetMapping="marketPlace")
+@NamedNativeQuery(
+	    name="Project.MarketPlaceSupportUser", 
+	    query="SELECT pro.*, co.management_company, co.organisation_name, co.city, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
+	    resultSetMapping="marketPlaceSupportUser")
 public class Project {
 
     public Project() {

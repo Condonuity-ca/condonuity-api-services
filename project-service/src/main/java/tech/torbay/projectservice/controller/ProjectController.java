@@ -985,4 +985,33 @@ public class ProjectController {
         }
         
 	}
+    
+    @ApiOperation(value = "Fetching All Projects for Marketplace")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Projects for Marketplace fetched successfully")
+            }
+    )
+	@GetMapping("/support/projects")
+	public ResponseEntity<Object> getAllProjectInMarketPlaceForSupportUser() {
+
+		List<Map<String,Object>> projects = projectService.getAllProjectInMarketPlaceForSupportUser();
+		
+		HashMap<String, Object> list = new HashMap();
+		
+		if(projects != null) {
+			list.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "All Marketplace Project details fetched successfully");
+			list.put("projects", projects);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
 } 

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Constants {
 
-	public static final String TIME_ZONE = "Europe/London";
+	public static final String TIME_ZONE = "UTC";
 
 	public enum UserType {
 	    CLIENT(1),

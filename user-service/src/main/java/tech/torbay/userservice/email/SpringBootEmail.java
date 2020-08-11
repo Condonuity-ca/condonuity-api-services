@@ -321,12 +321,14 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
+		        
+		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your account is rejected";
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
 		        		"<div style=\"text-align: center;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
-		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
+		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+organisationName+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your Organisation Account Status Update Alert \n</div>\r\n" +
 		        		
@@ -358,12 +360,12 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-
+		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your account is rejected";
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
 		        		"<div style=\"text-align: center;\"><img src=\"http://condonuityappdev.eastus2.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
-		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
+		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+username+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your User Account Status Update Alert for following Organisations, \n"+String.join(", ", organisationName) +"</div>\r\n" +
 		        		

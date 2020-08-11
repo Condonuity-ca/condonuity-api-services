@@ -40,4 +40,6 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	@Query(value = "Update condonuitydev.projects set status = 3 where bid_end_date < now();", nativeQuery = true)
 	void updateClosedProjects();
 	
+	@Query(name="Project.MarketPlaceSupportUser")
+    List<Object[]> findAllProjectsInMarketPlaceForSupportUser();
 }
