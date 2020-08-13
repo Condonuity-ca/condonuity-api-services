@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import tech.torbay.fileservice.Utils.RegisterFiles;
 import tech.torbay.fileservice.constants.Constants;
 import tech.torbay.fileservice.constants.Constants.StatusCode;
 import tech.torbay.fileservice.constants.Constants.ThreadType;
+import tech.torbay.fileservice.constants.Constants.UserType;
 import tech.torbay.fileservice.entity.UserProfileImages;
 import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.fileservice.service.AzureBlobService;
@@ -943,4 +945,43 @@ public class FilesController {
 			}
 			
 		}
+		
+		// multiple - client registration
+		@PostMapping(value = "/uploads/organisation/registration/files/{organisationId}/{userType}/{supportUserId}", consumes = { "multipart/form-data" })
+		public ResponseEntity<Map<String, Object>> uploadOrganisationRegistrationFiles(@PathVariable("organisationId") Integer organisationId,
+				@PathVariable("userType") Integer userType,
+				@PathVariable("supportUserId") Integer supportUserId,
+				@RequestParam("multipartFiles") MultipartFile[] multipartFiles, HttpServletRequest request) {
+
+			Map<String, Object> map = new HashMap<>();
+			
+			if(multipartFiles == null || multipartFiles.length == 0 ) {
+				map.put("statusCode", StatusCode.FILE_NOT_FOUND.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Please select any files to upload");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			List<URI> url = new ArrayList<>();
+			url = azureBlobService.uploadOrganisationRegistrationFilesBySupportUser(userType, supportUserId, organisationId, multipartFiles);
+			
+			
+			if(url != null && url.size() > 0) {
+				map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+				map.put("statusMessage", "Success");
+				map.put("responseMessage", "Organisation Registration File Uploaded Successfully");
+				if(userType == UserType.CLIENT.getValue())
+					map.put("containerName", Constants.Containers.CLIENT_REGISTRATION_FILES.getValue());
+				if(userType == UserType.VENDOR.getValue())
+					map.put("containerName", Constants.Containers.VENDOR_REGISTRATION_FILES.getValue());
+//				map.put("resource", url);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			} else {
+				map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "Failed to upload file");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+		}
+
 }

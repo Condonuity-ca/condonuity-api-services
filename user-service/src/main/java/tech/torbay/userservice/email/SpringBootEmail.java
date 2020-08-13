@@ -321,7 +321,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        
+		        String loginURL = "http://condonuityappdev.eastus2.cloudapp.azure.com/"; 
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your account is rejected";
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
@@ -334,6 +334,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        		
 		         "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"height:40px;color:#d84d34;padding:20px 40px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+"<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" +
 		        "<div style=\"font-size: 16px;color:#97a3b4;\">do not reply to this email \n</div>\r\n" +
 		        "</div>\r\n" +				
 						"</div>", true);
@@ -358,7 +359,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // default = text/plain
 		        //helper.setText("Check attachment for image!");
-
+		        String loginURL = "http://condonuityappdev.eastus2.cloudapp.azure.com/";
 		        // true = text/html
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your account is rejected";
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
@@ -369,7 +370,9 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+username+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your User Account Status Update Alert for following Organisations, \n"+String.join(", ", organisationName) +"</div>\r\n" +
 		        		
-		         "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#fff;height:40px;color:#d84d34;padding:20px 40px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
+					 "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"height:40px;color:#d84d34;padding:20px 40px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
+					// "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
+					"<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" +
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
 		        "<div style=\"font-size: 16px;color:#97a3b4;\">do not reply to this email \n</div>\r\n" +
 		        "</div>\r\n" +				

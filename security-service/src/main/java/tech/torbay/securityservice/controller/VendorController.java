@@ -134,7 +134,8 @@ public class VendorController {
 	private void sendVendorOrganisationVerificationPendingAlert(String email) {
 		// TODO Auto-generated method stub
 		
-		String content = "Thank you for registering with Condonuity. Currently our team is reviewing your account details. You would get a confirmation once the account review is completed successfully..!"; 
+//		String content = "Thank you for registering with Condonuity. Currently our team is reviewing your account details. You would get a confirmation once the account review is completed successfully..!"; 
+		String content = "Your registration is successful and our team is reviewing your account. You will recieve an email notification once your account is activated"; 
 		
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();

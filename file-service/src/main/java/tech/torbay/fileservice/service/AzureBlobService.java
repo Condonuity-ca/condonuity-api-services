@@ -27,12 +27,15 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 
+import tech.torbay.fileservice.constants.Constants;
+import tech.torbay.fileservice.constants.Constants.UserType;
 import tech.torbay.fileservice.entity.BidFiles;
 import tech.torbay.fileservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.fileservice.entity.ClientRegistrationFiles;
 import tech.torbay.fileservice.entity.CommentFiles;
 import tech.torbay.fileservice.entity.ProjectAwardFiles;
 import tech.torbay.fileservice.entity.ProjectFiles;
+import tech.torbay.fileservice.entity.SupportFileUploadLogs;
 import tech.torbay.fileservice.entity.ThreadFiles;
 import tech.torbay.fileservice.entity.UserProfileImages;
 import tech.torbay.fileservice.entity.VendorOrganisationProfileImages;
@@ -44,6 +47,7 @@ import tech.torbay.fileservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.fileservice.repository.CommentFilesRepository;
 import tech.torbay.fileservice.repository.ProjectAwardFilesRepository;
 import tech.torbay.fileservice.repository.ProjectFilesRepository;
+import tech.torbay.fileservice.repository.SupportFileUploadLogsRepository;
 import tech.torbay.fileservice.repository.ThreadFilesRepository;
 import tech.torbay.fileservice.repository.UserProfileImagesRepository;
 import tech.torbay.fileservice.repository.VendorOrganisationProfileImagesRepository;
@@ -80,6 +84,8 @@ public class AzureBlobService {
 	ProjectAwardFilesRepository projectAwardFilesRepository;
 	@Autowired
 	VendorPortfolioFilesRepository vendorPortfolioFilesRepository;
+	@Autowired
+	SupportFileUploadLogsRepository supportFileUploadLogsRepository;
 	
 	boolean URI_ACCESS_REQUIRED = true;
 	boolean URI_ACCESS_NOT_REQUIRED = false;
@@ -1061,5 +1067,43 @@ public class AzureBlobService {
 				exp.printStackTrace();
 				return false;
 			}
+		}
+
+		public List<URI> uploadOrganisationRegistrationFilesBySupportUser(Integer userType, Integer supportUserId,
+				Integer organisationId, MultipartFile[] multipartFiles) {
+			// TODO Auto-generated method stub
+			List<URI> urls =  new ArrayList();
+			
+			SupportFileUploadLogs supportFileUploadLogs = new SupportFileUploadLogs();
+			supportFileUploadLogs.setSupportUserId(supportUserId);
+			supportFileUploadLogs.setOrganisationId(organisationId);
+			supportFileUploadLogs.setOrganisationUserType(userType);
+			
+			if(userType == UserType.CLIENT.getValue()) {
+				urls = uploadClientRegistrationFiles(Constants.Availability.INFO_NOT_AVAILABLE.getValue(), organisationId, Constants.Containers.CLIENT_REGISTRATION_FILES.getValue(), multipartFiles);
+				
+				supportFileUploadLogs.setContainerName(Constants.Containers.CLIENT_REGISTRATION_FILES.getValue());
+				
+				for (URI url : urls) {
+					ClientRegistrationFiles clientRegistrationFile = clientRegistrationFilesRepository.findByFileUrl(url.toString());
+					
+					supportFileUploadLogs.setBlobName(clientRegistrationFile.getBlobName());
+					SupportFileUploadLogs supportLog = supportFileUploadLogsRepository.save(supportFileUploadLogs);
+				}
+			} else if(userType == UserType.VENDOR.getValue()) {
+				urls = uploadVendorRegistrationFiles(Constants.Availability.INFO_NOT_AVAILABLE.getValue(), organisationId, Constants.Containers.VENDOR_REGISTRATION_FILES.getValue(), multipartFiles);
+				
+				supportFileUploadLogs.setContainerName(Constants.Containers.VENDOR_REGISTRATION_FILES.getValue());
+				
+				for (URI url : urls) {
+					VendorRegistrationFiles vendorRegistrationFile = vendorRegistrationFilesRepository.findByFileUrl(url.toString());
+					
+					supportFileUploadLogs.setBlobName(vendorRegistrationFile.getBlobName());
+					SupportFileUploadLogs supportLog = supportFileUploadLogsRepository.save(supportFileUploadLogs);
+				}
+			}
+			
+			
+			return urls;
 		}
 }

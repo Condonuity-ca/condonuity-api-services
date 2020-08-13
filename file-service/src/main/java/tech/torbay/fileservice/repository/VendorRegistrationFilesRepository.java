@@ -17,5 +17,7 @@ public interface VendorRegistrationFilesRepository extends JpaRepository<VendorR
 	List<VendorRegistrationFiles> findAllByVendorOrganisationId(Integer vendorOrganisationId);
 
 	VendorRegistrationFiles findByBlobName(String BlobName);
+
+	VendorRegistrationFiles findByFileUrl(String string);
 	
 }

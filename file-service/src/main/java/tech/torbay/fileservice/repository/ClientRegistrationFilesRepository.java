@@ -18,4 +18,6 @@ public interface ClientRegistrationFilesRepository extends JpaRepository<ClientR
 
 	ClientRegistrationFiles findByBlobName(String BlobName);
 	
+	ClientRegistrationFiles findByFileUrl(String url);
+	
 }
