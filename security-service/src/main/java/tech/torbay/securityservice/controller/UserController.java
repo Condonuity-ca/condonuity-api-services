@@ -3,11 +3,8 @@ package tech.torbay.securityservice.controller;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,34 +16,25 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
-import org.apache.catalina.authenticator.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Multimap;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -57,8 +45,6 @@ import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
-import tech.torbay.securityservice.constants.Constants.VerificationStatus;
-import tech.torbay.securityservice.constants.Token;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
@@ -67,6 +53,7 @@ import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.SupportUser;
 import tech.torbay.securityservice.entity.User;
+import tech.torbay.securityservice.entity.UserInviteLogs;
 import tech.torbay.securityservice.entity.VendorOrganisation;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.BadRequestException;
@@ -556,6 +543,7 @@ public class UserController {
 			String firstName = "";
 			String lastName = "";
 			String phone = "";
+			int organisationId = 0;
 			try {
 				firstName = String.valueOf(requestData.get("firstName"));
 			} catch(Exception exp) {
@@ -570,6 +558,12 @@ public class UserController {
 			}
 			try {
 				phone = String.valueOf(requestData.get("phone"));
+			} catch(Exception exp) {
+				exp.printStackTrace();
+				phone = "";
+			}
+			try {
+				organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 			} catch(Exception exp) {
 				exp.printStackTrace();
 				phone = "";
@@ -598,14 +592,14 @@ public class UserController {
 				
 				if (userService.resetPassword(userId, userType, password, firstName, lastName, phone) == null) {
 			    	ResponseMessage responseMessage = new ResponseMessage(
-			    			APIStatusCode.REQUEST_FAILED.getValue(),
+			    			APIStatusCode.LINK_EXPIRED.getValue(),
 			        		"Failed",
-			        		"Failed to reset password");
+			        		"Invite Link Expired");
 			    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 			    } else {
 			    	
 			    	try {
-			    		userService.updateTermsAcceptedTimestamp(userId, userType);
+			    		userService.updateTermsAcceptedTimestamp(userId, userType, organisationId, hash);
 			    	} catch(Exception exp) {
 			    		exp.printStackTrace();
 			    	}
@@ -1051,6 +1045,64 @@ public class UserController {
 		        			APIStatusCode.REQUEST_SUCCESS.getValue(),
 		        			"Success",
 		        			"Client User Not Registered any Organisation using Hash");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.BAD_REQUEST.getValue(),
+	        			"Failed",
+	        			"Failed to Parse Request - Bad Request");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+			
+		}
+		
+		@ApiOperation(value = "Client Already Accepted the Invite or Not check")
+	    @ApiResponses(
+	            value = {
+	                    @ApiResponse(code = 200, message = "Client Invite Expiry check")
+	            }
+	    )
+		@PostMapping("/user/invite/hash")
+		public ResponseEntity<Object> checkDuplicateInviteAccept(
+				@RequestBody Map<String, Object> requestData) {
+			
+			try {
+				String hash = String.valueOf(requestData.get("hash"));
+				
+				String decryptedUser = SecurityAES.decrypt(hash);
+
+				System.out.println("decrypt hash :"+hash);
+				
+				Map<String, Object> userData;
+				
+				userData = Utils.convertJsonToHashMap(decryptedUser);
+				String expiry = String.valueOf(userData.get("expiry"));
+				Integer userId = Integer.parseInt(String.valueOf(userData.get("userId")));
+				Integer userType = Integer.parseInt(String.valueOf(userData.get("userType")));
+				Integer organisationId = Integer.parseInt(String.valueOf(userData.get("organisationId")));
+				
+				if (Utils.checkLinkIsExpired(expiry)) {
+					ResponseMessage responseMessage = new ResponseMessage(
+		        			APIStatusCode.LINK_EXPIRED.getValue(),
+		        			"Failed",
+		        			"Invite Link Expired");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+				}
+				List<UserInviteLogs> inviteLogs = clientService.checkInviteLogs(userId, userType, organisationId, hash);
+				if(inviteLogs != null && inviteLogs.size() > 0) {
+					ResponseMessage responseMessage = new ResponseMessage(
+		        			APIStatusCode.REQUEST_FAILED.getValue(),
+		        			"Failed",
+		        			"User Already Accepted an Invitation using this Hash");
+		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(
+		        			APIStatusCode.REQUEST_SUCCESS.getValue(),
+		        			"Success",
+		        			"User not used this hash for accepting an invite");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 				}
 			} catch (Exception e) {

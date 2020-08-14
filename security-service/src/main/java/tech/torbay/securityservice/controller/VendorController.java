@@ -355,11 +355,7 @@ public class VendorController {
 			
 			if(vendorUser != null ) {
 				
-				vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
-				vendorUser.setAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
-				vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
-				
-				vendorUser = vendorService.saveVendorUser(vendorUser);
+				vendorUser = vendorService.saveVendorUser(vendorUser, hash);
 				
 				if(vendorUser != null ) {
 					ResponseMessage responseMessage = new ResponseMessage(
@@ -369,9 +365,9 @@ public class VendorController {
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(
-							APIStatusCode.REQUEST_FAILED.getValue(),
+							APIStatusCode.LINK_EXPIRED.getValue(),
 			        		"Failed",
-			        		"Vendor User Account Verification Failed");
+			        		"Invite Link Expired");
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				}
 				

@@ -18,6 +18,7 @@ import tech.torbay.securityservice.entity.AvailableVendorProfiles;
 import tech.torbay.securityservice.entity.AvailableVendorProfilesRepository;
 import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.User;
+import tech.torbay.securityservice.entity.UserInviteLogs;
 import tech.torbay.securityservice.entity.VendorBrands;
 import tech.torbay.securityservice.entity.VendorInsurance;
 import tech.torbay.securityservice.entity.VendorInsuranceRepository;
@@ -29,6 +30,7 @@ import tech.torbay.securityservice.entity.VendorServices;
 import tech.torbay.securityservice.entity.VendorServicesCities;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.repository.RegistrationLogsRepository;
+import tech.torbay.securityservice.repository.UserInviteLogsRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorBrandsRepository;
 import tech.torbay.securityservice.repository.VendorLicensesRepository;
@@ -66,6 +68,8 @@ public class VendorService {
 	AvailableVendorProfilesRepository availableVendorProfilesRepository;
 	@Autowired
 	RegistrationLogsRepository registrationLogsRepository;
+	@Autowired
+	UserInviteLogsRepository userInviteLogsRepository;
 
 	public List<VendorUser> findAll() {
 //		// TODO Auto-generated method stub
@@ -225,9 +229,28 @@ public class VendorService {
 		return vendorUserRepository.findByUserId(userId);
 	}
 
-	public VendorUser saveVendorUser(VendorUser vendorUser) {
+	public VendorUser saveVendorUser(VendorUser vendorUser, String hash) {
 		// TODO Auto-generated method stub
-		return vendorUserRepository.save(vendorUser);
+//		check
+		List<UserInviteLogs> userInviteLogs = userInviteLogsRepository.findByUserIdAndUserTypeAndOrganisationIdAndHash(vendorUser.getUserId(),UserType.VENDOR.getValue(), vendorUser.getVendorOrganisationId(), hash);
+		
+		if(userInviteLogs != null && userInviteLogs.size() > 0) {
+			return null;
+		} else {
+			//add log
+			vendorUser.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+			vendorUser.setAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+			vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+			
+			UserInviteLogs userInviteLog = new UserInviteLogs();
+			userInviteLog.setUserId(vendorUser.getUserId());
+			userInviteLog.setUserType(UserType.VENDOR.getValue());
+			userInviteLog.setOrganisationId(vendorUser.getVendorOrganisationId());
+			userInviteLog.setHash(hash);
+			userInviteLogsRepository.save(userInviteLog);
+			
+			return vendorUserRepository.save(vendorUser);
+		}
 	}
 
 	public VendorUser createVendorUser(VendorUser vendorUser) {

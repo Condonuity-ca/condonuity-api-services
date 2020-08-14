@@ -128,7 +128,7 @@ public class ClientController {
 			if(clientService.findByEmail(email) != null) {
 				// Already have an client account
 				if (clientId != 0 /* && client.getOrganisationId() > 0 - check org parameter */) {
-					if(clientService.updateClientUserVerificationStatus(organisationId, clientId) != null) {
+					if(clientService.updateClientUserVerificationStatus(organisationId, clientId, hash) != null) {
 						
 						/*
 						 * if(clientService.getAllOrganisationsForClientUser(clientId) > 1) {
@@ -142,9 +142,9 @@ public class ClientController {
 						
 					} else {
 						ResponseMessage responseMessage = new ResponseMessage(
-								APIStatusCode.NOT_FOUND.getValue(),
-								"Resource not found error",
-								"Client Record Not Found");
+								APIStatusCode.LINK_EXPIRED.getValue(),
+								"Failed",
+								"Invite Link Expired");
 						return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 					}
 				} else {

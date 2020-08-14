@@ -17,10 +17,12 @@ import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.User;
+import tech.torbay.securityservice.entity.UserInviteLogs;
 import tech.torbay.securityservice.repository.ClientAssociationRepository;
 import tech.torbay.securityservice.repository.ClientOrganisationRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.repository.RegistrationLogsRepository;
+import tech.torbay.securityservice.repository.UserInviteLogsRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 
 @Component
@@ -36,6 +38,8 @@ public class ClientService {
 	ClientAssociationRepository clientAssociationRepository;
 	@Autowired
 	RegistrationLogsRepository registrationLogsRepository;
+	@Autowired
+	UserInviteLogsRepository userInviteLogsRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -245,19 +249,34 @@ public class ClientService {
 		return clientAssociations;
 	}
 
-	public ClientAssociation updateClientUserVerificationStatus(Integer clientOrgId, Integer clientId) {
+	public ClientAssociation updateClientUserVerificationStatus(Integer clientOrgId, Integer clientId, String hash) {
 		// TODO Auto-generated method stub
 		
-		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientId, clientOrgId);
-		clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
-		clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
-		clientAssociation.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+//		check
+		List<UserInviteLogs> userInviteLogs = userInviteLogsRepository.findByUserIdAndUserTypeAndOrganisationIdAndHash(clientId,UserType.CLIENT.getValue(), clientOrgId, hash);
 		
-		ClientUser clientUser = clientUserRepository.findByClientId(clientId);
-		clientUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
-		clientUserRepository.save(clientUser);
-		
-		return clientAssociationRepository.save(clientAssociation);
+		if(userInviteLogs != null && userInviteLogs.size() > 0) {
+			return null;
+		} else {
+			//add log
+			ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientId, clientOrgId);
+			clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.VERIFIED.getValue());
+			clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+			clientAssociation.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+			
+			ClientUser clientUser = clientUserRepository.findByClientId(clientId);
+			clientUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+			clientUserRepository.save(clientUser);
+			
+			UserInviteLogs userInviteLog = new UserInviteLogs();
+			userInviteLog.setUserId(clientId);
+			userInviteLog.setUserType(UserType.CLIENT.getValue());
+			userInviteLog.setOrganisationId(clientOrgId);
+			userInviteLog.setHash(hash);
+			userInviteLogsRepository.save(userInviteLog);
+			
+			return clientAssociationRepository.save(clientAssociation);
+		}
 	}
 
 	public boolean checkClientOrgAssociationFound(Integer clientId, Integer organisationId) {
@@ -351,6 +370,7 @@ public class ClientService {
 
 	public List<RegistrationLogs> checkRegistrationLog(Integer clientUserId) {
 		// TODO Auto-generated method stub
+		// Using Hash only one Organisation Can register, For Multiple Organisation Register User need to to Logged IN 
 		return registrationLogsRepository.findByUserIdAndUserType(clientUserId,UserType.CLIENT.getValue());
 	}
 
@@ -360,6 +380,11 @@ public class ClientService {
 		ClientUser clientUserObj = clientUserRepository.findByClientId(clientUser.getClientId());
 		clientUserObj.setPrimaryOrgId(organisationId);
 		clientUserRepository.save(clientUserObj);
+	}
+
+	public List<UserInviteLogs> checkInviteLogs(Integer userId, Integer userType, Integer organisationId, String hash) {
+		// TODO Auto-generated method stub
+		return userInviteLogsRepository.findByUserIdAndUserTypeAndOrganisationIdAndHash(userId,userType, organisationId, hash);
 	}
 }
 

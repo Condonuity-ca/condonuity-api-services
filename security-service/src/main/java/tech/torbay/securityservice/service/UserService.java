@@ -23,6 +23,7 @@ import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
+import tech.torbay.securityservice.entity.UserInviteLogs;
 import tech.torbay.securityservice.entity.UserProfileImages;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.exception.ResourceNotFoundException;
@@ -30,6 +31,7 @@ import tech.torbay.securityservice.repository.AmenitiesRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.repository.PredefinedTagsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
+import tech.torbay.securityservice.repository.UserInviteLogsRepository;
 import tech.torbay.securityservice.repository.UserProfileImagesRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorUserRepository;
@@ -53,6 +55,8 @@ public class UserService {
 	private BCryptPasswordEncoder encoder;
 	@Autowired
 	UserProfileImagesRepository userProfileImagesRepository;
+	@Autowired
+	UserInviteLogsRepository userInviteLogsRepository;
 
 	public List<User> findAll() {
 //		// TODO Auto-generated method stub
@@ -163,7 +167,7 @@ public class UserService {
 		return provinceCities;
 	}
 
-	public void updateTermsAcceptedTimestamp(Integer userId, Integer userType) {
+	public void updateTermsAcceptedTimestamp(Integer userId, Integer userType, int organisationId, String hash) {
 		// TODO Auto-generated method stub
 		User userObj = userRepository.findByUserIdAndUserType(userId, userType);
 		if (userObj != null) {
@@ -177,6 +181,14 @@ public class UserService {
 			String termsAcceptedDate = df.format(date);
 
 			userObj.setTermsAcceptedDate(termsAcceptedDate);
+			
+			// insert log for using hash invite accept
+			UserInviteLogs userInviteLogs = new UserInviteLogs();
+			userInviteLogs.setUserId(userId);
+			userInviteLogs.setUserType(userType);
+			userInviteLogs.setOrganisationId(organisationId);
+			userInviteLogs.setHash(hash);
+			userInviteLogsRepository.save(userInviteLogs);
 		}
 
 		userRepository.save(userObj);
