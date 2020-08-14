@@ -282,12 +282,16 @@ public class ProjectService {
 		
 		VendorBid vendorBid = vendorBidRepository.findOneById(vendorBidId);
 		
-		ObjectMapper oMapper = new ObjectMapper();
-		Map<String, Object> map = oMapper.convertValue(vendorBid, Map.class);
+		if(vendorBid != null ) {
+			ObjectMapper oMapper = new ObjectMapper();
+			Map<String, Object> map = oMapper.convertValue(vendorBid, Map.class);
+			
+			map.put("bidFiles", GetVendorBidFiles(vendorBid.getId()));
+			return map;
+		}
 		
-		map.put("bidFiles", GetVendorBidFiles(vendorBid.getId()));
 		
-		return map;
+		return null;
 	}
 
 	public List<Map<String,Object>> getAllProjects(ProjectSortBy past, Integer id) {

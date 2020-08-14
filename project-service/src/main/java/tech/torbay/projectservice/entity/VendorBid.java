@@ -104,7 +104,7 @@ public class VendorBid {
     @JoinColumn(name = "bidding_id")
     private List<BiddingProducts> biddingProducts;
     
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "vendorUserId", referencedColumnName = "userId")
     private VendorUser vendorUser;
     
