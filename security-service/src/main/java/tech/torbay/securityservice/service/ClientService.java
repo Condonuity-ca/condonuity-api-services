@@ -11,6 +11,7 @@ import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.Availability;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
+import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
@@ -304,6 +305,24 @@ public class ClientService {
 		// check Active clients count
 		
 		return clientAssociations.size();
+	}
+	
+	public boolean checkSingleOrganisationAccountVerificationStatus(Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		try {
+		if(clientAssociations.size() == 1) {
+			ClientOrganisation clientOrganisation = getClientOrganisationById(clientAssociations.get(0).getClientOrganisationId());
+			if(clientOrganisation.getActiveStatus() == UserAccountStatus.INVITED.getValue()) {
+				return true;
+			}
+		}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return false;
 	}
 
 	public ClientOrganisation getClientOrganisationById(Integer organisationId) {

@@ -292,38 +292,38 @@ public class VendorService {
 						System.out.println("rating 1 "+ ratingValue);
 						switch(ratingCategory) {
 							case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
-								System.out.println("overAllRatingCalculation1/1 "+ overAllRatingCalculation);
+//								System.out.println("overAllRatingCalculation1/1 "+ overAllRatingCalculation);
 								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
-								System.out.println("overAllRatingCalculation1/2 "+ overAllRatingCalculation);
+//								System.out.println("overAllRatingCalculation1/2 "+ overAllRatingCalculation);
 								break;
 							}
 							case 2/*VendorRatingCategory.PROFESSIONALISM.getValue()*/ :{
-								System.out.println("overAllRatingCalculation2/1 "+ overAllRatingCalculation);
+//								System.out.println("overAllRatingCalculation2/1 "+ overAllRatingCalculation);
 								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
-								System.out.println("overAllRatingCalculation2/2 "+ overAllRatingCalculation);
+//								System.out.println("overAllRatingCalculation2/2 "+ overAllRatingCalculation);
 								break;
 							}
 							case 3/*VendorRatingCategory.ACCURACY.getValue()*/ :{
-								System.out.println("overAllRatingCalculation3/1 "+ overAllRatingCalculation);
+//								System.out.println("overAllRatingCalculation3/1 "+ overAllRatingCalculation);
 								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
-								System.out.println("overAllRatingCalculation3/2 "+ overAllRatingCalculation);
+//								System.out.println("overAllRatingCalculation3/2 "+ overAllRatingCalculation);
 								break;
 							}
 							case 4/*VendorRatingCategory.QUALITY.getValue()*/ :{
-								System.out.println("overAllRatingCalculation4/1 "+ overAllRatingCalculation);
+//								System.out.println("overAllRatingCalculation4/1 "+ overAllRatingCalculation);
 								Float categoryRatingValue = (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
 								overAllRatingCalculation = overAllRatingCalculation + categoryRatingValue;
-								System.out.println("categoryRatingValue4 "+ categoryRatingValue);
-								System.out.println("overAllRatingCalculation4/2 "+ overAllRatingCalculation);
+//								System.out.println("categoryRatingValue4 "+ categoryRatingValue);
+//								System.out.println("overAllRatingCalculation4/2 "+ overAllRatingCalculation);
 								break;
 							}
 						}
 					}
-					System.out.println("overAllRatingCalculation Final "+ overAllRatingCalculation);
+//					System.out.println("overAllRatingCalculation Final "+ overAllRatingCalculation);
 					String rating = String.format("%.4f", overAllRatingCalculation);
-					String rating1 = String.format("%.2f", overAllRatingCalculation);
-					System.out.println("rating Final "+ rating);
-					System.out.println("rating1 Final "+ rating1);
+//					String rating1 = String.format("%.2f", overAllRatingCalculation);
+//					System.out.println("rating Final "+ rating);
+//					System.out.println("rating1 Final "+ rating1);
 					mappedObj.put("rating", rating);
 				 vendorAllReviews.add(mappedObj);
 			 }
@@ -473,6 +473,13 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
+	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+	        List<String> servicesCities = new ArrayList();
+	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+	        	servicesCities.add(serviceCity.getCityName());
+	        }
+	        map.put("serviceCities",String.join(",", servicesCities));
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        try {
 		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
@@ -518,7 +525,13 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-	        
+	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+	        List<String> servicesCities = new ArrayList();
+	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+	        	servicesCities.add(serviceCity.getCityName());
+	        }
+	        map.put("serviceCities",String.join(",", servicesCities));
 	        int activeStatus = vendorOrg.getActiveStatus();
 	        int deleteStatus = vendorOrg.getDeleteStatus();
 	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
@@ -791,6 +804,13 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
+	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+	        List<String> servicesCities = new ArrayList();
+	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+	        	servicesCities.add(serviceCity.getCityName());
+	        }
+	        map.put("serviceCities",String.join(",", servicesCities));
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
 	        	map.put("isPreferred", "true");

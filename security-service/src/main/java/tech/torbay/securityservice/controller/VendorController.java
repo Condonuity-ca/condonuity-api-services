@@ -140,7 +140,7 @@ public class VendorController {
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		try {
-			springBootEmail.sendRegistrationAlertForVerificationPending(email);
+			springBootEmail.sendRegistrationAlertForVerificationPending(email, content);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

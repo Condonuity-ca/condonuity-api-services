@@ -138,7 +138,21 @@ public class UserController {
 							
 							return new ResponseEntity<>(list, HttpStatus.OK);
 						}
-						if(clientService.getAllOrganisationsForClientUser(clientInfo.getClientId()) > 0) {
+						int organisationSize = clientService.getAllOrganisationsForClientUser(clientInfo.getClientId());
+						if(organisationSize > 0) {
+							// check client has single organisation and its under verification or not
+							if(organisationSize == 1) { // check organisation under verification alert from this check
+								if(clientService.checkSingleOrganisationAccountVerificationStatus(clientInfo.getClientId())) {
+									HashMap<String, Object> list = new HashMap();
+									list.put("statusCode", APIStatusCode.REGISTRATION_UNDER_REVIEW.getValue());
+									list.put("statusMessage", "Failed");
+									list.put("responseMessage", "Registration Under Review");
+									list.put("userId", clientInfo.getClientId());
+									list.put("userType", UserType.CLIENT.getValue());
+									
+									return new ResponseEntity<>(list, HttpStatus.OK);
+								}
+							}
 								
 								if(clientService.checkIsClientActiveAtlestOneAccount(clientInfo.getClientId())) {
 									if(clientService.checkIsClientAccountActive(clientInfo.getClientId())) {
@@ -222,6 +236,15 @@ public class UserController {
 					
 						if(vendorUserInfo.getVendorOrganisationId() != null && vendorUserInfo.getVendorOrganisationId()  > 0) {
 							VendorOrganisation vendorOrgInfo = vendorService.findByVendorOrgId(vendorUserInfo.getVendorOrganisationId());
+							if(vendorOrgInfo.getActiveStatus() == UserAccountStatus.INVITED.getValue()) {
+								HashMap<String, Object> list = new HashMap();
+								list.put("statusCode", APIStatusCode.REGISTRATION_UNDER_REVIEW.getValue());
+								list.put("statusMessage", "Failed");
+								list.put("responseMessage", "Registration Under Review");
+								list.put("userId", vendorUserInfo.getUserId());
+								list.put("userType", vendorUserInfo.getUserType());
+								return new ResponseEntity<>(list, HttpStatus.OK);
+							}
 							if(vendorOrgInfo.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
 								if(vendorOrgInfo.getActiveStatus() == OrganisationAccountStatus.ACTIVE.getValue()) {
 									if(vendorUserInfo.getAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
