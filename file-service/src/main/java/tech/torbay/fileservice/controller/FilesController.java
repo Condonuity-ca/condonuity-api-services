@@ -737,16 +737,37 @@ public class FilesController {
 		
 //	delete APIs
 	
-	@DeleteMapping("/delete/client/registration/files}")
-	public ResponseEntity<Map<String, Object>> deleteRegistrationFiles(@RequestBody List<Integer> fileIds) {
+	@DeleteMapping("/delete/client/registration/files")
+	public ResponseEntity<Map<String, Object>> deleteClientRegistrationFiles(@RequestBody List<Integer> fileIds) {
 		
-		boolean isDeleted = azureBlobService.deleteRegistrationFiles(fileIds);
+		boolean isDeleted = azureBlobService.deleteClientRegistrationFiles(fileIds);
 		
 		if(isDeleted) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
 			map.put("statusMessage", "Success");
-			map.put("responseMessage", "Registration Files Deleted SuccessFully");
+			map.put("responseMessage", "Client Registration Files Deleted SuccessFully");
+						return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			Map<String, Object> map = new HashMap<>();
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to delete the registration files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+	
+	@DeleteMapping("/delete/vendor/registration/files")
+	public ResponseEntity<Map<String, Object>> deleteVendorRegistrationFiles(@RequestBody List<Integer> fileIds) {
+		
+		boolean isDeleted = azureBlobService.deleteVendorRegistrationFiles(fileIds);
+		
+		if(isDeleted) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Vendor Registration Files Deleted SuccessFully");
 			
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		} else {

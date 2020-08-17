@@ -289,26 +289,42 @@ public class VendorService {
 						
 						Integer ratingCategory = (Integer) rating.get("ratingCategory");
 						Float ratingValue = Float.valueOf(String.valueOf(rating.get("rating")));
+						System.out.println("rating 1 "+ ratingValue);
 						switch(ratingCategory) {
 							case 1/*VendorRatingCategory.RESPONSIVENESS.getValue()*/ :{
+								System.out.println("overAllRatingCalculation1/1 "+ overAllRatingCalculation);
 								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
+								System.out.println("overAllRatingCalculation1/2 "+ overAllRatingCalculation);
 								break;
 							}
 							case 2/*VendorRatingCategory.PROFESSIONALISM.getValue()*/ :{
+								System.out.println("overAllRatingCalculation2/1 "+ overAllRatingCalculation);
 								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
+								System.out.println("overAllRatingCalculation2/2 "+ overAllRatingCalculation);
 								break;
 							}
 							case 3/*VendorRatingCategory.ACCURACY.getValue()*/ :{
+								System.out.println("overAllRatingCalculation3/1 "+ overAllRatingCalculation);
 								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
+								System.out.println("overAllRatingCalculation3/2 "+ overAllRatingCalculation);
 								break;
 							}
 							case 4/*VendorRatingCategory.QUALITY.getValue()*/ :{
-								overAllRatingCalculation = overAllRatingCalculation + (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+								System.out.println("overAllRatingCalculation4/1 "+ overAllRatingCalculation);
+								Float categoryRatingValue = (ratingValue*VendorRatingCategoryPercentage.QUALITY.getValue()/100);
+								overAllRatingCalculation = overAllRatingCalculation + categoryRatingValue;
+								System.out.println("categoryRatingValue4 "+ categoryRatingValue);
+								System.out.println("overAllRatingCalculation4/2 "+ overAllRatingCalculation);
 								break;
 							}
 						}
 					}
-					mappedObj.put("rating", overAllRatingCalculation);
+					System.out.println("overAllRatingCalculation Final "+ overAllRatingCalculation);
+					String rating = String.format("%.4f", overAllRatingCalculation);
+					String rating1 = String.format("%.2f", overAllRatingCalculation);
+					System.out.println("rating Final "+ rating);
+					System.out.println("rating1 Final "+ rating1);
+					mappedObj.put("rating", rating);
 				 vendorAllReviews.add(mappedObj);
 			 }
 			 

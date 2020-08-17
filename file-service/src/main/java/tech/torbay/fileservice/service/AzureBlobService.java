@@ -654,7 +654,7 @@ public class AzureBlobService {
 		return null;
 	}
 
-	public boolean deleteRegistrationFiles(List<Integer> fileIds) {
+	public boolean deleteClientRegistrationFiles(List<Integer> fileIds) {
 		// TODO Auto-generated method stub
 		try {
 			for(Integer fileId : fileIds) {
@@ -664,10 +664,34 @@ public class AzureBlobService {
 				String containerName = clientRegistrationFile.getContainerName();
 				String blobName = clientRegistrationFile.getBlobName();
 				
-				if(deleteBlob(containerName, blobName)) {
+				/*if(*/deleteBlob(containerName, blobName);/*) {*/
 					// azure file delete 
 					clientRegistrationFilesRepository.deleteById(fileId);
-				}
+//				}
+			}
+			
+			return true;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean deleteVendorRegistrationFiles(List<Integer> fileIds) {
+		// TODO Auto-generated method stub
+		try {
+			for(Integer fileId : fileIds) {
+				
+				VendorRegistrationFiles vendorRegistrationFile = vendorRegistrationFilesRepository.findOneById(fileId);
+				
+				String containerName = vendorRegistrationFile.getContainerName();
+				String blobName = vendorRegistrationFile.getBlobName();
+				
+				/*if(*/deleteBlob(containerName, blobName);/*) {*/
+					// azure file delete 
+					vendorRegistrationFilesRepository.deleteById(fileId);
+//				} 
 			}
 			
 			return true;
@@ -688,9 +712,9 @@ public class AzureBlobService {
 				String containerName = projectFile.getContainerName();
 				String blobName = projectFile.getBlobName();
 				
-				if(deleteBlob(containerName, blobName)) {
+				/*if(*/deleteBlob(containerName, blobName);/*) {*/
 					projectFilesRepository.deleteById(fileId);
-				}
+//				}
 				
 			}
 			
