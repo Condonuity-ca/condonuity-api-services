@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
 import tech.torbay.userservice.entity.ClientAssociation;
 
 @Repository
@@ -63,4 +64,8 @@ public interface ClientAssociationRepository extends JpaRepository<ClientAssocia
 	
 	@Query(value = "select ca.* from condonuitydev.client_association ca where client_id = (?1)  AND ( user_account_status = 1 )", nativeQuery = true)//only active users
     List<ClientAssociation> findAllActiveUsersByClientUserId(Integer clientUserId);
+
+	@Query(value = "select ca.* from condonuitydev.client_association ca where client_organisation_id = (?1) AND ( user_account_status = (?2) ) AND (delete_status = (?3) )", nativeQuery = true)
+	List<ClientAssociation> findAllUsersByClientOrganisationIdAndActiveStatusAndDeleteStatus(Integer organisationId,
+			int activeStatus, int deleteStatus);
 }

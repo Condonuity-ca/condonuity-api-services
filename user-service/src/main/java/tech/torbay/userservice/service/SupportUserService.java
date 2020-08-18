@@ -256,10 +256,14 @@ public class SupportUserService {
 			if(ClientOrganisationObj != null) {
 				
 				SendOrganisationAlertEmailForRemovalFromSystem(ClientOrganisationObj.getManagementEmail(), ClientOrganisationObj.getOrganisationName(), emailContentOrganisation );
+				List<ClientAssociation> clientAssociations = new ArrayList();
+				if(activeStatus == UserAccountStatus.ACTIVE.getValue()) {
+					clientAssociations = clientAssociationRepository.findAllUsersByClientOrganisationIdAndActiveStatusAndDeleteStatus(organisationId, UserAccountStatus.INACTIVE.getValue(), DeleteStatus.ACTIVE.getValue());
+				} else if(activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+					clientAssociations = clientAssociationRepository.findAllUsersByClientOrganisationIdAndActiveStatusAndDeleteStatus(organisationId, UserAccountStatus.ACTIVE.getValue(), DeleteStatus.ACTIVE.getValue());
+				}
 				
 				clientAssociationRepository.setUserAccountStatusByClientOrganisationId(activeStatus, organisationId);
-				
-				List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(organisationId);
 				for (ClientAssociation clientAssociation : clientAssociations) {
 					
 					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
@@ -288,10 +292,14 @@ public class SupportUserService {
 			if(vendorOrganisationObj != null) {
 				
 				SendOrganisationAlertEmailForRemovalFromSystem(vendorOrganisationObj.getEmail(), vendorOrganisationObj.getCompanyName(), emailContentOrganisation );
+				List<VendorUser> vendorUsers = new ArrayList();
+				if(activeStatus == UserAccountStatus.ACTIVE.getValue()) {
+					vendorUsers = vendorUserRepository.findUsersByVendorOrganisationIdAndActiveStatusAndDeleteStatus(organisationId, UserAccountStatus.INACTIVE.getValue(), DeleteStatus.ACTIVE.getValue());
+				} else if(activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+					vendorUsers = vendorUserRepository.findUsersByVendorOrganisationIdAndActiveStatusAndDeleteStatus(organisationId, UserAccountStatus.ACTIVE.getValue(), DeleteStatus.ACTIVE.getValue());
+				}
 				
 				vendorUserRepository.setAccountStatusByVendorOrganisationId(activeStatus, organisationId);
-				
-				List<VendorUser> vendorUsers = vendorUserRepository.findAllActiveUsersByVendorOrganisationId(organisationId);
 				
 				for(VendorUser vendorUser : vendorUsers) {
 					List<String> org = new ArrayList<>();
