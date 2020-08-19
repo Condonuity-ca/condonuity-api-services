@@ -428,7 +428,7 @@ public class ClientService {
 	
 	public List<Object> getAllClientOrganisationsForSupportUser() {
 		// TODO Auto-generated method stub
-		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAll();
+		List<ClientOrganisation> clientOrgsAll = clientOrganisationRepository.findAllActiveInActiveOrganisations();
 		
 		List<Object> clientOrganisations = new ArrayList();
 		

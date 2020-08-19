@@ -498,7 +498,7 @@ public class VendorService {
 	
 	public List<Object> getAllVendorOrganisationsForSupportUser() {
 		// TODO Auto-generated method stub
-		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAll();
+		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllActiveInActiveOrganisations();
 		
 		List<Object> vendorOrganisations = new ArrayList();
 		

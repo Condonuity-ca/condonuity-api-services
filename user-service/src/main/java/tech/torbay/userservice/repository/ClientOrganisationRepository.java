@@ -49,4 +49,7 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 			"co.board_email, '.', co.general_email, '.', co.management_email, '.', co.created_at, '.', co.modified_date )" + 
 			" LIKE (?1)", nativeQuery = true)
     List<ClientOrganisation> findUnApprovedOrganisationsByKeyword(String keyword);
+
+	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.active_status = 1 or co.active_status = 2 );", nativeQuery = true)
+	List<ClientOrganisation> findAllActiveInActiveOrganisations();
 }
