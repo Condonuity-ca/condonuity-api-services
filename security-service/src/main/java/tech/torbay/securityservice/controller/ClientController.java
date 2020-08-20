@@ -36,6 +36,8 @@ import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.constants.Constants.DeleteStatus;
+import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientAssociation;
@@ -251,8 +253,13 @@ public class ClientController {
 		
 		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 		String email = String.valueOf(requestData.get("email"));
-		String firstName =String.valueOf(requestData.get("firstName"));
-		String lastName = String.valueOf(requestData.get("lastName"));
+		String firstName = "", lastName = "";
+//		try {
+//		firstName =String.valueOf(requestData.get("firstName"));
+//		lastName = String.valueOf(requestData.get("lastName"));
+//		} catch(Exception exp) {
+//			exp.printStackTrace();
+//		}
 		Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
 		Integer clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
 		
@@ -266,7 +273,24 @@ public class ClientController {
 		
 		ClientUser existClient = clientService.findByEmail(email);
 		List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
+		
 		if(existClient != null) {
+			//check alreadyIn in this organisation and active and throw error message
+			
+			ClientAssociation clientUserAssociation = clientService.findClientAssociationByClientIdAndOrganisationId(existClient.getClientId(), organisationId);
+			if(clientUserAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue() && 
+					clientUserAssociation.getAccountVerificationStatus() == UserAccountStatus.ACTIVE.getValue() &&
+					clientUserAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+				HashMap<String, Object> list = new HashMap();
+				
+				list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+				list.put("statusMessage", "Failed");
+				list.put("responseMessage", "Client User Record Already Exists In this Organisation");
+				list.put("userId",existClient.getClientId());
+				list.put("userType",UserType.CLIENT.getValue());
+				
+	        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+			}
 			try {
 //				if Association Not-found/association-verification-pending/user-not-active  Send Invite
 //				if(clientService.checkClientOrgAssociationFound(existClient.getClientId(), organisationId)) {

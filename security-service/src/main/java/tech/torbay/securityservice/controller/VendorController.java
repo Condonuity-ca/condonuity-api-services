@@ -36,6 +36,8 @@ import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
+import tech.torbay.securityservice.constants.Constants.DeleteStatus;
+import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.User;
@@ -428,6 +430,82 @@ public class VendorController {
 				vendorUser.setAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
 				vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
 				VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
+				VendorOrganisation vendorOrg = vendorService.getVendorOrganisationById(vendorUser.getVendorOrganisationId());
+				
+				if(vendor_user != null ) {
+					ResponseMessage responseMessage = new ResponseMessage(
+							APIStatusCode.REQUEST_SUCCESS.getValue(),
+			        		"Success",
+			        		"Vendor User Account Created Successfully");
+					// Invite Sent
+					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
+					
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				} else {
+					ResponseMessage responseMessage = new ResponseMessage(
+							APIStatusCode.REQUEST_FAILED.getValue(),
+			        		"Failed",
+			        		"Vendor User Account Creation Failed");
+					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+				}
+			} else {
+				ResponseMessage responseMessage = new ResponseMessage(
+						APIStatusCode.MAX_USERS_COUNT_ERROR.getValue(),
+		        		"Failed",
+		        		"Maximum of "+Constants.MAX_USER_COUNT+" Vendor User Added in this Organisation");
+				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+			}
+		}
+	}
+	
+	@ApiOperation(value = "New Organisation Vendor user email invitation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Vendor User Account Created and Invitation Sent")
+            }
+    )
+	@PostMapping("/support/vendor/user/invite/register")
+	public ResponseEntity<Object> SendExistVendorUserInvitationBySupportUser(@RequestBody VendorUser vendorUser) {
+		
+		
+		VendorUser existVendorUserObj = vendorService.findByVendorUserId(vendorUser.getUserId());
+		if(existVendorUserObj != null) {
+			vendorUser.setEmail(existVendorUserObj.getEmail());
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Vendor User Account Invite Creation Failed");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		}
+		
+		if(existVendorUserObj != null && existVendorUserObj.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.CONFLICT.getValue(),
+	        		"Failed",
+	        		"Active Vendor User Already Exists");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+		} else {
+			User existUser= userService.findByIdAndUserType(vendorUser.getUserId(), UserType.CLIENT.getValue());
+			if(existUser != null && existUser.getUserType() == UserType.VENDOR.getValue()) {
+				HashMap<String, Object> list = new HashMap();
+				
+				list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+				list.put("statusMessage", "Failed");
+				list.put("responseMessage", "Client User Record Already Exists");
+				list.put("userId",existUser.getUserId());
+				list.put("userType",existUser.getUserType());
+				
+	        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+			}
+
+			List<VendorUser> vendorUsers = vendorService.getAllVendorUsersInOrganisation(vendorUser.getVendorOrganisationId());
+			if(vendorUsers.size() < Constants.MAX_USER_COUNT) {
+				vendorUser.setUserId(existVendorUserObj.getUserId());
+				vendorUser.setUserType(Constants.UserType.VENDOR.getValue());
+				vendorUser.setAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
+				vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+				VendorUser vendor_user = vendorService.updateVendorUserBySupportUser(vendorUser);
 				VendorOrganisation vendorOrg = vendorService.getVendorOrganisationById(vendorUser.getVendorOrganisationId());
 				
 				if(vendor_user != null ) {

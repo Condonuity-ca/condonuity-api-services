@@ -405,5 +405,12 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		return userInviteLogsRepository.findByUserIdAndUserTypeAndOrganisationIdAndHash(userId,userType, organisationId, hash);
 	}
+
+	public ClientAssociation findClientAssociationByClientIdAndOrganisationId(Integer clientId,	Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientId, clientOrganisationId);
+		
+		return clientAssociation;
+	}
 }
 

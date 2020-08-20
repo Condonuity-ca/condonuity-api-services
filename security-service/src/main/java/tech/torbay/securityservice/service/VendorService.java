@@ -131,7 +131,12 @@ public class VendorService {
 			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
 //			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.ACTIVE.getValue());//support user will activate the organisation
 			vendorOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
-			VendorInsurance vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
+			VendorInsurance vendorInsurance = null;
+			try {
+			vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
+			} catch(Exception exp) {
+				exp.printStackTrace();
+			}
 			
 			String serviceCities = String.valueOf(vendorOrganisationData.get("serviceCities")); // ids - 1,2,3
 			String services = String.valueOf(vendorOrganisationData.get("services")); // string - abc,abc,acbc
@@ -162,8 +167,10 @@ public class VendorService {
 				// 5 add brands
 				// 6 add memberships
 				
-				vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-				vendorInsuranceRepository.save(vendorInsurance);
+				if(vendorInsurance != null) {
+					vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+					vendorInsuranceRepository.save(vendorInsurance);
+				}
 				
 				//1
 				
@@ -199,7 +206,7 @@ public class VendorService {
 			    try {
 			    	String vendorProfileId = String.valueOf(vendorOrganisationData.get("vendorProfileId")); // ids - 1,2,3
 			    	
-			    	if(vendorProfileId != null && !vendorProfileId.equals("null") && vendorProfileId.trim().length() > 0) {
+			    	if(vendorProfileId != null && !vendorProfileId.equals("null") && !vendorProfileId.equals("0") && vendorProfileId.trim().length() > 0) {
 				    	AvailableVendorProfiles availableVendorProfile = availableVendorProfilesRepository.findByVendorProfileId(Integer.parseInt(vendorProfileId));
 				    	availableVendorProfile.setAllocatedVendorOrgId(vendorOrganisation.getVendorOrganisationId());
 				    	availableVendorProfilesRepository.save(availableVendorProfile);
@@ -281,6 +288,27 @@ public class VendorService {
 				return null;
 			}
 	}
+	
+	public VendorUser updateVendorUserBySupportUser(VendorUser vendorUser) {
+		// TODO Auto-generated method stub
+		try {
+			
+			if(vendorUserRepository.save(vendorUser) != null){
+				
+				vendorUser = vendorUserRepository.findByEmail(vendorUser.getEmail());
+				
+				System.out.println(vendorUser.toString());
+				
+				return vendorUser;
+			} else {
+				return null;
+			}
+			} catch (Exception exp) {
+				exp.printStackTrace();
+				return null;
+			}
+	}
+
 
 	public List<VendorUser> getAllVendorUsersInOrganisation(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
