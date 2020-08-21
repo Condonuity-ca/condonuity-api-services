@@ -289,7 +289,7 @@ public class VendorService {
 			}
 	}
 	
-	public VendorUser updateVendorUserBySupportUser(VendorUser vendorUser) {
+	public VendorUser updateVendorUser(VendorUser vendorUser) {
 		// TODO Auto-generated method stub
 		try {
 			
