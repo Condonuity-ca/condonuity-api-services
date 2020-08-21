@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
 import tech.torbay.userservice.constants.Constants.Availability;
 import tech.torbay.userservice.constants.Constants.NotificationType;
+import tech.torbay.userservice.constants.Constants.UserRole;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
@@ -452,8 +453,44 @@ public class ClientController {
 			list.put("payment_billing_details",paymentBillingDetails);
 			list.put("users",clients);
 			list.put("clientOrganisationId",clientOrgId);
-			list.put("userRole",client.get("userRole"));
+			if(client != null) {
+				list.put("userRole",client.get("userRole"));
+			} else {
+				list.put("userRole",UserRole.USER.getValue());
+			}
 			list.put("clientUserInfo",client);
+			
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		} else {
+			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			list.put("statusMessage", "Failed");
+			list.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching A Client Corporation , Payment and Billing Informations")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client Corporation , Payment and Billing Informations fetched successfully")
+            }
+    )
+	@GetMapping("/client/org/account/{orgId}")
+	public ResponseEntity<Object> getOrganisationAccountById(@PathVariable("orgId") Integer clientOrgId) {
+		List<Object> clients = clientService.getAllClientsByOrganisation(clientOrgId);
+		List<OrganisationPayment> paymentBillingDetails = clientService.getPaymentBillingDetails(clientOrgId);
+//		//IF admin get All other users details
+//		Clients allUsers = clientService;
+		HashMap<String, Object> list = new HashMap();
+		
+		if (clients != null /* && paymentDetails != null && billingAddress != null */) {
+			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			list.put("statusMessage", "Success");
+			list.put("responseMessage", "Client Corporation Users, Payment and Billing Informations fetched successfully");
+			list.put("payment_billing_details",paymentBillingDetails);
+			list.put("users",clients);
+			list.put("clientOrganisationId",clientOrgId);
 			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		} else {

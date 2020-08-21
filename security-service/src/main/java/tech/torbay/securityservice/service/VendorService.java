@@ -333,5 +333,43 @@ public class VendorService {
 		
 		return false;
 	}
+	
+	public boolean checkLegalNameAvailable(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
+		
+		List<VendorOrganisation> org = vendorOrganisationRepository.findByLegalName(vendorOrganisation.getLegalName());
+		
+		if( org != null && org.size() > 0) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean checkOrganisationNameIsEmpty(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
+//		System.out.println("vendorOrganisation.getCompanyName() : "+ vendorOrganisation.getCompanyName());
+		if(vendorOrganisation.getCompanyName().trim().length() > 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public boolean checkLegalNameIsEmpty(Map<String, Object> vendorOrganisationData) {
+		// TODO Auto-generated method stub
+		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
+//		System.out.println("vendorOrganisation.getCompanyName() : "+ vendorOrganisation.getCompanyName());
+		if(vendorOrganisation.getLegalName().trim().length() > 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }
 

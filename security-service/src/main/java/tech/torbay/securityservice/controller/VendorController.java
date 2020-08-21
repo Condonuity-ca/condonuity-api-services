@@ -93,11 +93,33 @@ public class VendorController {
 	
 	private ResponseEntity<Object> registerVendorOrganisation(Integer vendorId, Map<String, Object> vendorOrganisationData) {
 		// TODO Auto-generated method stub
+		
+		if(vendorService.checkOrganisationNameIsEmpty(vendorOrganisationData)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.FIELD_VALIDATION_ERROR.getValue(),
+        			"Failed",
+        			"Vendor Organisation Name Field Is Empty");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		if(vendorService.checkLegalNameIsEmpty(vendorOrganisationData)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.FIELD_VALIDATION_ERROR.getValue(),
+        			"Failed",
+        			"Vendor Organisation Legal Name Field Is Empty");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
 		if(vendorService.checkOrganisationNameAvailable(vendorOrganisationData)) {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.CONFLICT.getValue(),
         			"Failed",
         			"Vendor Organisation Name Already Exist");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		if(vendorService.checkLegalNameAvailable(vendorOrganisationData)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.CONFLICT.getValue(),
+        			"Failed",
+        			"Vendor Organisation Legal Name Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
 		

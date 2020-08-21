@@ -119,7 +119,8 @@ public class Constants {
 		REGISTRATION_UNDER_REVIEW(10), 
 		MAX_USERS_COUNT_ERROR(7),
 		RESET_PASSWORD(5),
-		LINK_EXPIRED(5);
+		LINK_EXPIRED(5),
+		FIELD_VALIDATION_ERROR(11);
 	    
 	    private int value;
 	    private static Map map = new HashMap<>();
