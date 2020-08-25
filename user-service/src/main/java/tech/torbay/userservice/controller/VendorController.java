@@ -368,7 +368,7 @@ public class VendorController {
             }
     )
 	@PutMapping("/vendor/user/role")
-	public ResponseEntity<Object> updateVendorUser(@RequestBody Map<String, Object> requestData) {
+	public ResponseEntity<Object> updateVendorUserRole(@RequestBody Map<String, Object> requestData) {
 		if(vendorService.updateVendorUserRole(requestData) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),

@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
+import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
@@ -103,8 +104,11 @@ public class UserService {
 
 				vendorUser.setFirstName(firstName);
 				vendorUser.setLastName(lastName);
+				vendorUser.setPhone(phone);
 				vendorUser.setAccountVerificationStatus(UserAccountStatus.ACTIVE.getValue());// no need until org register
 
+				//check
+				vendorUser.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
 				vendorUserRepository.save(vendorUser);
 			}
 		} catch (Exception exp) {

@@ -25,6 +25,7 @@ public class VendorUser {
     private Integer userRole = Constants.UserRole.USER.getValue();
     private String firstName = "";
     private String lastName = "";
+    private String phone = "";
     
     @NaturalId
     @NotEmpty(message = "Email must not be empty")
@@ -79,6 +80,12 @@ public class VendorUser {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 	public String getEmail() {
 		return email;
 	}
@@ -121,9 +128,9 @@ public class VendorUser {
 	public String toString() {
 		return "VendorUser [userId=" + userId + ", vendorOrganisationId=" + vendorOrganisationId + ", userType="
 				+ userType + ", userRole=" + userRole + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", email=" + email + ", accountStatus=" + accountStatus + ", accountVerificationStatus="
-				+ accountVerificationStatus + ", deleteStatus=" + deleteStatus + ", createdAt=" + createdAt
-				+ ", modifiedDate=" + modifiedDate + "]";
+				+ ", phone=" + phone + ", email=" + email + ", accountStatus=" + accountStatus
+				+ ", accountVerificationStatus=" + accountVerificationStatus + ", deleteStatus=" + deleteStatus
+				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 	
 }

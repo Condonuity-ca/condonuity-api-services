@@ -569,6 +569,7 @@ public class VendorService {
 		
 		vendorUserObj.setFirstName(vendorUser.getFirstName());
 		vendorUserObj.setLastName(vendorUser.getLastName());
+		vendorUserObj.setPhone(vendorUser.getPhone());
 		return vendorUserRepository.save(vendorUserObj);
 	}
 
