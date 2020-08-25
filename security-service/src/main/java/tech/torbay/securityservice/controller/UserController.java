@@ -589,7 +589,6 @@ public class UserController {
 				organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 			} catch(Exception exp) {
 				exp.printStackTrace();
-				phone = "";
 			}
 			
 			Boolean isFirstTimeUser = Boolean.parseBoolean(String.valueOf(requestData.get("isNewUser")));
