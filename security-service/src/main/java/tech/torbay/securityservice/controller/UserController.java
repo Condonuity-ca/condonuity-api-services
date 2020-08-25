@@ -1047,7 +1047,8 @@ public class UserController {
 				
 				userData = Utils.convertJsonToHashMap(decryptedUser);
 				String expiry = String.valueOf(userData.get("expiry"));
-				Integer clientUserId = Integer.parseInt(String.valueOf(userData.get("userId")));
+				Integer userId = Integer.parseInt(String.valueOf(userData.get("userId")));
+				Integer userType = Integer.parseInt(String.valueOf(userData.get("userType")));
 				
 				if (Utils.checkLinkIsExpired(expiry)) {
 					ResponseMessage responseMessage = new ResponseMessage(
@@ -1056,18 +1057,18 @@ public class UserController {
 		        			"Registration/Invite Link Expired");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 				}
-				List<RegistrationLogs> registrationLogs = clientService.checkRegistrationLog(clientUserId);
+				List<RegistrationLogs> registrationLogs = userService.checkRegistrationLog(userId, userType);
 				if(registrationLogs != null && registrationLogs.size() > 0) {
 					ResponseMessage responseMessage = new ResponseMessage(
 		        			APIStatusCode.REQUEST_FAILED.getValue(),
 		        			"Failed",
-		        			"Client User Already Registered Organisation using Hash");
+		        			"User Already Registered Organisation using Hash");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(
 		        			APIStatusCode.REQUEST_SUCCESS.getValue(),
 		        			"Success",
-		        			"Client User Not Registered any Organisation using Hash");
+		        			"User Not Registered any Organisation using Hash");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 				}
 			} catch (Exception e) {

@@ -19,9 +19,11 @@ import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
+import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.entity.Amenities;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
+import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.UserInviteLogs;
@@ -31,6 +33,7 @@ import tech.torbay.securityservice.exception.ResourceNotFoundException;
 import tech.torbay.securityservice.repository.AmenitiesRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.repository.PredefinedTagsRepository;
+import tech.torbay.securityservice.repository.RegistrationLogsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
 import tech.torbay.securityservice.repository.UserInviteLogsRepository;
 import tech.torbay.securityservice.repository.UserProfileImagesRepository;
@@ -58,6 +61,8 @@ public class UserService {
 	UserProfileImagesRepository userProfileImagesRepository;
 	@Autowired
 	UserInviteLogsRepository userInviteLogsRepository;
+	@Autowired
+	RegistrationLogsRepository registrationLogsRepository;
 
 	public List<User> findAll() {
 //		// TODO Auto-generated method stub
@@ -222,5 +227,11 @@ public class UserService {
 	        	exp.printStackTrace();
 	        	return "";
 	        }
+	}
+
+	public List<RegistrationLogs> checkRegistrationLog(Integer userId, Integer userType) {
+		// TODO Auto-generated method stub
+		// Using Hash only one Organisation Can register, For Multiple Organisation Register User need to to Logged IN 
+		return registrationLogsRepository.findByUserIdAndUserType(userId, userType );
 	}
 }
