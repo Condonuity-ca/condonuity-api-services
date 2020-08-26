@@ -848,7 +848,10 @@ public class ProjectService {
 				} else {
 					map.put("isInterested", false);
 				}
+				//
+				Map<String,Object> vendorBid = GetVendorBidForProject(project.getProjectId(), vendorOrganisationId);
 				
+				map.put("vendorBid",vendorBid); // null if not placed a bid
 				
 				//Client Preferred vendor Check
 				if(project.getPostType() == ProjectPostTo.ALL.getValue()) {
