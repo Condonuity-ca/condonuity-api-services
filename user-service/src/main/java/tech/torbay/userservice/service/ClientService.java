@@ -477,6 +477,76 @@ public class ClientService {
 		return clientOrganisations;
 	}
 
+	//search by clientOrganisation Name, number
+	public List<Object> getAllClientOrganisationsForSupportUser(Map<String, Object> requestData) {
+		int searchType = 0;
+		String keyword = "";
+		try {
+			searchType = Integer.parseInt(String.valueOf(requestData.get("searchType")));
+			keyword = String.valueOf(requestData.get("keyword"));
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+		String searchKeyword = "%"+keyword+"%";
+		
+		List<ClientOrganisation> clientOrgsAll = new ArrayList<>();
+		if(searchType == 1) {
+			// TODO Auto-generated method stub
+			clientOrgsAll = clientOrganisationRepository.findAllActiveInActiveOrganisationsByOrganisationName(searchKeyword);			
+		} else if(searchType == 2) {
+			// TODO Auto-generated method stub
+			clientOrgsAll = clientOrganisationRepository.findAllActiveInActiveOrganisationsByCorporationNumber(searchKeyword);
+		}
+		
+		List<Object> clientOrganisations = new ArrayList();
+		
+		for(ClientOrganisation clientOrg : clientOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(clientOrg, Map.class);
+	        if(clientOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(clientOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
+	        
+	        int activeStatus = clientOrg.getActiveStatus();
+	        int deleteStatus = clientOrg.getDeleteStatus();
+	        
+	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+	        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+	 	        	map.put("accountStatus","Registered");
+	 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+	 	        	map.put("accountStatus","Active");
+	 	        } 
+	        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+	        	map.put("accountStatus","Deleted");
+	        } else {
+	        	map.put("accountStatus","Deleted");
+	        }
+	        List<Map<String, Object>> amenitiesInfo = getAmenitiesByOrgId(clientOrg.getClientOrganisationId());
+	        map.put("amenities", amenitiesInfo);
+	        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());
+	        if(logo != null)
+	        	map.put("organisationLogo", logo);
+	        else
+	        	map.put("organisationLogo", "");
+			clientOrganisations.add(map);
+		}
+		
+    			
+		return clientOrganisations;
+	}
+
+	
 	public List<Object> getAllClientOrganisationsByVendorOrgId(Integer vendorOrgId) {
 		// TODO Auto-generated method stub
 		

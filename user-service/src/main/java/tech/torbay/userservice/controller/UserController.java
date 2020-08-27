@@ -1,6 +1,6 @@
 package tech.torbay.userservice.controller;
 
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +20,9 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.config.SecurityAES;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
-import tech.torbay.userservice.controller.UserController;
-import tech.torbay.userservice.entity.ClientBuildingRepository;
+import tech.torbay.userservice.service.ClientService;
 import tech.torbay.userservice.service.UserService;
+import tech.torbay.userservice.service.VendorService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
 
 @RestController
@@ -35,6 +32,10 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ClientService clientService;
+	@Autowired
+	private VendorService vendorService;
 	
 //	@Scheduled(fixedDelay = 10000)
 //	public void run() {
@@ -187,5 +188,50 @@ public class UserController {
 //			
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
         }
+	}
+	
+	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful All Client Details")
+            }
+    )
+	@PostMapping("/support/orgs/search")
+	public ResponseEntity<Object> getAllOrganisationsForSupportUser(@RequestBody Map<String, Object> requestData) {
+		String userType = "";
+		List<Object> list = new ArrayList();
+		try {
+			 userType = String.valueOf(requestData.get("userType"));
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		if(userType != null && userType.equals("1")) {
+			list = clientService.getAllClientOrganisationsForSupportUser(requestData);	
+		} else if(userType != null && userType.equals("2")){
+			list = vendorService.getAllVendorOrganisationsForSupportUser(requestData);
+		}
+		
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			if(userType != null && userType.equals("1")) {
+				response.put("responseMessage", "All Client Organisations details fetched successfully");
+				response.put("clientOrganisations", list);
+			} else if(userType != null && userType.equals("2")){
+				response.put("responseMessage", "All Vendor Organisations details fetched successfully");
+				response.put("vendorOrganisations", list);
+			}
+			
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
 	}
 }
