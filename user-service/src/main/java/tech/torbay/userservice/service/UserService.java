@@ -636,8 +636,21 @@ public class UserService {
 		ArrayList<Project> tagContainedProjects = new ArrayList();
 		if(tags != null && tags.size() > 0) {
 			for(PredefinedTags tag : tags) {
-				List<Project> projects = projectRepository.findAllByTagKeyword(clientOrganisationId, String.valueOf("%"+tag.getTagId()+"%"));
-				tagContainedProjects.addAll(new ArrayList<>(projects));
+				List<Project> filteredProjects = new ArrayList();
+				List<Project> projects = projectRepository.findAllByTagKeyword(clientOrganisationId, String.valueOf("%"+tag.getTagId()+"%"), projectStatusCodes);
+				for(Project project : projects) {
+					try {
+					List<String> tagIds = Arrays.asList(project.getTags().split(","));
+					for(String tagId : tagIds) {
+						if(Integer.parseInt(tagId) == tag.getTagId()) {
+							filteredProjects.add(project);
+						}
+					}
+					} catch(Exception exp) {
+						exp.printStackTrace();
+					}
+				}
+				tagContainedProjects.addAll(new ArrayList<>(filteredProjects));
 			}
 		}
 		List<Project> projects = new ArrayList();

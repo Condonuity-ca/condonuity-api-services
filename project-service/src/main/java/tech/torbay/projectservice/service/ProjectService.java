@@ -233,6 +233,8 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		try {
 			project.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+			project.setCity(clientOrganisation.getCity());
 			project.setDuration(calculateDuration(project.getDuration(), project.getProjectStartDate(), project.getProjectCompletionDeadline()));
 			Project projectObj = projectRepository.save(project);
 //			int id = projectObj.getProjectId();

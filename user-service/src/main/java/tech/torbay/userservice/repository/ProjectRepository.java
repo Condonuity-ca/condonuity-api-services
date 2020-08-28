@@ -76,10 +76,10 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	
 //	SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = 1 and concat (pro.project_name, pro.description) like "%remove%";
 	
-	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and " + 
+	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and pro.status IN (?3) and " + 
 			"pro.tags LIKE (?2)"
 			, nativeQuery = true)
-	List<Project> findAllByTagKeyword(Integer clientOrganisationId, String keyword);
+	List<Project> findAllByTagKeyword(Integer clientOrganisationId, String keyword, List<Integer> projectStatusCodes);
 
 	@Query(name="Project.MarketPlaceSearch")
 	List<Object[]> findAllProjectsForMarketPlaceByKeyword(String keyword, List<Integer> projectStatusCodes);

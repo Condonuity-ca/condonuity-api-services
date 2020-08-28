@@ -103,7 +103,7 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 				"'.', pro.duration, '.', pro.description, " + 
 				"'.', pro.special_conditions, '.', pro.city, '.', pro.created_at, '.', pro.modified_date ) " + 
 				"LIKE (?1) or concat (cu.first_name, '.', cu.last_name) "+
-				"LIKE (?1) or co.management_company LIKE (?1) "+
+				"LIKE (?1) or co.management_company LIKE (?1) or co.organisation_name LIKE (?1) "+
 				"or CONCAT(TRIM(cu.first_name), ' ', TRIM(cu.last_name)) LIKE (?1) )", 
 	    resultSetMapping="marketPlaceSearch")
 // if bid - add search
