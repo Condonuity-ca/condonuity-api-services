@@ -278,19 +278,22 @@ public class ClientController {
 			//check alreadyIn in this organisation and active and throw error message
 			
 			ClientAssociation clientUserAssociation = clientService.findClientAssociationByClientIdAndOrganisationId(existClient.getClientId(), organisationId);
-			if(clientUserAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue() && 
-					clientUserAssociation.getAccountVerificationStatus() == UserAccountStatus.ACTIVE.getValue() &&
-					clientUserAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
-				HashMap<String, Object> list = new HashMap();
-				
-				list.put("statusCode", APIStatusCode.CONFLICT.getValue());
-				list.put("statusMessage", "Failed");
-				list.put("responseMessage", "Client User Record Already Exists In this Organisation");
-				list.put("userId",existClient.getClientId());
-				list.put("userType",UserType.CLIENT.getValue());
-				
-	        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+			if(clientUserAssociation != null) {
+				if(clientUserAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue() && 
+						clientUserAssociation.getAccountVerificationStatus() == UserAccountStatus.ACTIVE.getValue() &&
+						clientUserAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+					HashMap<String, Object> list = new HashMap();
+					
+					list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+					list.put("statusMessage", "Failed");
+					list.put("responseMessage", "Client User Record Already Exists In this Organisation");
+					list.put("userId",existClient.getClientId());
+					list.put("userType",UserType.CLIENT.getValue());
+					
+		        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+				}	
 			}
+			
 			try {
 //				if Association Not-found/association-verification-pending/user-not-active  Send Invite
 //				if(clientService.checkClientOrgAssociationFound(existClient.getClientId(), organisationId)) {

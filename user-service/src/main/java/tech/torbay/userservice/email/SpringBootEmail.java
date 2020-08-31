@@ -322,7 +322,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // true = text/html
 		        String loginURL = "http://condonuityappdev.eastus2.cloudapp.azure.com/"; 
-		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your account is rejected";
+		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
 		        if ( content.toLowerCase().contains("approved")) {
 		        	loginURLContent = "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" ;
@@ -366,7 +366,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 		        String loginURL = "http://condonuityappdev.eastus2.cloudapp.azure.com/";
 		        // true = text/html
-		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your account is rejected";
+		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
 		        if ( content.toLowerCase().contains("approved")) {
 		        	loginURLContent = "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" ;

@@ -65,7 +65,7 @@ import tech.torbay.projectservice.constants.Constants;
 	    query="SELECT vb.*, pro.*, co.management_company, co.organisation_name, co.city FROM condonuitydev.bids vb " + 
 	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"WHERE vb.vendor_org_id = (?1) AND ( pro.status = 3 OR pro.status = 4 ) AND pro.delete_status = 1", 
+	    		"WHERE vb.vendor_org_id = (?1) AND ( pro.status = 3 OR pro.status = 4 ) AND pro.delete_status = 1 ORDER BY pro.created_at DESC", 
 	    resultSetMapping="vendorHistoryProjects")
 
 public class VendorBid {

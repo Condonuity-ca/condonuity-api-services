@@ -17,9 +17,11 @@ public class Constants {
 	public static final String ORGANISATION_ACCOUNT_ACTIVE_ALERT = "Your corporation profile has been activated by the system Admin";
 //	public static final String ORGANISATION_ACCOUNT_APPROVAL_ALERT = "Congratulations..! Your account is validated successfully. \nYou may start using the application using the credentials you have already created.";
 	public static final String ORGANISATION_ACCOUNT_APPROVAL_ALERT_SUBJECT = "Your Account is approved";
-	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT_SUBJECT = "Your Account is rejected";
+//	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT_SUBJECT = "Your Account is rejected";
+	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT_SUBJECT = "Your corporation account validation is unsuccessful";
 	public static final String ORGANISATION_ACCOUNT_APPROVAL_ALERT = "Congratulations..! Your account registration has been approved, you may log in & enjoy using Condonuity! ";
-	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT = "Account Alert..!  Your account is validation rejected. \nPlease contact condonuity support team for further clarification.";
+//	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT = "Account Alert..!  Your account is validation rejected. \nPlease contact condonuity support team for further clarification.";
+	public static final String ORGANISATION_ACCOUNT_REJECT_ALERT = "Please re-submit a registration request or contact condonuity support team for further information.";
 	public static final long EXPIRY_DURATION = 24;
 
 	public enum UserType {
