@@ -173,36 +173,48 @@ public class VendorService {
 				}
 				
 				//1
-				
-			    List<String> cities = Arrays.asList(serviceCities.split(","));
-			    for(String city: cities) {
-			    	vendorServicesCitiesRepository.save(new VendorServicesCities(vendorOrganisation.getVendorOrganisationId(),Integer.parseInt(city)));
-			    }
+				if(serviceCities.trim().length() > 0) {
+					List<String> cities = Arrays.asList(serviceCities.trim().split(","));
+				    for(String city: cities) {
+				    	vendorServicesCitiesRepository.save(new VendorServicesCities(vendorOrganisation.getVendorOrganisationId(),Integer.parseInt(city)));
+				    }
+				}
 			    
-			    List<String> vservices = Arrays.asList(services.split(","));
-			    for(String service: vservices) {
-			    	vendorServicesRepository.save(new VendorServices(vendorOrganisation.getVendorOrganisationId(),service));
-			    }
+				if(services.trim().length() > 0) {
+					List<String> vservices = Arrays.asList(services.trim().split(","));
+				    for(String service: vservices) {
+				    	vendorServicesRepository.save(new VendorServices(vendorOrganisation.getVendorOrganisationId(),service));
+				    }
+				}
 			    
-			    List<String> vproducts = Arrays.asList(products.split(","));
-			    for(String product: vproducts) {
-			    	vendorProductsRepository.save(new VendorProducts(vendorOrganisation.getVendorOrganisationId(),product));
-			    }
+				if(products.trim().length() > 0) {
+					List<String> vproducts = Arrays.asList(products.trim().split(","));
+				    for(String product: vproducts) {
+				    	vendorProductsRepository.save(new VendorProducts(vendorOrganisation.getVendorOrganisationId(),product));
+				    }
+				}
 			    
-			    List<String> vbrands = Arrays.asList(brands.split(","));
-			    for(String brand: vbrands) {
-			    	vendorBrandsRepository.save(new VendorBrands(vendorOrganisation.getVendorOrganisationId(),brand));
-			    }
+				if(brands.trim().length() > 0) {
+					List<String> vbrands = Arrays.asList(brands.trim().split(","));
+				    for(String brand: vbrands) {
+				    	vendorBrandsRepository.save(new VendorBrands(vendorOrganisation.getVendorOrganisationId(),brand));
+				    }
+				}
 			    
-			    List<String> vlicenses = Arrays.asList(licenses.split(","));
-			    for(String license: vlicenses) {
-			    	vendorLicensesRepository.save(new VendorLicenses(vendorOrganisation.getVendorOrganisationId(),license,"",""));
-			    }
+				if(licenses.trim().length() > 0) {
+					List<String> vlicenses = Arrays.asList(licenses.trim().split(","));
+				    for(String license: vlicenses) {
+				    	vendorLicensesRepository.save(new VendorLicenses(vendorOrganisation.getVendorOrganisationId(),license,"",""));
+				    }
+				}
 			    
-			    List<String> vmemberships = Arrays.asList(memberships.split(","));
-			    for(String membership: vmemberships) {
-			    	vendorMembershipsRepository.save(new VendorMemberships(vendorOrganisation.getVendorOrganisationId(),membership,""));
-			    }
+				if(memberships.trim().length() > 0) {
+					List<String> vmemberships = Arrays.asList(memberships.trim().split(","));
+				    for(String membership: vmemberships) {
+				    	vendorMembershipsRepository.save(new VendorMemberships(vendorOrganisation.getVendorOrganisationId(),membership,""));
+				    }
+				}
+			    
 			    try {
 			    	String vendorProfileId = String.valueOf(vendorOrganisationData.get("vendorProfileId")); // ids - 1,2,3
 			    	

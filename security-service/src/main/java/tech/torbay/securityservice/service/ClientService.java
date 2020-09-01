@@ -359,7 +359,7 @@ public class ClientService {
 	public ClientUser checkIsPrimaryOrganisationActive(ClientUser clientInfo) {
 		// TODO Auto-generated method stub
 		ClientOrganisation clientOrg = getClientOrganisationById(clientInfo.getPrimaryOrgId());
-		if(clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() 
+		if(clientOrg != null && clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() 
 				&& clientOrg.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() ) {
 			return clientInfo;
 		} else {
