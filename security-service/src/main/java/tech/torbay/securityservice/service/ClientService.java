@@ -387,6 +387,12 @@ public class ClientService {
 		return false;
 	}
 
+	public List<RegistrationLogs> checkRegistrationLog(Integer clientUserId, String hash) {
+		// TODO Auto-generated method stub
+		// Using Hash only one Organisation Can register, For Multiple Organisation Register User need to to Logged IN 
+		return registrationLogsRepository.findByUserIdAndUserTypeAndHash(clientUserId,UserType.CLIENT.getValue(), hash);
+	}
+
 	public void setPrimaryOrganisationId(ClientUser clientUser, Integer organisationId) {
 		// TODO Auto-generated method stub
 		

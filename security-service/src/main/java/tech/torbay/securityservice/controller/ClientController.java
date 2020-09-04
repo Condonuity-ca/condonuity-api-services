@@ -754,7 +754,7 @@ public class ClientController {
 			userData = Utils.convertJsonToHashMap(decryptedUser);
 			Integer clientUserId = Integer.parseInt(String.valueOf(userData.get("userId")));
 			
-			List<RegistrationLogs> registrationLogs = clientService.checkRegistrationLog(clientUserId);
+			List<RegistrationLogs> registrationLogs = clientService.checkRegistrationLog(clientUserId, hash);
 			if(registrationLogs != null && registrationLogs.size() > 0) {
 				ResponseMessage responseMessage = new ResponseMessage(
 	        			APIStatusCode.REQUEST_FAILED.getValue(),
