@@ -1186,7 +1186,6 @@ public class VendorService {
 				// 4 add products
 				// 5 add brands
 				// 6 add memberships
-				
 				vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 				vendorInsuranceRepository.save(vendorInsurance);
 				

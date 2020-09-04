@@ -19,5 +19,5 @@ public interface RegistrationLogsRepository extends JpaRepository<RegistrationLo
 
 	RegistrationLogs findOneById(Integer id);
 
-	List<RegistrationLogs> findByUserIdAndUserType(Integer clientUserId, Integer userType);
+	List<RegistrationLogs> findByUserIdAndUserTypeAndHash(Integer clientUserId, Integer userType, String hash);
 }

@@ -21,6 +21,15 @@ public class RegistrationLogs {
 	private int userId;
 	private int userType;
 	private int organisationId;
+	private String hash;
+	
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
 	
 	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -81,7 +90,8 @@ public class RegistrationLogs {
 	@Override
 	public String toString() {
 		return "RegistrationLogs [id=" + id + ", userId=" + userId + ", userType=" + userType + ", organisationId="
-				+ organisationId + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+				+ organisationId + ", hash=" + hash + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
+				+ "]";
 	}
 
 }

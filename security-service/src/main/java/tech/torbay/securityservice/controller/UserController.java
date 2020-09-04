@@ -1056,7 +1056,7 @@ public class UserController {
 		        			"Registration/Invite Link Expired");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 				}
-				List<RegistrationLogs> registrationLogs = userService.checkRegistrationLog(userId, userType);
+				List<RegistrationLogs> registrationLogs = userService.checkRegistrationLog(userId, userType, hash);
 				if(registrationLogs != null && registrationLogs.size() > 0) {
 					ResponseMessage responseMessage = new ResponseMessage(
 		        			APIStatusCode.REQUEST_FAILED.getValue(),

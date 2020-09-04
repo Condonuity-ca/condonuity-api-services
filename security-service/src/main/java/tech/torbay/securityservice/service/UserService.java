@@ -229,9 +229,9 @@ public class UserService {
 	        }
 	}
 
-	public List<RegistrationLogs> checkRegistrationLog(Integer userId, Integer userType) {
+	public List<RegistrationLogs> checkRegistrationLog(Integer userId, Integer userType, String hash) {
 		// TODO Auto-generated method stub
 		// Using Hash only one Organisation Can register, For Multiple Organisation Register User need to to Logged IN 
-		return registrationLogsRepository.findByUserIdAndUserType(userId, userType );
+		return registrationLogsRepository.findByUserIdAndUserTypeAndHash(userId, userType , hash);
 	}
 }
