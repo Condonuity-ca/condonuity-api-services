@@ -652,4 +652,31 @@ public class VendorController {
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 		}
 	}
+	
+	@ApiOperation(value = "Fetching All Vendor Available Profiles in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor profiles fetched successfully in Condonuity Application")
+            }
+    )
+	@GetMapping("/vendor/available/profiles")
+	public ResponseEntity<Object> getAllVendorProfilesForVendorRegistration() {
+		List<Object> list = vendorService.getAllVendorProfilesForVendorRegistration();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendor Profiles in Condonuity Application fetched successfully");
+			response.put("vendorProfiles", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
 } 

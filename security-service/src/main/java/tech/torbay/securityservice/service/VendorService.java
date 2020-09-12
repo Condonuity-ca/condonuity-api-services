@@ -1,5 +1,6 @@
 package tech.torbay.securityservice.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.entity.AvailableVendorProfiles;
 import tech.torbay.securityservice.entity.AvailableVendorProfilesRepository;
 import tech.torbay.securityservice.entity.RegistrationLogs;
+import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.UserInviteLogs;
 import tech.torbay.securityservice.entity.VendorBrands;
@@ -30,6 +32,7 @@ import tech.torbay.securityservice.entity.VendorServices;
 import tech.torbay.securityservice.entity.VendorServicesCities;
 import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.repository.RegistrationLogsRepository;
+import tech.torbay.securityservice.repository.ServiceCitiesRepository;
 import tech.torbay.securityservice.repository.UserInviteLogsRepository;
 import tech.torbay.securityservice.repository.UserRepository;
 import tech.torbay.securityservice.repository.VendorBrandsRepository;
@@ -70,6 +73,8 @@ public class VendorService {
 	RegistrationLogsRepository registrationLogsRepository;
 	@Autowired
 	UserInviteLogsRepository userInviteLogsRepository;
+	@Autowired
+	ServiceCitiesRepository servicesCitiesRepository;
 
 	public List<VendorUser> findAll() {
 //		// TODO Auto-generated method stub
@@ -383,5 +388,50 @@ public class VendorService {
 			return true;
 		}
 	}
+
+	public List<Object> getAllVendorProfilesForVendorRegistration() {
+		// TODO Auto-generated method stub
+				List<AvailableVendorProfiles> vendorOrgsAll = availableVendorProfilesRepository.findAll();
+				
+				List<Object> vendorOrganisations = new ArrayList();
+				
+				for(AvailableVendorProfiles vendorOrg : vendorOrgsAll) {
+					ObjectMapper oMapper = new ObjectMapper();
+			        // object -> Map
+			        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+			        
+			        
+			        if(vendorOrg.getCity() != null && vendorOrg.getCity().length() > 0) {
+			        	try {
+			        		Integer city = Integer.parseInt(vendorOrg.getCity());
+			        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+			        		map.put("city",serviceCity.getCityName());
+			        	} catch(Exception exp) {
+			        		map.put("city",vendorOrg.getCity());
+			        	}
+			        	
+			        } else {
+			        	map.put("city","");
+					}
+			        
+			        int activeStatus = vendorOrg.getActiveStatus();
+//			        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+//			        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+//			 	        	map.put("accountStatus","Registered");
+//			 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+//			 	        	map.put("accountStatus","Active");
+//			 	        } 
+//			        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+//			        	map.put("accountStatus","Deleted");
+//			        } else {
+//			        	map.put("accountStatus","Deleted");
+//			        }
+			       
+			        vendorOrganisations.add(map);
+				}
+				
+				return vendorOrganisations;
+	}
+	
 }
 

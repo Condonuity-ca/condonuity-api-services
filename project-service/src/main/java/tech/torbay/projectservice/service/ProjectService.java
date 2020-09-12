@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectAwards;
 import tech.torbay.projectservice.entity.ProjectFiles;
+import tech.torbay.projectservice.entity.ProjectProducts;
 import tech.torbay.projectservice.entity.ProjectQuestionAnswer;
 import tech.torbay.projectservice.entity.ProjectReviewRating;
 import tech.torbay.projectservice.entity.ServiceCities;
@@ -1312,6 +1315,63 @@ public class ProjectService {
 		 
 		 
 		return allProjects;
+	}
+
+	public Integer cloneProject(Integer projectId) {
+		// TODO Auto-generated method stub
+		Project projectObj = projectRepository.findByProjectId(projectId);
+		Project project = new Project();
+		project.setClientOrganisationId(projectObj.getClientOrganisationId());
+		project.setClientId(projectObj.getClientId());
+
+		project.setProjectName(projectObj.getProjectName());
+		project.setProjectModifiedBy(DeleteStatus.NOT_AVAILABLE.getValue());
+		project.setTags(projectObj.getTags());
+		project.setBidEndDate(projectObj.getBidEndDate());
+		project.setProjectStartDate(projectObj.getProjectStartDate());
+		project.setProjectCompletionDeadline(projectObj.getProjectCompletionDeadline());
+		project.setEstimatedBudget(projectObj.getEstimatedBudget());
+		project.setDuration(projectObj.getDuration());
+		project.setDescription(projectObj.getDescription());
+		project.setSpecialConditions(projectObj.getSpecialConditions());
+		project.setCity(projectObj.getCity());
+		project.setContractType(projectObj.getContractType());
+		project.setInsuranceRequired(projectObj.getInsuranceRequired());
+		project.setPostType(projectObj.getPostType());
+		project.setStatus(ProjectPostType.UNPUBLISHED.getValue());
+		project.setAwardedBidId(DeleteStatus.NOT_AVAILABLE.getValue());
+		project.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
+		
+		List<ProjectProducts> projectProducts = projectObj.getProjectProducts();
+		List<ProjectProducts> projectProductsCloned = new ArrayList();
+		
+		for(ProjectProducts projectProductObj : projectProducts) {
+			ProjectProducts projectProduct = new ProjectProducts();
+//			projectProduct.setProjectId(project.getProjectId());
+			projectProduct.setDescription(projectProductObj.getDescription());
+			projectProduct.setQuantity(projectProductObj.getQuantity());
+			projectProduct.setUnit(projectProductObj.getUnit());
+			projectProductsCloned.add(projectProduct);
+			
+		}
+		project.setProjectProducts(projectProductsCloned);
+		project = projectRepository.save(project);
+		
+		List<ProjectFiles> projectFiles = projectFilesRepository.findAllByProjectId(projectId);
+		
+		for(ProjectFiles projectFile : projectFiles) {
+			ProjectFiles projectFileObj = new ProjectFiles();
+		    projectFileObj.setProjectId(project.getProjectId());
+		    projectFileObj.setContainerName(projectFile.getContainerName());
+		    projectFileObj.setBlobName(projectFile.getBlobName());
+		    projectFileObj.setFileName(projectFile.getFileName());
+		    projectFileObj.setFileType(projectFile.getFileType());
+		    projectFileObj.setFileSize(projectFile.getFileSize());
+			projectFileObj.setFileUrl(projectFile.getFileUrl());
+			projectFilesRepository.save(projectFileObj);
+		}
+		
+		return project.getProjectId();
 	}
 
 }

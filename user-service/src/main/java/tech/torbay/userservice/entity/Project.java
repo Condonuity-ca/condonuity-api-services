@@ -38,7 +38,8 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 	      columns={
 	    		  @ColumnResult(name="management_company"),
 	    		  @ColumnResult(name="first_name"),
-	    		  @ColumnResult(name="last_name")
+	    		  @ColumnResult(name="last_name"),
+	    		  @ColumnResult(name="organisation_name")
 	    		  }
 	  ),
 	  @SqlResultSetMapping(
@@ -49,7 +50,8 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 		      columns={
 		    		  @ColumnResult(name="management_company"),
 		    		  @ColumnResult(name="first_name"),
-		    		  @ColumnResult(name="last_name")
+		    		  @ColumnResult(name="last_name"),
+		    		  @ColumnResult(name="organisation_name")
 		    		  }
 		  ),
 	  @SqlResultSetMapping(
@@ -60,7 +62,8 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 			  columns={
 					  @ColumnResult(name="management_company"),
 					  @ColumnResult(name="first_name"),
-					  @ColumnResult(name="last_name")
+					  @ColumnResult(name="last_name"),
+		    		  @ColumnResult(name="organisation_name")
 			  }
 			  ),
 	  @SqlResultSetMapping(
@@ -71,7 +74,8 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 			  columns={
 					  @ColumnResult(name="management_company"),
 					  @ColumnResult(name="first_name"),
-					  @ColumnResult(name="last_name")
+					  @ColumnResult(name="last_name"),
+		    		  @ColumnResult(name="organisation_name")
 			  }
 			  ),
 	  @SqlResultSetMapping(
@@ -82,20 +86,21 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 			  columns={
 					  @ColumnResult(name="management_company"),
 					  @ColumnResult(name="first_name"),
-					  @ColumnResult(name="last_name")
+					  @ColumnResult(name="last_name"),
+		    		  @ColumnResult(name="organisation_name")
 			  }
 			  )
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
 	    resultSetMapping="marketPlace")
 
 @NamedNativeQuery(
 	    name="Project.MarketPlaceSearch", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and " +
 	    		"( concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
@@ -109,7 +114,7 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 // if bid - add search
 @NamedNativeQuery(
 	    name="Project.VendorCurrentProjectsSearch", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name " + 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name " + 
 	    		"FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
@@ -131,7 +136,7 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 	    resultSetMapping="vendorCurrentProjectsSearch")
 @NamedNativeQuery(
 	    name="Project.VendorHistoryProjectsSearch", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name " + 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name " + 
 	    		"FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
@@ -154,7 +159,7 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 //if bid - add search
 @NamedNativeQuery(
 	    name="Project.VendorFavoriteProjectsSearch", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name " + 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name " + 
 	    		"FROM condonuitydev.projects pro " + 
 	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 

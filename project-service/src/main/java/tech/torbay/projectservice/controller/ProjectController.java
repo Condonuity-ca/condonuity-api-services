@@ -197,6 +197,63 @@ public class ProjectController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Client Project Creation and Posting implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Project Created/Published successfully")
+            }
+    )
+	@PostMapping("/client/project/clone/{projectId}")
+	public ResponseEntity<Object> createProject(@PathVariable Integer projectId) {
+		
+		try {
+//			logger.info("projectObj "+ project.toString());
+			
+//			String projectDuration = projectService.calculateDuration(project.getDuration(), project.getProjectStartDate(), project.getProjectCompletionDeadline());
+//			if(projectDuration.startsWith("-")) { // need to check this exception
+//				throw new BadRequestException("project creation", "project Duration", projectDuration);
+//			}
+			
+			Integer newProjectId = projectService.cloneProject(projectId);
+	        if (newProjectId == null || newProjectId == 0) {
+	     
+	        	ResponseMessage responseMessage = new ResponseMessage(
+                		StatusCode.REQUEST_FAILED.getValue(),
+                		"Failed",
+            			"Failed to Clone Project");
+	        	
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+	        } else {
+			/*
+			 * HttpHeaders headers = new HttpHeaders();
+			 * headers.setLocation(builder.path("/client/org/{id}").buildAndExpand(
+			 * organisation.getOrganisationId()).toUri());
+			 */
+	        	HashMap<String, Object> response = new HashMap();
+//	        	if(project.getStatus() == ProjectPostType.UNPUBLISHED.getValue()) {
+	            
+	        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+	    			response.put("statusMessage", "Success");
+	    			response.put("responseMessage", "Project cloned successfully");
+	    			response.put("projectId", newProjectId);
+	    			
+//	        	} else if(project.getStatus() == ProjectPostType.PUBLISHED.getValue()){
+//	        		response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+//	    			response.put("statusMessage", "Success");
+//	    			response.put("responseMessage", "Project posted successfully");
+//	    			response.put("projectId", projectObj.getProjectId());
+//	    			
+//	    			SendProjectNotification(project, NotificationType.PROJECT_CREATE);
+//	        	}
+	        	
+	        	return new ResponseEntity<Object>(response, HttpStatus.OK);
+	        }
+		} catch(BadRequestException exp) {
+			new BadRequestException(exp.getMessage());
+		}
+		return null;
+	}
+	
 	@ApiOperation(value = "Client Project Update Implementation")
     @ApiResponses(
             value = {

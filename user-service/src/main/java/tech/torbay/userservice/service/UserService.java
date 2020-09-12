@@ -1813,9 +1813,10 @@ public class UserService {
 		// TODO Auto-generated method stub
 		projects.stream().forEach((record) -> {
 	        Project project = (Project) record[0];
-	        String condoName = (String) record[1];
+	        String managementCompany = (String) record[1];
 	        String firstName = (String) record[2];
 	        String lastName = (String) record[3];
+	        String condoName = (String) record[4];
 	        
 //	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
 	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
