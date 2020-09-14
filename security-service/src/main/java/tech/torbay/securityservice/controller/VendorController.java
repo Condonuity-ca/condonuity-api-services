@@ -429,11 +429,20 @@ public class VendorController {
 		if(existVendorUserObj != null ) {
 			
 			if(existVendorUserObj.getVendorOrganisationId() == null || existVendorUserObj.getVendorOrganisationId() == 0) {
-				
+				//not yet registered
 				vendorUser.setUserId(existVendorUserObj.getUserId());
 				return SendExistVendorUserInvitation(vendorUser);
 			} else {
 			
+				if(existVendorUserObj.getVendorOrganisationId() != null && existVendorUserObj.getVendorOrganisationId()>0 ) {
+					VendorOrganisation vendorOrg = vendorService.findByVendorOrgId(existVendorUserObj.getVendorOrganisationId());
+					//registered but not yet approved by admin
+					if(vendorOrg.getActiveStatus() == UserAccountStatus.INVITED.getValue()) {
+						vendorUser.setUserId(existVendorUserObj.getUserId());
+						return SendExistVendorUserInvitation(vendorUser);
+					}
+				}
+					
 				ResponseMessage responseMessage = new ResponseMessage(
 						APIStatusCode.CONFLICT.getValue(),
 		        		"Failed",
@@ -442,7 +451,7 @@ public class VendorController {
 			}
 		} else {
 			User existUser= userService.findByEmail(vendorUser.getEmail());
-			if(existUser != null && existUser.getUserType() == UserType.VENDOR.getValue()) {
+			if(existUser != null && existUser.getUserType() == UserType.CLIENT.getValue()) {
 				HashMap<String, Object> list = new HashMap();
 				
 				list.put("statusCode", APIStatusCode.CONFLICT.getValue());
@@ -493,7 +502,7 @@ public class VendorController {
 		
 		
 		User existUser= userService.findByIdAndUserType(vendorUser.getUserId(), UserType.CLIENT.getValue());
-		if(existUser != null && existUser.getUserType() == UserType.VENDOR.getValue()) {
+		if(existUser != null && existUser.getUserType() == UserType.CLIENT.getValue()) {
 			HashMap<String, Object> list = new HashMap();
 			
 			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
