@@ -536,6 +536,14 @@ public class ProjectService {
 		
 		return projectRepository.save(project);
 	}
+	
+	public Project cancelProject(Integer projectId) {
+		// TODO Auto-generated method stub
+		Project project = projectRepository.findOneByProjectId(projectId);
+		project.setStatus(Constants.ProjectPostType.CANCELLED.getValue());
+		
+		return projectRepository.save(project);
+	}
 
 	public VendorBid publishVendorBid(Integer bidId) {
 		// TODO Auto-generated method stub
