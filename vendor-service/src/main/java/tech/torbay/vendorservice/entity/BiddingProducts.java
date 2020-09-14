@@ -29,7 +29,7 @@ public class BiddingProducts {
 	private Integer productType = 0;
 //    private Integer biddingId = 0; //uni-directional relation
     private String description;
-    private Integer quantity = 0;
+    private String quantity = "";
     private String unit;
     private String price;
     
@@ -61,10 +61,10 @@ public class BiddingProducts {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Integer getQuantity() {
+	public String getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(String quantity) {
 		this.quantity = quantity;
 	}
 	public String getUnit() {

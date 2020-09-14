@@ -35,7 +35,7 @@ public class ProjectProducts {
     public String description = "";
 //    @Min(value = 1, message = "Quantity must be greater than 1")
     @Column(name = "quantity")
-    public Integer quantity = 0;
+    public String quantity = "";
 //    @NotEmpty(message = "Unit must not be empty")
     @Column(name = "unit")
     public String unit = "";
@@ -62,10 +62,10 @@ public class ProjectProducts {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Integer getQuantity() {
+	public String getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(String quantity) {
 		this.quantity = quantity;
 	}
 	public String getUnit() {
