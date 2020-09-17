@@ -120,6 +120,7 @@ public class Constants {
 		MAX_USERS_COUNT_ERROR(7),
 		RESET_PASSWORD(5),
 		LINK_EXPIRED(5),
+		DUPLICATE_CORPORATION_NUMBER(7),
 		FIELD_VALIDATION_ERROR(11);
 	    
 	    private int value;

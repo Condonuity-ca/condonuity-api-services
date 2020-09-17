@@ -18,4 +18,6 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
     ClientOrganisation save(ClientOrganisation clientOrganisation);
     
     List<ClientOrganisation> findByOrganisationName(String organisationName);
+    
+    List<ClientOrganisation> findByCorporateNumber(String corporationNumber);
 }

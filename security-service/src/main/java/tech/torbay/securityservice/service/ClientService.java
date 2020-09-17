@@ -386,6 +386,16 @@ public class ClientService {
 		
 		return false;
 	}
+	
+	public boolean checkOrganisationCoporationNumberAvailable(String corporationNumber) {
+		// TODO Auto-generated method stub
+		List<ClientOrganisation> clientOrgs = clientOrganisationRepository.findByCorporateNumber(corporationNumber);
+		if( clientOrgs != null && clientOrgs.size() > 0) {
+			return true;
+		}
+		
+		return false;
+	}
 
 	public List<RegistrationLogs> checkRegistrationLog(Integer clientUserId, String hash) {
 		// TODO Auto-generated method stub

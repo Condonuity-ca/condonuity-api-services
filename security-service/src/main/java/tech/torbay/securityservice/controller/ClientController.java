@@ -441,7 +441,13 @@ public class ClientController {
         			"Client Organisation Name Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
-		
+		if(clientService.checkOrganisationCoporationNumberAvailable(organisation.getCorporateNumber())) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.DUPLICATE_CORPORATION_NUMBER.getValue(),
+        			"Failed",
+        			"Client Organisation Corporation Number Already Exist");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
 		ClientOrganisation clientorganisation = clientService.addClientOrganisation(clientUserId, organisation, isExisting);
         if (clientorganisation == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
