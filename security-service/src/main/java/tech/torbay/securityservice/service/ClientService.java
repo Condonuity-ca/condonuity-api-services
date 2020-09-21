@@ -189,6 +189,7 @@ public class ClientService {
 				registrationLogs.setUserId(clientId);
 				registrationLogs.setUserType(UserType.CLIENT.getValue());
 				registrationLogs.setOrganisationId(clientOrganisationObj.getClientOrganisationId());
+//				registrationLogs.setHash(hash);
 				registrationLogsRepository.save(registrationLogs);
 				return clientOrganisationObj;
 				

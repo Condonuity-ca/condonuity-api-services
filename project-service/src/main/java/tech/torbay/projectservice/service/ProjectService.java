@@ -1326,6 +1326,10 @@ public class ProjectService {
 	}
 
 	public Integer cloneProject(Integer projectId) {
+		String endDateCommon = Utils.getPlus30DaysDate();
+		if(endDateCommon == null) {
+			return null;
+		}
 		// TODO Auto-generated method stub
 		Project projectObj = projectRepository.findByProjectId(projectId);
 		Project project = new Project();
@@ -1335,11 +1339,15 @@ public class ProjectService {
 		project.setProjectName(projectObj.getProjectName());
 		project.setProjectModifiedBy(DeleteStatus.NOT_AVAILABLE.getValue());
 		project.setTags(projectObj.getTags());
-		project.setBidEndDate(projectObj.getBidEndDate());
-		project.setProjectStartDate(projectObj.getProjectStartDate());
-		project.setProjectCompletionDeadline(projectObj.getProjectCompletionDeadline());
+//		project.setBidEndDate(projectObj.getBidEndDate());
+		project.setBidEndDate(endDateCommon);
+//		project.setProjectStartDate(projectObj.getProjectStartDate());
+		project.setProjectStartDate(endDateCommon);
+//		project.setProjectCompletionDeadline(projectObj.getProjectCompletionDeadline());
+		project.setProjectCompletionDeadline(endDateCommon);
 		project.setEstimatedBudget(projectObj.getEstimatedBudget());
-		project.setDuration(projectObj.getDuration());
+//		project.setDuration(projectObj.getDuration());
+		project.setDuration(Constants.END_DATE_PROJECTS_CONSTANT+" Days");
 		project.setDescription(projectObj.getDescription());
 		project.setSpecialConditions(projectObj.getSpecialConditions());
 		project.setCity(projectObj.getCity());

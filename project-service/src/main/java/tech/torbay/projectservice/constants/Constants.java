@@ -6,6 +6,7 @@ import java.util.Map;
 public class Constants {
 
 	public static final String TIME_ZONE = "UTC";
+	public static final int END_DATE_PROJECTS_CONSTANT = 30;
 
 	public enum UserType {
 	    CLIENT(1),

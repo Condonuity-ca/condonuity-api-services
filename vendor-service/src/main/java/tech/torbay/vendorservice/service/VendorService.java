@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.vendorservice.constants.Constants;
 import tech.torbay.vendorservice.constants.Constants.UserAccountStatus;
+import tech.torbay.vendorservice.entity.ClientOrganisation;
 import tech.torbay.vendorservice.entity.ClientUser;
 import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
@@ -35,6 +36,7 @@ import tech.torbay.vendorservice.entity.VendorServices;
 import tech.torbay.vendorservice.entity.VendorServicesCities;
 import tech.torbay.vendorservice.entity.VendorTags;
 import tech.torbay.vendorservice.entity.VendorUser;
+import tech.torbay.vendorservice.repository.ClientOrganisationRepository;
 import tech.torbay.vendorservice.repository.ClientUserRepository;
 import tech.torbay.vendorservice.repository.NotificationRepository;
 import tech.torbay.vendorservice.repository.NotificationViewsHistoryRepository;
@@ -99,6 +101,8 @@ public class VendorService {
 	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
 	@Autowired
 	UserLevelNotificationRepository userLevelNotificationRepository;
+	@Autowired
+	ClientOrganisationRepository clientOrganisationRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -858,7 +862,7 @@ public class VendorService {
 			return vendors;
 	}
 
-	public List<Notification> getVendorNotifications(Integer vendorId, Integer vendorOrganisationId) {
+	public List<Map<String,Object>> getVendorNotifications(Integer vendorId, Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		List<Notification> filteredNotifications = new ArrayList<Notification>();
 		
@@ -866,6 +870,7 @@ public class VendorService {
 //		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 		
 		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
+		List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(vendorOrganisationId);
 		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
 		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
 		
@@ -889,12 +894,57 @@ public class VendorService {
 		}
 		
 		filteredNotifications.addAll(projectBidsNotifications);
+		//if same project award more than 1 time may lead notification issue in future, needs to check this
+		filteredNotifications.addAll(projectAwardsNotifications);
 		filteredNotifications.addAll(projectInterestNotifications);
 		filteredNotifications.addAll(reviewRatingNotifications);
 		
 		
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
-		return uniqueNotifications;
+		
+		List<Map<String,Object>> vendorNotifications = new ArrayList();
+		
+		for(Notification notification : uniqueNotifications) {
+			ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
+			
+			String sendorFirstName = "";
+			String sendorLastName = "";
+			String sendorOrganisationName = "";
+			String sendorLegalCompanyName = "";
+			
+			if(notification.getUserId() == 0) {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getOrganisationId() != 0) {
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(notification.getOrganisationId());
+					
+					sendorOrganisationName = clientOrganisation.getOrganisationName();
+					sendorLegalCompanyName = clientOrganisation.getManagementCompany();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
+					sendorOrganisationName = vendorOrganisation.getCompanyName();
+					sendorLegalCompanyName = vendorOrganisation.getLegalName();
+				}
+			} else {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
+					ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+					
+					sendorFirstName = clientUser.getFirstName();
+					sendorLastName = clientUser.getLastName();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
+					VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
+					sendorFirstName = vendorUser.getFirstName();
+					sendorLastName = vendorUser.getLastName();
+				}
+			}
+			
+			mapNotification.put("sendorFirstName", sendorFirstName);
+			mapNotification.put("sendorLastName", sendorLastName);
+			mapNotification.put("sendorOrganisationName", sendorOrganisationName);
+			mapNotification.put("sendorLegalCompanyName", sendorLegalCompanyName);
+			vendorNotifications.add(mapNotification);
+		}
+		
+		return vendorNotifications;
 	}
 }
 

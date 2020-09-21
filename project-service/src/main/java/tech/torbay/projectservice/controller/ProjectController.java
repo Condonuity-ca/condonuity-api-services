@@ -204,7 +204,7 @@ public class ProjectController {
             }
     )
 	@PostMapping("/client/project/clone/{projectId}")
-	public ResponseEntity<Object> createProject(@PathVariable Integer projectId) {
+	public ResponseEntity<Object> cloneProject(@PathVariable Integer projectId) {
 		
 		try {
 //			logger.info("projectObj "+ project.toString());

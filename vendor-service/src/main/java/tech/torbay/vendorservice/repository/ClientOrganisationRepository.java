@@ -1,15 +1,15 @@
-package tech.torbay.userservice.repository;
+package tech.torbay.vendorservice.repository;
+
+import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import tech.torbay.userservice.entity.ClientUser;
-import tech.torbay.userservice.entity.ClientOrganisation;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
+import tech.torbay.vendorservice.entity.ClientOrganisation;
 
 @Repository
 public interface ClientOrganisationRepository extends JpaRepository<ClientOrganisation, Integer> {
@@ -35,7 +35,7 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 	@Query(value="UPDATE condonuitydev.client_organisation SET organisation_name = (?1) , corporate_number = (?2) WHERE client_organisation_id=(?3);", nativeQuery = true)
 	int setOrganisationNameAndCorporateNumberByClientOrganisationId(String corporationName, String corporationNumber, Integer clientOrganisationId);
 
-	@Query(value="Select co.* FROM condonuitydev.client_organisation co where co.active_status =(?1) or co.active_status = 2;", nativeQuery = true)
+	@Query(value="Select co.* FROM condonuitydev.client_organisation co where co.active_status =(?1);", nativeQuery = true)
 	List<ClientOrganisation> findAllByActiveStatus(int activeStatus);
 
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.organisation_name or co.management_company LIKE '%29%';")

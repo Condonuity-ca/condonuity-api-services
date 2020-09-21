@@ -105,4 +105,28 @@ public class Utils {
 		
 	}
 	
+public static String getPlus30DaysDate() {
+		
+		try {
+			Date date = new Date();
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			
+			String plus30Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.END_DATE_PROJECTS_CONSTANT).toLocalDate().toString();
+			
+			System.out.println("currentDateTime : "+ plus30Days);
+			
+//			Date endDate=new SimpleDateFormat("yyyy-MM-dd").parse(plus30Days); 
+			
+//			System.out.println("endDate : "+ endDate.toString());
+			
+			return plus30Days;
+			 
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+		
+	}
+	
 }

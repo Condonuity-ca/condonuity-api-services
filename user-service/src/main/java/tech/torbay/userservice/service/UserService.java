@@ -208,12 +208,15 @@ public class UserService {
 				return getProjects(Constants.SearchType.HISTORY_PROJECTS.getValue(), actualKeyword, keyword, clientOrganisationId, projectStatusCodes);
 			}
 			case 4:{
-				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());
 				// check contract type
-				// check keyword has project tags				
-				return getProjects(Constants.SearchType.MARKETPLACE_PROJECTS.getValue(), actualKeyword, keyword, clientOrganisationId, projectStatusCodes);
+				// check keyword has project tags
+				
+				projectStatusCodes.add(ProjectPostType.PUBLISHED.getValue());//status = 2 - published projects status
+				
+				List<Object[]> projects = projectRepository.findAllProjectsForMarketPlaceByKeyword(keyword, projectStatusCodes);
+				
+				return getProjectsBundleForClientMarketplace(projects);
 			}
-			
 			case 5:{
 				// check keyword has vendor tags				
 				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
@@ -664,7 +667,7 @@ public class UserService {
 				break;
 			}
 			case 4:{
-				projects = projectRepository.findAllMarketplaceByKeyword(clientOrganisationId, keyword, projectStatusCodes);
+				projects = projectRepository.findAllMarketplaceByKeyword(keyword, projectStatusCodes);
 				break;
 			}
 		}
@@ -1843,6 +1846,44 @@ public class UserService {
 				} else {
 					map.put("isInterested", false);
 				}
+				result.add(map);
+//	        }
+	        
+	        
+		 });
+		return result;
+	}
+	
+	private List<Map<String, Object>> getProjectsBundleForClientMarketplace(List<Object[]> projects) {
+		
+		List<Map<String, Object>> result = new ArrayList();
+		
+		// TODO Auto-generated method stub
+		projects.stream().forEach((record) -> {
+	        Project project = (Project) record[0];
+	        String managementCompany = (String) record[1];
+	        String firstName = (String) record[2];
+	        String lastName = (String) record[3];
+	        String condoName = (String) record[4];
+	        
+//	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
+				        .map(Integer::parseInt)
+				        .collect(Collectors.toList());
+		        project.setTags(predefinedTagsRepository.findByTagId(ids).stream().collect(Collectors.joining(",")));
+		       
+		        Map<String,Object> map = new HashMap<>();
+				ObjectMapper oMapper = new ObjectMapper();
+				map = oMapper.convertValue(project, Map.class);
+				
+				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
+				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("condoName", condoName);
+				map.put("projectCreatedBy", firstName+" "+lastName);
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+//				projectReview.put("condoName", clientOrganisation.getOrganisationName());
+				map.put("condoCity", getCityName(clientOrganisation.getCity()));
+				map.put("city", getCityName(clientOrganisation.getCity()));
 				result.add(map);
 //	        }
 	        

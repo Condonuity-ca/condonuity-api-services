@@ -665,7 +665,7 @@ public class VendorController {
     )
 	@GetMapping("/vendor/notifications/{vendorId}/{vendorOrganisationId}")
 	public ResponseEntity<Object> getVendorNotifications(@PathVariable("vendorId") Integer vendorId, @PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
-		List<Notification> list = vendorService.getVendorNotifications(vendorId, vendorOrganisationId);
+		List<Map<String, Object>> list = vendorService.getVendorNotifications(vendorId, vendorOrganisationId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
