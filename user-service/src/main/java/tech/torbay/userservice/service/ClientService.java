@@ -15,6 +15,9 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.DeleteStatus;
+import tech.torbay.userservice.constants.Constants.Invalid;
+import tech.torbay.userservice.constants.Constants.NotificationType;
 import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.TaskStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
@@ -32,6 +35,7 @@ import tech.torbay.userservice.entity.ClientTask;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.ClientUserTasks;
+import tech.torbay.userservice.entity.Notification;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
@@ -54,6 +58,7 @@ import tech.torbay.userservice.repository.ClientTaskCommentsRepository;
 import tech.torbay.userservice.repository.ClientTaskRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.ClientUserTasksRepository;
+import tech.torbay.userservice.repository.NotificationRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
@@ -114,6 +119,8 @@ public class ClientService {
 	ServiceCitiesRepository servicesCitiesRepository;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -254,7 +261,11 @@ public class ClientService {
 		clientOrg.setActiveStatus(clientOrganisation.getActiveStatus());
 		clientOrg.setDeleteStatus(clientOrganisation.getDeleteStatus());
 		clientOrg.setUserType(Constants.UserType.CLIENT.getValue());
-		return clientOrganisationRepository.save(clientOrg);
+		ClientOrganisation clientOrgObj = clientOrganisationRepository.save(clientOrg);
+		if(clientOrgObj != null) {
+			SendAccountUpdateAlert(Invalid.ID.getValue(), clientOrg.getClientOrganisationId(), NotificationType.CLIENT_ORGANISATION_UPDATE.getValue());
+		}
+		return clientOrgObj;
 	}
 
 	public Object getOrganisationById(Integer id) {
@@ -716,6 +727,9 @@ public class ClientService {
 			}
 			projectRR.setRating(String.valueOf(overAllRatingCalculation));
 			projectRR = projectReviewRatingRepository.save(projectRR);
+			
+			sendVendorReviewRatingNotification(projectRR, NotificationType.REVIEW_CREATE.getValue());
+			
 			System.out.println("overAllRatingCalculation : "+overAllRatingCalculation);
 		} catch(Exception exp) {
 			exp.printStackTrace();
@@ -723,6 +737,42 @@ public class ClientService {
 		}
 		
 		return true;
+	}
+
+	public void sendVendorReviewRatingNotification(ProjectReviewRating projectReviewRating, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Review";
+		String subContent = " review added";
+		switch(notificationType) {
+			case 7 :{
+				message = "New Review";
+				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				notification.setUserType(UserType.CLIENT.getValue());
+				notification.setUserId(projectReviewRating.getClientId());
+				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
+				break;
+			}
+			case 8 :{
+				message = "New Reply";
+				String vendorOrgName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
+				subContent = vendorOrgName +" Vendor Organisation replied to this review";
+				notification.setUserType(UserType.VENDOR.getValue());
+				notification.setUserId(projectReviewRating.getVendorId());
+				notification.setOrganisationId(projectReviewRating.getVendorOrganisationId());
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(projectReviewRating.getId());
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 
 	public boolean updateReview(Map<String, Object> ratings) {
@@ -838,10 +888,10 @@ public class ClientService {
         return clientObj;
 	}
 
-	public Object deleteClientUserById(Integer id, Integer clientOrgId) {
+	public Object deleteClientUserById(Integer clientUserId, Integer clientOrgId) {
 		// TODO Auto-generated method stub
 		
-		ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(id, clientOrgId);
+		ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUserId, clientOrgId);
 //		clientAssociate.setAccountVerificationStatus(); --> Need to check , is it has changes? -no
 		clientAssociate.setUserAccountStatus(UserAccountStatus.INACTIVE.getValue());
 //		clientAssociate.setDeleteStatus(UserAccountStatus.INACTIVE.getValue());
@@ -850,9 +900,55 @@ public class ClientService {
 		
 		clientAssociate.setUserInactiveDate(userInactiveDate);
 		
-		return clientAssociationRepository.save(clientAssociate);
+		ClientAssociation clientAssociateObject = clientAssociationRepository.save(clientAssociate);
+		if(clientAssociateObject != null) {
+			SendAccountUpdateAlert(clientUserId, clientOrgId, NotificationType.CLIENT_USER_PROFILE_DELETE.getValue());
+		}
+		return clientAssociateObject;
 	}
 	
+	private void SendAccountUpdateAlert(Integer clientUserId, Integer clientOrgId, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		ClientUser clientuser = clientUserRepository.findByClientId(clientUserId);
+		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrgId);
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(clientUserId);
+		notification.setOrganisationId(clientOrgId);
+		
+		switch(notificationType) {
+			case 19 :{//CLIENT_USER_PROFILE_DELETE
+				message = "User Account Deleted";
+				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account deleted from Organisation";
+				notification.setNotificationCategoryId(clientUserId);
+				break;
+			}
+			case 20 :{//CLIENT_USER_PROFILE_UPDATE
+				message = "User Account Update";
+				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account updated in our Organisation";
+				notification.setNotificationCategoryId(clientUserId);
+				break;
+			}
+			case 21 :{//CLIENT_ORGANISATION_UPDATE
+				message = "Organisation Profile Information Updated";
+				subContent = clientOrganisation.getOrganisationName() +" - our organisation profile information updated";
+				notification.setNotificationCategoryId(clientOrgId);
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
+
 	public int getUsersCountByOrganisationId(Integer clientOrgId) {
 		// TODO Auto-generated method stub
 		List<ClientAssociation> clientAssociate = clientAssociationRepository.findAllActiveUsersByClientOrganisationId(clientOrgId);
@@ -883,6 +979,8 @@ public class ClientService {
 //    	client.setLastName(lastName);
     	
     	clientUserRepository.save(client);
+    	
+    	SendAccountUpdateAlert(clientUserId, clientOrgId, NotificationType.CLIENT_USER_PROFILE_UPDATE.getValue());
     	
     	return clientAssociate;
     	
@@ -1712,6 +1810,64 @@ public class ClientService {
 		}
 		
 		return clientUser;
+	}
+
+	public void CheckIsContractExpiring() {
+		// TODO Auto-generated method stub
+		List<ClientContract> clientContracts = clientContractRepository.findAllByStatus(DeleteStatus.ACTIVE.getValue());
+		
+		for(ClientContract clientContract : clientContracts) {
+			int expireIn = Utils.checkContractExpiring(clientContract.getExpiryDate());
+			
+			System.out.println("clientContract ID : "+ clientContract.getId());
+        	
+        	System.out.println("expireIn : "+ expireIn);
+        	
+        	if(expireIn == 1) {
+        		// project expire in 1 day
+        		SendClientContractExpiringNotification(Constants.DAY_30, clientContract, NotificationType.ANNUAL_CONTRACT_EXPIRING.getValue());
+        	} else if(expireIn == 2) {
+        		// project expire in 2 days
+        		SendClientContractExpiringNotification(Constants.DAY_60, clientContract, NotificationType.ANNUAL_CONTRACT_EXPIRING.getValue());
+        	} else if(expireIn == 0){
+        		// not expiring
+        		SendClientContractExpiringNotification(Constants.DAY_0, clientContract, NotificationType.ANNUAL_CONTRACT_EXPIRED.getValue());
+        	}
+		}
+	}
+
+	private void SendClientContractExpiringNotification(int expireIn, ClientContract clientContract, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Annual Contract Expiring";
+		String subContent = " annual contract expiring";
+		switch(notificationType) {
+			case 29 :{//ANNUAL_CONTRACT_EXPIRING
+				message = "Annual Contract Expiring";
+				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expiring in "+expireIn+ " days";
+				
+				break;
+			}
+			case 30 :{//ANNUAL_CONTRACT_EXPIRED
+				message = "Annual Contract Expired";
+				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expired";
+				
+				break;
+			}
+
+		}
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(Invalid.ID.getValue());
+		notification.setOrganisationId(clientContract.getClientOrganisationId());
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(clientContract.getId());
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 }
 

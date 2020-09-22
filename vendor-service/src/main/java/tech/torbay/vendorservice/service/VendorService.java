@@ -873,6 +873,14 @@ public class VendorService {
 		List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(vendorOrganisationId);
 		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
 		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
+		//1.bidEnd Alert
+		//2.Account Alert
+		//3.Project QA Alert
+		//4.All bids(include competitor) Alert
+		List<Notification> allAccountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(vendorOrganisationId);
+//		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsNotifications(vendorOrganisationId);
+//		List<Notification> allInterestedBiddedProjectsQANotifications = notificationRepository.findAllInterestedBiddedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
 		
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
 		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
@@ -898,6 +906,10 @@ public class VendorService {
 		filteredNotifications.addAll(projectAwardsNotifications);
 		filteredNotifications.addAll(projectInterestNotifications);
 		filteredNotifications.addAll(reviewRatingNotifications);
+		
+//		filteredNotifications.addAll(allOtherCompetitorBidsNotifications);
+		filteredNotifications.addAll(allAccountChangesNotifications);
+		filteredNotifications.addAll(bidEndAlertNotifications);
 		
 		
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
@@ -937,10 +949,10 @@ public class VendorService {
 				}
 			}
 			
-			mapNotification.put("sendorFirstName", sendorFirstName);
-			mapNotification.put("sendorLastName", sendorLastName);
-			mapNotification.put("sendorOrganisationName", sendorOrganisationName);
-			mapNotification.put("sendorLegalCompanyName", sendorLegalCompanyName);
+			mapNotification.put("senderFirstName", sendorFirstName);
+			mapNotification.put("senderLastName", sendorLastName);
+			mapNotification.put("senderOrganisationName", sendorOrganisationName);
+			mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
 			vendorNotifications.add(mapNotification);
 		}
 		

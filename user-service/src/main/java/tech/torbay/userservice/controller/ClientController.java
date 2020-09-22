@@ -1,13 +1,17 @@
 package tech.torbay.userservice.controller;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +44,8 @@ import tech.torbay.userservice.statusmessage.ResponseMessage;
 @RequestMapping("/api")
 @Api(value = "Client Resource REST Endpoint", description = "Shows the client info")
 public class ClientController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     @Autowired
     ClientService clientService;
@@ -152,7 +158,6 @@ public class ClientController {
 
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
     	}
-    	
     	
 	}
 	
@@ -1090,5 +1095,22 @@ public class ClientController {
 	private void SendTaskCommentNotification(ClientTaskComments clientTaskComment, NotificationType notificationType) {
 		// TODO Auto-generated method stub
 		clientService.sendTaskCommentNotification(clientTaskComment, notificationType.getValue());
+	}
+	
+	@Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+	public void run() {
+	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
+	    try {
+//			cronJobSch();
+	    	CheckIsClientContractExpiring();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void CheckIsClientContractExpiring() {
+		// TODO Auto-generated method stub
+		clientService.CheckIsContractExpiring();
 	}
 }

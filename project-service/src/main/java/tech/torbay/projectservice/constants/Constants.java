@@ -7,6 +7,11 @@ public class Constants {
 
 	public static final String TIME_ZONE = "UTC";
 	public static final int END_DATE_PROJECTS_CONSTANT = 30;
+	public static final int HOURS_24 = 24;
+	public static final int DAY_0 = 0;
+	public static final int DAY_1 = 1;
+	public static final int DAY_2 = 2;
+	public static final int HOURS_48 = 48;
 
 	public enum UserType {
 	    CLIENT(1),
@@ -392,6 +397,31 @@ public class Constants {
 	    }
 	}
 	
+	public enum Invalid {
+		ID(0);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private Invalid(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (Invalid pageType : Invalid.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static Invalid valueOf(int pageType) {
+	        return (Invalid) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	public enum NotificationType {
 		// changes -c, expiry -e, new - n, won -w, lose -l, new bid - b, 
 		PROJECT_CREATE(1),
@@ -410,7 +440,22 @@ public class Constants {
 		INTERNAL_MESSAGE_THREAD_COMMENT(14),
 		EXTERNAL_MESSAGE_THREAD_CREATE(15),
 		EXTERNAL_MESSAGE_THREAD_UPDATE(16),
-		EXTERNAL_MESSAGE_THREAD_COMMENT(17);
+		EXTERNAL_MESSAGE_THREAD_COMMENT(17),
+		CLIENT_USER_PROFILE_INVITE(18),
+		CLIENT_USER_PROFILE_DELETE(19),
+		CLIENT_USER_PROFILE_UPDATE(20),
+		CLIENT_ORGANISATION_UPDATE(21),
+		VENDOR_USER_PROFILE_INVITE(22),
+		VENDOR_USER_PROFILE_DELETE(23),
+		VENDOR_USER_PROFILE_UPDATE(24),
+		VENDOR_ORGANISATION_UPDATE(25),
+		PROJECT_BIDDING_EXPIRING(26),
+		PROJECT_BIDDING_EXPIRED(27),
+		PROJECT_COMPETITOR_BIDDING(28),
+		ANNUAL_CONTRACT_EXPIRING(29),
+		ANNUAL_CONTRACT_EXPIRED(30),
+		PROJECT_QUESTION_CREATE(31),
+		PROJECT_QUESTION_ANSWER(32);
 
 	    private int value;
 	    private static Map map = new HashMap<>();

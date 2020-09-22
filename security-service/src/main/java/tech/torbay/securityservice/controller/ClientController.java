@@ -37,6 +37,7 @@ import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
+import tech.torbay.securityservice.constants.Constants.NotificationType;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
@@ -320,7 +321,7 @@ public class ClientController {
 					clientService.addClientOrgAccountAssociation(organisationId, clientUserType, userRole, existClient, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue(), Constants.DeleteStatus.ACTIVE.getValue());
 					
 					sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
-					
+					clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
 					HttpHeaders headers = new HttpHeaders();
 			        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
 			        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
@@ -364,7 +365,7 @@ public class ClientController {
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
 				        // Invite Sent
 				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), clientUser , organisationId, clientUserType, userRole);
-				        
+				        clientService.SendAccountUpdateAlert(clientUser.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
 				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
 		        	} catch(Exception exp) {
 		        		exp.printStackTrace();

@@ -3,13 +3,12 @@ package tech.torbay.projectservice.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,8 @@ import tech.torbay.projectservice.Utils.Utils;
 import tech.torbay.projectservice.constants.Constants;
 import tech.torbay.projectservice.constants.Constants.BidPostType;
 import tech.torbay.projectservice.constants.Constants.DeleteStatus;
+import tech.torbay.projectservice.constants.Constants.Invalid;
+import tech.torbay.projectservice.constants.Constants.NotificationType;
 import tech.torbay.projectservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.projectservice.constants.Constants.ProjectPostTo;
 import tech.torbay.projectservice.constants.Constants.ProjectPostType;
@@ -45,6 +46,7 @@ import tech.torbay.projectservice.entity.VendorCategoryRatings;
 import tech.torbay.projectservice.entity.VendorOrganisation;
 import tech.torbay.projectservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
+import tech.torbay.projectservice.entity.VendorUser;
 import tech.torbay.projectservice.repository.BidFilesRepository;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.ClientUserRepository;
@@ -1388,6 +1390,117 @@ public class ProjectService {
 		}
 		
 		return project.getProjectId();
+	}
+
+	public void SendProjectQANotification(ProjectQuestionAnswer projectQA, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Project Question";
+		String subContent = " question updated";
+		switch(notificationType) {
+			case 31 :{//PROJECT_QUESTION_CREATE
+				message = "New Project Question";
+				VendorUser vendorUser = vendorUserRepository.findByUserId(projectQA.getVendorUserId());
+				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId());
+				subContent = vendorOrganisation.getCompanyName()+" vendor posted a new question";
+				notification.setUserType(UserType.VENDOR.getValue());
+				notification.setUserId(vendorUser.getUserId());
+				notification.setOrganisationId(vendorUser.getVendorOrganisationId());
+				break;
+			}
+			case 32 :{//PROJECT_QUESTION_ANSWER
+				message = "Project Question Answered";
+				Project project = projectRepository.findByProjectId(projectQA.getProjectId());
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+				subContent = clientOrganisation.getOrganisationName() +" client answered to Project -"+ project.getProjectName()+" and question - "+projectQA.getQuestion()+" ?";
+				notification.setUserType(UserType.CLIENT.getValue());
+				notification.setUserId(projectQA.getClientUserId());
+				notification.setOrganisationId(project.getClientOrganisationId());
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(projectQA.getProjectqaId());
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
+
+	public void CheckIsProjectBidExpiring() {
+		// TODO Auto-generated method stub
+		List<Object[]> projects = projectRepository.findAllProjectsForMarketPlace();
+		
+		List<Map<String,Object>> allProjects = new ArrayList();
+		
+		 projects.stream().forEach((record) -> {
+	        Project project = (Project) record[0];
+	        String managementCompany = (String) record[1];
+	        String condoName = (String) record[2];
+	        String condoCity = (String) record[3];
+	        String firstName = (String) record[4];
+	        String lastName = (String) record[5];
+	        
+	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+	        	
+	        	System.out.println("Project ID : "+ project.getProjectId());
+	        	int expireIn = Utils.checkBidEndDateExpireInDays(project.getBidEndDate());
+	        	
+	        	System.out.println("expireIn : "+ expireIn);
+	        	
+	        	if(expireIn == 1) {
+	        		// project expire in 1 day
+	        		SendProjectBidDateExpiringNotification(Constants.DAY_1, project, NotificationType.PROJECT_BIDDING_EXPIRING.getValue());
+	        	} else if(expireIn == 2) {
+	        		// project expire in 2 days
+	        		SendProjectBidDateExpiringNotification(Constants.DAY_2, project, NotificationType.PROJECT_BIDDING_EXPIRING.getValue());
+	        	} else if(expireIn == 0){
+	        		// not expiring
+	        		SendProjectBidDateExpiringNotification(Constants.DAY_0, project, NotificationType.PROJECT_BIDDING_EXPIRED.getValue());
+	        	}
+	        }
+	        
+		 });
+		 
+		 
+	}
+
+	private void SendProjectBidDateExpiringNotification(int expireIn, Project project, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Project Bidding Expiring";
+		String subContent = " bidding expiring";
+		switch(notificationType) {
+			case 26 :{//PROJECT_BIDDING_EXPIRING
+				message = "Project Bid Expiring";
+				subContent = "Project "+project.getProjectName()+" bidding expiring in "+expireIn+ " days";
+				
+				break;
+			}
+			case 27 :{//PROJECT_BIDDING_EXPIRED
+				message = "Project Bidding Expired";
+				subContent = "Project "+project.getProjectName()+" bidding expired";
+				
+				break;
+			}
+
+		}
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(Invalid.ID.getValue());
+		notification.setOrganisationId(project.getClientOrganisationId());
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(project.getProjectId());
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 
 }

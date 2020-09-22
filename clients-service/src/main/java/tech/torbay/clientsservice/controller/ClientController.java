@@ -976,7 +976,7 @@ public class ClientController {
     )
 	@GetMapping("/client/notifications/{clientId}/{clientOrganisationId}")
 	public ResponseEntity<Object> getVendorNotifications(@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
-		List<Notification> list = clientService.getClientNotifications(clientId, clientOrganisationId);
+		List<Map<String,Object>>list = clientService.getClientNotifications(clientId, clientOrganisationId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {

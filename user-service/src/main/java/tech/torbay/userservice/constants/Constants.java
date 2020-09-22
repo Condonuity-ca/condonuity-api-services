@@ -7,6 +7,9 @@ public class Constants {
 
 	public static final Integer MAX_USER_COUNT = 12;
 	public static final String TIME_ZONE = "UTC";
+	public static final int DAY_30 = 30;
+	public static final int DAY_60 = 60;
+	public static final int DAY_0 = 0;
 //	public static final String USER_ACCOUNT_REMOVE_ALERT = "User Account Deleted From the System By Admin";
 	public static final String USER_ACCOUNT_REMOVE_ALERT = "Your user account has been deactivated on the system by the admin";
 //	public static final String USER_ACCOUNT_ACTIVE_ALERT = "User Account Status Changed to Active By Admin";
@@ -956,7 +959,22 @@ public class Constants {
 		INTERNAL_MESSAGE_THREAD_COMMENT(14),
 		EXTERNAL_MESSAGE_THREAD_CREATE(15),
 		EXTERNAL_MESSAGE_THREAD_UPDATE(16),
-		EXTERNAL_MESSAGE_THREAD_COMMENT(17);
+		EXTERNAL_MESSAGE_THREAD_COMMENT(17),
+		CLIENT_USER_PROFILE_INVITE(18),
+		CLIENT_USER_PROFILE_DELETE(19),
+		CLIENT_USER_PROFILE_UPDATE(20),
+		CLIENT_ORGANISATION_UPDATE(21),
+		VENDOR_USER_PROFILE_INVITE(22),
+		VENDOR_USER_PROFILE_DELETE(23),
+		VENDOR_USER_PROFILE_UPDATE(24),
+		VENDOR_ORGANISATION_UPDATE(25),
+		PROJECT_BIDDING_EXPIRING(26),
+		PROJECT_BIDDING_EXPIRED(27),
+		PROJECT_COMPETITOR_BIDDING(28),
+		ANNUAL_CONTRACT_EXPIRING(29),
+		ANNUAL_CONTRACT_EXPIRED(30),
+		PROJECT_QUESTION_CREATE(31),
+		PROJECT_QUESTION_ANSWER(32);
 
 	    private int value;
 	    private static Map map = new HashMap<>();

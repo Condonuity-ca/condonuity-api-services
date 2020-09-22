@@ -105,7 +105,77 @@ public class Utils {
 		
 	}
 	
-public static String getPlus30DaysDate() {
+	public static int checkBidEndDateExpireInDays(String bidEndDate) {
+		
+		try {
+			Date date = new Date();
+			Date today_Date = new Date();
+			Date bidEnd_Date = new Date();
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			
+			String today = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).toLocalDate().toString();
+			String plus1Day = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_1).toLocalDate().toString();
+			String plus2Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_2).toLocalDate().toString();
+			
+			System.out.println("today : "+ today);
+			System.out.println("bidEndDate : "+ bidEndDate);
+			System.out.println("plus1Day : "+ plus1Day);
+			System.out.println("plus2Days : "+ plus2Days);
+			
+
+			if(bidEndDate.equals(plus1Day)) {
+				return 1;
+			} else if(bidEndDate.equals(plus2Days)) {
+				return 2;
+			} else if(bidEndDate.equals(today)) {
+				return 0;
+			}
+			
+			 try {
+				   today_Date = dateFormat.parse(today);
+			       }
+			       catch(Exception e)
+			       {
+				   e.printStackTrace();
+			       }
+
+				// convert date present in the String to java.util.Date.
+				try
+				{
+				    bidEnd_Date = dateFormat.parse(bidEndDate);
+				}
+				catch(Exception e)
+				{
+				    e.printStackTrace();
+				}
+				
+				System.out.print("Difference : "+ today_Date.compareTo(bidEnd_Date));
+
+				
+			return 3; //else =3 - no action
+			 
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return 3;
+		}
+		
+	}
+	
+	public static String getDateTime() {
+		// TODO Auto-generated method stub
+		Date date = new Date();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		// Use Madrid's time zone to format the date in
+		df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+
+		String dateTimeNow = df.format(date);
+		
+		return dateTimeNow; 
+	}
+	
+	public static String getPlus30DaysDate() {
 		
 		try {
 			Date date = new Date();

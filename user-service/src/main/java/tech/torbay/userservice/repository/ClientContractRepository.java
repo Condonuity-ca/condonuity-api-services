@@ -38,4 +38,6 @@ public interface ClientContractRepository extends JpaRepository<ClientContract, 
     List<ClientContract> findAllByClientOrganisationIdAndCostTermUnits(Integer clientOrganisationId, Integer costTermUnits);
     
     List<ClientContract> findAllByClientOrganisationIdAndTermUnits(Integer clientOrganisationId, Integer termUnits);
+
+	List<ClientContract> findAllByStatus(Integer status);
 }

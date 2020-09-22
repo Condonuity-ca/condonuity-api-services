@@ -16,12 +16,14 @@ import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.Notification;
 import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.User;
 import tech.torbay.securityservice.entity.UserInviteLogs;
 import tech.torbay.securityservice.repository.ClientAssociationRepository;
 import tech.torbay.securityservice.repository.ClientOrganisationRepository;
 import tech.torbay.securityservice.repository.ClientUserRepository;
+import tech.torbay.securityservice.repository.NotificationRepository;
 import tech.torbay.securityservice.repository.RegistrationLogsRepository;
 import tech.torbay.securityservice.repository.UserInviteLogsRepository;
 import tech.torbay.securityservice.repository.UserRepository;
@@ -41,6 +43,8 @@ public class ClientService {
 	RegistrationLogsRepository registrationLogsRepository;
 	@Autowired
 	UserInviteLogsRepository userInviteLogsRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -422,6 +426,36 @@ public class ClientService {
 		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientId, clientOrganisationId);
 		
 		return clientAssociation;
+	}
+
+	public void SendAccountUpdateAlert(Integer clientUserId, Integer clientOrgId, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		ClientUser clientuser = clientUserRepository.findByClientId(clientUserId);
+		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrgId);
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(clientUserId);
+		notification.setOrganisationId(clientOrgId);
+		
+		switch(notificationType) {
+			case 18 :{//CLIENT_USER_PROFILE_INVITE
+				message = "New User Invited";
+				subContent = "New user ("+clientuser.getEmail()+") invited from Organisation";
+				notification.setNotificationCategoryId(clientUserId);
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 }
 

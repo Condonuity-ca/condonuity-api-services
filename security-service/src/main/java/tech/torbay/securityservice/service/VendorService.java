@@ -17,6 +17,9 @@ import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.entity.AvailableVendorProfiles;
 import tech.torbay.securityservice.entity.AvailableVendorProfilesRepository;
+import tech.torbay.securityservice.entity.ClientOrganisation;
+import tech.torbay.securityservice.entity.ClientUser;
+import tech.torbay.securityservice.entity.Notification;
 import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.ServiceCities;
 import tech.torbay.securityservice.entity.User;
@@ -31,6 +34,7 @@ import tech.torbay.securityservice.entity.VendorProducts;
 import tech.torbay.securityservice.entity.VendorServices;
 import tech.torbay.securityservice.entity.VendorServicesCities;
 import tech.torbay.securityservice.entity.VendorUser;
+import tech.torbay.securityservice.repository.NotificationRepository;
 import tech.torbay.securityservice.repository.RegistrationLogsRepository;
 import tech.torbay.securityservice.repository.ServiceCitiesRepository;
 import tech.torbay.securityservice.repository.UserInviteLogsRepository;
@@ -75,6 +79,8 @@ public class VendorService {
 	UserInviteLogsRepository userInviteLogsRepository;
 	@Autowired
 	ServiceCitiesRepository servicesCitiesRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 
 	public List<VendorUser> findAll() {
 //		// TODO Auto-generated method stub
@@ -431,6 +437,36 @@ public class VendorService {
 				}
 				
 				return vendorOrganisations;
+	}
+	
+	public void SendAccountUpdateAlert(Integer vendorUserId, Integer vendorOrgId, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUserId);
+		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(vendorUserId);
+		notification.setOrganisationId(vendorOrgId);
+		
+		switch(notificationType) {
+			case 22 :{//VENDOR_USER_PROFILE_INVITE
+				message = "New User Invited";
+				subContent = "New user ("+vendoruser.getEmail()+") invited from Organisation";
+				notification.setNotificationCategoryId(vendorUserId);
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 	
 }

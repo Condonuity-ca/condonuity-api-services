@@ -106,5 +106,61 @@ public class Utils {
 		
 		return String.valueOf(apiExpiryDateTime);
 	}
+
+	public static int checkContractExpiring(String expiryDate) {
+		// TODO Auto-generated method stub
+		try {
+			Date date = new Date();
+			Date today_Date = new Date();
+			Date expiry_Date = new Date();
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			
+			String today = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).toLocalDate().toString();
+			String plus30Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_30).toLocalDate().toString();
+			String plus60Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_60).toLocalDate().toString();
+			
+			System.out.println("today : "+ today);
+			System.out.println("expiryDate : "+ expiryDate);
+			System.out.println("plus30Days : "+ plus30Days);
+			System.out.println("plus60Days : "+ plus60Days);
+			
+
+			if(expiryDate.equals(plus30Days)) {
+				return 30;
+			} else if(expiryDate.equals(plus60Days)) {
+				return 60;
+			} else if(expiryDate.equals(today)) {
+				return 0;
+			} //else =3 - no action 
+			
+			 try {
+				   today_Date = dateFormat.parse(today);
+			       }
+			       catch(Exception e)
+			       {
+				   e.printStackTrace();
+			       }
+
+				// convert date present in the String to java.util.Date.
+				try
+				{
+					expiry_Date = dateFormat.parse(expiryDate);
+				}
+				catch(Exception e)
+				{
+				    e.printStackTrace();
+				}
+				
+				System.out.print("Difference : "+ today_Date.compareTo(expiry_Date));
+
+				
+			return 3;
+			 
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return 3;
+		}
+	}
 	
 }

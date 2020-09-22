@@ -1,6 +1,7 @@
 package tech.torbay.projectservice.controller;
 
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -820,7 +822,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Question Posted Successfully");
-        	
+        	SendProjectQANotification(projectQA, NotificationType.PROJECT_QUESTION_CREATE);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
@@ -852,12 +854,17 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Question Answered Successfully");
-        	
+        	SendProjectQANotification(projectQA, NotificationType.PROJECT_QUESTION_ANSWER);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
 	}
 	
+	private void SendProjectQANotification(ProjectQuestionAnswer projectQA, NotificationType projectQuestionAnswer) {
+		// TODO Auto-generated method stub
+		projectService.SendProjectQANotification(projectQA,projectQuestionAnswer.getValue());
+	}
+
 	@ApiOperation(value = "Project Review and Rating Posting implementation")
     @ApiResponses(
             value = {
@@ -1100,4 +1107,26 @@ public class ProjectController {
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 		}
 	}
+    
+	@Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+	public void run() {
+	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
+	    try {
+//			cronJobSch();
+	    	CheckIsProjectBidExpiring();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void CheckIsProjectBidExpiring() {
+		// TODO Auto-generated method stub
+		projectService.CheckIsProjectBidExpiring();
+	}
+	
+//	@Scheduled(cron = "0 * 9 * * ?")
+//	public void cronJobSch() throws Exception {
+//		logger.info("Current time is :: " + Calendar.getInstance().getTime());
+//	}
 } 

@@ -17,6 +17,7 @@ import tech.torbay.clientsservice.Utils.Utils;
 import tech.torbay.clientsservice.constants.Constants;
 import tech.torbay.clientsservice.constants.Constants.TaskStatus;
 import tech.torbay.clientsservice.constants.Constants.UserAccountStatus;
+import tech.torbay.clientsservice.entity.Amenities;
 import tech.torbay.clientsservice.entity.ClientAmenities;
 import tech.torbay.clientsservice.entity.ClientAssociation;
 import tech.torbay.clientsservice.entity.ClientBuildingRepository;
@@ -36,6 +37,7 @@ import tech.torbay.clientsservice.entity.UserProfileImages;
 import tech.torbay.clientsservice.entity.UserWishList;
 import tech.torbay.clientsservice.entity.VendorCategoryRatings;
 import tech.torbay.clientsservice.entity.VendorOrganisation;
+import tech.torbay.clientsservice.entity.VendorUser;
 import tech.torbay.clientsservice.repository.AmenitiesRepository;
 import tech.torbay.clientsservice.repository.ClientAmenitiesRepository;
 import tech.torbay.clientsservice.repository.ClientAssociationRepository;
@@ -56,7 +58,7 @@ import tech.torbay.clientsservice.repository.UserProfileImagesRepository;
 import tech.torbay.clientsservice.repository.UserWishListRepository;
 import tech.torbay.clientsservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.clientsservice.repository.VendorOrganisationRepository;
-import tech.torbay.clientsservice.entity.Amenities;
+import tech.torbay.clientsservice.repository.VendorUserRepository;
 
 @Component
 public class ClientService {
@@ -103,6 +105,8 @@ public class ClientService {
 	NotificationRepository notificationRepository;
 	@Autowired
 	UserLevelNotificationRepository userLevelNotificationRepository;
+	@Autowired
+	VendorUserRepository vendorUserRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -1096,7 +1100,7 @@ public class ClientService {
 		return clientBuildingRepoRepository.findAllByClientOrganisationId(clientOrganisationId);
 	}
 
-	public List<Notification> getClientNotifications(Integer clientId, Integer clientOrganisationId) {
+	public List<Map<String,Object>> getClientNotifications(Integer clientId, Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 				List<Notification> filteredNotifications = new ArrayList<Notification>();
 				
@@ -1107,6 +1111,17 @@ public class ClientService {
 				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
 				List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(clientOrganisationId); 
 				List<UserLevelNotification> taskNotifications = userLevelNotificationRepository.findAllTaskNotifications(clientOrganisationId, clientId); 
+				//1.all projects for client notification
+				//2.bid end alert
+				//3.reply for client comment
+				//4.annual contract alert
+				//5.account changes
+				//6.project question Alert
+				List<Notification> allPostedProjectsForClientNotifications = notificationRepository.findAllPostedProjectsForClient(clientOrganisationId);
+				List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjects(clientOrganisationId);
+				List<Notification> annualAlertNotifications = notificationRepository.findAllContractExpiryAlert(clientOrganisationId);
+				List<Notification> accountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(clientOrganisationId);
+				List<Notification> reviewRepliesFromVendor = notificationRepository.findAllReviewRepliesNotificationsFromVendors(clientOrganisationId);
 				
 				internalMessagesNotifications.addAll(taskNotifications);
 				internalMessagesNotifications.addAll(externalMessagesNotifications);
@@ -1126,10 +1141,57 @@ public class ClientService {
 				}
 				
 				filteredNotifications.addAll(projectBidsNotifications);
+				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
+				filteredNotifications.addAll(bidEndAlertNotifications);
+				filteredNotifications.addAll(annualAlertNotifications);
+				filteredNotifications.addAll(accountChangesNotifications);
+				filteredNotifications.addAll(reviewRepliesFromVendor);
 				
 				
 				List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
-				return uniqueNotifications;
+				
+				List<Map<String,Object>> clientNotifications = new ArrayList();
+				
+				for(Notification notification : uniqueNotifications) {
+					ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+					Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
+					
+					String sendorFirstName = "";
+					String sendorLastName = "";
+					String sendorOrganisationName = "";
+					String sendorLegalCompanyName = "";
+					
+					if(notification.getUserId() == 0) {
+						if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getOrganisationId() != 0) {
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(notification.getOrganisationId());
+							
+							sendorOrganisationName = clientOrganisation.getOrganisationName();
+							sendorLegalCompanyName = clientOrganisation.getManagementCompany();
+						} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
+							sendorOrganisationName = vendorOrganisation.getCompanyName();
+							sendorLegalCompanyName = vendorOrganisation.getLegalName();
+						}
+					} else {
+						if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
+							ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+							
+							sendorFirstName = clientUser.getFirstName();
+							sendorLastName = clientUser.getLastName();
+						} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
+							VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
+							sendorFirstName = vendorUser.getFirstName();
+							sendorLastName = vendorUser.getLastName();
+						}
+					}
+					
+					mapNotification.put("senderFirstName", sendorFirstName);
+					mapNotification.put("senderLastName", sendorLastName);
+					mapNotification.put("senderOrganisationName", sendorOrganisationName);
+					mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
+					clientNotifications.add(mapNotification);
+				}
+				return clientNotifications;
 	}
 }
 

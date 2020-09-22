@@ -37,6 +37,7 @@ import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
+import tech.torbay.securityservice.constants.Constants.NotificationType;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
@@ -308,6 +309,7 @@ public class VendorController {
 	        	
 	        	try {
 		        	sendVendorEmailVerification(vendor_user);
+		        	vendorService.SendAccountUpdateAlert(vendor_user.getUserId(), vendor_user.getVendorOrganisationId(), NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 		        } catch(Exception exp) {
 		        	exp.printStackTrace();
 		        }

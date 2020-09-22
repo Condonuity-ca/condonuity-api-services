@@ -16,12 +16,16 @@ import com.google.common.collect.Lists;
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.DeleteStatus;
+import tech.torbay.userservice.constants.Constants.Invalid;
+import tech.torbay.userservice.constants.Constants.NotificationType;
 import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
+import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.AvailableVendorProfiles;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.Notification;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.ServiceCities;
@@ -46,6 +50,7 @@ import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.AvailableVendorProfilesRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
+import tech.torbay.userservice.repository.NotificationRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
@@ -116,6 +121,8 @@ public class VendorService {
 	ClientOrganisationRepository clientOrganisationRepository;
 	@Autowired
 	VendorPortfolioFilesRepository vendorPortfolioFilesRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -737,6 +744,8 @@ public class VendorService {
 			    	vendorMembershipsRepository.save(new VendorMemberships(vendorOrganisation.getVendorOrganisationId(),membership,""));
 			    }
 			    
+			    SendAccountUpdateAlert(Invalid.ID.getValue(), vendorOrganisation.getVendorOrganisationId(), NotificationType.VENDOR_ORGANISATION_UPDATE.getValue());
+			    
 				return vendorOrganisation;
 			}
 		} catch(Exception exp) {
@@ -1004,11 +1013,57 @@ public class VendorService {
 		return paymentDetails;
 	}
 
-	public VendorUser deleteVendorUserById(Integer id) {
+	public VendorUser deleteVendorUserById(Integer vendorUserId) {
 		// TODO Auto-generated method stub
-		VendorUser vendorUser = vendorUserRepository.findByUserId(id);
+		VendorUser vendorUser = vendorUserRepository.findByUserId(vendorUserId);
 		vendorUser.setAccountStatus(UserAccountStatus.INACTIVE.getValue());
-		return vendorUserRepository.save(vendorUser);
+		VendorUser vendorUserObj = vendorUserRepository.save(vendorUser);
+		if(vendorUserObj != null) {
+			SendAccountUpdateAlert(vendorUserId, vendorUser.getVendorOrganisationId(), NotificationType.VENDOR_USER_PROFILE_DELETE.getValue());
+		}
+		return vendorUserObj;
+	}
+	
+	private void SendAccountUpdateAlert(Integer vendorUserId, Integer vendorOrgId, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUserId);
+		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
+		notification.setUserType(UserType.VENDOR.getValue());
+		notification.setUserId(vendorUserId);
+		notification.setOrganisationId(vendorOrgId);
+		
+		switch(notificationType) {
+			case 23 :{//CLIENT_USER_PROFILE_DELETE
+				message = "User Account Deleted";
+				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account deleted from Organisation";
+				notification.setNotificationCategoryId(vendorUserId);
+				break;
+			}
+			case 24 :{//CLIENT_USER_PROFILE_UPDATE
+				message = "User Account Update";
+				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account updated in our Organisation";
+				notification.setNotificationCategoryId(vendorUserId);
+				break;
+			}
+			case 25 :{//CLIENT_ORGANISATION_UPDATE
+				message = "Organisation Profile Information Updated";
+				subContent = vendorOrganisation.getCompanyName() +" - our organisation profile information updated";
+				notification.setNotificationCategoryId(vendorOrgId);
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		
+		notification.setTitle(message);
+		notification.setDescription(message+" - "+subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 	
 	public int getUsersCountByOrganisationId(Integer vendorId) {
@@ -1033,7 +1088,13 @@ public class VendorService {
 //    	vendorUser.setFirstName(firstName);
 //    	vendorUser.setLastName(lastName);
     	
-		return vendorUserRepository.save(vendorUser);
+		VendorUser vendorUserObj = vendorUserRepository.save(vendorUser);
+		
+		if(vendorUserObj != null) {
+			SendAccountUpdateAlert(vendorUserId, vendorUser.getVendorOrganisationId(), NotificationType.VENDOR_USER_PROFILE_UPDATE.getValue());
+		}
+		
+		return vendorUserObj;
 	}
 
 	public Object updateVendorOrganisationCompany(Map<String, Object> vendorOrganisationData) {
