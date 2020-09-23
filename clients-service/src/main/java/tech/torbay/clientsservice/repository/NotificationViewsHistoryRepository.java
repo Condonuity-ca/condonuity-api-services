@@ -1,11 +1,11 @@
-package tech.torbay.vendorservice.repository;
+package tech.torbay.clientsservice.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import tech.torbay.vendorservice.entity.NotificationViewsHistory;
+import tech.torbay.clientsservice.entity.NotificationViewsHistory;
 
 @Repository
 public interface NotificationViewsHistoryRepository extends JpaRepository<NotificationViewsHistory, Integer> {

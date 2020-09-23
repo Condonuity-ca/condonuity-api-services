@@ -666,13 +666,14 @@ public class VendorController {
 	@GetMapping("/vendor/notifications/{vendorId}/{vendorOrganisationId}")
 	public ResponseEntity<Object> getVendorNotifications(@PathVariable("vendorId") Integer vendorId, @PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
 		List<Map<String, Object>> list = vendorService.getVendorNotifications(vendorId, vendorOrganisationId);
-		
+		long count = getCountOfUnreadMessages(list);
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
 			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "All notifications fetched successfully");
 			response.put("notifications", list);
+			response.put("unreadMessages", count);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {
@@ -684,4 +685,14 @@ public class VendorController {
 		}
 	}
 	// to check the db connection issue, I am making comment changes in this build internal_v_10.5
+
+	private long getCountOfUnreadMessages(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		long countBigCustomers = list
+				  .stream()
+				  .filter(notification -> notification.get("isViewed").toString().equals("false"))
+				  .count();
+		
+		return countBigCustomers;
+	}
 } 

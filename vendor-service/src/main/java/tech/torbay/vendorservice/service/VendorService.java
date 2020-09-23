@@ -15,9 +15,11 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.vendorservice.constants.Constants;
 import tech.torbay.vendorservice.constants.Constants.UserAccountStatus;
+import tech.torbay.vendorservice.constants.Constants.UserType;
 import tech.torbay.vendorservice.entity.ClientOrganisation;
 import tech.torbay.vendorservice.entity.ClientUser;
 import tech.torbay.vendorservice.entity.Notification;
+import tech.torbay.vendorservice.entity.NotificationViewsHistory;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
 import tech.torbay.vendorservice.entity.ProjectReviewRating;
 import tech.torbay.vendorservice.entity.UserLevelNotification;
@@ -958,8 +960,41 @@ public class VendorService {
 			mapNotification.put("senderLastName", sendorLastName);
 			mapNotification.put("senderOrganisationName", sendorOrganisationName);
 			mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
+			mapNotification.put("isViewed",false);
+			
+			List<NotificationViewsHistory> notificationViewsHistoryByOrganisation = notificationViewsHistoryRepository.findByOrganisationIdAndUserIdAndUserTypeAndNotificationId(vendorOrganisationId, vendorId, UserType.VENDOR.getValue(), notification.getId());
+//			List<NotificationViewsHistory> notificationViewsHistoryByUser = notificationViewsHistoryRepository.findByUserIdAndUserTypeAndNotificationId(vendorId, UserType.VENDOR.getValue(), notification.getId());
+			int count = 0;
+			if(notificationViewsHistoryByOrganisation != null) {
+				for(NotificationViewsHistory notificationViews : notificationViewsHistoryByOrganisation) {
+					if(notificationViews.getNotificationId().equals(notification.getId())) {
+						mapNotification.put("isViewed",true);
+						count++;
+					}
+				}
+			}
+			
+//			if(notificationViewsHistoryByUser != null)
+//			for(NotificationViewsHistory notificationViews : notificationViewsHistoryByUser) {
+//				if(notificationViews.getNotificationId() == notification.getId()) {
+//					mapNotification.put("isViewed",true);
+//					count++;
+//				}
+//			}
 			vendorNotifications.add(mapNotification);
 		}
+		for(Map<String,Object> notification : vendorNotifications) {
+			if(String.valueOf(notification.get("isViewed")).equals("false")) {
+				NotificationViewsHistory notificationView = new NotificationViewsHistory();
+				notificationView.setNotificationId(Integer.parseInt(notification.get("id").toString()));
+				notificationView.setOrganisationId(vendorOrganisationId);
+				notificationView.setUserId(vendorId);
+				notificationView.setUserType(UserType.VENDOR.getValue());
+				
+				notificationViewsHistoryRepository.save(notificationView);
+			}
+		}
+		
 		
 		return vendorNotifications;
 	}

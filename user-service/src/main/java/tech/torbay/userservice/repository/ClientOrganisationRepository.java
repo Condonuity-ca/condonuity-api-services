@@ -41,7 +41,7 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.organisation_name or co.management_company LIKE '%29%';")
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.client_organisation_id = (?1) and ( co.organisation_name or co.management_company ) LIKE '%(?2)%';")
 	
-	@Query(value = "SELECT co.* FROM condonuitydev.client_organisation co where co.active_status = 0 and " + 
+	@Query(value = "SELECT co.* FROM condonuitydev.client_organisation co where  ( co.active_status = 0 or co.active_status = 2)and " + 
 			"concat (co.organisation_name, '.', co.management_company, '.', co.corporate_number, '.', " + 
 			"co.registration_date, '.', co.address, '.', co.city, '.', co.province, '.', co.postal_code, '.', " + 
 			"co.country_code, '.', co.phone_number, '.', co.fax_number or co.units, '.', " + 
