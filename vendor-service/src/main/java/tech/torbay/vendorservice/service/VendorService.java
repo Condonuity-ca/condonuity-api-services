@@ -866,7 +866,7 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		List<Notification> filteredNotifications = new ArrayList<Notification>();
 		
-		List<Notification> notifications = notificationRepository.findAll();
+//		List<Notification> notifications = notificationRepository.findAll();
 //		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 		
 		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
@@ -878,8 +878,10 @@ public class VendorService {
 		//3.Project QA Alert
 		//4.All bids(include competitor) Alert
 		List<Notification> allAccountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(vendorOrganisationId);
-//		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsNotifications(vendorOrganisationId);
-//		List<Notification> allInterestedBiddedProjectsQANotifications = notificationRepository.findAllInterestedBiddedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
+		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
 		
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
@@ -907,9 +909,12 @@ public class VendorService {
 		filteredNotifications.addAll(projectInterestNotifications);
 		filteredNotifications.addAll(reviewRatingNotifications);
 		
-//		filteredNotifications.addAll(allOtherCompetitorBidsNotifications);
 		filteredNotifications.addAll(allAccountChangesNotifications);
+		filteredNotifications.addAll(allOtherCompetitorBidsNotifications);//based on vendor bided projects
+		filteredNotifications.addAll(allOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
 		filteredNotifications.addAll(bidEndAlertNotifications);
+		filteredNotifications.addAll(allInterestedProjectsQANotifications);
+		filteredNotifications.addAll(allBiddedProjectsQANotifications);
 		
 		
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());

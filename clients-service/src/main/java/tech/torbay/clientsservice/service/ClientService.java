@@ -1104,7 +1104,7 @@ public class ClientService {
 		// TODO Auto-generated method stub
 				List<Notification> filteredNotifications = new ArrayList<Notification>();
 				
-				List<Notification> notifications = notificationRepository.findAll();
+//				List<Notification> notifications = notificationRepository.findAll();
 //				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 				
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
@@ -1121,7 +1121,8 @@ public class ClientService {
 				List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjects(clientOrganisationId);
 				List<Notification> annualAlertNotifications = notificationRepository.findAllContractExpiryAlert(clientOrganisationId);
 				List<Notification> accountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(clientOrganisationId);
-				List<Notification> reviewRepliesFromVendor = notificationRepository.findAllReviewRepliesNotificationsFromVendors(clientOrganisationId);
+				List<Notification> reviewRepliesFromVendorNotifications = notificationRepository.findAllReviewRepliesNotificationsFromVendors(clientOrganisationId);
+				List<Notification> projectQuestionsAlertNotifications = notificationRepository.findAllProjectQuestionsAlertNotifications(clientOrganisationId);
 				
 				internalMessagesNotifications.addAll(taskNotifications);
 				internalMessagesNotifications.addAll(externalMessagesNotifications);
@@ -1145,7 +1146,8 @@ public class ClientService {
 				filteredNotifications.addAll(bidEndAlertNotifications);
 				filteredNotifications.addAll(annualAlertNotifications);
 				filteredNotifications.addAll(accountChangesNotifications);
-				filteredNotifications.addAll(reviewRepliesFromVendor);
+				filteredNotifications.addAll(reviewRepliesFromVendorNotifications);
+				filteredNotifications.addAll(projectQuestionsAlertNotifications);
 				
 				
 				List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());

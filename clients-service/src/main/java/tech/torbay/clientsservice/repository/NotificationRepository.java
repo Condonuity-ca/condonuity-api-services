@@ -92,5 +92,18 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		"( notification_category_type = 8 )" + 
     		")", nativeQuery = true)
 	List<Notification> findAllReviewRepliesNotificationsFromVendors(Integer clientOrganisationId);
+    
+    @Query(value =" select nt.* from condonuitydev.notification nt" + 
+    		" inner join " + 
+    		" condonuitydev.projects pro on " + 
+    		" ( pro.client_organisation_id = (?1) )" +
+    		" inner join " + 
+    		" condonuitydev.project_questions pq on" + 
+    		" ( pq.project_id = pro.project_id ) " +
+    		" where ( " +
+    		" (pq.projectqa_id = nt.notification_category_id ) and " +
+    		" ( notification_category_type = 31 or notification_category_type = 32 ) " + 
+    		")", nativeQuery = true)
+	List<Notification> findAllProjectQuestionsAlertNotifications(Integer clientOrganisationId);
 
 }
