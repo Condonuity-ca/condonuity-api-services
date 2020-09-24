@@ -975,15 +975,18 @@ public class ClientController {
             }
     )
 	@GetMapping("/client/notifications/{clientId}/{clientOrganisationId}")
-	public ResponseEntity<Object> getVendorNotifications(@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+	public ResponseEntity<Object> getClientNotifications(@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
 		List<Map<String,Object>>list = clientService.getClientNotifications(clientId, clientOrganisationId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
+			long count = getCountOfUnreadMessages(list);
+			
 			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "All Notifications fetched successfully");
 			response.put("notifications", list);
+			response.put("unreadMessagesCount", count);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {
@@ -993,6 +996,16 @@ public class ClientController {
 
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
+	}
+	
+	private long getCountOfUnreadMessages(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		long countBigCustomers = list
+				  .stream()
+				  .filter(notification -> notification.get("isViewed").toString().equals("false"))
+				  .count();
+		
+		return countBigCustomers;
 	}
 	
 //	private void SendTaskNotification(VendorBid vendorBid, NotificationType notificationType) {

@@ -1097,8 +1097,8 @@ public class ClientController {
 		clientService.sendTaskCommentNotification(clientTaskComment, notificationType.getValue());
 	}
 	
-	@Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
-	public void run() {
+	@Scheduled(cron = "0 0 6 * * ?") /* (fixedDelay = 1000 * 60 * 60 * 24) */
+	public void publish() {
 	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
 	    try {
 //			cronJobSch();

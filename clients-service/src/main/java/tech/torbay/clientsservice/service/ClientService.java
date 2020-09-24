@@ -17,6 +17,7 @@ import tech.torbay.clientsservice.Utils.Utils;
 import tech.torbay.clientsservice.constants.Constants;
 import tech.torbay.clientsservice.constants.Constants.TaskStatus;
 import tech.torbay.clientsservice.constants.Constants.UserAccountStatus;
+import tech.torbay.clientsservice.constants.Constants.UserType;
 import tech.torbay.clientsservice.entity.Amenities;
 import tech.torbay.clientsservice.entity.ClientAmenities;
 import tech.torbay.clientsservice.entity.ClientAssociation;
@@ -29,6 +30,7 @@ import tech.torbay.clientsservice.entity.ClientTaskComments;
 import tech.torbay.clientsservice.entity.ClientUser;
 import tech.torbay.clientsservice.entity.ClientUserTasks;
 import tech.torbay.clientsservice.entity.Notification;
+import tech.torbay.clientsservice.entity.NotificationViewsHistory;
 import tech.torbay.clientsservice.entity.OrganisationPayment;
 import tech.torbay.clientsservice.entity.Project;
 import tech.torbay.clientsservice.entity.ProjectReviewRating;
@@ -50,6 +52,7 @@ import tech.torbay.clientsservice.repository.ClientTaskRepository;
 import tech.torbay.clientsservice.repository.ClientUserRepository;
 import tech.torbay.clientsservice.repository.ClientUserTasksRepository;
 import tech.torbay.clientsservice.repository.NotificationRepository;
+import tech.torbay.clientsservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.clientsservice.repository.OrganisationPaymentRepository;
 import tech.torbay.clientsservice.repository.ProjectRepository;
 import tech.torbay.clientsservice.repository.ProjectReviewRatingRepository;
@@ -107,6 +110,8 @@ public class ClientService {
 	UserLevelNotificationRepository userLevelNotificationRepository;
 	@Autowired
 	VendorUserRepository vendorUserRepository;
+	@Autowired
+	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -1191,8 +1196,41 @@ public class ClientService {
 					mapNotification.put("senderLastName", sendorLastName);
 					mapNotification.put("senderOrganisationName", sendorOrganisationName);
 					mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
+					mapNotification.put("isViewed",false);
+					
+					List<NotificationViewsHistory> notificationViewsHistoryByOrganisation = notificationViewsHistoryRepository.findByOrganisationIdAndUserIdAndUserTypeAndNotificationId(clientOrganisationId, clientId, UserType.CLIENT.getValue(), notification.getId());
+//					List<NotificationViewsHistory> notificationViewsHistoryByUser = notificationViewsHistoryRepository.findByUserIdAndUserTypeAndNotificationId(clientId, UserType.CLIENT.getValue(), notification.getId());
+					int count = 0;
+					if(notificationViewsHistoryByOrganisation != null) {
+						for(NotificationViewsHistory notificationViews : notificationViewsHistoryByOrganisation) {
+							if(notificationViews.getNotificationId().equals(notification.getId())) {
+								mapNotification.put("isViewed",true);
+								count++;
+							}
+						}
+					}
+					
+//					if(notificationViewsHistoryByUser != null)
+//					for(NotificationViewsHistory notificationViews : notificationViewsHistoryByUser) {
+//						if(notificationViews.getNotificationId() == notification.getId()) {
+//							mapNotification.put("isViewed",true);
+//							count++;
+//						}
+//					}
 					clientNotifications.add(mapNotification);
 				}
+				for(Map<String,Object> notification : clientNotifications) {
+					if(String.valueOf(notification.get("isViewed")).equals("false")) {
+						NotificationViewsHistory notificationView = new NotificationViewsHistory();
+						notificationView.setNotificationId(Integer.parseInt(notification.get("id").toString()));
+						notificationView.setOrganisationId(clientOrganisationId);
+						notificationView.setUserId(clientId);
+						notificationView.setUserType(UserType.CLIENT.getValue());
+						
+						notificationViewsHistoryRepository.save(notificationView);
+					}
+				}
+				
 				return clientNotifications;
 	}
 }

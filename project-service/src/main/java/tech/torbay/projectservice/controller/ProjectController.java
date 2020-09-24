@@ -1108,7 +1108,7 @@ public class ProjectController {
 		}
 	}
     
-	@Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+	@Scheduled(cron = "0 0 6 * * ?") /* (fixedDelay = 1000 * 60 * 60 * 24) */
 	public void run() {
 	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
 	    try {

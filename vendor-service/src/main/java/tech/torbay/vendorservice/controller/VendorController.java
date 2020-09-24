@@ -666,14 +666,15 @@ public class VendorController {
 	@GetMapping("/vendor/notifications/{vendorId}/{vendorOrganisationId}")
 	public ResponseEntity<Object> getVendorNotifications(@PathVariable("vendorId") Integer vendorId, @PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
 		List<Map<String, Object>> list = vendorService.getVendorNotifications(vendorId, vendorOrganisationId);
-		long count = getCountOfUnreadMessages(list);
+		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
+			long count = getCountOfUnreadMessages(list);
 			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 			response.put("statusMessage", "Success");
 			response.put("responseMessage", "All notifications fetched successfully");
 			response.put("notifications", list);
-			response.put("unreadMessages", count);
+			response.put("unreadMessagesCount", count);
 			
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		} else {
