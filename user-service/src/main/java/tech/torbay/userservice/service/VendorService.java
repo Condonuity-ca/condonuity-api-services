@@ -651,6 +651,87 @@ public class VendorService {
 		return vendorOrganisations;
 	}
 
+	public List<Object> getAllUnApproveRejectVendorOrganisationsForSupportUser(Map<String, Object> requestData) {
+		
+		int searchType = 0;
+		String keyword = "";
+		try {
+			searchType = Integer.parseInt(String.valueOf(requestData.get("searchType")));
+			keyword = String.valueOf(requestData.get("keyword"));
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+		String searchKeyword = "%"+keyword+"%";
+		
+		List<VendorOrganisation> vendorOrgsAll = new ArrayList<>();
+		if(searchType == 1) {
+			// TODO Auto-generated method stub
+			vendorOrgsAll = vendorOrganisationRepository.findAllUnApproveRejectOrganisationsByOrganisationName(searchKeyword);			
+		}
+		
+		List<Object> vendorOrganisations = new ArrayList();
+		
+		for(VendorOrganisation vendorOrg : vendorOrgsAll) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        
+	        
+	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
+	        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
+	        } else {
+	        	map.put("vendorTags","");
+	        }
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
+	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+	        List<String> servicesCities = new ArrayList();
+	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+	        	servicesCities.add(serviceCity.getCityName());
+	        }
+	        map.put("serviceCities",String.join(",", servicesCities));
+	        int activeStatus = vendorOrg.getActiveStatus();
+	        int deleteStatus = vendorOrg.getDeleteStatus();
+	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+	        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+	 	        	map.put("accountStatus","Registered");
+	 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+	 	        	map.put("accountStatus","Active");
+	 	        } 
+	        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+	        	map.put("accountStatus","Deleted");
+	        } else {
+	        	map.put("accountStatus","Deleted");
+	        }
+	       
+	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        try {
+		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
+		        if(logo != null)
+		        	map.put("vendorProfileImageUrl", logo);
+		        else
+		        	map.put("vendorProfileImageUrl", "");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
+	        }
+	        vendorOrganisations.add(map);
+		}
+		
+		return vendorOrganisations;
+	}
+
 	public VendorUser updateVendorUser(VendorUser vendorUser) {
 		// TODO Auto-generated method stub
 		

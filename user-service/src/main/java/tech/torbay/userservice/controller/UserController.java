@@ -234,4 +234,49 @@ public class UserController {
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
 	}
+	
+	@ApiOperation(value = "Fetching All client Organisation details with in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Successful All Client Details")
+            }
+    )
+	@PostMapping("/support/unapprove/orgs/search")
+	public ResponseEntity<Object> getAllUnApproveAndRejectOrganisationsForSupportUser(@RequestBody Map<String, Object> requestData) {
+		String userType = "";
+		List<Object> list = new ArrayList();
+		try {
+			 userType = String.valueOf(requestData.get("userType"));
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		if(userType != null && userType.equals("1")) {
+			list = clientService.getAllUnApproveRejectClientOrganisationsForSupportUser(requestData);	
+		} else if(userType != null && userType.equals("2")){
+			list = vendorService.getAllUnApproveRejectVendorOrganisationsForSupportUser(requestData);
+		}
+		
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			if(userType != null && userType.equals("1")) {
+				response.put("responseMessage", "All Client Organisations details fetched successfully");
+				response.put("clientOrganisations", list);
+			} else if(userType != null && userType.equals("2")){
+				response.put("responseMessage", "All Vendor Organisations details fetched successfully");
+				response.put("vendorOrganisations", list);
+			}
+			
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
 }
