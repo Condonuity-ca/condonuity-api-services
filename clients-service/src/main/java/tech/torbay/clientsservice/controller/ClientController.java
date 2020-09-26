@@ -1008,6 +1008,36 @@ public class ClientController {
 		return countBigCustomers;
 	}
 	
+	@ApiOperation(value = "Fetching All Client Organisation Notifications")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Client Notifications fetched successfully")
+            }
+    )
+	@GetMapping("/client/notifications/read/{clientId}/{clientOrganisationId}")
+	public ResponseEntity<Object> getClientReadNotifications(@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
+		List<Map<String,Object>>list = clientService.getClientReadNotifications(clientId, clientOrganisationId);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+//			long count = getCountOfUnreadMessages(list);
+			
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Notifications read successfully");
+//			response.put("notifications", list);
+//			response.put("unreadMessagesCount", count);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
 //	private void SendTaskNotification(VendorBid vendorBid, NotificationType notificationType) {
 //		// TODO Auto-generated method stub
 //		projectService.sendBidNotification(vendorBid, notificationType.getValue());

@@ -983,6 +983,143 @@ public class VendorService {
 //			}
 			vendorNotifications.add(mapNotification);
 		}
+		
+		//refer - getVendorReadNotifications
+//		for(Map<String,Object> notification : vendorNotifications) {
+//			if(String.valueOf(notification.get("isViewed")).equals("false")) {
+//				NotificationViewsHistory notificationView = new NotificationViewsHistory();
+//				notificationView.setNotificationId(Integer.parseInt(notification.get("id").toString()));
+//				notificationView.setOrganisationId(vendorOrganisationId);
+//				notificationView.setUserId(vendorId);
+//				notificationView.setUserType(UserType.VENDOR.getValue());
+//				
+//				notificationViewsHistoryRepository.save(notificationView);
+//			}
+//		}
+		
+		
+		return vendorNotifications;
+	}
+	
+	public List<Map<String,Object>> getVendorReadNotifications(Integer vendorId, Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		List<Notification> filteredNotifications = new ArrayList<Notification>();
+		
+//		List<Notification> notifications = notificationRepository.findAll();
+//		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
+		
+		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
+		List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(vendorOrganisationId);
+		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
+		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
+		//1.bidEnd Alert
+		//2.Account Alert
+		//3.Project QA Alert
+		//4.All bids(include competitor) Alert
+		List<Notification> allAccountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
+		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		
+		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
+		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
+		
+		internalMessagesNotifications.addAll(externalMessagesNotifications);
+		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
+			Notification notification = new Notification();
+			notification.setId(userLevelNotification.getId());
+			notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());
+			notification.setNotificationCategoryType(userLevelNotification.getNotificationCategoryType());
+			notification.setTitle(userLevelNotification.getTitle());
+			notification.setDescription(userLevelNotification.getDescription());
+			notification.setUserId(userLevelNotification.getFromUserId());
+			notification.setUserType(userLevelNotification.getFromUserType());
+			notification.setCreatedAt(userLevelNotification.getCreatedAt());
+			notification.setModifiedDate(userLevelNotification.getModifiedDate());
+			
+			filteredNotifications.add(notification);
+		}
+		
+		filteredNotifications.addAll(projectBidsNotifications);
+		//if same project award more than 1 time may lead notification issue in future, needs to check this
+		filteredNotifications.addAll(projectAwardsNotifications);
+		filteredNotifications.addAll(projectInterestNotifications);
+		filteredNotifications.addAll(reviewRatingNotifications);
+		
+		filteredNotifications.addAll(allAccountChangesNotifications);
+		filteredNotifications.addAll(allOtherCompetitorBidsNotifications);//based on vendor bided projects
+		filteredNotifications.addAll(allOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
+		filteredNotifications.addAll(bidEndAlertNotifications);
+		filteredNotifications.addAll(allInterestedProjectsQANotifications);
+		filteredNotifications.addAll(allBiddedProjectsQANotifications);
+		
+		
+		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
+		
+		List<Map<String,Object>> vendorNotifications = new ArrayList();
+		
+		for(Notification notification : uniqueNotifications) {
+			ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
+			
+			String sendorFirstName = "";
+			String sendorLastName = "";
+			String sendorOrganisationName = "";
+			String sendorLegalCompanyName = "";
+			
+			if(notification.getUserId() == 0) {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getOrganisationId() != 0) {
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(notification.getOrganisationId());
+					
+					sendorOrganisationName = clientOrganisation.getOrganisationName();
+					sendorLegalCompanyName = clientOrganisation.getManagementCompany();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
+					sendorOrganisationName = vendorOrganisation.getCompanyName();
+					sendorLegalCompanyName = vendorOrganisation.getLegalName();
+				}
+			} else {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
+					ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+					
+					sendorFirstName = clientUser.getFirstName();
+					sendorLastName = clientUser.getLastName();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
+					VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
+					sendorFirstName = vendorUser.getFirstName();
+					sendorLastName = vendorUser.getLastName();
+				}
+			}
+			
+			mapNotification.put("senderFirstName", sendorFirstName);
+			mapNotification.put("senderLastName", sendorLastName);
+			mapNotification.put("senderOrganisationName", sendorOrganisationName);
+			mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
+			mapNotification.put("isViewed",false);
+			
+			List<NotificationViewsHistory> notificationViewsHistoryByOrganisation = notificationViewsHistoryRepository.findByOrganisationIdAndUserIdAndUserTypeAndNotificationId(vendorOrganisationId, vendorId, UserType.VENDOR.getValue(), notification.getId());
+//			List<NotificationViewsHistory> notificationViewsHistoryByUser = notificationViewsHistoryRepository.findByUserIdAndUserTypeAndNotificationId(vendorId, UserType.VENDOR.getValue(), notification.getId());
+			int count = 0;
+			if(notificationViewsHistoryByOrganisation != null) {
+				for(NotificationViewsHistory notificationViews : notificationViewsHistoryByOrganisation) {
+					if(notificationViews.getNotificationId().equals(notification.getId())) {
+						mapNotification.put("isViewed",true);
+						count++;
+					}
+				}
+			}
+			
+//			if(notificationViewsHistoryByUser != null)
+//			for(NotificationViewsHistory notificationViews : notificationViewsHistoryByUser) {
+//				if(notificationViews.getNotificationId() == notification.getId()) {
+//					mapNotification.put("isViewed",true);
+//					count++;
+//				}
+//			}
+			vendorNotifications.add(mapNotification);
+		}
 		for(Map<String,Object> notification : vendorNotifications) {
 			if(String.valueOf(notification.get("isViewed")).equals("false")) {
 				NotificationViewsHistory notificationView = new NotificationViewsHistory();
@@ -998,5 +1135,6 @@ public class VendorService {
 		
 		return vendorNotifications;
 	}
+
 }
 

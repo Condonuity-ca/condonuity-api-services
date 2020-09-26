@@ -1219,6 +1219,136 @@ public class ClientService {
 //					}
 					clientNotifications.add(mapNotification);
 				}
+				// Refer - getClientReadNotifications
+//				for(Map<String,Object> notification : clientNotifications) {
+//					if(String.valueOf(notification.get("isViewed")).equals("false")) {
+//						NotificationViewsHistory notificationView = new NotificationViewsHistory();
+//						notificationView.setNotificationId(Integer.parseInt(notification.get("id").toString()));
+//						notificationView.setOrganisationId(clientOrganisationId);
+//						notificationView.setUserId(clientId);
+//						notificationView.setUserType(UserType.CLIENT.getValue());
+//						
+//						notificationViewsHistoryRepository.save(notificationView);
+//					}
+//				}
+				
+				return clientNotifications;
+	}
+	
+	public List<Map<String,Object>> getClientReadNotifications(Integer clientId, Integer clientOrganisationId) {
+		// TODO Auto-generated method stub
+				List<Notification> filteredNotifications = new ArrayList<Notification>();
+				
+//				List<Notification> notifications = notificationRepository.findAll();
+//				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
+				
+				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
+				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
+				List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(clientOrganisationId); 
+				List<UserLevelNotification> taskNotifications = userLevelNotificationRepository.findAllTaskNotifications(clientOrganisationId, clientId); 
+				//1.all projects for client notification
+				//2.bid end alert
+				//3.reply for client comment
+				//4.annual contract alert
+				//5.account changes
+				//6.project question Alert
+				List<Notification> allPostedProjectsForClientNotifications = notificationRepository.findAllPostedProjectsForClient(clientOrganisationId);
+				List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjects(clientOrganisationId);
+				List<Notification> annualAlertNotifications = notificationRepository.findAllContractExpiryAlert(clientOrganisationId);
+				List<Notification> accountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(clientOrganisationId);
+				List<Notification> reviewRepliesFromVendorNotifications = notificationRepository.findAllReviewRepliesNotificationsFromVendors(clientOrganisationId);
+				List<Notification> projectQuestionsAlertNotifications = notificationRepository.findAllProjectQuestionsAlertNotifications(clientOrganisationId);
+				
+				internalMessagesNotifications.addAll(taskNotifications);
+				internalMessagesNotifications.addAll(externalMessagesNotifications);
+				for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
+					Notification notification = new Notification();
+					notification.setId(userLevelNotification.getId());
+					notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());
+					notification.setNotificationCategoryType(userLevelNotification.getNotificationCategoryType());
+					notification.setTitle(userLevelNotification.getTitle());
+					notification.setDescription(userLevelNotification.getDescription());
+					notification.setUserId(userLevelNotification.getFromUserId());
+					notification.setUserType(userLevelNotification.getFromUserType());
+					notification.setCreatedAt(userLevelNotification.getCreatedAt());
+					notification.setModifiedDate(userLevelNotification.getModifiedDate());
+					
+					filteredNotifications.add(notification);
+				}
+				
+				filteredNotifications.addAll(projectBidsNotifications);
+				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
+				filteredNotifications.addAll(bidEndAlertNotifications);
+				filteredNotifications.addAll(annualAlertNotifications);
+				filteredNotifications.addAll(accountChangesNotifications);
+				filteredNotifications.addAll(reviewRepliesFromVendorNotifications);
+				filteredNotifications.addAll(projectQuestionsAlertNotifications);
+				
+				
+				List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
+				
+				List<Map<String,Object>> clientNotifications = new ArrayList();
+				
+				for(Notification notification : uniqueNotifications) {
+					ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+					Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
+					
+					String sendorFirstName = "";
+					String sendorLastName = "";
+					String sendorOrganisationName = "";
+					String sendorLegalCompanyName = "";
+					
+					if(notification.getUserId() == 0) {
+						if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getOrganisationId() != 0) {
+							ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(notification.getOrganisationId());
+							
+							sendorOrganisationName = clientOrganisation.getOrganisationName();
+							sendorLegalCompanyName = clientOrganisation.getManagementCompany();
+						} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
+							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
+							sendorOrganisationName = vendorOrganisation.getCompanyName();
+							sendorLegalCompanyName = vendorOrganisation.getLegalName();
+						}
+					} else {
+						if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
+							ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+							
+							sendorFirstName = clientUser.getFirstName();
+							sendorLastName = clientUser.getLastName();
+						} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
+							VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
+							sendorFirstName = vendorUser.getFirstName();
+							sendorLastName = vendorUser.getLastName();
+						}
+					}
+					
+					mapNotification.put("senderFirstName", sendorFirstName);
+					mapNotification.put("senderLastName", sendorLastName);
+					mapNotification.put("senderOrganisationName", sendorOrganisationName);
+					mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
+					mapNotification.put("isViewed",false);
+					
+					List<NotificationViewsHistory> notificationViewsHistoryByOrganisation = notificationViewsHistoryRepository.findByOrganisationIdAndUserIdAndUserTypeAndNotificationId(clientOrganisationId, clientId, UserType.CLIENT.getValue(), notification.getId());
+//					List<NotificationViewsHistory> notificationViewsHistoryByUser = notificationViewsHistoryRepository.findByUserIdAndUserTypeAndNotificationId(clientId, UserType.CLIENT.getValue(), notification.getId());
+					int count = 0;
+					if(notificationViewsHistoryByOrganisation != null) {
+						for(NotificationViewsHistory notificationViews : notificationViewsHistoryByOrganisation) {
+							if(notificationViews.getNotificationId().equals(notification.getId())) {
+								mapNotification.put("isViewed",true);
+								count++;
+							}
+						}
+					}
+					
+//					if(notificationViewsHistoryByUser != null)
+//					for(NotificationViewsHistory notificationViews : notificationViewsHistoryByUser) {
+//						if(notificationViews.getNotificationId() == notification.getId()) {
+//							mapNotification.put("isViewed",true);
+//							count++;
+//						}
+//					}
+					clientNotifications.add(mapNotification);
+				}
 				for(Map<String,Object> notification : clientNotifications) {
 					if(String.valueOf(notification.get("isViewed")).equals("false")) {
 						NotificationViewsHistory notificationView = new NotificationViewsHistory();
@@ -1233,5 +1363,6 @@ public class ClientService {
 				
 				return clientNotifications;
 	}
+
 }
 
