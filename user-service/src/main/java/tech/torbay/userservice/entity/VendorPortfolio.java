@@ -24,7 +24,16 @@ public class VendorPortfolio {
     private String date = "";
     private String duration = "";
     private String cost = "";
+    private int status = 0;
     
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	
 	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
@@ -123,10 +132,10 @@ public class VendorPortfolio {
 
 	@Override
 	public String toString() {
-		return "VendorPortfolio [Id=" + Id + ", vendorOrganisationId=" + vendorOrganisationId + ", projectName=" + projectName + ", city="
-				+ city + ", description=" + description + ", clientName=" + clientName + ", date=" + date
-				+ ", duration=" + duration + ", cost=" + cost + ", createdAt=" + createdAt + ", modifiedDate="
-				+ modifiedDate + "]";
+		return "VendorPortfolio [Id=" + Id + ", vendorOrganisationId=" + vendorOrganisationId + ", projectName="
+				+ projectName + ", city=" + city + ", description=" + description + ", clientName=" + clientName
+				+ ", date=" + date + ", duration=" + duration + ", cost=" + cost + ", status=" + status + ", createdAt="
+				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
     
 	

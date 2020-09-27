@@ -23,6 +23,7 @@ import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.AvailableVendorProfiles;
+import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.Notification;
@@ -858,7 +859,7 @@ public class VendorService {
 
 	public List<Map<String, Object>> getVendorPortfolio(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		List<VendorPortfolio> vendorPortfolios = vendorPortfolioRepository.findByVendorOrganisationId(vendorOrganisationId);
+		List<VendorPortfolio> vendorPortfolios = vendorPortfolioRepository.findByVendorOrganisationIdAndStatus(vendorOrganisationId, DeleteStatus.ACTIVE.getValue());
 		List<Map<String, Object>> portfolios = new ArrayList<>();
 		
 		for (VendorPortfolio vendorPortfolio : vendorPortfolios) {
@@ -904,19 +905,19 @@ public class VendorService {
 		
 		switch(sortBy) {
 			case 1: {//Constants.PortfolioSortBy.ASC
-				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByProjectNameAsc(orgId);
+				return vendorPortfolioRepository.findByVendorOrganisationIdAndStatusOrderByProjectNameAsc(orgId, DeleteStatus.ACTIVE.getValue());
 			}
 			case 2: {//Constants.PortfolioSortBy.DESC
-				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByProjectNameDesc(orgId);
+				return vendorPortfolioRepository.findByVendorOrganisationIdAndStatusOrderByProjectNameDesc(orgId, DeleteStatus.ACTIVE.getValue());
 			}
 			case 3: {//Constants.PortfolioSortBy.DATE
-				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByCreatedAtAsc(orgId);
+				return vendorPortfolioRepository.findByVendorOrganisationIdAndStatusOrderByCreatedAtAsc(orgId, DeleteStatus.ACTIVE.getValue());
 			}
 			case 4: {//Constants.PortfolioSortBy.COST
-				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByCostAsc(orgId);
+				return vendorPortfolioRepository.findByVendorOrganisationIdAndStatusOrderByCostAsc(orgId, DeleteStatus.ACTIVE.getValue());
 			}
 			case 5: {//Constants.PortfolioSortBy.DURATION
-				return vendorPortfolioRepository.findByVendorOrganisationIdOrderByDurationAsc(orgId); // check - ?
+				return vendorPortfolioRepository.findByVendorOrganisationIdAndStatusOrderByDurationAsc(orgId, DeleteStatus.ACTIVE.getValue()); // check - ?
 			}
 			
 		}
@@ -1492,6 +1493,27 @@ public class VendorService {
 				}
 				
 				return vendorOrganisations;
+	}
+
+	public boolean deleteVendorPortfolio(Integer portfolioId) {
+		// TODO Auto-generated method stub
+		try {
+			VendorPortfolio vendorPortfolio = vendorPortfolioRepository.findOneById(portfolioId);
+			
+			if(vendorPortfolio != null) {
+				vendorPortfolio.setStatus(Constants.UserAccountStatus.INACTIVE.getValue());
+				if(vendorPortfolioRepository.save(vendorPortfolio) != null) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 }

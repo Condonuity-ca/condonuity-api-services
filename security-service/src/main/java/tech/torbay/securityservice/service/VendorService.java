@@ -17,8 +17,6 @@ import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.entity.AvailableVendorProfiles;
 import tech.torbay.securityservice.entity.AvailableVendorProfilesRepository;
-import tech.torbay.securityservice.entity.ClientOrganisation;
-import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.Notification;
 import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.ServiceCities;

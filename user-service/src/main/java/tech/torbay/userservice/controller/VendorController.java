@@ -566,6 +566,32 @@ public class VendorController {
 		
 	}
 	
+	@ApiOperation(value = "Vendor Portfolio update Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "vendor Portfolio details updated successfully")
+            }
+    )
+	@PutMapping("/vendor/org/portfolio/inactive/{portfolioId}")
+	public ResponseEntity<Object> updateVendorPortfolio(@PathVariable("portfolioId") Integer portfolioId) {
+		
+		boolean isdeleted = vendorService.deleteVendorPortfolio(portfolioId);
+		if(isdeleted) {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Vendor Portfolio Deleted Successfully");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		} else {
+			ResponseMessage responseMessage = new ResponseMessage(
+					APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to delete Vendor Portfolio");
+			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);	
+		}
+		
+	}
+	
 	@ApiOperation(value = "Vendor Insurance Creation")
     @ApiResponses(
             value = {

@@ -1,32 +1,34 @@
 package tech.torbay.userservice.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import tech.torbay.userservice.entity.ClientUser;
-import tech.torbay.userservice.entity.VendorOrganisation;
-import tech.torbay.userservice.entity.VendorPortfolio;
-import tech.torbay.userservice.entity.VendorUser;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import tech.torbay.userservice.entity.VendorPortfolio;
 
 @Repository
 public interface VendorPortfolioRepository extends JpaRepository<VendorPortfolio, Integer> {
 
-    Optional<VendorPortfolio> findById(Integer id);
-
-    VendorPortfolio save(VendorUser vendorUser);
-
-	List<VendorPortfolio> findByVendorOrganisationId(Integer vendorId);
-
-	List<VendorPortfolio> findByVendorOrganisationIdOrderByProjectNameAsc(Integer orgId);
+	Optional<VendorPortfolio> findById(Integer id);
 	
-	List<VendorPortfolio> findByVendorOrganisationIdOrderByProjectNameDesc(Integer orgId);
+	@Query(value = "select port.* from condonuitydev.vendor_portfolio port where id = (?1)", nativeQuery = true)
+    VendorPortfolio findOneById(Integer id);
+
+    VendorPortfolio save(VendorPortfolio vendorPortfolio);
+
+	List<VendorPortfolio> findByVendorOrganisationIdAndStatus(Integer vendorId, Integer activeStatus);
+
+	List<VendorPortfolio> findByVendorOrganisationIdAndStatusOrderByProjectNameAsc(Integer orgId, Integer activeStatus);
 	
-	List<VendorPortfolio> findByVendorOrganisationIdOrderByCreatedAtAsc(Integer orgId);
+	List<VendorPortfolio> findByVendorOrganisationIdAndStatusOrderByProjectNameDesc(Integer orgId, Integer activeStatus);
+	
+	List<VendorPortfolio> findByVendorOrganisationIdAndStatusOrderByCreatedAtAsc(Integer orgId, Integer activeStatus);
 
-	List<VendorPortfolio> findByVendorOrganisationIdOrderByCostAsc(Integer orgId);
+	List<VendorPortfolio> findByVendorOrganisationIdAndStatusOrderByCostAsc(Integer orgId, Integer activeStatus);
 
-	List<VendorPortfolio> findByVendorOrganisationIdOrderByDurationAsc(Integer orgId);
+	List<VendorPortfolio> findByVendorOrganisationIdAndStatusOrderByDurationAsc(Integer orgId, Integer activeStatus);
 
 }
