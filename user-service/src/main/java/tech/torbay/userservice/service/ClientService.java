@@ -1938,5 +1938,15 @@ public class ClientService {
 		
 		notificationRepository.save(notification);
 	}
+
+	public boolean isInvitedClient(Integer clientUserId, Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUserId, clientOrgId);
+		
+		if(clientAssociation != null && clientAssociation.getAccountVerificationStatus() == UserAccountStatus.INVITED.getValue() && clientAssociation.getUserAccountStatus() == UserAccountStatus.INVITED.getValue()) {
+			return true;
+		}
+		return false;
+	}
 }
 

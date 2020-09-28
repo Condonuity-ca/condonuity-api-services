@@ -152,11 +152,31 @@ public class ClientController {
     			return new ResponseEntity<Object>(list, HttpStatus.OK);
     		}
     	} else {
-    		list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
-			list.put("statusMessage", "Failed");
-			list.put("responseMessage", "Organisation requires atleast 1 Active User");
+    		
+    		if(clientService.isInvitedClient(clientUserId, clientOrgId)) {
+    			Object client = clientService.deleteClientUserById(clientUserId, clientOrgId);
+        		
+        		if(client != null) {
+        			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+        			list.put("statusMessage", "Success");
+        			list.put("responseMessage", "Client User deleted successfully");
+        			
+        			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        		} else {
+        			
+        			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+        			list.put("statusMessage", "Failed");
+        			list.put("responseMessage", "Database Error");
 
-			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        			return new ResponseEntity<Object>(list, HttpStatus.OK);
+        		}
+    		} else {
+    			list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+    			list.put("statusMessage", "Failed");
+    			list.put("responseMessage", "Organisation requires atleast 1 Active User");
+
+    			return new ResponseEntity<Object>(list, HttpStatus.OK);
+    		}
     	}
     	
 	}

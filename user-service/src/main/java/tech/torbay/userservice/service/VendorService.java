@@ -1515,6 +1515,16 @@ public class VendorService {
 		
 		return false;
 	}
+
+	public boolean isInvitedVendor(Integer vendorId) {
+		// TODO Auto-generated method stub
+		
+		VendorUser vendorUser = vendorUserRepository.findByUserId(vendorId);
+		if(vendorUser != null && vendorUser.getAccountStatus() == UserAccountStatus.INVITED.getValue() && vendorUser.getAccountVerificationStatus() == UserAccountStatus.INVITED.getValue()) {
+			return true;
+		}
+		return false;
+	}
 	
 }
 
