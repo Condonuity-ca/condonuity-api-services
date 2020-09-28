@@ -175,7 +175,9 @@ public class ClientService {
 				
 				if(clientUser.getPrimaryOrgId() == null || clientUser.getPrimaryOrgId() == 0) {
 					clientUser.setPrimaryOrgId(clientOrganisationObj.getClientOrganisationId());
-				} 
+				} else {
+					isExisting = true;
+				}
 				clientUserRepository.save(clientUser);
 				int deleteStatus = 0;
 				if(isExisting) {
@@ -458,6 +460,16 @@ public class ClientService {
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
+	}
+
+	public ClientUser getClientUserById(Integer userId) {
+		// TODO Auto-generated method stub
+		return clientUserRepository.findByClientId(userId);
+	}
+
+	public ClientAssociation findClientAssociation(Integer userId, Integer organisationId) {
+		// TODO Auto-generated method stub
+		return clientAssociationRepository.findByClientIdAndClientOrganisationId(userId, organisationId);
 	}
 }
 

@@ -47,6 +47,8 @@ import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.Amenities;
+import tech.torbay.securityservice.entity.ClientAssociation;
+import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.PredefinedTags;
 import tech.torbay.securityservice.entity.RegistrationLogs;
@@ -1106,6 +1108,57 @@ public class UserController {
 				Integer userId = Integer.parseInt(String.valueOf(userData.get("userId")));
 				Integer userType = Integer.parseInt(String.valueOf(userData.get("userType")));
 				Integer organisationId = Integer.parseInt(String.valueOf(userData.get("organisationId")));
+				
+				if(userType == UserType.CLIENT.getValue()) {
+					ClientOrganisation clientOrganisation = clientService.getClientOrganisationById(organisationId);
+					
+					if(clientOrganisation != null && clientOrganisation.getActiveStatus() == DeleteStatus.INACTIVE.getValue()) {
+						ResponseMessage responseMessage = new ResponseMessage(
+			        			APIStatusCode.LINK_EXPIRED.getValue(),
+			        			"Failed",
+			        			"Invite Link Expired");
+	        			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+					}
+					
+					ClientUser clientUser = clientService.getClientUserById(userId);
+					
+					if(clientUser != null && clientUser.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+						ResponseMessage responseMessage = new ResponseMessage(
+			        			APIStatusCode.LINK_EXPIRED.getValue(),
+			        			"Failed",
+			        			"Invite Link Expired");
+	        			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+					}
+					
+					ClientAssociation clientAssociation = clientService.findClientAssociation(userId, organisationId);
+					
+					if(clientAssociation != null && clientAssociation.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+						ResponseMessage responseMessage = new ResponseMessage(
+			        			APIStatusCode.LINK_EXPIRED.getValue(),
+			        			"Failed",
+			        			"Invite Link Expired");
+	        			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+					}
+				} else if(userType == UserType.VENDOR.getValue()) {
+					
+					VendorOrganisation vendorOrganisation = vendorService.findByVendorOrgId(organisationId);
+					if(vendorOrganisation != null && vendorOrganisation.getActiveStatus() == DeleteStatus.INACTIVE.getValue()) {
+						ResponseMessage responseMessage = new ResponseMessage(
+			        			APIStatusCode.LINK_EXPIRED.getValue(),
+			        			"Failed",
+			        			"Invite Link Expired");
+	        			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+					}
+					
+					VendorUser vendorUser = vendorService.findByVendorUserId(userId);
+					if(vendorUser != null && vendorUser.getAccountStatus() == DeleteStatus.INACTIVE.getValue()) {
+						ResponseMessage responseMessage = new ResponseMessage(
+			        			APIStatusCode.LINK_EXPIRED.getValue(),
+			        			"Failed",
+			        			"Invite Link Expired");
+	        			return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+					}
+				}
 				
 				if (Utils.checkLinkIsExpired(expiry)) {
 					ResponseMessage responseMessage = new ResponseMessage(
