@@ -1132,7 +1132,7 @@ public class UserController {
 					
 					ClientAssociation clientAssociation = clientService.findClientAssociation(userId, organisationId);
 					
-					if(clientAssociation != null && clientAssociation.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+					if(clientAssociation != null && ( clientAssociation.getDeleteStatus() == DeleteStatus.INACTIVE.getValue() || clientAssociation.getUserAccountStatus() == DeleteStatus.INACTIVE.getValue())) {
 						ResponseMessage responseMessage = new ResponseMessage(
 			        			APIStatusCode.LINK_EXPIRED.getValue(),
 			        			"Failed",

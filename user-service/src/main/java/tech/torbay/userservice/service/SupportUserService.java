@@ -271,7 +271,9 @@ public class SupportUserService {
 				
 //				case2: new flow by client
 				// For client Comment , I gonna de-activate all user account when organisation activation status change, except admin account
-				clientAssociationRepository.setUserAccountStatusByClientOrganisationId(activeStatus, organisationId);
+				if(activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+					clientAssociationRepository.setUserAccountStatusByClientOrganisationId(activeStatus, organisationId);
+				}
 				//admin need to be active if organisation account activated
 //				List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(userType, organisationId);
 //				for(RegistrationLogs registrationLogAdmin : registrationLogs) {
