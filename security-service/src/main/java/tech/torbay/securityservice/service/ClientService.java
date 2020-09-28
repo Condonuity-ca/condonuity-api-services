@@ -173,7 +173,9 @@ public class ClientService {
 			if(clientOrganisationObj != null) {
 				ClientUser clientUser = clientUserRepository.findByClientId(clientId);
 				
-				clientUser.setPrimaryOrgId(clientOrganisationObj.getClientOrganisationId());
+				if(clientUser.getPrimaryOrgId() == null || clientUser.getPrimaryOrgId() == 0) {
+					clientUser.setPrimaryOrgId(clientOrganisationObj.getClientOrganisationId());
+				} 
 				clientUserRepository.save(clientUser);
 				int deleteStatus = 0;
 				if(isExisting) {

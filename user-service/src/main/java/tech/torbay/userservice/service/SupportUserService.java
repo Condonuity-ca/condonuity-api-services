@@ -273,17 +273,17 @@ public class SupportUserService {
 				// For client Comment , I gonna de-activate all user account when organisation activation status change, except admin account
 				clientAssociationRepository.setUserAccountStatusByClientOrganisationId(activeStatus, organisationId);
 				//admin need to be active if organisation account activated
-				List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(userType, organisationId);
-				for(RegistrationLogs registrationLogAdmin : registrationLogs) {
-					ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(registrationLogAdmin.getUserId(), organisationId);
-					clientAssociation.setUserAccountStatus(UserAccountStatus.ACTIVE.getValue());
-					clientAssociationRepository.save(clientAssociation);
-					List<String> org = new ArrayList<>();
-					org.add(ClientOrganisationObj.getOrganisationName());
-					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
-					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
-				}
-//				case2 ends
+//				List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(userType, organisationId);
+//				for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+//					ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(registrationLogAdmin.getUserId(), organisationId);
+//					clientAssociation.setUserAccountStatus(UserAccountStatus.ACTIVE.getValue());
+//					clientAssociationRepository.save(clientAssociation);
+//					List<String> org = new ArrayList<>();
+//					org.add(ClientOrganisationObj.getOrganisationName());
+//					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
+//					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
+//				}
+//				case2 ends - client again confirms that even admin cannot login after activation so removed above logic (registration logs)
 				for (ClientAssociation clientAssociation : clientAssociations) {
 					
 					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
@@ -292,14 +292,14 @@ public class SupportUserService {
 					//case 1 - no need forloop,if condition
 //					SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
 					//case2
-					for(RegistrationLogs registrationLogAdmin : registrationLogs) {
-						if(clientUser.getClientId() != registrationLogAdmin.getUserId()) {
+//					for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+//						if(clientUser.getClientId() != registrationLogAdmin.getUserId()) {
 							//case2 if condition //Based on client comment - only deactivation email only will send to active client/vendor user, while activationg only admin will receive email
 							if(activeStatus == UserAccountStatus.INACTIVE.getValue()) {
 								SendUserAlertEmailForRemovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER );
 							}
-						}
-					}
+//						}
+//					} - this loop for non-admin user logic for sending only non admin users will receive removal email, now as per client comment all will receive remove alert
 				}
 				
 				return true;
@@ -337,15 +337,15 @@ public class SupportUserService {
 				// For client Comment , I gonna de-activate all user account when organisation activation status change, except admin account
 				vendorUserRepository.setAccountStatusByVendorOrganisationId(UserAccountStatus.INACTIVE.getValue(), organisationId);
 				//admin need to be active if organisation account activated
-				List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(userType, organisationId);
-				for(RegistrationLogs registrationLogAdmin : registrationLogs) {
-					VendorUser vendorUser = vendorUserRepository.findByUserId(registrationLogAdmin.getUserId());
-					vendorUser.setAccountStatus(UserAccountStatus.ACTIVE.getValue());
-					vendorUserRepository.save(vendorUser);
-					List<String> org = new ArrayList<>();
-					org.add(vendorOrganisationObj.getCompanyName());
-					SendUserAlertEmailForRemovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER );
-				}
+//				List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(userType, organisationId);
+//				for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+//					VendorUser vendorUser = vendorUserRepository.findByUserId(registrationLogAdmin.getUserId());
+//					vendorUser.setAccountStatus(UserAccountStatus.ACTIVE.getValue());
+//					vendorUserRepository.save(vendorUser);
+//					List<String> org = new ArrayList<>();
+//					org.add(vendorOrganisationObj.getCompanyName());
+//					SendUserAlertEmailForRemovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER );
+//				} - HOLD as per client comment , even admin cannot login after activation
 //				case2 ends
 				
 				for(VendorUser vendorUser : vendorUsers) {
@@ -354,14 +354,14 @@ public class SupportUserService {
 					//case 1 - no need forloop, if condition
 //					/SendUserAlertEmailForRemovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER );
 					//case2
-					for(RegistrationLogs registrationLogAdmin : registrationLogs) {
-						if(vendorUser.getUserId() != registrationLogAdmin.getUserId()) {
+//					for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+//						if(vendorUser.getUserId() != registrationLogAdmin.getUserId()) {
 							//case2 if condition //Based on client comment - only deactivation email only will send to active client/vendor user, while activationg only admin will receive email
 							if(activeStatus == UserAccountStatus.INACTIVE.getValue()) {
 								SendUserAlertEmailForRemovalFromSystem(vendorUser.getEmail(), vendorUser.getFirstName(), vendorUser.getLastName(), org, emailContentUSER );	
 							}
-						}
-					}
+//						}
+//					}- as per client comment , now all users even admin will receive email only for deactivation
 					
 				}
 				return true;
