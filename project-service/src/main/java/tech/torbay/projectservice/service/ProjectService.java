@@ -798,8 +798,13 @@ public class ProjectService {
 		        map.put("city", getCityName(clientOrganisation.getCity()));
 		        
 		        VendorBid vendorBid = vendorBidRepository.findVendorBidByProjectIdAndVendorOrgId(project.getProjectId(), vendorOrganisationId);
-		        
 				if(vendorBid == null || vendorBid.getBidStatus() == BidPostType.UNPUBLISHED.getValue() || vendorBid.getBidStatus() == BidPostType.PULLED.getValue()) {// once bided and published its moved to current projects until its under favorite
+					if(vendorBid == null) {
+						map.put("bidStatus","0");
+					} else {
+						map.put("bidStatus",vendorBid.getBidStatus());
+					}
+					map.put("vendorBid",vendorBid);
 					favoriteProjects.add(map);
 				} 
 					
