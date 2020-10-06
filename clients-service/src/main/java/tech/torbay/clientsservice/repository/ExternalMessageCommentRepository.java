@@ -3,6 +3,7 @@ package tech.torbay.clientsservice.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import tech.torbay.clientsservice.entity.ExternalMessageComment;
@@ -17,5 +18,9 @@ public interface ExternalMessageCommentRepository extends JpaRepository<External
     ExternalMessageComment findOneById(Integer id);
 
 	List<ExternalMessageComment> findAllByThreadId(Integer threadId);
+
+	 @Query(value = "SELECT emc.* FROM condonuitydev.external_message_comment emc " + 
+	    		"  WHERE ( emc.thread_id IN (?1))", nativeQuery = true)
+	List<ExternalMessageComment> findAllByThreadId(List<Integer> externalThreadIds);
 	
 }

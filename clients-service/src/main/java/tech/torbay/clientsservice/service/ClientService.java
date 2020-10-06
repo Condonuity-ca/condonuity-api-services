@@ -29,6 +29,7 @@ import tech.torbay.clientsservice.entity.ClientTask;
 import tech.torbay.clientsservice.entity.ClientTaskComments;
 import tech.torbay.clientsservice.entity.ClientUser;
 import tech.torbay.clientsservice.entity.ClientUserTasks;
+import tech.torbay.clientsservice.entity.ExternalMessageComment;
 import tech.torbay.clientsservice.entity.Notification;
 import tech.torbay.clientsservice.entity.NotificationViewsHistory;
 import tech.torbay.clientsservice.entity.OrganisationPayment;
@@ -51,6 +52,7 @@ import tech.torbay.clientsservice.repository.ClientTaskCommentsRepository;
 import tech.torbay.clientsservice.repository.ClientTaskRepository;
 import tech.torbay.clientsservice.repository.ClientUserRepository;
 import tech.torbay.clientsservice.repository.ClientUserTasksRepository;
+import tech.torbay.clientsservice.repository.ExternalMessageCommentRepository;
 import tech.torbay.clientsservice.repository.NotificationRepository;
 import tech.torbay.clientsservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.clientsservice.repository.OrganisationPaymentRepository;
@@ -112,6 +114,8 @@ public class ClientService {
 	VendorUserRepository vendorUserRepository;
 	@Autowired
 	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
+	@Autowired
+	ExternalMessageCommentRepository externalMessageCommentRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -1115,6 +1119,18 @@ public class ClientService {
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
 				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
 				List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(clientOrganisationId); 
+			
+				List<Integer> externalThreadIds = new ArrayList();
+				List<Integer> externalMessageIds = new ArrayList();
+						
+				for(UserLevelNotification ecternalMessageNotification : externalMessagesNotifications) {
+					externalThreadIds.add(ecternalMessageNotification.getNotificationCategoryId());
+				}
+				List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
+				for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+					externalMessageIds.add(externalMessageComment.getId());
+				}
+				List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds); 
 				List<UserLevelNotification> taskNotifications = userLevelNotificationRepository.findAllTaskNotifications(clientOrganisationId, clientId); 
 				//1.all projects for client notification
 				//2.bid end alert
@@ -1131,6 +1147,7 @@ public class ClientService {
 				
 				internalMessagesNotifications.addAll(taskNotifications);
 				internalMessagesNotifications.addAll(externalMessagesNotifications);
+				internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
 				for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
 					Notification notification = new Notification();
 					notification.setId(userLevelNotification.getId());

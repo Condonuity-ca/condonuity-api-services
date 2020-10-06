@@ -32,6 +32,10 @@ public interface UserLevelNotificationRepository extends JpaRepository<UserLevel
     		"notification_category_type = 17);", nativeQuery = true)
 	List<UserLevelNotification> findAllExternalMessagesNotifications(Integer clientOrganisationId);
     
+    @Query(value = "SELECT uln.* FROM condonuitydev.user_level_notification uln " + 
+    		"  WHERE ( uln.notification_category_type = 17 and uln.notification_category_id IN (?1))", nativeQuery = true)
+	List<UserLevelNotification> findAllExternalMessageCommentsNotifications(List<Integer> externalMessageIds);
+    
     @Query(value = "SELECT * FROM condonuitydev.user_level_notification where " + 
     		"( notification_category_type = 9 or " + 
     		"notification_category_type = 10 or " +
