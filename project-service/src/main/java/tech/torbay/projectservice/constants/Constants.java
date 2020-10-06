@@ -431,6 +431,7 @@ public class Constants {
 	    BID_UPDATE(5),
 		BID_WON_LOSE(6),
 		REVIEW_CREATE(7),
+		REVIEW_UPDATE(71),
 		REVIEW_COMMENT(8),
 		TASK_CREATE(9),
 		TASK_UPDATE(10),

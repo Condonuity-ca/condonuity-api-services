@@ -563,6 +563,13 @@ public class ProjectService {
 
 	public ProjectReviewRating postProjectReview(ProjectReviewRating projectReviewRating) {
 		// TODO Auto-generated method stub
+		if(projectReviewRating.getId() > 0) {
+			ProjectReviewRating projectRR = projectReviewRatingRepository.findOneById(projectReviewRating.getId());
+			projectReviewRating.setReplyComments(projectRR.getReplyComments());
+			//review update notification
+			sendReviewRatingNotification(projectReviewRating, NotificationType.REVIEW_UPDATE.getValue());
+		}
+		
 		return projectReviewRatingRepository.save(projectReviewRating);
 	}
 
@@ -1150,6 +1157,15 @@ public class ProjectService {
 				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
 				break;
 			}
+			case 71 :{
+				notificationType = 7;
+				message = "Review updated";
+				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				notification.setUserType(UserType.CLIENT.getValue());
+				notification.setUserId(projectReviewRating.getClientId());
+				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
+				break;
+			}
 			case 8 :{
 				message = "New Reply";
 				String vendorOrgName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
@@ -1272,7 +1288,7 @@ public class ProjectService {
 		try {
 			Project project = projectRepository.findByProjectId(projectId);
 			
-			project.setStatus(ProjectPostType.CANCELLED.getValue());
+			project.setDeleteStatus(DeleteStatus.INACTIVE.getValue());
 			return projectRepository.save(project);
 		} catch (Exception exp) {
 			exp.printStackTrace();

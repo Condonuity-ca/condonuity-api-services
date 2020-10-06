@@ -188,7 +188,7 @@ public class ProjectController {
 	    			response.put("responseMessage", "Project posted successfully");
 	    			response.put("projectId", projectObj.getProjectId());
 	    			
-	    			SendProjectNotification(project, NotificationType.PROJECT_CREATE);
+	    			SendProjectNotification(projectObj, NotificationType.PROJECT_CREATE);
 	        	}
 	        	
 	        	return new ResponseEntity<Object>(response, HttpStatus.OK);
