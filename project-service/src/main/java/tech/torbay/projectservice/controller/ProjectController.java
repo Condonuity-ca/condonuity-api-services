@@ -30,6 +30,7 @@ import tech.torbay.projectservice.constants.Constants.NotificationType;
 import tech.torbay.projectservice.constants.Constants.ProjectPostType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.StatusCode;
+import tech.torbay.projectservice.entity.BidResultsViewsHistory;
 import tech.torbay.projectservice.entity.PredefinedTags;
 import tech.torbay.projectservice.entity.Project;
 import tech.torbay.projectservice.entity.ProjectAwards;
@@ -1105,6 +1106,32 @@ public class ProjectController {
 			list.put("responseMessage", "Database Error");
 
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
+		}
+	}
+    
+    @ApiOperation(value = "Client views Vendor Project Bids and saving its views history")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Client views Vendor Project Bids and saving its views")
+            }
+    )
+	@PostMapping("/project/bids/client/views")
+	public ResponseEntity<Object> recordClientUserProjectBidsViews(@RequestBody BidResultsViewsHistory bidResultsViewsHistory) {
+    	BidResultsViewsHistory bidResultview = projectService.recordClientProjectBidsViews(bidResultsViewsHistory);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(bidResultview != null) {
+			response.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Bid Results View recorded successfully");
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
 	}
     

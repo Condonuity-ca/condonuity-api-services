@@ -29,6 +29,7 @@ import tech.torbay.projectservice.constants.Constants.ProjectPostType;
 import tech.torbay.projectservice.constants.Constants.ProjectSortBy;
 import tech.torbay.projectservice.constants.Constants.UserType;
 import tech.torbay.projectservice.entity.BidFiles;
+import tech.torbay.projectservice.entity.BidResultsViewsHistory;
 import tech.torbay.projectservice.entity.ClientOrganisation;
 import tech.torbay.projectservice.entity.ClientUser;
 import tech.torbay.projectservice.entity.Notification;
@@ -48,6 +49,7 @@ import tech.torbay.projectservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.projectservice.entity.VendorProjectInterests;
 import tech.torbay.projectservice.entity.VendorUser;
 import tech.torbay.projectservice.repository.BidFilesRepository;
+import tech.torbay.projectservice.repository.BidResultsViewsHistoryRepository;
 import tech.torbay.projectservice.repository.ClientOrganisationRepository;
 import tech.torbay.projectservice.repository.ClientUserRepository;
 import tech.torbay.projectservice.repository.NotificationRepository;
@@ -111,6 +113,8 @@ public class ProjectService {
 	ServiceCitiesRepository servicesCitiesRepository;
 	@Autowired
 	UserWishListRepository userWishListRepository;
+	@Autowired
+	BidResultsViewsHistoryRepository bidResultsViewsHistoryRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
@@ -196,6 +200,8 @@ public class ProjectService {
 		map = oMapper.convertValue(project, Map.class);
 		
 		map.put("tags",allTags);
+		
+		// project create, modified by ids as opened by
 		
 		List<Integer> openByIds = new ArrayList(); 
 		
@@ -393,6 +399,27 @@ public class ProjectService {
 		        } catch(Exception exp) {
 			        	exp.printStackTrace();
 		        }
+				
+				//bidViews
+				List<BidResultsViewsHistory> bidViews = bidResultsViewsHistoryRepository.findByProjectIdAndBidId(projectId, vendorBid.getId());
+				List<Integer> clientIds = new ArrayList();
+				for(BidResultsViewsHistory bidView : bidViews) {
+					clientIds.add(bidView.getClientId());
+				}
+				if(clientIds.size() > 0) {
+					List<ClientUser> projectBidViewedByClients = clientUserRepository.findByClientId(clientIds); 
+					
+					List<String> names = new ArrayList();
+					
+					for(ClientUser user : projectBidViewedByClients) {
+						
+						names.add(user.getFirstName()+" "+user.getLastName());
+					}
+					
+					map.put("openedBy",String.join(",",names));	
+				} else {
+					map.put("openedBy","");
+				}
 				
 				map.put("organisationName",vendorOrganisation.getCompanyName());
 				map.put("legalName",vendorOrganisation.getLegalName());
@@ -1522,6 +1549,18 @@ public class ProjectService {
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
+	}
+
+	public BidResultsViewsHistory recordClientProjectBidsViews(BidResultsViewsHistory bidResultsViewsHistory) {
+		// TODO Auto-generated method stub
+		BidResultsViewsHistory bidResultView = bidResultsViewsHistoryRepository.findByClientIdAndProjectIdAndBidId(bidResultsViewsHistory.getClientId(), bidResultsViewsHistory.getProjectId(), bidResultsViewsHistory.getBidId());
+		if(bidResultView != null) {
+			return bidResultsViewsHistory;
+		} else {
+			Project project = projectRepository.findByProjectId(bidResultsViewsHistory.getProjectId());
+			bidResultsViewsHistory.setClientOrganisationId(project.getClientOrganisationId());
+			return bidResultsViewsHistoryRepository.save(bidResultsViewsHistory);
+		}
 	}
 
 }
