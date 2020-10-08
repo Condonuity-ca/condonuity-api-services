@@ -18,6 +18,7 @@ import tech.torbay.vendorservice.constants.Constants.UserAccountStatus;
 import tech.torbay.vendorservice.constants.Constants.UserType;
 import tech.torbay.vendorservice.entity.ClientOrganisation;
 import tech.torbay.vendorservice.entity.ClientUser;
+import tech.torbay.vendorservice.entity.ExternalMessageComment;
 import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.NotificationViewsHistory;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
@@ -40,6 +41,7 @@ import tech.torbay.vendorservice.entity.VendorTags;
 import tech.torbay.vendorservice.entity.VendorUser;
 import tech.torbay.vendorservice.repository.ClientOrganisationRepository;
 import tech.torbay.vendorservice.repository.ClientUserRepository;
+import tech.torbay.vendorservice.repository.ExternalMessageCommentRepository;
 import tech.torbay.vendorservice.repository.NotificationRepository;
 import tech.torbay.vendorservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.vendorservice.repository.PredefinedTagsRepository;
@@ -105,6 +107,8 @@ public class VendorService {
 	UserLevelNotificationRepository userLevelNotificationRepository;
 	@Autowired
 	ClientOrganisationRepository clientOrganisationRepository;
+	@Autowired
+	ExternalMessageCommentRepository externalMessageCommentRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -889,7 +893,20 @@ public class VendorService {
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
 		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
 		
+		List<Integer> externalThreadIds = new ArrayList();
+		List<Integer> externalMessageIds = new ArrayList();
+				
+		for(UserLevelNotification ecternalMessageNotification : externalMessagesNotifications) {
+			externalThreadIds.add(ecternalMessageNotification.getNotificationCategoryId());
+		}
+		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
+		for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+			externalMessageIds.add(externalMessageComment.getId());
+		}
+		List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
+		
 		internalMessagesNotifications.addAll(externalMessagesNotifications);
+		internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
 		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
 			Notification notification = new Notification();
 			notification.setId(userLevelNotification.getId());
@@ -1025,6 +1042,8 @@ public class VendorService {
 		
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
 		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
+		
+		
 		
 		internalMessagesNotifications.addAll(externalMessagesNotifications);
 		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {

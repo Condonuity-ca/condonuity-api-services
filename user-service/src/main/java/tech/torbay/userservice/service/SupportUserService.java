@@ -652,6 +652,14 @@ public class SupportUserService {
 	        else
 	        	map.put("organisationLogo", "");
 	        
+			List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(UserType.CLIENT.getValue(), clientOrg.getClientOrganisationId());
+			for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+				ClientUser clientUser = clientUserRepository.findByClientId(registrationLogAdmin.getUserId());
+				map.put("adminFirstName", clientUser.getFirstName());
+				map.put("adminLastName", clientUser.getLastName());
+				map.put("adminEmail", clientUser.getEmail());
+			} 
+	        
 	        upApprovedClientOrganisations.add(map);
 		}
     	
@@ -693,6 +701,15 @@ public class SupportUserService {
 	        } catch(Exception exp) {
 		        	exp.printStackTrace();
 	        }
+	        
+	        List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(UserType.VENDOR.getValue(), vendorOrg.getVendorOrganisationId());
+			for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+				VendorUser vendorUser = vendorUserRepository.findByUserId(registrationLogAdmin.getUserId());
+				map.put("adminFirstName", vendorUser.getFirstName());
+				map.put("adminLastName", vendorUser.getLastName());
+				map.put("adminEmail", vendorUser.getEmail());
+			} 
+	        
 	        upApprovedVendorOrganisations.add(map);
 		}
 		
