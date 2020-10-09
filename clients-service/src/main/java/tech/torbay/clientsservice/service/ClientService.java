@@ -1126,11 +1126,18 @@ public class ClientService {
 				for(UserLevelNotification ecternalMessageNotification : externalMessagesNotifications) {
 					externalThreadIds.add(ecternalMessageNotification.getNotificationCategoryId());
 				}
-				List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
-				for(ExternalMessageComment externalMessageComment : externalMessageComments) {
-					externalMessageIds.add(externalMessageComment.getId());
+				if(externalThreadIds!= null && externalThreadIds.size() > 0) {
+					List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
+					for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+						externalMessageIds.add(externalMessageComment.getId());
+					}
+				} 
+				if(externalMessageIds != null && externalMessageIds.size() > 0) {
+					List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
+					internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
 				}
-				List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds); 
+				
+				 
 				List<UserLevelNotification> taskNotifications = userLevelNotificationRepository.findAllTaskNotifications(clientOrganisationId, clientId); 
 				//1.all projects for client notification
 				//2.bid end alert
@@ -1147,7 +1154,7 @@ public class ClientService {
 				
 				internalMessagesNotifications.addAll(taskNotifications);
 				internalMessagesNotifications.addAll(externalMessagesNotifications);
-				internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+				
 				for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
 					Notification notification = new Notification();
 					notification.setId(userLevelNotification.getId());

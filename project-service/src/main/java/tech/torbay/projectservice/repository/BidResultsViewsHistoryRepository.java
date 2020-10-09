@@ -19,7 +19,7 @@ public interface BidResultsViewsHistoryRepository extends JpaRepository<BidResul
 
 	List<BidResultsViewsHistory> findByProjectIdAndBidId(Integer projectId, Integer bidId);
 
-	BidResultsViewsHistory findByClientIdAndProjectIdAndBidId(Integer clientId,
-			Integer projectId, Integer bidId);
+	BidResultsViewsHistory findByClientIdAndProjectIdAndBidId(Integer clientId, Integer projectId, Integer bidId);
 
+	List<BidResultsViewsHistory> findByClientIdAndProjectId(Integer clientId, Integer projectId);
 }

@@ -899,14 +899,20 @@ public class VendorService {
 		for(UserLevelNotification ecternalMessageNotification : externalMessagesNotifications) {
 			externalThreadIds.add(ecternalMessageNotification.getNotificationCategoryId());
 		}
-		List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
-		for(ExternalMessageComment externalMessageComment : externalMessageComments) {
-			externalMessageIds.add(externalMessageComment.getId());
+		
+		if(externalThreadIds != null && externalThreadIds.size() > 0) {
+			List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
+			for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+				externalMessageIds.add(externalMessageComment.getId());
+			}	
 		}
-		List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
+		if(externalMessageIds != null && externalMessageIds.size() > 0) {
+			List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
+			internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+		}
 		
 		internalMessagesNotifications.addAll(externalMessagesNotifications);
-		internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+		
 		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
 			Notification notification = new Notification();
 			notification.setId(userLevelNotification.getId());

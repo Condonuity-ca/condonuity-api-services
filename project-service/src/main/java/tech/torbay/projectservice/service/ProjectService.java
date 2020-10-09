@@ -3,7 +3,6 @@ package tech.torbay.projectservice.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1553,14 +1552,31 @@ public class ProjectService {
 
 	public BidResultsViewsHistory recordClientProjectBidsViews(BidResultsViewsHistory bidResultsViewsHistory) {
 		// TODO Auto-generated method stub
-		BidResultsViewsHistory bidResultView = bidResultsViewsHistoryRepository.findByClientIdAndProjectIdAndBidId(bidResultsViewsHistory.getClientId(), bidResultsViewsHistory.getProjectId(), bidResultsViewsHistory.getBidId());
-		if(bidResultView != null) {
-			return bidResultsViewsHistory;
+		if(bidResultsViewsHistory.getBidId() > 0) {
+			BidResultsViewsHistory bidResultView = bidResultsViewsHistoryRepository.findByClientIdAndProjectIdAndBidId(bidResultsViewsHistory.getClientId(), bidResultsViewsHistory.getProjectId(), bidResultsViewsHistory.getBidId());
+			if(bidResultView != null) {
+				return bidResultsViewsHistory;
+			} else {
+				Project project = projectRepository.findByProjectId(bidResultsViewsHistory.getProjectId());
+				bidResultsViewsHistory.setClientOrganisationId(project.getClientOrganisationId());
+				return bidResultsViewsHistoryRepository.save(bidResultsViewsHistory);
+			}	
 		} else {
 			Project project = projectRepository.findByProjectId(bidResultsViewsHistory.getProjectId());
 			bidResultsViewsHistory.setClientOrganisationId(project.getClientOrganisationId());
-			return bidResultsViewsHistoryRepository.save(bidResultsViewsHistory);
+			
+			List<VendorBid> bids = vendorBidRepository.findVendorBidByProjectId(bidResultsViewsHistory.getProjectId());
+			for (VendorBid vendorBid : bids) {
+				BidResultsViewsHistory bidResultView = bidResultsViewsHistoryRepository.findByClientIdAndProjectIdAndBidId(bidResultsViewsHistory.getClientId(), bidResultsViewsHistory.getProjectId(), vendorBid.getId());
+				if(bidResultView == null) {
+					bidResultsViewsHistory.setBidId(vendorBid.getId());
+					bidResultsViewsHistoryRepository.save(bidResultsViewsHistory);
+				}
+			}
+			
+			return bidResultsViewsHistory;	
 		}
+		
 	}
 
 }
