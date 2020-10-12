@@ -877,11 +877,14 @@ public class VendorService {
 
 	public VendorPortfolio addVendorPortfolio(VendorPortfolio vendorPortfolio) {
 		// TODO Auto-generated method stub
+		vendorPortfolio.setStatus(DeleteStatus.ACTIVE.getValue());
 		return vendorPortfolioRepository.save(vendorPortfolio);
 	}
 	
 	public VendorPortfolio updateVendorPortfolio(VendorPortfolio vendorPortfolio) {
 		// TODO Auto-generated method stub
+		VendorPortfolio portfolio = vendorPortfolioRepository.findOneById(vendorPortfolio.getId());
+		vendorPortfolio.setStatus(portfolio.getStatus());
 		return vendorPortfolioRepository.save(vendorPortfolio);
 	}
 	
