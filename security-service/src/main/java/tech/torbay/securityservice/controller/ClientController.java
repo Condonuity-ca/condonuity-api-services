@@ -660,6 +660,7 @@ public class ClientController {
 //		springBootEmail.sendEmail(email);
 		try {
 			springBootEmail.sendInviteAcceptEmailWithAttachment(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), organisationName , content);
+			clientService.checkClientUserActiveStatus(clientUser);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

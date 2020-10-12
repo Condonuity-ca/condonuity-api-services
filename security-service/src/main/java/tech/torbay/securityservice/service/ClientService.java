@@ -471,5 +471,21 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		return clientAssociationRepository.findByClientIdAndClientOrganisationId(userId, organisationId);
 	}
+
+	public void checkClientUserActiveStatus(ClientUser clientUser) {
+		// TODO Auto-generated method stub
+		ClientUser client = getClientUserById(clientUser.getClientId());
+		
+		if(client.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+			client.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
+			
+		}
+		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientUser.getPrimaryOrgId());
+		if(clientOrganisation.getActiveStatus() == DeleteStatus.INACTIVE.getValue()) {
+			clientUser.setPrimaryOrgId(DeleteStatus.NOT_AVAILABLE.getValue());;
+		}
+		
+		clientUserRepository.save(client);
+	}
 }
 
