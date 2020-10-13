@@ -345,7 +345,8 @@ public class ClientService {
 		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
 		
 		for (ClientAssociation clientAssociation : clientAssociations) {
-			if(clientAssociation.getUserAccountStatus() == Constants.UserAccountStatus.ACTIVE.getValue() ) {
+			if(clientAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue() 
+					&& clientAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
 				return true;
 			}
 		}
