@@ -196,6 +196,34 @@ public class SupportUserController {
 		String corporationNumber =  String.valueOf(requestData.get("corporationNumber"));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
 		
+		if(corporationName == null || corporationName.trim().length() == 0) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.FIELD_VALIDATION_ERROR.getValue(),
+        			"Failed",
+        			"Client Organisation Name Field Is Empty");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		if(corporationNumber == null || corporationNumber.trim().length() == 0 ) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.FIELD_VALIDATION_ERROR.getValue(),
+        			"Failed",
+        			"Client Organisation Corporation Number Field Is Empty");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		if(clientService.checkOrganisationNameAvailable(corporationName)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.CONFLICT.getValue(),
+        			"Failed",
+        			"Client Organisation Name Already Exist");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
+		if(clientService.checkOrganisationCoporationNumberAvailable(corporationNumber)) {
+			ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.CONFLICT.getValue(),
+        			"Failed",
+        			"Client Organisation Corporation Number Already Exist");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		}
 		
 		if (!supportUserService.updateClientCorporationInformation(clientOrganisationId, corporationName, corporationNumber, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(

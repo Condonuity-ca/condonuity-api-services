@@ -64,4 +64,8 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 
 	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.corporate_number LIKE (?1) and ( co.active_status = 0 or co.active_status = 2 ));", nativeQuery = true)
 	List<ClientOrganisation> findAllUnApproveRejectOrganisationsByCorporationNumber(String keyword);
+	
+	List<ClientOrganisation> findByOrganisationName(String organisationName);
+	
+	List<ClientOrganisation> findByCorporateNumber(String corporationNumber);
 }

@@ -120,7 +120,8 @@ public class Constants {
 		INACTIVE_USER(7),
 		ORGANISATION_NOT_FOUND(8),
 		NO_ACTIVE_ORGANISATION_FOUND(9), 
-		MAX_USERS_COUNT_ERROR(7);
+		MAX_USERS_COUNT_ERROR(7),
+		FIELD_VALIDATION_ERROR(11);
 	    
 	    private int value;
 	    private static Map map = new HashMap<>();
