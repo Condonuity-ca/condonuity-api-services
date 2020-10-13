@@ -352,17 +352,26 @@ public class ClientService {
 		return false;
 	}
 	
+//	public boolean checkIsClientAccountActive(Integer clientId) {
+//		// TODO Auto-generated method stub
+//		
+//		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+//		
+//		for (ClientAssociation clientAssociation : clientAssociations) {
+//			if(clientAssociation.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
+	
 	public boolean checkIsClientAccountActive(Integer clientId) {
-		// TODO Auto-generated method stub
 		
-		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
-		
-		for (ClientAssociation clientAssociation : clientAssociations) {
-			if(clientAssociation.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
-				return false;
-			}
+		ClientUser clientUser = clientUserRepository.findByClientId(clientId);
+		if(clientUser.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	public ClientUser checkIsPrimaryOrganisationActive(ClientUser clientInfo) {

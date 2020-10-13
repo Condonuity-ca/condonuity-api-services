@@ -178,9 +178,11 @@ public class SupportUserService {
 				for (ClientAssociation clientAssociation : clientAssociations) {
 					
 					ClientUser clientUser = clientUserRepository.findByClientId(clientAssociation.getClientId());
-					
-					clientUser.setDeleteStatus(approvalStatus);
-					clientUserRepository.save(clientUser);
+					if(!checkIsClientActiveAtlestOneAccount(clientAssociation.getClientId())) {
+						clientUser.setDeleteStatus(approvalStatus);
+						clientUserRepository.save(clientUser);
+						
+					}
 					List<String> org = new ArrayList<>();
 					org.add(ClientOrganisationObj.getOrganisationName());
 					SendUserAlertForApprovalFromSystem(clientUser.getEmail(), clientUser.getFirstName(), clientUser.getLastName(), org, emailContentUSER, subjectUser );
@@ -1172,6 +1174,19 @@ public class SupportUserService {
 		}
 		
 		return allCategoryRatings;
+	}
+	
+	public boolean checkIsClientActiveAtlestOneAccount(Integer clientId) {
+		// TODO Auto-generated method stub
+		
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		
+		for (ClientAssociation clientAssociation : clientAssociations) {
+			if(clientAssociation.getUserAccountStatus() == Constants.UserAccountStatus.ACTIVE.getValue() ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
