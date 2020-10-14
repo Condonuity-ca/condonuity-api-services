@@ -2724,7 +2724,7 @@ public class UserService {
 	        boolean isLNameContain = false;
 	        int paramCount = 3;
 	        if(emailKeyword.trim().length() > 0) {
-	        	if(vendorUser.getEmail().contains(emailKeyword.trim())) {
+	        	if(vendorUser.getEmail().toLowerCase().contains(emailKeyword.trim().toLowerCase())) {
 	        		isEmailContain = true;
 	        	}
 			} else {
@@ -2732,7 +2732,7 @@ public class UserService {
 				paramCount--;
 			}
 	        if(fnameKeyword.trim().length() > 0) {
-	        	if(vendorUser.getFirstName().contains(fnameKeyword.trim())) {
+	        	if(vendorUser.getFirstName().toLowerCase().contains(fnameKeyword.trim().toLowerCase())) {
 	        		isFNameContain = true;
 	        	}
 			} else {
@@ -2740,7 +2740,7 @@ public class UserService {
 				paramCount--;
 			}
 	        if(lnameKeyword.trim().length() > 0) {
-	        	if(vendorUser.getLastName().contains(lnameKeyword.trim())) {
+	        	if(vendorUser.getLastName().toLowerCase().contains(lnameKeyword.trim().toLowerCase())) {
 	        		isLNameContain = true;
 	        	}
 			} else {
