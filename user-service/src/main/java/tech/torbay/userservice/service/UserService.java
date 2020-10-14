@@ -2657,7 +2657,7 @@ public class UserService {
 	        boolean isPhoneContain = false;
 	        int paramCount = 4;
 	        if(emailKeyword.trim().length() > 0) {
-	        	if(clientUser.getEmail().contains(emailKeyword.trim())) {
+	        	if(clientUser.getEmail().toLowerCase().contains(emailKeyword.trim().toLowerCase())) {
 	        		isEmailContain = true;
 	        	}
 			} else {
@@ -2665,7 +2665,7 @@ public class UserService {
 				paramCount--;
 			}
 	        if(fnameKeyword.trim().length() > 0) {
-	        	if(clientUser.getFirstName().contains(fnameKeyword.trim())) {
+	        	if(clientUser.getFirstName().toLowerCase().contains(fnameKeyword.trim().toLowerCase())) {
 	        		isFNameContain = true;
 	        	}
 			} else {
@@ -2673,7 +2673,7 @@ public class UserService {
 				paramCount--;
 			}
 	        if(lnameKeyword.trim().length() > 0) {
-	        	if(clientUser.getLastName().contains(lnameKeyword.trim())) {
+	        	if(clientUser.getLastName().toLowerCase().contains(lnameKeyword.trim().toLowerCase())) {
 	        		isLNameContain = true;
 	        	}
 			} else {
