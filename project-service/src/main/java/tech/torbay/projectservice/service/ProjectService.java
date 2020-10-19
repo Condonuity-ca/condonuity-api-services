@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -352,7 +353,25 @@ public class ProjectService {
 			
 			
 			map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-			map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
+			
+			//
+//			map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
+			List<VendorBid> bids = vendorBidRepository.findVendorBidByProjectId(project.getProjectId());
+			List<VendorProjectInterests> interests = vendorProjectInterestsRepository.findByProjectId(project.getProjectId());
+			List<Integer> projectInterests = new ArrayList<>();
+			
+			for(VendorBid bid : bids) {
+				projectInterests.add(bid.getVendorOrgId());
+			}
+			for(VendorProjectInterests interest : interests) {
+				projectInterests.add(interest.getVendorOrganisationId());
+			}
+			
+			HashSet<Integer> resultSet = new HashSet(projectInterests);
+			projectInterests.clear();
+			projectInterests.addAll(resultSet);
+			
+			map.put("interestCount", projectInterests.size());
 			
 			allProjects.add(map);
 		}
