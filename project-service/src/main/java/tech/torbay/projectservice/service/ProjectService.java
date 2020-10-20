@@ -1,8 +1,12 @@
 package tech.torbay.projectservice.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -376,7 +380,23 @@ public class ProjectService {
 			allProjects.add(map);
 		}
 		
+		// sort by bid closing date
+		
+		Collections.sort(allProjects, new BidCloseDateComparator());
+		
 		return allProjects;
+	}
+	
+	class BidCloseDateComparator implements Comparator<Map<String,Object>> {
+		DateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+	    
+	    public int compare(Map<String,Object> o1, Map<String,Object> o2) {
+            try {
+                return f.parse(o2.get("bidEndDate").toString()).compareTo(f.parse(o1.get("bidEndDate").toString()));
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
 	}
 
 	private void checkIsProjectsClosed() {
