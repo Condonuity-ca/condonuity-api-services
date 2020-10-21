@@ -41,7 +41,8 @@ public class Constants {
 	    NOT_FOUND(4),
 	    AUTHENTICATION_FAILED(5),
 		CONFLICT(6),
-		FILE_NOT_FOUND(7);
+		FILE_NOT_FOUND(7),
+		UPLOAD_FILE_SIZE_EXCEED(8);
 		
 	    private int value;
 	    private static Map map = new HashMap<>();
