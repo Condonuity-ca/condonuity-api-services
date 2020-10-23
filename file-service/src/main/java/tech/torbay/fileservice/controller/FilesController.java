@@ -384,6 +384,15 @@ public class FilesController {
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
 		
+		for(MultipartFile multipartFile : multipartFiles) {
+			if(checkFileSizeAbove5Mb(multipartFile)) {
+				map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File Size should not be more than 5 Mb");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+		}
+		
 		List<URI> url = azureBlobService.uploadClientRegistrationFiles(clientId, clientOrganisationId, Constants.Containers.CLIENT_REGISTRATION_FILES.getValue(), multipartFiles);
 		
 		
@@ -444,6 +453,15 @@ public class FilesController {
 			map.put("statusMessage", "Failed");
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+		for(MultipartFile multipartFile : multipartFiles) {
+			if(checkFileSizeAbove5Mb(multipartFile)) {
+				map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File Size should not be more than 5 Mb");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
 		}
 		
 		List<URI> url = azureBlobService.uploadProjectFiles(projectId, Constants.Containers.PROJECT_FILES.getValue(), multipartFiles);
@@ -521,6 +539,15 @@ public class FilesController {
 			map.put("statusMessage", "Failed");
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+		for(MultipartFile multipartFile : multipartFiles) {
+			if(checkFileSizeAbove5Mb(multipartFile)) {
+				map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File Size should not be more than 5 Mb");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
 		}
 		
 		List<URI> url = azureBlobService.uploadBidFiles(bidId, Constants.Containers.BID_FILES.getValue(), multipartFiles);
@@ -664,6 +691,16 @@ public class FilesController {
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
+		
+		for(MultipartFile multipartFile : multipartFiles) {
+			if(checkFileSizeAbove5Mb(multipartFile)) {
+				map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File Size should not be more than 5 Mb");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+		}
+		
 		List<URI> url = azureBlobService.uploadThreadFiles(threadId, Constants.Containers.MESSAGE_INTERNAL_THREAD_FILES.getValue(), multipartFiles, ThreadType.INTERNAL.getValue());
 		
 		if(url != null) {
@@ -694,6 +731,16 @@ public class FilesController {
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
+		
+		for(MultipartFile multipartFile : multipartFiles) {
+			if(checkFileSizeAbove5Mb(multipartFile)) {
+				map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File Size should not be more than 5 Mb");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+		}
+		
 		List<URI> url = azureBlobService.uploadCommentFiles(commentId, Constants.Containers.MESSAGE_INTERNAL_COMMENT_FILES.getValue(), multipartFiles, ThreadType.INTERNAL.getValue());
 		
 		if(url != null) {
@@ -724,6 +771,16 @@ public class FilesController {
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
+		
+		for(MultipartFile multipartFile : multipartFiles) {
+			if(checkFileSizeAbove5Mb(multipartFile)) {
+				map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File Size should not be more than 5 Mb");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+		}
+		
 		List<URI> url = azureBlobService.uploadThreadFiles(threadId, Constants.Containers.MESSAGE_EXTERNAL_THREAD_FILES.getValue(), multipartFiles, ThreadType.EXTERNAL.getValue());
 		
 		if(url != null) {
@@ -754,6 +811,16 @@ public class FilesController {
 			map.put("responseMessage", "Please select any files to upload");
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		}
+		
+		for(MultipartFile multipartFile : multipartFiles) {
+			if(checkFileSizeAbove5Mb(multipartFile)) {
+				map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+				map.put("statusMessage", "Failed");
+				map.put("responseMessage", "File Size should not be more than 5 Mb");
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+		}
+		
 		List<URI> url = azureBlobService.uploadCommentFiles(commentId, Constants.Containers.MESSAGE_EXTERNAL_COMMENT_FILES.getValue(), multipartFiles, ThreadType.EXTERNAL.getValue());
 		
 		if(url != null) {
@@ -930,6 +997,15 @@ public class FilesController {
 				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 			}
 			
+			for(MultipartFile multipartFile : multipartFiles) {
+				if(checkFileSizeAbove5Mb(multipartFile)) {
+					map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+					map.put("statusMessage", "Failed");
+					map.put("responseMessage", "File Size should not be more than 5 Mb");
+					return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+				}
+			}
+			
 			List<URI> url = azureBlobService.uploadVendorRegistrationFiles(vendorId, vendorOrganisationId, Constants.Containers.VENDOR_REGISTRATION_FILES.getValue(), multipartFiles);
 			
 			
@@ -962,6 +1038,15 @@ public class FilesController {
 				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 			}
 			
+			for(MultipartFile multipartFile : multipartFiles) {
+				if(checkFileSizeAbove5Mb(multipartFile)) {
+					map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+					map.put("statusMessage", "Failed");
+					map.put("responseMessage", "File Size should not be more than 5 Mb");
+					return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+				}
+			}
+			
 			List<URI> url = azureBlobService.uploadProjectAwardFiles(projectAwardId, Constants.Containers.PROJECT_AWARD_FILES.getValue(), multipartFiles);
 			
 			if(url != null) {
@@ -991,6 +1076,15 @@ public class FilesController {
 				map.put("statusMessage", "Failed");
 				map.put("responseMessage", "Please select any files to upload");
 				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+			}
+			
+			for(MultipartFile multipartFile : multipartFiles) {
+				if(checkFileSizeAbove5Mb(multipartFile)) {
+					map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+					map.put("statusMessage", "Failed");
+					map.put("responseMessage", "File Size should not be more than 5 Mb");
+					return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+				}
 			}
 			
 			List<URI> url = azureBlobService.uploadVendorPortfolioFiles(portfolioId, Constants.Containers.VENDOR_PORTFOLIO_FILES.getValue(), multipartFiles);
@@ -1048,6 +1142,15 @@ public class FilesController {
 				map.put("responseMessage", "Please select any files to upload");
 				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 			}
+			for(MultipartFile multipartFile : multipartFiles) {
+				if(checkFileSizeAbove5Mb(multipartFile)) {
+					map.put("statusCode", StatusCode.UPLOAD_FILE_SIZE_EXCEED.getValue());
+					map.put("statusMessage", "Failed");
+					map.put("responseMessage", "File Size should not be more than 5 Mb");
+					return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+				}
+			}
+			
 			List<URI> url = new ArrayList<>();
 			url = azureBlobService.uploadOrganisationRegistrationFilesBySupportUser(userType, supportUserId, organisationId, multipartFiles);
 			
@@ -1076,9 +1179,9 @@ public class FilesController {
 			// Get length of file in bytes
 			long fileSizeInBytes = multipartFile.getSize();
 			// Convert the bytes to Kilobytes (1 KB = 1024 Bytes)
-			long fileSizeInKB = fileSizeInBytes / 1024;
+			float fileSizeInKB = fileSizeInBytes / 1024;
 			// Convert the KB to MegaBytes (1 MB = 1024 KBytes)
-			long fileSizeInMB = fileSizeInKB / 1024;
+			float fileSizeInMB = fileSizeInKB / 1024;
 
 			if (fileSizeInMB > 5) {
 				return true;
