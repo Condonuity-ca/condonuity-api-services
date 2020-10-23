@@ -890,17 +890,26 @@ public class VendorService {
 	
 	public List<VendorInsurance> getVendorInsurance(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		return vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisationId);
+		List<VendorInsurance> vendorinsurances =  vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisationId);
+		
+		List<VendorInsurance> singleInsurance = new ArrayList();
+		if(vendorinsurances != null && vendorinsurances.size() > 0) {
+			if(vendorinsurances.get(0).getInsuranceAvailability() == Constants.Availability.AVAILABLE.getValue()) {
+				singleInsurance.add(vendorinsurances.get(0));	
+			}
+		}
+		
+		return singleInsurance;
 	}
 
-	public VendorInsurance addVendorInsurance(VendorInsurance vendorPortfolio) {
+	public VendorInsurance addVendorInsurance(VendorInsurance vendorInsurance) {
 		// TODO Auto-generated method stub
-		return vendorInsuranceRepository.save(vendorPortfolio);
+		return vendorInsuranceRepository.save(vendorInsurance);
 	}
 	
-	public VendorInsurance updateVendorInsurance(VendorInsurance vendorPortfolio) {
+	public VendorInsurance updateVendorInsurance(VendorInsurance vendorInsurance) {
 		// TODO Auto-generated method stub
-		return vendorInsuranceRepository.save(vendorPortfolio);
+		return vendorInsuranceRepository.save(vendorInsurance);
 	}
 
 	public List<VendorPortfolio> sortVendorPortfolio(Integer orgId, Integer sortBy) {
@@ -1313,6 +1322,7 @@ public class VendorService {
 			if(vendorOrganisation != null) {
 				
 				// remove old records
+				// 0 - if insurance availability 0 then it needs to be deleted
 				// 1 delete service cities -NA
 				// 2 delete services
 				// 3 delete licenses
@@ -1325,15 +1335,19 @@ public class VendorService {
 				vendorLicensesRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 				vendorMembershipsRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 				
-				// 0 add insurance
+				// 0 delete/add insurance
 				// 1 add service cities - NA
 				// 2 add services
 				// 3 add licenses
 				// 4 add products
 				// 5 add brands
 				// 6 add memberships
-				vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-				vendorInsuranceRepository.save(vendorInsurance);
+				if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {
+					vendorInsuranceRepository.deleteByVendorOrganisationId(vendorInsurance.getInsuranceId());
+				} else {
+					vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+					vendorInsuranceRepository.save(vendorInsurance);
+				}
 				
 				//1
 				

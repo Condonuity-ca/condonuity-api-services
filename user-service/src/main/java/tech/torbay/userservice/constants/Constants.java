@@ -284,6 +284,31 @@ public class Constants {
 	    }
 	}
 	
+	public enum InsuranceBondAvailability {
+	    NOT_AVAILABLE(0),
+	    AVAILABLE(1);
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private InsuranceBondAvailability(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (InsuranceBondAvailability pageType : InsuranceBondAvailability.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static InsuranceBondAvailability valueOf(int pageType) {
+	        return (InsuranceBondAvailability) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	public enum TaskUsers {
 	    OTHER_USER_ONLY(1),
 	    CLIENT_USER_ONLY(2),
