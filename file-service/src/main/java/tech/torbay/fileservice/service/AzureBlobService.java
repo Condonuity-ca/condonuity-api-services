@@ -750,6 +750,30 @@ public class AzureBlobService {
 		}
 	}
 	
+	public boolean deleteProjectAwardFiles(List<Integer> fileIds) {
+		// TODO Auto-generated method stub
+		try {
+			for(Integer fileId : fileIds) {
+				
+				ProjectAwardFiles projectAwardFile = projectAwardFilesRepository.findOneById(fileId);
+				
+				String containerName = projectAwardFile.getContainerName();
+				String blobName = projectAwardFile.getBlobName();
+				
+				/*if(*/deleteBlob(containerName, blobName);/*) {*/
+					projectAwardFilesRepository.deleteById(fileId);
+//				}
+				
+			}
+			
+			return true;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+			return false;
+		}
+	}
+	
 	// single file upload
 	public URI uploadThreadFiles(Integer threadId, String containerName, MultipartFile multipartFile, Integer threadType) {
 		// TODO Auto-generated method stub

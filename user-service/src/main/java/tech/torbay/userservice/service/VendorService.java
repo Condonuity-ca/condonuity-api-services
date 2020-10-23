@@ -1343,7 +1343,12 @@ public class VendorService {
 				// 5 add brands
 				// 6 add memberships
 				if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {
-					vendorInsuranceRepository.deleteByVendorOrganisationId(vendorInsurance.getInsuranceId());
+					if(vendorInsurance.getInsuranceId() > 0) {
+						vendorInsuranceRepository.deleteByVendorOrganisationId(vendorInsurance.getInsuranceId());
+					} else {
+						vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+						vendorInsuranceRepository.save(vendorInsurance);
+					}
 				} else {
 					vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 					vendorInsuranceRepository.save(vendorInsurance);

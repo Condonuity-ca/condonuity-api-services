@@ -860,6 +860,28 @@ public class FilesController {
 		}
 	}
 	
+	@DeleteMapping("/delete/project/award/files")
+	public ResponseEntity<Map<String, Object>> deleteProjectAwardFiles(@RequestBody List<Integer> fileIds) {
+		
+		boolean isDeleted = azureBlobService.deleteProjectAwardFiles(fileIds);
+		
+		if(isDeleted) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
+			map.put("statusMessage", "Success");
+			map.put("responseMessage", "Project Award Files Deleted SuccessFully");
+			
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		} else {
+			Map<String, Object> map = new HashMap<>();
+			map.put("statusCode", StatusCode.REQUEST_FAILED.getValue());
+			map.put("statusMessage", "Failed");
+			map.put("responseMessage", "Failed to delete the project award files");
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		}
+		
+	}
+	
 	// Client Registration Document Upload
 	
 		@PostMapping("/upload/vendor/registration/{vendorOrganisationId}/{vendorId}")

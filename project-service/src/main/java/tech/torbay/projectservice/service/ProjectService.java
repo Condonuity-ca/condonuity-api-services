@@ -1259,11 +1259,11 @@ public class ProjectService {
 		if(projectAwardsObj != null) {
 			projectAwardsObj.setAwardedBidId(projectAwards.getAwardedBidId());
 			projectAwardsObj.setVendorOrganisationId(projectAwards.getVendorOrganisationId());
-			projectAwardsObj.setAwardDate(projectAwards.getAwardDate());
-			projectAwardsObj.setTotalPrice(projectAwards.getTotalPrice());
-			projectAwardsObj.setComments(projectAwards.getComments());
-			projectAwardsObj.setDuration(projectAwards.getDuration());
-			projectAwardsObj.setStartDate(projectAwards.getStartDate());
+//			projectAwardsObj.setAwardDate(projectAwards.getAwardDate());
+//			projectAwardsObj.setTotalPrice(projectAwards.getTotalPrice());
+			projectAwardsObj.setComments(projectAwards.getComments());//client-comment-#434
+//			projectAwardsObj.setDuration(projectAwards.getDuration());
+//			projectAwardsObj.setStartDate(projectAwards.getStartDate());
 			
 			projectAwardsRepository.save(projectAwardsObj);
 		} else {
