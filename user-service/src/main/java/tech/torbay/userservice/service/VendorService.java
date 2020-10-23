@@ -1344,7 +1344,7 @@ public class VendorService {
 				// 6 add memberships
 				if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {
 					if(vendorInsurance.getInsuranceId() > 0) {
-						vendorInsuranceRepository.deleteByVendorOrganisationId(vendorInsurance.getInsuranceId());
+						vendorInsuranceRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 					} else {
 						vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 						vendorInsuranceRepository.save(vendorInsurance);
