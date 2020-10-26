@@ -1342,16 +1342,27 @@ public class VendorService {
 				// 4 add products
 				// 5 add brands
 				// 6 add memberships
-				if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {
-					if(vendorInsurance.getInsuranceId() > 0) {
+				List<VendorInsurance> existingVendorInsurances = vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+				if(existingVendorInsurances.size() > 0) {
+					VendorInsurance singleInsurance = existingVendorInsurances.get(0);
+					if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.AVAILABLE.getValue()) {
+						singleInsurance.setInsuranceAvailability(vendorInsurance.getInsuranceAvailability());
+						singleInsurance.setInsuranceBonded(vendorInsurance.getInsuranceBonded());
+						singleInsurance.setInsuranceCompany(vendorInsurance.getInsuranceCompany());
+						singleInsurance.setInsuranceLiability(vendorInsurance.getInsuranceLiability());;
+						singleInsurance.setInsuranceNumber(vendorInsurance.getInsuranceNumber());
+						singleInsurance.setInsurancePolicyExpiryDate(vendorInsurance.getInsurancePolicyExpiryDate());
+						
+						vendorInsuranceRepository.save(singleInsurance);
+					} else if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {
 						vendorInsuranceRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-					} else {
+					}
+					
+				} else {
+					if(vendorInsurance != null ) {
 						vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 						vendorInsuranceRepository.save(vendorInsurance);
 					}
-				} else {
-					vendorInsurance.setVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-					vendorInsuranceRepository.save(vendorInsurance);
 				}
 				
 				//1
