@@ -16,6 +16,7 @@ import tech.torbay.messageservice.constants.Constants;
 import tech.torbay.messageservice.constants.Constants.Availability;
 import tech.torbay.messageservice.constants.Constants.DeleteStatus;
 import tech.torbay.messageservice.constants.Constants.ThreadType;
+import tech.torbay.messageservice.constants.Constants.UserType;
 import tech.torbay.messageservice.entity.ClientOrganisation;
 import tech.torbay.messageservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.messageservice.entity.ClientUser;
@@ -545,17 +546,39 @@ public class MessageService {
 		UserLevelNotification notification = new UserLevelNotification();
 		String message = "New Internal Message";
 		String subContent = " received message in thread";
+		
+		String userFirstName = "";
+		String userLastName = "";
+		
+		if(internalMessage.getUserType() == UserType.CLIENT.getValue()){
+			ClientUser clientUser = clientUserRepository.findByClientId(internalMessage.getUserId());
+			userFirstName = clientUser.getFirstName();
+			userLastName = clientUser.getLastName();
+		}
+		if(internalMessage.getUserType() == UserType.VENDOR.getValue()){
+			VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessage.getUserId());
+			userFirstName = vendorUser.getFirstName();
+			userLastName = vendorUser.getLastName();
+		}
+		
 		switch(notificationType) {
 			case 12 :{
-				message = "New Internal Message";
+//				message = "New Internal Message";
 //				subContent = "New Message received - \""+internalMessage.getThreadSubject()+"\"";
-				subContent = "\""+internalMessage.getThreadSubject()+"\"";
+//				subContent = "\""+internalMessage.getThreadSubject()+"\"";
+				
+				message = "New message thread!";
+				subContent = "New message thread! User "+userFirstName +" "+userLastName+" has created a new internal message thread: "+internalMessage.getThreadSubject();
+
 				break;
 			}
 			case 13	 :{
-				message = "Internal Message Updated";
+//				message = "Internal Message Updated";
 //				subContent = "Message has updated";
-				subContent = "\""+internalMessage.getThreadSubject()+"\"";
+//				subContent = "\""+internalMessage.getThreadSubject()+"\"";
+				
+				message = "Message thread updated!";
+				subContent = "message thread updated! User "+userFirstName +" "+userLastName+" has updated the internal message thread: "+internalMessage.getThreadSubject();
 				break;
 			}
 		}
@@ -581,11 +604,30 @@ public class MessageService {
 		UserLevelNotification notification = new UserLevelNotification();
 		String message = "New Comment";
 		String subContent = " received message comment in thread";
+		
+		String userFirstName = "";
+		String userLastName = "";
+		
+		if(internalMessageComment.getUserType() == UserType.CLIENT.getValue()){
+			ClientUser clientUser = clientUserRepository.findByClientId(internalMessageComment.getUserId());
+			userFirstName = clientUser.getFirstName();
+			userLastName = clientUser.getLastName();
+		}
+		if(internalMessageComment.getUserType() == UserType.CLIENT.getValue()){
+			VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessageComment.getUserId());
+			userFirstName = vendorUser.getFirstName();
+			userLastName = vendorUser.getLastName();
+		}
+		
 		switch(notificationType) {
 			case 14	 :{
-				message = "New Internal Message Comment";
+//				message = "New Internal Message Comment";
 //				subContent = "New comments on internal message thread - \""+ internalMessageComment.getComment() +"\"";
-				subContent = "\""+ internalMessageComment.getComment() +"\"";
+//				subContent = "\""+ internalMessageComment.getComment() +"\"";
+				
+				message = "New comment";
+				InternalMessage internalMessage = internalMessageRepository.findOneById(internalMessageComment.getThreadId());
+				subContent = "New comment by User "+userFirstName + " "+ userLastName+" on the internal message thread: "+internalMessage.getThreadSubject();
 				break;
 			}
 		}
@@ -594,7 +636,7 @@ public class MessageService {
 		notification.setNotificationCategoryId(internalMessageComment.getId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());
 		
 		notification.setFromUserId(internalMessageComment.getUserId());
@@ -613,17 +655,46 @@ public class MessageService {
 		UserLevelNotification notification = new UserLevelNotification();
 		String message = "New Message";
 		String subContent = " received message in thread";
+		
+		String userFirstName = "";
+		String userLastName = "";
+		String organisationName = "";
+		
+		if(externalMessage.getSourceUserType() == UserType.CLIENT.getValue()) {
+			ClientUser user = clientUserRepository.findByClientId(externalMessage.getSourceUserId());
+			ClientOrganisation organisation = clientOrganisationRepository.findByClientOrganisationId(externalMessage.getSourceOrganisationId());
+			
+			userFirstName = user.getFirstName();
+			userLastName = user.getLastName();
+			organisationName = organisation.getOrganisationName();
+		}
+		if(externalMessage.getSourceUserType() == UserType.VENDOR.getValue()) {
+			VendorUser user = vendorUserRepository.findByUserId(externalMessage.getSourceUserId());
+			VendorOrganisation organisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessage.getSourceOrganisationId());
+			
+			userFirstName = user.getFirstName();
+			userLastName = user.getLastName();
+			organisationName = organisation.getCompanyName();
+		}
+		
 		switch(notificationType) {
 			case 15 :{
-				message = "New External Message";
+//				message = "New External Message";
 //				subContent = "New Message received - \""+externalMessage.getThreadSubject()+"\"";
-				subContent = "\""+externalMessage.getThreadSubject()+"\"";
+//				subContent = "\""+externalMessage.getThreadSubject()+"\"";
+				
+				message = "New message thread!";
+				subContent = "New message thread! User "+userFirstName +" "+userLastName +" from Organisation "+organisationName+" has created a new external message thread: "+externalMessage.getThreadSubject();
+				
 				break;
 			}
 			case 16	 :{
-				message = "External Message Updated";
+//				message = "External Message Updated";
 //				subContent = "Message has updated";
-				subContent =  "\""+externalMessage.getThreadSubject()+"\"";
+//				subContent =  "\""+externalMessage.getThreadSubject()+"\"";
+				
+				message = "Message thread updated!";
+				subContent = "Message thread updated! User "+userFirstName +" "+userLastName +" from Organisation "+organisationName+" has updated the external message thread: "+externalMessage.getThreadSubject();
 				break;
 			}
 		}
@@ -631,7 +702,7 @@ public class MessageService {
 		notification.setNotificationCategoryType(notificationType);
 		notification.setNotificationCategoryId(externalMessage.getId());
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notification.setFromUserId(externalMessage.getSourceUserId());
@@ -650,11 +721,36 @@ public class MessageService {
 		UserLevelNotification notification = new UserLevelNotification();
 		String message = "New Comment";
 		String subContent = " received message comment in thread";
+		
+		String userFirstName = "";
+		String userLastName = "";
+		String organisationName = "";
+		
+		if(externalMessageComment.getUserType() == UserType.CLIENT.getValue()) {
+			ClientUser user = clientUserRepository.findByClientId(externalMessageComment.getUserId());
+			ClientOrganisation organisation = clientOrganisationRepository.findByClientOrganisationId(externalMessageComment.getOrganisationId());
+			
+			userFirstName = user.getFirstName();
+			userLastName = user.getLastName();
+			organisationName = organisation.getOrganisationName();
+		}
+		if(externalMessageComment.getUserType() == UserType.VENDOR.getValue()) {
+			VendorUser user = vendorUserRepository.findByUserId(externalMessageComment.getUserId());
+			VendorOrganisation organisation = vendorOrganisationRepository.findByVendorOrganisationId(externalMessageComment.getOrganisationId());
+			
+			userFirstName = user.getFirstName();
+			userLastName = user.getLastName();
+			organisationName = organisation.getCompanyName();
+		}
+
 		switch(notificationType) {
 			case 17	 :{
-				message = "New External Message Comment";
+//				message = "New External Message Comment";
 //				subContent = "New comments on external message thread - \""+externalMessageComment.getComment()+"\"";
-				subContent = "\""+externalMessageComment.getComment()+"\"";
+//				subContent = "\""+externalMessageComment.getComment()+"\"";
+				ExternalMessage externalMessage = externalMessageRepository.findOneById(externalMessageComment.getThreadId());
+				message = "New comment";
+				subContent = "New comment by User "+userFirstName +" "+ userLastName+" from Organisation "+organisationName+" on the external message thread: "+externalMessage.getThreadSubject();
 				break;
 			}
 		}
@@ -663,7 +759,7 @@ public class MessageService {
 		notification.setNotificationCategoryId(externalMessageComment.getId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());
 		
 		notification.setFromUserId(externalMessageComment.getUserId());

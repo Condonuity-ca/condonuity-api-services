@@ -1170,6 +1170,13 @@ public class ClientService {
 					filteredNotifications.add(notification);
 				}
 				
+				for(int index = 0; index < bidEndAlertNotifications.size(); index++) {
+					if(bidEndAlertNotifications.get(index).getNotificationCategoryType()==26)
+						bidEndAlertNotifications.get(index).setDescription(bidEndAlertNotifications.get(index).getDescription().replace("that may interests you will", "is set to"));
+					if(bidEndAlertNotifications.get(index).getNotificationCategoryType()==27)
+						bidEndAlertNotifications.get(index).setDescription(bidEndAlertNotifications.get(index).getDescription().replace("that may interests you has reached the bidding deadline", "has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project."));
+				}
+				
 				filteredNotifications.addAll(projectBidsNotifications);
 				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
 				filteredNotifications.addAll(bidEndAlertNotifications);

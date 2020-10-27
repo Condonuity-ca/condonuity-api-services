@@ -1134,8 +1134,12 @@ public class ProjectService {
 		String subContent = " project made changes";
 		switch(notificationType) {
 			case 1:{
-				message = "New Project";
-				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
+//				message = "New Project";
+//				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
+				
+				message = "Fresh opportunity!"; 
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+				subContent = "Fresh opportunity! "+clientOrganisation.getOrganisationName() +" published a new project to the marketplace (\""+project.getProjectName()+"\", Project ID: "+project.getProjectId()+").";
 				break;
 			}
 			case 2 :{
@@ -1540,10 +1544,10 @@ public class ProjectService {
 	        	
 	        	if(expireIn == 1) {
 	        		// project expire in 1 day
-	        		SendProjectBidDateExpiringNotification(Constants.DAY_1, project, NotificationType.PROJECT_BIDDING_EXPIRING.getValue());
+	        		SendProjectBidDateExpiringNotification(Constants.HOURS_24, project, NotificationType.PROJECT_BIDDING_EXPIRING.getValue());
 	        	} else if(expireIn == 2) {
 	        		// project expire in 2 days
-	        		SendProjectBidDateExpiringNotification(Constants.DAY_2, project, NotificationType.PROJECT_BIDDING_EXPIRING.getValue());
+	        		SendProjectBidDateExpiringNotification(Constants.HOURS_48, project, NotificationType.PROJECT_BIDDING_EXPIRING.getValue());
 	        	} else if(expireIn == 0){
 	        		// not expiring
 	        		SendProjectBidDateExpiringNotification(Constants.DAY_0, project, NotificationType.PROJECT_BIDDING_EXPIRED.getValue());
@@ -1562,14 +1566,19 @@ public class ProjectService {
 		String subContent = " bidding expiring";
 		switch(notificationType) {
 			case 26 :{//PROJECT_BIDDING_EXPIRING
-				message = "Project Bid Expiring";
-				subContent = "Project "+project.getProjectName()+" bidding expiring in "+expireIn+ " days";
+//				message = "Project Bid Expiring";
+//				subContent = "Project "+project.getProjectName()+" bidding expiring in "+expireIn+ " days";
+				message = "Deadline alert!";
+				subContent = "Deadline alert! \n"+project.getProjectName()+" that may interests you will reach its bidding deadline in "+expireIn+" hours (Project ID: "+project.getProjectId()+").";
 				
 				break;
 			}
 			case 27 :{//PROJECT_BIDDING_EXPIRED
-				message = "Project Bidding Expired";
-				subContent = "Project "+project.getProjectName()+" bidding expired";
+//				message = "Project Bidding Expired";
+//				subContent = "Project "+project.getProjectName()+" bidding expired";
+				message = "Deadline alert!";
+				subContent = "Deadline alert! \n"+project.getProjectName()+" that may interests you has reached the bidding deadline (Project ID: "+project.getProjectId()+").";
+
 				
 				break;
 			}
