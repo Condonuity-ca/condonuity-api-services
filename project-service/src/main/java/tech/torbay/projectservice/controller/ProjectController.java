@@ -317,16 +317,16 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Published successfully");
-        	SendProjectNotification(project, NotificationType.PROJECT_UPDATE);
+        	SendProjectNotification(project, NotificationType.PROJECT_CREATE);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
 	}
 	
-	@ApiOperation(value = "Client Project Publish Implementation")
+	@ApiOperation(value = "Client Project Cancel Implementation")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "Project Published Successfully")
+                    @ApiResponse(code = 200, message = "Project Cancelled Successfully")
             }
     )
 	@PutMapping("/client/project/cancel/{projectId}")
@@ -346,7 +346,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project cancelled successfully");
-        	SendProjectNotification(project, NotificationType.PROJECT_UPDATE);
+        	SendProjectNotification(project, NotificationType.PROJECT_UPDATE/*PROJECT_CANCEL*/);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         

@@ -613,7 +613,7 @@ public class MessageService {
 			userFirstName = clientUser.getFirstName();
 			userLastName = clientUser.getLastName();
 		}
-		if(internalMessageComment.getUserType() == UserType.CLIENT.getValue()){
+		if(internalMessageComment.getUserType() == UserType.VENDOR.getValue()){
 			VendorUser vendorUser = vendorUserRepository.findByUserId(internalMessageComment.getUserId());
 			userFirstName = vendorUser.getFirstName();
 			userLastName = vendorUser.getLastName();
