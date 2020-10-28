@@ -1217,10 +1217,20 @@ public class ProjectService {
 		Notification notification = new Notification();
 		String message = "Review";
 		String subContent = " review added";
+		
+		String corpName = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName();				
+		ClientUser clientUser = clientUserRepository.findByClientId(projectReviewRating.getClientId());
+		String userFirstName = clientUser.getFirstName();
+		String userLastName = clientUser.getLastName();
+		String userName = userFirstName +" "+ userLastName;
+		
 		switch(notificationType) {
 			case 7 :{
-				message = "New Review";
-				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				message = "New Review!";
+//				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				
+				subContent = "New review! User "+userName+" from Condo "+corpName+" added a new review.";
+				
 				notification.setUserType(UserType.CLIENT.getValue());
 				notification.setUserId(projectReviewRating.getClientId());
 				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
@@ -1228,17 +1238,27 @@ public class ProjectService {
 			}
 			case 71 :{
 				notificationType = 7;
-				message = "Review updated";
-				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+//				message = "Review updated";
+//				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				message = "Edited review!";
+				subContent = "Edited review! User "+userName+" from Condo "+corpName+" edited your review.";
 				notification.setUserType(UserType.CLIENT.getValue());
 				notification.setUserId(projectReviewRating.getClientId());
 				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
 				break;
 			}
 			case 8 :{
-				message = "New Reply";
-				String vendorOrgName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
-				subContent = vendorOrgName +" Vendor Organisation replied to this review";
+				message = "New reply!";
+				
+				VendorUser vendorUser = vendorUserRepository.findByUserId(projectReviewRating.getVendorId());
+				userFirstName = vendorUser.getFirstName();
+				userLastName = vendorUser.getLastName();
+				userName = userFirstName +" "+ userLastName;
+				
+				String contractorName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
+//				subContent = vendorOrgName +" Vendor Organisation replied to this review";
+				
+				subContent = "New reply! User "+userName+" from Contractor "+contractorName+" replied to your review";
 				notification.setUserType(UserType.VENDOR.getValue());
 				notification.setUserId(projectReviewRating.getVendorId());
 				notification.setOrganisationId(projectReviewRating.getVendorOrganisationId());
@@ -1251,7 +1271,7 @@ public class ProjectService {
 		notification.setNotificationCategoryId(projectReviewRating.getId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
