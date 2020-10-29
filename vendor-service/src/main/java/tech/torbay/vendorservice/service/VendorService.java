@@ -22,10 +22,12 @@ import tech.torbay.vendorservice.entity.ExternalMessageComment;
 import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.NotificationViewsHistory;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
+import tech.torbay.vendorservice.entity.Project;
 import tech.torbay.vendorservice.entity.ProjectReviewRating;
 import tech.torbay.vendorservice.entity.UserLevelNotification;
 import tech.torbay.vendorservice.entity.UserProfileImages;
 import tech.torbay.vendorservice.entity.UserWishList;
+import tech.torbay.vendorservice.entity.VendorBid;
 import tech.torbay.vendorservice.entity.VendorBrands;
 import tech.torbay.vendorservice.entity.VendorCategoryRatings;
 import tech.torbay.vendorservice.entity.VendorInsurance;
@@ -45,10 +47,12 @@ import tech.torbay.vendorservice.repository.ExternalMessageCommentRepository;
 import tech.torbay.vendorservice.repository.NotificationRepository;
 import tech.torbay.vendorservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.vendorservice.repository.PredefinedTagsRepository;
+import tech.torbay.vendorservice.repository.ProjectRepository;
 import tech.torbay.vendorservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.vendorservice.repository.UserLevelNotificationRepository;
 import tech.torbay.vendorservice.repository.UserProfileImagesRepository;
 import tech.torbay.vendorservice.repository.UserWishListRepository;
+import tech.torbay.vendorservice.repository.VendorBidRepository;
 import tech.torbay.vendorservice.repository.VendorBrandsRepository;
 import tech.torbay.vendorservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.vendorservice.repository.VendorInsuranceRepository;
@@ -109,6 +113,10 @@ public class VendorService {
 	ClientOrganisationRepository clientOrganisationRepository;
 	@Autowired
 	ExternalMessageCommentRepository externalMessageCommentRepository;
+	@Autowired
+	ProjectRepository projectRepository;
+	@Autowired
+	VendorBidRepository vendorBidRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -928,6 +936,24 @@ public class VendorService {
 			filteredNotifications.add(notification);
 		}
 		
+		for(int index = 0; index < allOtherCompetitorBidsNotifications.size(); index++) {
+			VendorBid vendorBid = vendorBidRepository.findOneById(allOtherCompetitorBidsNotifications.get(index).getNotificationCategoryId());
+			Project project = projectRepository.findByProjectId(vendorBid.getProjectId());
+			String title = "Bid alert";
+			String message = "Bid alert: Project "+project.getProjectName()+" received a new bid from another contractor (Project ID: "+project.getProjectId()+").";
+			allOtherCompetitorBidsNotifications.get(index).setTitle(title);
+			allOtherCompetitorBidsNotifications.get(index).setDescription(message);
+			
+		}
+		for(int index = 0; index < allOtherCompetitorBidsForInterestedProjectsNotifications.size(); index++) {
+			VendorBid vendorBid = vendorBidRepository.findOneById(allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).getNotificationCategoryId());
+			Project project = projectRepository.findByProjectId(vendorBid.getProjectId());
+			String title = "Bid alert";
+			String message = "Bid alert: Project "+project.getProjectName()+" received a new bid from another contractor (Project ID: "+project.getProjectId()+").";
+			allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setTitle(title);
+			allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setDescription(message);
+			
+		}
 		filteredNotifications.addAll(projectBidsNotifications);
 		//if same project award more than 1 time may lead notification issue in future, needs to check this
 		filteredNotifications.addAll(projectAwardsNotifications);

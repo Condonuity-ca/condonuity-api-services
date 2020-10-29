@@ -1177,6 +1177,21 @@ public class ClientService {
 						bidEndAlertNotifications.get(index).setDescription(bidEndAlertNotifications.get(index).getDescription().replace("that may interests you has reached the bidding deadline", "has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project."));
 				}
 				
+				for(int index = 0; index < allPostedProjectsForClientNotifications.size(); index++) {
+					Notification notification = allPostedProjectsForClientNotifications.get(index);
+					if(notification.getNotificationCategoryType() == Constants.NotificationType.PROJECT_CREATE.getValue()) {
+						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+						Project project = projectRepository.findByProjectId(notification.getNotificationCategoryId());
+						String userFirstName = clientUser.getFirstName();
+						String userLastName = clientUser.getLastName();
+						String userName = userFirstName+" "+userLastName;
+						String title = "New project posting";
+						String message = "New project posting: User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+						allPostedProjectsForClientNotifications.get(index).setTitle(title);
+						allPostedProjectsForClientNotifications.get(index).setDescription(message);
+					}
+				}
+				
 				filteredNotifications.addAll(projectBidsNotifications);
 				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
 				filteredNotifications.addAll(bidEndAlertNotifications);

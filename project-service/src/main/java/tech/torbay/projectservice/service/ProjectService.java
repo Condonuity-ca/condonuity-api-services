@@ -1507,22 +1507,26 @@ public class ProjectService {
 		Notification notification = new Notification();
 		String message = "Project Question";
 		String subContent = " question updated";
+		Project project = projectRepository.findByProjectId(projectQA.getProjectId());
 		switch(notificationType) {
 			case 31 :{//PROJECT_QUESTION_CREATE
-				message = "New Project Question";
+				message = "New project question";
 				VendorUser vendorUser = vendorUserRepository.findByUserId(projectQA.getVendorUserId());
-				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId());
-				subContent = vendorOrganisation.getCompanyName()+" vendor posted a new question";
+//				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId());
+//				subContent = vendorOrganisation.getCompanyName()+" vendor posted a new question";
+				subContent = "New project question: A new question has been posted to the Q & A section of Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+
 				notification.setUserType(UserType.VENDOR.getValue());
 				notification.setUserId(vendorUser.getUserId());
 				notification.setOrganisationId(vendorUser.getVendorOrganisationId());
 				break;
 			}
 			case 32 :{//PROJECT_QUESTION_ANSWER
-				message = "Project Question Answered";
-				Project project = projectRepository.findByProjectId(projectQA.getProjectId());
-				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
-				subContent = clientOrganisation.getOrganisationName() +" client answered to Project -"+ project.getProjectName()+" and question - "+projectQA.getQuestion()+" ?";
+				message = "Project question answer";
+//				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+//				subContent = clientOrganisation.getOrganisationName() +" client answered to Project -"+ project.getProjectName()+" and question - "+projectQA.getQuestion()+" ?";
+				subContent = "New project answer: A new answer has been published to the Q & A section of Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+")";
+
 				notification.setUserType(UserType.CLIENT.getValue());
 				notification.setUserId(projectQA.getClientUserId());
 				notification.setOrganisationId(project.getClientOrganisationId());

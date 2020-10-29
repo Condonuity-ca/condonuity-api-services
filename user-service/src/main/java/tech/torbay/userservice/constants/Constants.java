@@ -916,6 +916,32 @@ public class Constants {
 	    }
 	}
 	
+	public enum ProjectPostTo {
+		ALL(1),
+		MARKED(2);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private ProjectPostTo(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (ProjectPostTo pageType : ProjectPostTo.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static ProjectPostTo valueOf(int pageType) {
+	        return (ProjectPostTo) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
+	
 	public enum ProjectInterestStatus {
 		UN_LIKE(0),
 		LIKE(1);

@@ -804,4 +804,62 @@ public class Constants {
 	        return value;
 	    }
 	}
+	
+	public enum NotificationType {
+		// changes -c, expiry -e, new - n, won -w, lose -l, new bid - b, 
+		PROJECT_CREATE(1),
+		PROJECT_UPDATE(2),
+	    PROJECT_EXPIRY(3),
+	    BID_CREATE(4),
+	    BID_UPDATE(5),
+		BID_WON_LOSE(6),
+		REVIEW_CREATE(7),
+		REVIEW_UPDATE(71),
+		REVIEW_COMMENT(8),
+		TASK_CREATE(9),
+		TASK_UPDATE(10),
+		TASK_COMMENT(11),
+		INTERNAL_MESSAGE_THREAD_CREATE(12),
+		INTERNAL_MESSAGE_THREAD_UPDATE(13),
+		INTERNAL_MESSAGE_THREAD_COMMENT(14),
+		EXTERNAL_MESSAGE_THREAD_CREATE(15),
+		EXTERNAL_MESSAGE_THREAD_UPDATE(16),
+		EXTERNAL_MESSAGE_THREAD_COMMENT(17),
+		CLIENT_USER_PROFILE_INVITE(18),
+		CLIENT_USER_PROFILE_DELETE(19),
+		CLIENT_USER_PROFILE_UPDATE(20),
+		CLIENT_ORGANISATION_UPDATE(21),
+		VENDOR_USER_PROFILE_INVITE(22),
+		VENDOR_USER_PROFILE_DELETE(23),
+		VENDOR_USER_PROFILE_UPDATE(24),
+		VENDOR_ORGANISATION_UPDATE(25),
+		PROJECT_BIDDING_EXPIRING(26),
+		PROJECT_BIDDING_EXPIRED(27),
+		PROJECT_COMPETITOR_BIDDING(28),
+		ANNUAL_CONTRACT_EXPIRING(29),
+		ANNUAL_CONTRACT_EXPIRED(30),
+		PROJECT_QUESTION_CREATE(31),
+		PROJECT_QUESTION_ANSWER(32);
+
+	    private int value;
+	    private static Map map = new HashMap<>();
+
+	    private NotificationType(int value) {
+	        this.value = value;
+	    }
+
+	    static {
+	        for (NotificationType pageType : NotificationType.values()) {
+	            map.put(pageType.value, pageType);
+	        }
+	    }
+
+	    public static NotificationType valueOf(int pageType) {
+	        return (NotificationType) map.get(pageType);
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
+	}
 }
