@@ -1176,10 +1176,14 @@ public class ProjectService {
 		Notification notification = new Notification();
 		String message = "Changes";
 		String subContent = " Bid made changes";
+		Project project = projectRepository.findByProjectId(vendorBid.getProjectId());
+		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorBid.getVendorOrgId());
 		switch(notificationType) {
 			case 4 :{
-				message = "New Bid";
-				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
+				message = "New bid";
+//				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
+				subContent = "New bid: Vendor "+vendorOrganisation.getCompanyName()+" submitted a new bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
 				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}
@@ -1190,8 +1194,9 @@ public class ProjectService {
 				break;
 			}
 			case 6 :{
-				message = "Awarded";
-				subContent = " project awarded successfully";
+				message = "Congratulations!";
+//				subContent = " project awarded successfully";
+				subContent = "Congratulations! You have been awarded with project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
 				notification.setUserType(UserType.CLIENT.getValue());
 				break;
 			}
@@ -1205,7 +1210,7 @@ public class ProjectService {
 		
 		notification.setOrganisationId(vendorBid.getVendorOrgId());
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+projectRepository.findOneByProjectId(vendorBid.getProjectId()).getProjectName()+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
@@ -1308,9 +1313,13 @@ public class ProjectService {
 
 	public void sendProjectAwardNotification(ProjectAwards projectAwardsObj, int notificationType) {
 		// TODO Auto-generated method stub
+		
+		Project project = projectRepository.findByProjectId(projectAwardsObj.getProjectId());
+		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getProjectId());
 		Notification notification = new Notification();
-		String message = "Awarded";
-		String subContent = " Bid Awarded";
+		String message = "Congratulations!";
+//		String subContent = " Bid Awarded";
+		String subContent = "Congratulations! You have been awarded with project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
 		notification.setUserType(UserType.VENDOR.getValue());
 		
 		notification.setNotificationCategoryType(notificationType);
@@ -1320,7 +1329,7 @@ public class ProjectService {
 		
 		notification.setOrganisationId(projectAwardsObj.getVendorOrganisationId());
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+projectRepository.findOneByProjectId(projectAwardsObj.getProjectId()).getProjectName()+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);

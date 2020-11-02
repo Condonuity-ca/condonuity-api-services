@@ -1688,15 +1688,30 @@ public class ClientService {
 		UserLevelNotification notification = new UserLevelNotification();
 		String message = "New Task";
 		String subContent = " new task updated";
+		
+		
 		switch(notificationType) {
 			case 9 :{
-				message = "New Task";
-				subContent = clientTask.getTaskDescription() + " task created";
+//				message = "New Task";
+//				subContent = clientTask.getTaskDescription() + " task created";
+				ClientUser clientUser = clientUserRepository.findByClientId(clientTask.getCreatedBy());
+				String firstName = clientUser.getFirstName();
+				String lastName = clientUser.getLastName();
+				String userName = firstName +" "+lastName;
+				message = "New Task!";
+				subContent = "New Task! User "+userName+" created a new task.";
+				
 				break;
 			}
 			case 10	 :{
-				message = "Task Updated";
-				subContent = clientTask.getTaskDescription()+ " task updated";
+//				message = "Task Updated";
+//				subContent = clientTask.getTaskDescription()+ " task updated";
+				ClientUser clientUser = clientUserRepository.findByClientId(clientTask.getModifiedBy());
+				String firstName = clientUser.getFirstName();
+				String lastName = clientUser.getLastName();
+				String userName = firstName +" "+lastName;
+				message = "Task Update!";
+				subContent = "Task Update! Item #"+clientTask.getId()+" has been updated by User "+userName+".";
 				break;
 			}
 		}
@@ -1704,7 +1719,7 @@ public class ClientService {
 		notification.setNotificationCategoryType(notificationType);
 		notification.setNotificationCategoryId(clientTask.getId());
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notification.setFromUserId(clientTask.getCreatedBy());
@@ -1733,10 +1748,18 @@ public class ClientService {
 		UserLevelNotification notification = new UserLevelNotification();
 		String message = "New Comment";
 		String subContent = " received message comment in task";
+		
+		ClientUser clientUser = clientUserRepository.findByClientId(clientTaskComment.getClientId());
+		String firstName = clientUser.getFirstName();
+		String lastName = clientUser.getLastName();
+		String userName = firstName +" "+lastName;
+		
 		switch(notificationType) {
 			case 11	 :{
-				message = "New Comment";
-				subContent = "New comments on Task";
+//				message = "New Comment";
+//				subContent = "New comments on Task";
+				message = "Task Comment!";
+				subContent = "Task Comment! User "+userName+" commented on item #"+clientTaskComment.getTaskId()+".";
 				break;
 			}
 		}
@@ -1745,7 +1768,7 @@ public class ClientService {
 		notification.setNotificationCategoryId(clientTaskComment.getId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());
 		
 		notification.setFromUserId(clientTaskComment.getClientId());
@@ -1918,14 +1941,18 @@ public class ClientService {
 		String subContent = " annual contract expiring";
 		switch(notificationType) {
 			case 29 :{//ANNUAL_CONTRACT_EXPIRING
-				message = "Annual Contract Expiring";
-				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expiring in "+expireIn+ " days";
+//				message = "Annual Contract Expiring";
+//				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expiring in "+expireIn+ " days";
+				message = "Annual contract expiration alert!";
+				subContent = "Annual contract expiration alert! Contract "+clientContract.getNotes()+" is set to expire in "+expireIn+" days!";
 				
 				break;
 			}
 			case 30 :{//ANNUAL_CONTRACT_EXPIRED
-				message = "Annual Contract Expired";
-				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expired";
+//				message = "Annual Contract Expired";
+//				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expired";
+				message = "Annual contract Expired!";
+				subContent = "Annual contract Expired! Contract "+clientContract.getNotes()+" has expired";
 				
 				break;
 			}
