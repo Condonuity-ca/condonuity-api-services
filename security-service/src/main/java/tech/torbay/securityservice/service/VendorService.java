@@ -450,8 +450,9 @@ public class VendorService {
 		
 		switch(notificationType) {
 			case 22 :{//VENDOR_USER_PROFILE_INVITE
-				message = "New User Invited";
-				subContent = "New user ("+vendoruser.getEmail()+") invited from Organisation";
+				message = "New User Invite!";
+//				subContent = "New user ("+vendoruser.getEmail()+") invited from Organisation";
+				subContent = "New User Invite! Organisation "+vendorOrganisation.getCompanyName()+" has sent an invitation to a new user with email address: "+vendoruser.getEmail();
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
@@ -461,7 +462,7 @@ public class VendorService {
 		notification.setNotificationCategoryType(notificationType);
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);

@@ -989,20 +989,26 @@ public class ClientService {
 		
 		switch(notificationType) {
 			case 19 :{//CLIENT_USER_PROFILE_DELETE
-				message = "User Account Deleted";
-				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account deleted from Organisation";
+//				message = "User Account Deleted";
+//				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account deleted from Organisation";
+				message = "User deleted!";
+				subContent = "User deleted! One of the organization user has deleted User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" from the organization's account.";
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}
 			case 20 :{//CLIENT_USER_PROFILE_UPDATE
-				message = "User Account Update";
-				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account updated in our Organisation";
+//				message = "User Account Update";
+//				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account updated in our Organisation";
+				message = "User account update!";
+				subContent = "User account update! User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" account information has been updated by One of the organization user";;
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}
 			case 21 :{//CLIENT_ORGANISATION_UPDATE
-				message = "Organisation Profile Information Updated";
-				subContent = clientOrganisation.getOrganisationName() +" - our organisation profile information updated";
+//				message = "Organisation Profile Information Updated";
+//				subContent = clientOrganisation.getOrganisationName() +" - our organisation profile information updated";
+				message = "Update";
+				subContent = "Update: Your organization's profile information was recently edited.";
 				notification.setNotificationCategoryId(clientOrgId);
 				break;
 			}

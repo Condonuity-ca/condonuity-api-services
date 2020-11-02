@@ -1131,20 +1131,24 @@ public class VendorService {
 		
 		switch(notificationType) {
 			case 23 :{//CLIENT_USER_PROFILE_DELETE
-				message = "User Account Deleted";
-				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account deleted from Organisation";
+				message = "User deleted!";
+//				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account deleted from Organisation";
+				subContent = "User deleted! One of the organization user has deleted User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" from the organization's account.";
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
 			case 24 :{//CLIENT_USER_PROFILE_UPDATE
-				message = "User Account Update";
-				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account updated in our Organisation";
+				message = "User account update!";
+//				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account updated in our Organisation";
+				subContent = "User account update! User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" account information has been updated by One of the organization user";
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
 			case 25 :{//CLIENT_ORGANISATION_UPDATE
-				message = "Organisation Profile Information Updated";
-				subContent = vendorOrganisation.getCompanyName() +" - our organisation profile information updated";
+				message = "Update";
+				
+//				subContent = vendorOrganisation.getCompanyName() +" - our organisation profile information updated";
+				subContent = "Update: Your organization's profile information was recently edited.";
 				notification.setNotificationCategoryId(vendorOrgId);
 				break;
 			}

@@ -455,8 +455,11 @@ public class ClientService {
 		
 		switch(notificationType) {
 			case 18 :{//CLIENT_USER_PROFILE_INVITE
-				message = "New User Invited";
-				subContent = "New user ("+clientuser.getEmail()+") invited from Organisation";
+				message = "New User Invite!";
+//				subContent = "New user ("+clientuser.getEmail()+") invited from Organisation";
+				
+				subContent = "New User Invite! Organisation "+clientOrganisation.getOrganisationName()+" has sent an invitation to a new user: "+clientuser.getEmail();
+
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}
@@ -466,7 +469,7 @@ public class ClientService {
 		notification.setNotificationCategoryType(notificationType);
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
