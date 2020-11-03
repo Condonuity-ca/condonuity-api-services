@@ -380,13 +380,26 @@ public class ClientService {
 		ClientOrganisation clientOrg = getClientOrganisationById(clientInfo.getPrimaryOrgId());
 		if(clientOrg != null && clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() 
 				&& clientOrg.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() ) {
-			return clientInfo;
+			ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientInfo.getClientId(), clientInfo.getPrimaryOrgId());
+			if(clientAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+				clientInfo.setPrimaryOrgId(clientAssociation.getClientOrganisationId());
+				return clientInfo;
+			} else {
+				List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientInfo.getClientId());
+				
+				for (ClientAssociation clientAssociate : clientAssociations) {
+					if(clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociate.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+						clientInfo.setPrimaryOrgId(clientAssociate.getClientOrganisationId());
+						return clientInfo;
+					}
+				}
+			}
 		} else {
 			List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientInfo.getClientId());
 			
-			for (ClientAssociation clientAssociation : clientAssociations) {
-				if(clientAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
-					clientInfo.setPrimaryOrgId(clientAssociation.getClientOrganisationId());
+			for (ClientAssociation clientAssociate : clientAssociations) {
+				if(clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociate.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+					clientInfo.setPrimaryOrgId(clientAssociate.getClientOrganisationId());
 					return clientInfo;
 				}
 			}

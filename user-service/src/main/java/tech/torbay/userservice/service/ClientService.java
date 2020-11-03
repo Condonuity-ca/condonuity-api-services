@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.Availability;
 import tech.torbay.userservice.constants.Constants.DeleteStatus;
 import tech.torbay.userservice.constants.Constants.Invalid;
 import tech.torbay.userservice.constants.Constants.NotificationType;
@@ -153,12 +154,47 @@ public class ClientService {
         Map<String, Object> map = oMapper.convertValue(clientUser, Map.class);
         
         map.put("profileImageURL",getUserProfileImageURL(clientUser.getClientId()));
-        
+        map.put("primaryOrgId",checkIsPrimaryOrganisationActive(clientUser));
         
 //        map.put("",""); blobName
         
         return map;
 	}
+	
+	public Integer checkIsPrimaryOrganisationActive(ClientUser clientInfo) {
+		// TODO Auto-generated method stub
+		ClientOrganisation clientOrg = getClientOrganisationById(clientInfo.getPrimaryOrgId());
+		if(clientOrg != null && clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() 
+				&& clientOrg.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() ) {
+			ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientInfo.getClientId(), clientInfo.getPrimaryOrgId());
+			if(clientAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+				clientInfo.setPrimaryOrgId(clientAssociation.getClientOrganisationId());
+				return clientAssociation.getClientOrganisationId();
+			} else {
+				List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientInfo.getClientId());
+				
+				for (ClientAssociation clientAssociate : clientAssociations) {
+					if(clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociate.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+						clientInfo.setPrimaryOrgId(clientAssociate.getClientOrganisationId());
+						return clientAssociate.getClientOrganisationId();
+					}
+				}
+			}
+		} else {
+			List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientInfo.getClientId());
+			
+			for (ClientAssociation clientAssociate : clientAssociations) {
+				if(clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociate.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+					clientInfo.setPrimaryOrgId(clientAssociate.getClientOrganisationId());
+					return clientAssociate.getClientOrganisationId();
+				}
+			}
+		}
+		
+		clientInfo.setPrimaryOrgId(Availability.INFO_NOT_AVAILABLE.getValue());
+		return clientInfo.getPrimaryOrgId();
+	}
+
 
 	private String getUserProfileImageURL(Integer clientId) {
 		// TODO Auto-generated method stub
