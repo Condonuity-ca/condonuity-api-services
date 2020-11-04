@@ -346,7 +346,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project cancelled successfully");
-        	SendProjectNotification(project, NotificationType.PROJECT_UPDATE/*PROJECT_CANCEL*/);
+        	SendProjectNotification(project, NotificationType.PROJECT_CANCEL);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
@@ -636,7 +636,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Bid Pulled successfully");
-        	SendBidNotification(vendorBid, NotificationType.BID_UPDATE);
+        	SendBidNotification(vendorBid, NotificationType.BID_WITHDRAWN);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         

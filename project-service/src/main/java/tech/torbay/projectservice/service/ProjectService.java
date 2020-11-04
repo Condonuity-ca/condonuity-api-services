@@ -1147,6 +1147,11 @@ public class ProjectService {
 				subContent = " project made changes";
 				break;
 			}
+			case 21 :{
+				message = "Project cancellation";
+				subContent = "Project cancellation: Project "+project.getProjectName()+" has been cancelled by Organisation.";
+				break;
+			}
 			case 3 :{
 				message = "Expiry";
 				subContent = " project bidding expiring on "+project.getBidEndDate();
@@ -1190,6 +1195,14 @@ public class ProjectService {
 			case 5 :{
 				message = "Changes";
 				subContent = " Project Bid made changes";
+				notification.setUserType(UserType.VENDOR.getValue());
+				break;
+			}
+			case 51 :{
+//				message = "Changes";
+//				subContent = " Project Bid made changes";
+				message = "Bid withdrawn!";
+				subContent = "Bid withdrawn!: Vendor "+vendorOrganisation.getCompanyName()+" withdrew the bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
 				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}

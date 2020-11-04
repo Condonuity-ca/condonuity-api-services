@@ -897,6 +897,7 @@ public class VendorService {
 		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> biddedProjectCancelledNotifications = notificationRepository.findAllProjectCancelledNotifications(vendorOrganisationId);;
 		
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
 		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
@@ -954,6 +955,15 @@ public class VendorService {
 			allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setDescription(message);
 			
 		}
+		
+		for(int index = 0; index < biddedProjectCancelledNotifications.size(); index++) {
+			Project project = projectRepository.findByProjectId(biddedProjectCancelledNotifications.get(index).getNotificationCategoryId());
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+			String title = "Project cancellation";
+			String message = "Project cancellation: Project "+project.getProjectName()+" has been cancelled (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
+			biddedProjectCancelledNotifications.get(index).setTitle(title);
+			biddedProjectCancelledNotifications.get(index).setDescription(message);
+		}
 		filteredNotifications.addAll(projectBidsNotifications);
 		//if same project award more than 1 time may lead notification issue in future, needs to check this
 		filteredNotifications.addAll(projectAwardsNotifications);
@@ -966,6 +976,7 @@ public class VendorService {
 		filteredNotifications.addAll(bidEndAlertNotifications);
 		filteredNotifications.addAll(allInterestedProjectsQANotifications);
 		filteredNotifications.addAll(allBiddedProjectsQANotifications);
+		filteredNotifications.addAll(biddedProjectCancelledNotifications);
 		
 		
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());

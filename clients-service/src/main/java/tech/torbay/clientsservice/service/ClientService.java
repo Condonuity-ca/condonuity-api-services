@@ -1145,12 +1145,14 @@ public class ClientService {
 				//4.annual contract alert
 				//5.account changes
 				//6.project question Alert
+				//7.bid withdrawn alert
 				List<Notification> allPostedProjectsForClientNotifications = notificationRepository.findAllPostedProjectsForClient(clientOrganisationId);
 				List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjects(clientOrganisationId);
 				List<Notification> annualAlertNotifications = notificationRepository.findAllContractExpiryAlert(clientOrganisationId);
 				List<Notification> accountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(clientOrganisationId);
 				List<Notification> reviewRepliesFromVendorNotifications = notificationRepository.findAllReviewRepliesNotificationsFromVendors(clientOrganisationId);
 				List<Notification> projectQuestionsAlertNotifications = notificationRepository.findAllProjectQuestionsAlertNotifications(clientOrganisationId);
+				List<Notification> bidWithdrawnAlertNotifications = notificationRepository.findBidWithdrawnAlertNotifications(clientOrganisationId);
 				
 				internalMessagesNotifications.addAll(taskNotifications);
 				internalMessagesNotifications.addAll(externalMessagesNotifications);
