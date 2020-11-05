@@ -34,6 +34,7 @@ import tech.torbay.clientsservice.entity.Notification;
 import tech.torbay.clientsservice.entity.NotificationViewsHistory;
 import tech.torbay.clientsservice.entity.OrganisationPayment;
 import tech.torbay.clientsservice.entity.Project;
+import tech.torbay.clientsservice.entity.ProjectAwards;
 import tech.torbay.clientsservice.entity.ProjectReviewRating;
 import tech.torbay.clientsservice.entity.UserLevelNotification;
 import tech.torbay.clientsservice.entity.UserProfileImages;
@@ -56,6 +57,7 @@ import tech.torbay.clientsservice.repository.ExternalMessageCommentRepository;
 import tech.torbay.clientsservice.repository.NotificationRepository;
 import tech.torbay.clientsservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.clientsservice.repository.OrganisationPaymentRepository;
+import tech.torbay.clientsservice.repository.ProjectAwardsRepository;
 import tech.torbay.clientsservice.repository.ProjectRepository;
 import tech.torbay.clientsservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.clientsservice.repository.UserLevelNotificationRepository;
@@ -116,6 +118,8 @@ public class ClientService {
 	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
 	@Autowired
 	ExternalMessageCommentRepository externalMessageCommentRepository;
+	@Autowired
+	ProjectAwardsRepository projectAwardsRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -1306,6 +1310,19 @@ public class ClientService {
 				List<Notification> accountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(clientOrganisationId);
 				List<Notification> reviewRepliesFromVendorNotifications = notificationRepository.findAllReviewRepliesNotificationsFromVendors(clientOrganisationId);
 				List<Notification> projectQuestionsAlertNotifications = notificationRepository.findAllProjectQuestionsAlertNotifications(clientOrganisationId);
+				
+				
+				for(int index = 0; index < projectBidsNotifications.size(); index++) {
+					if(projectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
+						ProjectAwards projectAwards = projectAwardsRepository.findOneById(projectBidsNotifications.get(index).getNotificationCategoryId());
+						Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
+						VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAwards.getVendorOrganisationId()); 
+						String title = "Project award";
+						String message = "Project award: Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
+						projectBidsNotifications.get(index).setTitle(title);
+						projectBidsNotifications.get(index).setDescription(message);
+					}
+				}
 				
 				internalMessagesNotifications.addAll(taskNotifications);
 				internalMessagesNotifications.addAll(externalMessagesNotifications);
