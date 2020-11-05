@@ -962,12 +962,12 @@ public class VendorService {
 			allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setTitle(title);
 			allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setDescription(message);
 			
-			if(allOtherCompetitorBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID_WON_LOSE
+			if(allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).getNotificationCategoryType() == 6) {//BID_WON_LOSE
 				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
 				title = "Hard luck!";
 				message = "Hard luck! Project "+project.getProjectName()+" has been awarded to another bidder (Project ID: "+project.getProjectId()+"), by "+clientOrganisation.getOrganisationName();
-				allOtherCompetitorBidsNotifications.get(index).setTitle(title);
-				allOtherCompetitorBidsNotifications.get(index).setDescription(message);	
+				allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setTitle(title);
+				allOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setDescription(message);	
 			}
 		}
 		

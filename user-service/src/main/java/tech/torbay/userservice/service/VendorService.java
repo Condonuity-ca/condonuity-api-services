@@ -1359,7 +1359,17 @@ public class VendorService {
 						
 						vendorInsuranceRepository.save(singleInsurance);
 					} else if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {
-						vendorInsuranceRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+//						vendorInsuranceRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
+						
+						//instead of delete - change empty of insurance data
+						singleInsurance.setInsuranceAvailability(vendorInsurance.getInsuranceAvailability());
+						singleInsurance.setInsuranceBonded(vendorInsurance.getInsuranceBonded());
+						singleInsurance.setInsuranceCompany("");
+						singleInsurance.setInsuranceLiability("");
+						singleInsurance.setInsuranceNumber(vendorInsurance.getInsuranceNumber());
+						singleInsurance.setInsurancePolicyExpiryDate("");
+						
+						vendorInsuranceRepository.save(singleInsurance);
 					}
 					
 				} else {
