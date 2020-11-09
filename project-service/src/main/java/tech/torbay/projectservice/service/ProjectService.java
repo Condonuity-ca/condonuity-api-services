@@ -1236,7 +1236,8 @@ public class ProjectService {
 		String message = "Review";
 		String subContent = " review added";
 		
-		String corpName = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName();				
+		ClientOrganisation clientOrg = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId());
+		String corpName = clientOrg.getOrganisationName();
 		ClientUser clientUser = clientUserRepository.findByClientId(projectReviewRating.getClientId());
 		String userFirstName = clientUser.getFirstName();
 		String userLastName = clientUser.getLastName();

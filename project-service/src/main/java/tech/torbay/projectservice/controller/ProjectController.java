@@ -874,7 +874,7 @@ public class ProjectController {
     )
 	@PostMapping("/projects/review/create")
 	public ResponseEntity<Object> postProjectReview(@RequestBody ProjectReviewRating projectReviewRating) {
-		projectReviewRating = projectService.postProjectReview(projectReviewRating);
+		ProjectReviewRating projectReviewRatingObj = projectService.postProjectReview(projectReviewRating);
         if (projectReviewRating == null) {
      
         	ResponseMessage responseMessage = new ResponseMessage(
@@ -892,7 +892,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project Reviewed and Rated Successfully");
-        	SendReviewRatingNotification(projectReviewRating, NotificationType.REVIEW_CREATE);
+        	SendReviewRatingNotification(projectReviewRatingObj, NotificationType.REVIEW_CREATE);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
@@ -925,7 +925,7 @@ public class ProjectController {
             		"Success",
             		"Replied to a Project Review Successfully");
         	
-        	SendReviewRatingNotification(projectReviewRating, NotificationType.REVIEW_COMMENT);
+        	SendReviewRatingNotification(projectReviewRatingObj, NotificationType.REVIEW_COMMENT);
         	
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         	
