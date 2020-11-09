@@ -594,7 +594,7 @@ public class ClientController {
 //		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
 		boolean isRated = clientService.updateReview(requestData);
         if (!isRated) {
-        	ResponseMessage responseMessage = new ResponseMessage(
+        	ResponseMessage responseMessage = new ResponseMessage( 	
         			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",
 	        		"Failed to Update Review");
@@ -615,7 +615,7 @@ public class ClientController {
             }
     )
 	@PutMapping("/client/review/inactive/{reviewId}")
-	public ResponseEntity<Object> updateClientReview(@PathVariable("reviewId") Integer reviewId) {
+	public ResponseEntity<Object> deleteClientReview(@PathVariable("reviewId") Integer reviewId) {
 		//if client user based reviews
 //		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
 		boolean isRated = clientService.deleteReview(reviewId);
