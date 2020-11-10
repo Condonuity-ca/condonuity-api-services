@@ -364,11 +364,15 @@ public class ProjectService {
 			List<VendorProjectInterests> interests = vendorProjectInterestsRepository.findByProjectId(project.getProjectId());
 			List<Integer> projectInterests = new ArrayList<>();
 			
-			for(VendorBid bid : bids) {
-				projectInterests.add(bid.getVendorOrgId());
-			}
+//			for(VendorBid bid : bids) {
+//				projectInterests.add(bid.getVendorOrgId());
+//			}
 			for(VendorProjectInterests interest : interests) {
-				projectInterests.add(interest.getVendorOrganisationId());
+				for(VendorBid bid : bids) {
+					if(!interest.getProjectId().equals(bid.getProjectId())) {
+						projectInterests.add(interest.getVendorOrganisationId());
+					}
+				}
 			}
 			
 			HashSet<Integer> resultSet = new HashSet(projectInterests);
