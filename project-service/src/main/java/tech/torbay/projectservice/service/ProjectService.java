@@ -153,7 +153,8 @@ public class ProjectService {
 				
 				
 				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+//				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("interestCount", getFilteredProjectInterestCount(project.getProjectId())); 
 				map.put("managementCompany", managementCompany);
 				map.put("condoName", condoName);
 				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
@@ -360,26 +361,8 @@ public class ProjectService {
 			
 			//
 //			map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId()));
-			List<VendorBid> bids = vendorBidRepository.findVendorBidByProjectId(project.getProjectId());
-			List<VendorProjectInterests> interests = vendorProjectInterestsRepository.findByProjectId(project.getProjectId());
-			List<Integer> projectInterests = new ArrayList<>();
 			
-//			for(VendorBid bid : bids) {
-//				projectInterests.add(bid.getVendorOrgId());
-//			}
-			for(VendorProjectInterests interest : interests) {
-				for(VendorBid bid : bids) {
-					if(!interest.getProjectId().equals(bid.getProjectId())) {
-						projectInterests.add(interest.getVendorOrganisationId());
-					}
-				}
-			}
-			
-			HashSet<Integer> resultSet = new HashSet(projectInterests);
-			projectInterests.clear();
-			projectInterests.addAll(resultSet);
-			
-			map.put("interestCount", projectInterests.size());
+			map.put("interestCount", getFilteredProjectInterestCount(project.getProjectId()));
 			
 			allProjects.add(map);
 		}
@@ -925,7 +908,8 @@ public class ProjectService {
 				
 				
 				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+//				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("interestCount", getFilteredProjectInterestCount(project.getProjectId())); 
 				map.put("condoName", condoName);
 				
 				//condoCity has query issue
@@ -968,6 +952,41 @@ public class ProjectService {
 		 
 		 
 		return allProjects;
+	}
+
+	private Object getFilteredProjectInterestCount(Integer projectId) {
+		// TODO Auto-generated method stub
+		List<VendorBid> bids = vendorBidRepository.findSavedORwithdrawnVendorBidByProjectId(projectId);
+		List<VendorProjectInterests> interests = vendorProjectInterestsRepository.findByProjectId(projectId);
+		List<Integer> projectInterests = new ArrayList<>();
+		
+		//add pulled, saved project as interested one
+		for(VendorBid bid : bids) {
+			projectInterests.add(bid.getVendorOrgId());
+		}
+		for(VendorProjectInterests interest : interests) {
+			for(VendorBid bid : bids) {
+				if(!interest.getProjectId().equals(bid.getProjectId())) {// remove duplicates
+					projectInterests.add(interest.getVendorOrganisationId());
+				}
+			}
+		}
+		
+		List<Integer> filteredProjectInterests = new ArrayList<>(projectInterests);
+		List<VendorBid> liveBids = vendorBidRepository.getProjectLiveBids(projectId);
+		for(VendorBid bid : liveBids) {
+			for(Integer vendorOrgId : filteredProjectInterests) {
+				if(!vendorOrgId.equals(bid.getVendorOrgId())) {// remove duplicates if interested project bidded and live or awarded
+					projectInterests.remove(vendorOrgId);
+				}
+			}
+		}
+		
+		HashSet<Integer> resultSet = new HashSet(projectInterests);
+		projectInterests.clear();
+		projectInterests.addAll(resultSet);
+		
+		return projectInterests.size();
 	}
 
 	public Map<String, Object> getProjectForVendor(Integer projectId, Integer vendorOrganisationId) {
@@ -1443,7 +1462,8 @@ public class ProjectService {
 				
 				
 				map.put("bidCount",vendorBidRepository.getProjectBidsCount(project.getProjectId()));
-				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+//				map.put("interestCount", vendorProjectInterestsRepository.getProjectInterestCount(project.getProjectId())); 
+				map.put("interestCount", getFilteredProjectInterestCount(project.getProjectId())); 
 				map.put("managementCompany", managementCompany);
 				map.put("condoName", condoName);
 				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());

@@ -17,11 +17,14 @@ public interface VendorBidRepository extends JpaRepository<VendorBid, Integer> {
 
 	VendorBid findOneById (Integer vendorBidId);
 
-	@Query(value="SELECT b.* FROM condonuitydev.bids b WHERE project_id = (?1) AND ( bid_status != 1 or bid_status != 4)", nativeQuery = true)
+	@Query(value="SELECT b.* FROM condonuitydev.bids b WHERE project_id = (?1) AND ( bid_status = 2 or bid_status = 3)", nativeQuery = true)
 	List<VendorBid> findVendorBidByProjectId(Integer id);
 	
-	@Query(value="SELECT COUNT(b.project_id) FROM condonuitydev.bids b WHERE project_id = (?1) AND ( bid_status != 1 or bid_status != 4)", nativeQuery = true)
+	@Query(value="SELECT COUNT(b.project_id) FROM condonuitydev.bids b WHERE project_id = (?1) AND ( bid_status = 2 or bid_status = 3)", nativeQuery = true)
 	Integer getProjectBidsCount(Integer projectId);
+	
+	@Query(value="SELECT b.* FROM condonuitydev.bids b WHERE project_id = (?1) AND ( bid_status = 2 or bid_status = 3)", nativeQuery = true)
+	List<VendorBid> getProjectLiveBids(Integer projectId);
 
 	@Query(name="VendorBid.CurrentProject")
 	List<Object[]> findCurrentProjectsByVendorOrgId(Integer vendorOrganisationId);
@@ -34,4 +37,6 @@ public interface VendorBidRepository extends JpaRepository<VendorBid, Integer> {
 	@Query(value="SELECT b.* FROM condonuitydev.bids b WHERE vendor_org_id = (?1) AND ( bid_status = 1 or bid_status = 4)", nativeQuery = true)
 	List<VendorBid> findSavedOrPulledVendorBidByVendorOrgId(Integer vendorOrgId);
 	
+	@Query(value="SELECT b.* FROM condonuitydev.bids b WHERE project_id = (?1) AND ( bid_status = 1 or bid_status = 4)", nativeQuery = true)
+	List<VendorBid> findSavedORwithdrawnVendorBidByProjectId(Integer id);
 }
