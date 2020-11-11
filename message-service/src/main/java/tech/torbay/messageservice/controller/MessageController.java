@@ -462,7 +462,7 @@ public class MessageController {
             }
     )
 	@GetMapping("/support/messages/internal/{userType}/{organisationId}")
-	private ResponseEntity<Object> GetAllInternalMessagesByOrgId(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+	private ResponseEntity<Object> GetAllInternalMessagesByOrgIdForSupportUser(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
 		// TODO Auto-generated method stub
 		List<Map<String,Object>> internalMessages = messageService.getInternalMessagesForSupportUser(userType, organisationId);
 		HashMap<String, Object> list = new HashMap();
@@ -490,7 +490,7 @@ public class MessageController {
             }
     )
 	@GetMapping("/support/messages/external/{userType}/{organisationId}")
-	private ResponseEntity<Object> GetAllExternalMessagesByOrgId(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
+	private ResponseEntity<Object> GetAllExternalMessagesByOrgIdForSupportUser(@PathVariable("userType") Integer userType, @PathVariable("organisationId") Integer organisationId) {
 		// TODO Auto-generated method stub
 		List<Map<String,Object>> externalMessages = messageService.getExternalMessagesForSupportUser(userType, organisationId);
 		HashMap<String, Object> list = new HashMap();

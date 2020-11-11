@@ -15,6 +15,7 @@ public interface PredefinedTagsRepository extends JpaRepository<PredefinedTags, 
 
     PredefinedTags findByTagId(Integer Id);
     
+    @Query(value = "SELECT pdt.* FROM condonuitydev.predefined_tags pdt	where pdt.tag_name LIKE (?1)", nativeQuery = true)
     List<PredefinedTags> findAllByTagName(String tagName);
     
     @Query("select tagName from PredefinedTags co where co.tagId IN (?1)")

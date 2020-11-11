@@ -776,7 +776,7 @@ public class MessageService {
 
 	}
 
-	public List<Map<String,Object>> getInternalMessagesForSupportUser(Integer organisationId, Integer userType) {
+	public List<Map<String,Object>> getInternalMessagesForSupportUser(Integer userType, Integer organisationId) {
 		// TODO Auto-generated method stub
 
 		List<InternalMessage> internalMessages = internalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);
@@ -864,7 +864,7 @@ public class MessageService {
 		return allMessages;
 	}
 	
-	public List<Map<String,Object>> getExternalMessagesForSupportUser(Integer organisationId, Integer userType) {
+	public List<Map<String,Object>> getExternalMessagesForSupportUser(Integer userType, Integer organisationId) {
 		// TODO Auto-generated method stub
 
 		List<ExternalMessage> externalMessages = externalMessageRepository.findAllByOrganisationIdAndUserType(organisationId, userType);

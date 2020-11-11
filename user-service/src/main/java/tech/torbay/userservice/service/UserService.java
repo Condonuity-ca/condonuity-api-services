@@ -218,7 +218,7 @@ public class UserService {
 			}
 			case 5:{
 				// check keyword has vendor tags				
-				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
+				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(keyword);
 				List<VendorOrganisation> tagContainedVendors = new ArrayList();
 				
 				List<Integer> vendorIds = new ArrayList();
@@ -634,7 +634,7 @@ public class UserService {
 	private List<Map<String, Object>> getProjects(int searchType, String actualKeyword, String keyword, Integer clientOrganisationId, List<Integer> projectStatusCodes) {
 		List<Map<String, Object>> result = new ArrayList();
 		
-		List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
+		List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(keyword);
 		ArrayList<Project> tagContainedProjects = new ArrayList();
 		if(tags != null && tags.size() > 0) {
 			for(PredefinedTags tag : tags) {
@@ -1538,7 +1538,7 @@ public class UserService {
 			}
 			case 5:{
 				// check keyword has vendor tags				
-				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
+				List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(keyword);
 				List<VendorOrganisation> tagContainedVendors = new ArrayList();
 				
 				List<Integer> vendorIds = new ArrayList();
@@ -2304,7 +2304,7 @@ private List<Map<String, Object>> getProjectsBundleForVendorMarketplace(Integer 
 	private List<Map<String, Object>> getSupportSearchProjects(int searchType, String actualKeyword, String keyword, List<Integer> projectStatusCodes) {
 		List<Map<String, Object>> result = new ArrayList();
 		
-		List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(actualKeyword);
+		List<PredefinedTags> tags = predefinedTagsRepository.findAllByTagName(keyword);
 		ArrayList<Project> tagContainedProjects = new ArrayList();
 		if(tags != null && tags.size() > 0) {
 			for(PredefinedTags tag : tags) {
