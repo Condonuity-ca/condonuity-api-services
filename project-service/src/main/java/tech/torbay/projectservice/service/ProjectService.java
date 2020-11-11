@@ -1293,9 +1293,14 @@ public class ProjectService {
 				message = "New reply!";
 				
 				VendorUser vendorUser = vendorUserRepository.findByUserId(projectReviewRating.getVendorId());
-				userFirstName = vendorUser.getFirstName();
-				userLastName = vendorUser.getLastName();
+				userFirstName = "Vendor";
+				userLastName = "User";
 				userName = userFirstName +" "+ userLastName;
+				if(vendorUser != null) {
+					userFirstName = vendorUser.getFirstName();
+					userLastName = vendorUser.getLastName();
+					userName = userFirstName +" "+ userLastName;
+				}
 				
 				String contractorName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
 //				subContent = vendorOrgName +" Vendor Organisation replied to this review";
