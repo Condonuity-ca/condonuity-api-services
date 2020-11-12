@@ -37,7 +37,7 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 
 	@Query(value="Select co.* FROM condonuitydev.client_organisation co where co.active_status =(?1) or co.active_status = 2;", nativeQuery = true)
 	List<ClientOrganisation> findAllByActiveStatus(int activeStatus);
-
+	
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.organisation_name or co.management_company LIKE '%29%';")
 //	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.client_organisation_id = (?1) and ( co.organisation_name or co.management_company ) LIKE '%(?2)%';")
 	
@@ -50,7 +50,7 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 			" LIKE (?1)", nativeQuery = true)
     List<ClientOrganisation> findUnApprovedOrganisationsByKeyword(String keyword);
 
-	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.active_status = 1 or co.active_status = 2 );", nativeQuery = true)
+	@Query(value="Select co.* FROM condonuitydev.client_organisation co where co.delete_status = 1 and ( co.active_status = 1 or co.active_status = 2 );", nativeQuery = true)
 	List<ClientOrganisation> findAllActiveInActiveOrganisations();
 
 	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.organisation_name LIKE (?1) );", nativeQuery = true)

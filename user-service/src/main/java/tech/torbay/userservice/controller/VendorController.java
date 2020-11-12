@@ -435,6 +435,44 @@ public class VendorController {
     )
 	@PutMapping("/vendor/org/update/company")
 	public ResponseEntity<Object> updateVendorOrganisationCompanyDetails(@RequestBody Map<String, Object> vendorOrganisationData) {
+		
+		try {
+			Integer vendorOrganisationId = Integer.parseInt(String.valueOf(vendorOrganisationData.get("vendorOrganisationId"))); 
+			String companyName = String.valueOf(vendorOrganisationData.get("companyName")); 
+
+			if(vendorService.checkOrganisationNameIsEmpty(vendorOrganisationData)) {
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.FIELD_VALIDATION_ERROR.getValue(),
+	        			"Failed",
+	        			"Vendor Organisation Name Field Is Empty");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+			if(vendorService.checkLegalNameIsEmpty(vendorOrganisationData)) {
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.FIELD_VALIDATION_ERROR.getValue(),
+	        			"Failed",
+	        			"Vendor Organisation Legal Name Field Is Empty");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+			if(vendorService.checkOrganisationNameAvailable(vendorOrganisationData)) {
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.CONFLICT.getValue(),
+	        			"Failed",
+	        			"Vendor Organisation Name Already Exist");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+			if(vendorService.checkLegalNameAvailable(vendorOrganisationData)) {
+				ResponseMessage responseMessage = new ResponseMessage(
+	        			APIStatusCode.CONFLICT.getValue(),
+	        			"Failed",
+	        			"Vendor Organisation Legal Name Already Exist");
+	        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+			}
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
 		if(vendorService.updateVendorOrganisationCompany(vendorOrganisationData) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),

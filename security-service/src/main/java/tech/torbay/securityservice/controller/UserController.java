@@ -480,28 +480,73 @@ public class UserController {
 				//	- active/inactive
 				
 				if(user != null) {
-					if(user.getPassword() == null || user.getPassword().trim().length() == 0) {
-						
-						// Send Email Alert to Reset Password
-						
-						HashMap<String, Object> response = new HashMap();
-						
-						response.put("statusCode", APIStatusCode.RESET_PASSWORD.getValue());
-						response.put("statusMessage", "User need to set New Password");
-						response.put("responseMessage", "Please reset your password");
-						response.put("userId", user.getUserId());
-						response.put("userType", user.getUserType());
-//						response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
-//						Action
-						try {
-//							sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());// no need
-						} catch(Exception exp) {
-							exp.printStackTrace();
+					if(user.getUserType() == UserType.CLIENT.getValue()) {
+						List<ClientAssociation> clientAssociations = clientService.findClientAssociationById(user.getUserId());
+						if(clientAssociations == null) {
+							//no need any action
+							if(user.getPassword() == null || user.getPassword().trim().length() == 0) {
+								
+								// Send Email Alert to Reset Password
+								
+								HashMap<String, Object> response = new HashMap();
+								
+								response.put("statusCode", APIStatusCode.RESET_PASSWORD.getValue());
+								response.put("statusMessage", "User need to set New Password");
+								response.put("responseMessage", "Please reset your password");
+								response.put("userId", user.getUserId());
+								response.put("userType", user.getUserType());
+//								response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
+//								Action
+								try {
+//									sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());// no need
+								} catch(Exception exp) {
+									exp.printStackTrace();
+								}
+								
+								return new ResponseEntity<Object>(response, HttpStatus.OK);
+								
+							}
+						} else {
+							if(clientAssociations.size() > 0) {
+								if(clientAssociations.size() == 1) {
+									ClientAssociation clientAssociation = clientAssociations.get(0);
+									if(clientAssociation.getAccountVerificationStatus() == UserAccountStatus.INVITED.getValue() && clientAssociation.getUserAccountStatus() == UserAccountStatus.INACTIVE.getValue()) {
+										ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.NOT_FOUND.getValue(),"Resource not found error","User Record Not Found");
+										return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
+									} 
+//									else if () {
+//										//no action required for now
+//									}
+								} else {
+									//no need any action
+								}
+							} //no action required
 						}
-						
-						return new ResponseEntity<Object>(response, HttpStatus.OK);
-						
+					} else if(user.getUserType() == UserType.VENDOR.getValue()) {
+						if(user.getPassword() == null || user.getPassword().trim().length() == 0) {
+							
+							// Send Email Alert to Reset Password
+							
+							HashMap<String, Object> response = new HashMap();
+							
+							response.put("statusCode", APIStatusCode.RESET_PASSWORD.getValue());
+							response.put("statusMessage", "User need to set New Password");
+							response.put("responseMessage", "Please reset your password");
+							response.put("userId", user.getUserId());
+							response.put("userType", user.getUserType());
+//							response.put("action", queryStringCreator.getResetPasswordEncodedURL(user));
+//							Action
+							try {
+//								sendForgotPasswordResetLink(email, user.getUserId(), user.getUserType());// no need
+							} catch(Exception exp) {
+								exp.printStackTrace();
+							}
+							
+							return new ResponseEntity<Object>(response, HttpStatus.OK);
+							
+						}
 					}
+					
 //					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","User Already Exists");
 					HashMap<String, Object> response = new HashMap();
 					response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue()/*StatusCode.RESET_PASSWORD.getValue()*/);

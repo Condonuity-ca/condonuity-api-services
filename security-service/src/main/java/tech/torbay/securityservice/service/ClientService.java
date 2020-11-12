@@ -513,5 +513,10 @@ public class ClientService {
 		
 		clientUserRepository.save(client);
 	}
+
+	public List<ClientAssociation> findClientAssociationById(Integer clientId) {
+		// TODO Auto-generated method stub
+		return clientAssociationRepository.findAllByClientId(clientId);
+	}
 }
 

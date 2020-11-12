@@ -87,7 +87,7 @@ public class Utils {
 		try {
 			Date date = new Date();
 			
-			long currentDateTime = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).toInstant().toEpochMilli();
+			long currentDateTime = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE_EST)).toInstant().toEpochMilli();
 			
 			Date endDate=new SimpleDateFormat("yyyy-MM-dd").parse(bidEndDate); 
 			 
@@ -114,9 +114,9 @@ public class Utils {
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			
-			String today = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).toLocalDate().toString();
-			String plus1Day = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_1).toLocalDate().toString();
-			String plus2Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_2).toLocalDate().toString();
+			String today = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE_EST)).toLocalDate().toString();
+			String plus1Day = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE_EST)).plusDays(Constants.DAY_1).toLocalDate().toString();
+			String plus2Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE_EST)).plusDays(Constants.DAY_2).toLocalDate().toString();
 			
 			System.out.println("today : "+ today);
 			System.out.println("bidEndDate : "+ bidEndDate);

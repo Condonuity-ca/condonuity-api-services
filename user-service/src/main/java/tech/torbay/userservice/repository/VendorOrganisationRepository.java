@@ -57,7 +57,7 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 			, nativeQuery = true)
 	List<VendorOrganisation> findUnApprovedOrganisationsByKeyword(String keyword);
 
-	@Query(value="Select vo.* FROM condonuitydev.vendor_organisation vo where ( vo.active_status = 1 or vo.active_status = 2);", nativeQuery = true)
+	@Query(value="Select vo.* FROM condonuitydev.vendor_organisation vo where vo.delete_status = 1 and ( vo.active_status = 1 or vo.active_status = 2);", nativeQuery = true)
 	List<VendorOrganisation> findAllActiveInActiveOrganisations();
 
 	@Query(value="Select vo.* FROM condonuitydev.vendor_organisation vo where ( vo.company_name LIKE (?1) );", nativeQuery = true)
@@ -65,6 +65,10 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	
 	@Query(value="Select vo.* FROM condonuitydev.vendor_organisation vo where ( vo.company_name LIKE (?1) and ( vo.active_status = 0 or vo.active_status = 2));", nativeQuery = true)
 	List<VendorOrganisation> findAllUnApproveRejectOrganisationsByOrganisationName(String searchKeyword);
+
+	List<VendorOrganisation> findByCompanyName(String companyName);
+
+	List<VendorOrganisation> findByLegalName(String legalName);
 
 //	List<VendorOrganisation> findAllOrderByCompanyNameAsc();
 
