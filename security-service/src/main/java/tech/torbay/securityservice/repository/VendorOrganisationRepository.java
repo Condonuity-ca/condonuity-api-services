@@ -1,6 +1,7 @@
 package tech.torbay.securityservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.VendorOrganisation;
@@ -17,7 +18,9 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	
 	VendorOrganisation findByVendorOrganisationId(Integer id);
 	
+	@Query(value ="select vo.* from condonuitydev.vendor_organisation vo where lower(vo.company_name) = (?1)", nativeQuery = true)
 	List<VendorOrganisation> findByCompanyName(String companyName);
 
+	@Query(value ="select vo.* from condonuitydev.vendor_organisation vo where lower(vo.legal_name) = (?1)", nativeQuery = true)
 	List<VendorOrganisation> findByLegalName(String legalName);
 }

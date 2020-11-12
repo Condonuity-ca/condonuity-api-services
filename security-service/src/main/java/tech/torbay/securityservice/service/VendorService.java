@@ -346,7 +346,7 @@ public class VendorService {
 		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
 		
-		List<VendorOrganisation> org = vendorOrganisationRepository.findByCompanyName(vendorOrganisation.getCompanyName());
+		List<VendorOrganisation> org = vendorOrganisationRepository.findByCompanyName(vendorOrganisation.getCompanyName().toLowerCase());
 		
 		if( org != null && org.size() > 0) {
 			return true;
@@ -360,7 +360,7 @@ public class VendorService {
 		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
 		
-		List<VendorOrganisation> org = vendorOrganisationRepository.findByLegalName(vendorOrganisation.getLegalName());
+		List<VendorOrganisation> org = vendorOrganisationRepository.findByLegalName(vendorOrganisation.getLegalName().toLowerCase());
 		
 		if( org != null && org.size() > 0) {
 			return true;

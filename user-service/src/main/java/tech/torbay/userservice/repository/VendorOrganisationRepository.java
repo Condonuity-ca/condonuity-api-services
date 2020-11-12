@@ -65,9 +65,11 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	
 	@Query(value="Select vo.* FROM condonuitydev.vendor_organisation vo where ( vo.company_name LIKE (?1) and ( vo.active_status = 0 or vo.active_status = 2));", nativeQuery = true)
 	List<VendorOrganisation> findAllUnApproveRejectOrganisationsByOrganisationName(String searchKeyword);
-
+	
+	@Query(value ="select vo.* from condonuitydev.vendor_organisation vo where lower(vo.company_name) = (?1)", nativeQuery = true)
 	List<VendorOrganisation> findByCompanyName(String companyName);
 
+	@Query(value ="select vo.* from condonuitydev.vendor_organisation vo where lower(vo.legal_name) = (?1)", nativeQuery = true)
 	List<VendorOrganisation> findByLegalName(String legalName);
 
 //	List<VendorOrganisation> findAllOrderByCompanyNameAsc();

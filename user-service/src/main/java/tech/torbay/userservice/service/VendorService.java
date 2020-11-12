@@ -1195,15 +1195,15 @@ public class VendorService {
 		return vendorUserObj;
 	}
 	
-	public boolean checkOrganisationNameAvailable(Map<String, Object> vendorOrganisationData) {
+	public boolean checkOrganisationNameAvailable(Integer vendorOrganisationId, String companyName) {
 		// TODO Auto-generated method stub
-		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
-		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
 		
-		List<VendorOrganisation> org = vendorOrganisationRepository.findByCompanyName(vendorOrganisation.getCompanyName());
+		List<VendorOrganisation> orgs = vendorOrganisationRepository.findByCompanyName(companyName.toLowerCase());
 		
-		if( org != null && org.size() > 0) {
-			return true;
+		for(VendorOrganisation org : orgs) {
+			if(org.getCompanyName().toLowerCase().trim().equals(companyName.toLowerCase()) && !org.getVendorOrganisationId().equals(vendorOrganisationId)) {
+				return true;
+			}
 		}
 		
 		return false;
@@ -1221,30 +1221,6 @@ public class VendorService {
 		}
 		
 		return false;
-	}
-	
-	public boolean checkOrganisationNameIsEmpty(Map<String, Object> vendorOrganisationData) {
-		// TODO Auto-generated method stub
-		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
-		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
-//		System.out.println("vendorOrganisation.getCompanyName() : "+ vendorOrganisation.getCompanyName());
-		if(vendorOrganisation.getCompanyName().trim().length() > 0) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	public boolean checkLegalNameIsEmpty(Map<String, Object> vendorOrganisationData) {
-		// TODO Auto-generated method stub
-		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
-		VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
-//		System.out.println("vendorOrganisation.getCompanyName() : "+ vendorOrganisation.getCompanyName());
-		if(vendorOrganisation.getLegalName().trim().length() > 0) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 	public Object updateVendorOrganisationCompany(Map<String, Object> vendorOrganisationData) {

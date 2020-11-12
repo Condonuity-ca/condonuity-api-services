@@ -976,8 +976,10 @@ public class ProjectService {
 		List<VendorBid> liveBids = vendorBidRepository.getProjectLiveBids(projectId);
 		for(VendorBid bid : liveBids) {
 			for(Integer vendorOrgId : filteredProjectInterests) {
-				if(!vendorOrgId.equals(bid.getVendorOrgId())) {// remove duplicates if interested project bidded and live or awarded
+				if(vendorOrgId.equals(bid.getVendorOrgId())) {// remove duplicates if interested project bidded and live or awarded
 					projectInterests.remove(vendorOrgId);
+				} else {
+					projectInterests.add(bid.getVendorOrgId());
 				}
 			}
 		}
