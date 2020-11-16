@@ -1097,13 +1097,31 @@ public class VendorService {
 		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> biddedProjectCancelledNotifications = notificationRepository.findAllProjectCancelledNotifications(vendorOrganisationId);;
 		
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
 		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
 		
+		List<Integer> externalThreadIds = new ArrayList();
+		List<Integer> externalMessageIds = new ArrayList();
+				
+		for(UserLevelNotification ecternalMessageNotification : externalMessagesNotifications) {
+			externalThreadIds.add(ecternalMessageNotification.getNotificationCategoryId());
+		}
 		
+		if(externalThreadIds != null && externalThreadIds.size() > 0) {
+			List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
+			for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+				externalMessageIds.add(externalMessageComment.getId());
+			}	
+		}
+		if(externalMessageIds != null && externalMessageIds.size() > 0) {
+			List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
+			internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+		}
 		
 		internalMessagesNotifications.addAll(externalMessagesNotifications);
+		
 		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
 			Notification notification = new Notification();
 			notification.setId(userLevelNotification.getId());
@@ -1131,7 +1149,7 @@ public class VendorService {
 		filteredNotifications.addAll(bidEndAlertNotifications);
 		filteredNotifications.addAll(allInterestedProjectsQANotifications);
 		filteredNotifications.addAll(allBiddedProjectsQANotifications);
-		
+		filteredNotifications.addAll(biddedProjectCancelledNotifications);
 		
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
 		

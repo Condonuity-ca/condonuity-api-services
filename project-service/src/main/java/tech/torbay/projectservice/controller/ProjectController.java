@@ -1092,7 +1092,6 @@ public class ProjectController {
 		List<Map<String,Object>> projects = projectService.getAllProjectInMarketPlaceForSupportUser();
 		
 		HashMap<String, Object> list = new HashMap();
-		
 		if(projects != null) {
 			list.put("statusCode", StatusCode.REQUEST_SUCCESS.getValue());
 			list.put("statusMessage", "Success");
@@ -1135,7 +1134,7 @@ public class ProjectController {
 		}
 	}
     
-	@Scheduled(cron = "0 0 6 * * ?") /* (fixedDelay = 1000 * 60 * 60 * 24) */
+	@Scheduled(cron = "0 0 5 * * ?") /* (fixedDelay = 1000 * 60 * 60 * 24) */
 	public void run() {
 	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
 	    try {
