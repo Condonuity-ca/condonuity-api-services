@@ -177,7 +177,7 @@ public class UserController {
 										HashMap<String, Object> list = new HashMap();
 										list.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
 										list.put("statusMessage", "Failed");
-										list.put("responseMessage", "User Account Deleted");
+										list.put("responseMessage", "User Account Deleted or Inactive");
 										list.put("userId", clientInfo.getClientId());
 										list.put("userType", UserType.CLIENT.getValue());
 										

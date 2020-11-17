@@ -370,7 +370,18 @@ public class ClientService {
 		
 		ClientUser clientUser = clientUserRepository.findByClientId(clientId);
 		if(clientUser.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
-			return true;
+//			return true;
+			//check any one organisation is active
+			List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+			
+			for(ClientAssociation clientAssociation : clientAssociations) {
+				ClientOrganisation clientOrg = clientOrganisationRepository.findByClientOrganisationId(clientAssociation.getClientOrganisationId());
+				
+				if(clientAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()
+						&& clientOrg.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientOrg.getActiveStatus() == UserAccountStatus.ACTIVE.getValue()) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
