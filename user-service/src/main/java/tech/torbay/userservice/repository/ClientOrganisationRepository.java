@@ -53,10 +53,10 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 	@Query(value="Select co.* FROM condonuitydev.client_organisation co where co.delete_status = 1 and ( co.active_status = 1 or co.active_status = 2 );", nativeQuery = true)
 	List<ClientOrganisation> findAllActiveInActiveOrganisations();
 
-	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.organisation_name LIKE (?1) );", nativeQuery = true)
+	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.organisation_name LIKE (?1) and co.delete_status = 1 and ( co.active_status = 1 or co.active_status = 2 ));", nativeQuery = true)
 	List<ClientOrganisation> findAllActiveInActiveOrganisationsByOrganisationName(String keyword);
 
-	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.corporate_number LIKE (?1) );", nativeQuery = true)
+	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.corporate_number LIKE (?1) and co.delete_status = 1 and ( co.active_status = 1 or co.active_status = 2 ));", nativeQuery = true)
 	List<ClientOrganisation> findAllActiveInActiveOrganisationsByCorporationNumber(String keyword);
 	
 	@Query(value="Select co.* FROM condonuitydev.client_organisation co where ( co.organisation_name LIKE (?1) and ( co.active_status = 0 or co.active_status = 2 ));", nativeQuery = true)

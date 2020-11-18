@@ -197,7 +197,7 @@ public class UserController {
             }
     )
 	@PostMapping("/support/orgs/search")
-	public ResponseEntity<Object> getAllOrganisationsForSupportUser(@RequestBody Map<String, Object> requestData) {
+	public ResponseEntity<Object> searchOrganisationsForSupportUser(@RequestBody Map<String, Object> requestData) {
 		String userType = "";
 		List<Object> list = new ArrayList();
 		try {

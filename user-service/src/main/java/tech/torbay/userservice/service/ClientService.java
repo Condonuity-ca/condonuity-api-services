@@ -576,6 +576,8 @@ public class ClientService {
 	 	        	map.put("accountStatus","Registered");
 	 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
 	 	        	map.put("accountStatus","Active");
+	 	        } else if(activeStatus == UserAccountStatus.INACTIVE.getValue()){
+	 	        	map.put("accountStatus","Rejected");
 	 	        } 
 	        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
 	        	map.put("accountStatus","Deleted");
@@ -644,6 +646,8 @@ public class ClientService {
 	 	        	map.put("accountStatus","Registered");
 	 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
 	 	        	map.put("accountStatus","Active");
+	 	        } else if(activeStatus == UserAccountStatus.INACTIVE.getValue()){
+	 	        	map.put("accountStatus","Rejected");
 	 	        } 
 	        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
 	        	map.put("accountStatus","Deleted");
