@@ -1554,6 +1554,12 @@ public class ClientService {
 			map.put("comment", clientTaskComment.getComment());
 			map.put("createdAt", clientTaskComment.getCreatedAt());
 			
+			UserProfileImages userProfileImage = userProfileImagesRepository.findByUserIdAndUserType(clientTaskComment.getClientId(), UserType.CLIENT.getValue());
+			if(userProfileImage != null)
+				map.put("profileImageURL",userProfileImage.getFileUrl());
+			else
+				map.put("profileImageURL","");
+			
 	        allClientTaskComments.add(map);
 		}
 		
