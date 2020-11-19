@@ -53,6 +53,7 @@ import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorOrganisationProfileImages;
 import tech.torbay.userservice.entity.VendorProjectInterests;
+import tech.torbay.userservice.entity.VendorServicesCities;
 import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
@@ -85,6 +86,7 @@ import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorOrganisationProfileImagesRepository;
 import tech.torbay.userservice.repository.VendorOrganisationRepository;
 import tech.torbay.userservice.repository.VendorProjectInterestsRepository;
+import tech.torbay.userservice.repository.VendorServicesCitiesRepository;
 import tech.torbay.userservice.repository.VendorTagsRepository;
 import tech.torbay.userservice.repository.VendorUserRepository;
 
@@ -162,6 +164,8 @@ public class UserService {
 	ClientAmenitiesRepository clientAmenitiesRepository;
 	@Autowired
 	AmenitiesRepository amenitiesRepository;
+	@Autowired
+	VendorServicesCitiesRepository vendorServicesCitiesRepository;
 	
 	public User findByEmail(String email) {
 		// TODO Auto-generated method stub
@@ -1374,6 +1378,15 @@ public class UserService {
         }
         map.put("city",getCityName(vendorOrg.getCity()));
         map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+        
+        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+        List<String> servicesCities = new ArrayList();
+        for(VendorServicesCities vendorCity : vendorServicesCities) {
+        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+        	servicesCities.add(serviceCity.getCityName());
+        }
+        map.put("serviceCities",String.join(",", servicesCities));
+        
         if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
         	map.put("isPreferred", "true");
         } else {

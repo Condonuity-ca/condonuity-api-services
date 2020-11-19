@@ -1359,7 +1359,7 @@ public class ProjectService {
 		// TODO Auto-generated method stub
 		
 		Project project = projectRepository.findByProjectId(projectAwardsObj.getProjectId());
-		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getProjectId());
+		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
 		Notification notification = new Notification();
 		String message = "Congratulations!";
 //		String subContent = " Bid Awarded";
