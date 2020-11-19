@@ -1748,7 +1748,7 @@ public class ClientService {
 				String lastName = clientUser.getLastName();
 				String userName = firstName +" "+lastName;
 				message = "New Task!";
-				subContent = "New Task! User "+userName+" created a new task.";
+				subContent = "User "+userName+" created a new task.";
 				
 				break;
 			}
@@ -1760,7 +1760,7 @@ public class ClientService {
 				String lastName = clientUser.getLastName();
 				String userName = firstName +" "+lastName;
 				message = "Task Update!";
-				subContent = "Task Update! Item #"+clientTask.getId()+" has been updated by User "+userName+".";
+				subContent = "Item #"+clientTask.getId()+" has been updated by User "+userName+".";
 				break;
 			}
 		}
@@ -1808,7 +1808,7 @@ public class ClientService {
 //				message = "New Comment";
 //				subContent = "New comments on Task";
 				message = "Task Comment!";
-				subContent = "Task Comment! User "+userName+" commented on item #"+clientTaskComment.getTaskId()+".";
+				subContent = "User "+userName+" commented on item #"+clientTaskComment.getTaskId()+".";
 				break;
 			}
 		}
@@ -1993,7 +1993,7 @@ public class ClientService {
 //				message = "Annual Contract Expiring";
 //				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expiring in "+expireIn+ " days";
 				message = "Annual contract expiration alert!";
-				subContent = "Annual contract expiration alert! Contract "+clientContract.getNotes()+" is set to expire in "+expireIn+" days!";
+				subContent = "Contract "+clientContract.getNotes()+" is set to expire in "+expireIn+" days!";
 				
 				break;
 			}
@@ -2001,7 +2001,7 @@ public class ClientService {
 //				message = "Annual Contract Expired";
 //				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expired";
 				message = "Annual contract Expired!";
-				subContent = "Annual contract Expired! Contract "+clientContract.getNotes()+" has expired";
+				subContent = "Contract "+clientContract.getNotes()+" has expired";
 				
 				break;
 			}

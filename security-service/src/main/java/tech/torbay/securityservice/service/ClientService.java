@@ -482,7 +482,7 @@ public class ClientService {
 				message = "New User Invite!";
 //				subContent = "New user ("+clientuser.getEmail()+") invited from Organisation";
 				
-				subContent = "New User Invite! Organisation "+clientOrganisation.getOrganisationName()+" has sent an invitation to a new user: "+clientuser.getEmail();
+				subContent = "Organisation "+clientOrganisation.getOrganisationName()+" has sent an invitation to a new user: "+clientuser.getEmail();
 
 				notification.setNotificationCategoryId(clientUserId);
 				break;

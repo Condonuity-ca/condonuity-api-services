@@ -1164,7 +1164,7 @@ public class ProjectService {
 				
 				message = "Fresh opportunity!"; 
 				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
-				subContent = "Fresh opportunity! "+clientOrganisation.getOrganisationName() +" published a new project to the marketplace (\""+project.getProjectName()+"\", Project ID: "+project.getProjectId()+").";
+				subContent = clientOrganisation.getOrganisationName() +" published a new project to the marketplace (\""+project.getProjectName()+"\", Project ID: "+project.getProjectId()+").";
 				break;
 			}
 			case 2 :{
@@ -1173,13 +1173,13 @@ public class ProjectService {
 				break;
 			}
 			case 21 :{
-				message = "Project cancellation";
-				subContent = "Project cancellation: Project "+project.getProjectName()+" has been cancelled by Organisation.";
+				message = "Project cancellation : ";
+				subContent = "Project "+project.getProjectName()+" has been cancelled by Organisation.";
 				break;
 			}
 			case 3 :{
 				message = "Expiry";
-				subContent = " project bidding expiring on "+project.getBidEndDate();
+				subContent = "Project bidding expiring on "+project.getBidEndDate();
 				break;
 			}
 		}
@@ -1190,7 +1190,7 @@ public class ProjectService {
 		notification.setUserId(project.getClientId());
 		notification.setOrganisationId(project.getClientOrganisationId());
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+project.getProjectName()+subContent);
+		notification.setDescription(project.getProjectName()+subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
@@ -1213,13 +1213,13 @@ public class ProjectService {
 			case 4 :{
 				message = "New bid";
 //				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
-				subContent = "New bid: Vendor "+vendorOrganisation.getCompanyName()+" submitted a new bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+				subContent = "Vendor "+vendorOrganisation.getCompanyName()+" submitted a new bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
 				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}
 			case 5 :{
 				message = "Changes";
-				subContent = " Project Bid made changes";
+				subContent = "Project Bid made changes";
 				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}
@@ -1227,7 +1227,7 @@ public class ProjectService {
 //				message = "Changes";
 //				subContent = " Project Bid made changes";
 				message = "Bid withdrawn!";
-				subContent = "Bid withdrawn!: Vendor "+vendorOrganisation.getCompanyName()+" withdrew the bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+				subContent = "Vendor "+vendorOrganisation.getCompanyName()+" withdrew the bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
 				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}
@@ -1273,7 +1273,7 @@ public class ProjectService {
 				message = "New Review!";
 //				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
 				
-				subContent = "New review! User "+userName+" from Condo "+corpName+" added a new review.";
+				subContent = "User "+userName+" from Condo "+corpName+" added a new review.";
 				
 				notification.setUserType(UserType.CLIENT.getValue());
 				notification.setUserId(projectReviewRating.getClientId());
@@ -1285,7 +1285,7 @@ public class ProjectService {
 //				message = "Review updated";
 //				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
 				message = "Edited review!";
-				subContent = "Edited review! User "+userName+" from Condo "+corpName+" edited your review.";
+				subContent = "User "+userName+" from Condo "+corpName+" edited your review.";
 				notification.setUserType(UserType.CLIENT.getValue());
 				notification.setUserId(projectReviewRating.getClientId());
 				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
@@ -1307,7 +1307,7 @@ public class ProjectService {
 				String contractorName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
 //				subContent = vendorOrgName +" Vendor Organisation replied to this review";
 				
-				subContent = "New reply! User "+userName+" from Contractor "+contractorName+" replied to your review";
+				subContent = "User "+userName+" from Contractor "+contractorName+" replied to your review";
 				notification.setUserType(UserType.VENDOR.getValue());
 				notification.setUserId(projectReviewRating.getVendorId());
 				notification.setOrganisationId(projectReviewRating.getVendorOrganisationId());
@@ -1564,11 +1564,11 @@ public class ProjectService {
 		Project project = projectRepository.findByProjectId(projectQA.getProjectId());
 		switch(notificationType) {
 			case 31 :{//PROJECT_QUESTION_CREATE
-				message = "New project question";
+				message = "New project question : ";
 				VendorUser vendorUser = vendorUserRepository.findByUserId(projectQA.getVendorUserId());
 //				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId());
 //				subContent = vendorOrganisation.getCompanyName()+" vendor posted a new question";
-				subContent = "New project question: A new question has been posted to the Q & A section of Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+				subContent = "A new question has been posted to the Q & A section of Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
 
 				notification.setUserType(UserType.VENDOR.getValue());
 				notification.setUserId(vendorUser.getUserId());
@@ -1593,7 +1593,7 @@ public class ProjectService {
 		notification.setNotificationCategoryId(projectQA.getProjectqaId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
@@ -1647,7 +1647,7 @@ public class ProjectService {
 //				message = "Project Bid Expiring";
 //				subContent = "Project "+project.getProjectName()+" bidding expiring in "+expireIn+ " days";
 				message = "Deadline alert!";
-				subContent = "Deadline alert! \n"+project.getProjectName()+" that may interests you will reach its bidding deadline in "+expireIn+" hours (Project ID: "+project.getProjectId()+").";
+				subContent = project.getProjectName()+" that may interests you will reach its bidding deadline in "+expireIn+" hours (Project ID: "+project.getProjectId()+").";
 				
 				break;
 			}
@@ -1655,7 +1655,7 @@ public class ProjectService {
 //				message = "Project Bidding Expired";
 //				subContent = "Project "+project.getProjectName()+" bidding expired";
 				message = "Deadline alert!";
-				subContent = "Deadline alert! \n"+project.getProjectName()+" that may interests you has reached the bidding deadline (Project ID: "+project.getProjectId()+").";
+				subContent = project.getProjectName()+" that may interests you has reached the bidding deadline (Project ID: "+project.getProjectId()+").";
 
 				
 				break;
@@ -1670,7 +1670,7 @@ public class ProjectService {
 		notification.setNotificationCategoryId(project.getProjectId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);

@@ -1410,6 +1410,15 @@ public class UserService {
         }
         map.put("city",getCityName(vendorOrg.getCity()));
         map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+        
+        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+        List<String> servicesCities = new ArrayList();
+        for(VendorServicesCities vendorCity : vendorServicesCities) {
+        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+        	servicesCities.add(serviceCity.getCityName());
+        }
+        map.put("serviceCities",String.join(",", servicesCities));
+        
         map.put("vendorProfileImageUrl",getOrganisationLogo(vendorOrg.getVendorOrganisationId(), UserType.VENDOR.getValue()));
         return map;
 	}

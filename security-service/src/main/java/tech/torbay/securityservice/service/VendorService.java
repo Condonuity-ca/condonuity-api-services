@@ -452,7 +452,7 @@ public class VendorService {
 			case 22 :{//VENDOR_USER_PROFILE_INVITE
 				message = "New User Invite!";
 //				subContent = "New user ("+vendoruser.getEmail()+") invited from Organisation";
-				subContent = "New User Invite! Organisation "+vendorOrganisation.getCompanyName()+" has sent an invitation to a new user with email address: "+vendoruser.getEmail();
+				subContent = "Organisation "+vendorOrganisation.getCompanyName()+" has sent an invitation to a new user with email address: "+vendoruser.getEmail();
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}

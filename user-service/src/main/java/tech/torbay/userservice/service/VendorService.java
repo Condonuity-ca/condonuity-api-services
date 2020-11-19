@@ -1135,14 +1135,14 @@ public class VendorService {
 			case 23 :{//CLIENT_USER_PROFILE_DELETE
 				message = "User deleted!";
 //				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account deleted from Organisation";
-				subContent = "User deleted! One of the organization user has deleted User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" from the organization's account.";
+				subContent = "One of the organization user has deleted User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" from the organization's account.";
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
 			case 24 :{//CLIENT_USER_PROFILE_UPDATE
 				message = "User account update!";
 //				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account updated in our Organisation";
-				subContent = "User account update! User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" account information has been updated by One of the organization user";
+				subContent = "User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" account information has been updated by One of the organization user";
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}

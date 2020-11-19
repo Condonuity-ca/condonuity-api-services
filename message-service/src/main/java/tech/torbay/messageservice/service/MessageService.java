@@ -568,7 +568,7 @@ public class MessageService {
 //				subContent = "\""+internalMessage.getThreadSubject()+"\"";
 				
 				message = "New message thread!";
-				subContent = "New message thread! User "+userFirstName +" "+userLastName+" has created a new internal message thread: "+internalMessage.getThreadSubject();
+				subContent = "User "+userFirstName +" "+userLastName+" has created a new internal message thread: "+internalMessage.getThreadSubject();
 
 				break;
 			}
@@ -578,7 +578,7 @@ public class MessageService {
 //				subContent = "\""+internalMessage.getThreadSubject()+"\"";
 				
 				message = "Message thread updated!";
-				subContent = "message thread updated! User "+userFirstName +" "+userLastName+" has updated the internal message thread: "+internalMessage.getThreadSubject();
+				subContent = "User "+userFirstName +" "+userLastName+" has updated the internal message thread: "+internalMessage.getThreadSubject();
 				break;
 			}
 		}
@@ -586,7 +586,7 @@ public class MessageService {
 		notification.setNotificationCategoryType(notificationType);
 		notification.setNotificationCategoryId(internalMessage.getId());
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notification.setFromUserId(internalMessage.getUserId());
@@ -684,7 +684,7 @@ public class MessageService {
 //				subContent = "\""+externalMessage.getThreadSubject()+"\"";
 				
 				message = "New message thread!";
-				subContent = "New message thread! User "+userFirstName +" "+userLastName +" from Organisation "+organisationName+" has created a new external message thread: "+externalMessage.getThreadSubject();
+				subContent = "User "+userFirstName +" "+userLastName +" from Organisation "+organisationName+" has created a new external message thread: "+externalMessage.getThreadSubject();
 				
 				break;
 			}
@@ -694,7 +694,7 @@ public class MessageService {
 //				subContent =  "\""+externalMessage.getThreadSubject()+"\"";
 				
 				message = "Message thread updated!";
-				subContent = "Message thread updated! User "+userFirstName +" "+userLastName +" from Organisation "+organisationName+" has updated the external message thread: "+externalMessage.getThreadSubject();
+				subContent = "User "+userFirstName +" "+userLastName +" from Organisation "+organisationName+" has updated the external message thread: "+externalMessage.getThreadSubject();
 				break;
 			}
 		}
