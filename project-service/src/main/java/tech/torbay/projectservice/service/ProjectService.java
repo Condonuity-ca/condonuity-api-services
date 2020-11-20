@@ -1168,13 +1168,15 @@ public class ProjectService {
 				break;
 			}
 			case 2 :{
-				message = "Changes";
-				subContent = " project made changes";
+				message = "Project Update";
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+				subContent = "Project "+project.getProjectName()+"( Project ID :"+project.getProjectId()+" ) has been updated by "+clientOrganisation.getOrganisationName();
 				break;
 			}
 			case 21 :{
 				message = "Project cancellation : ";
-				subContent = "Project "+project.getProjectName()+" has been cancelled by Organisation.";
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+				subContent = "Project "+project.getProjectName()+"( Project ID :"+project.getProjectId()+" ) has been cancelled by "+clientOrganisation.getOrganisationName();
 				break;
 			}
 			case 3 :{
@@ -1190,7 +1192,7 @@ public class ProjectService {
 		notification.setUserId(project.getClientId());
 		notification.setOrganisationId(project.getClientOrganisationId());
 		notification.setTitle(message);
-		notification.setDescription(project.getProjectName()+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
@@ -1234,7 +1236,7 @@ public class ProjectService {
 			case 6 :{
 				message = "Congratulations!";
 //				subContent = " project awarded successfully";
-				subContent = "Congratulations! You have been awarded with project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
+				subContent = "You have been awarded with project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
 				notification.setUserType(UserType.CLIENT.getValue());
 				break;
 			}

@@ -40,6 +40,7 @@ import tech.torbay.userservice.entity.Notification;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.RegistrationLogs;
 import tech.torbay.userservice.entity.ServiceCities;
 import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserLevelNotification;
@@ -63,6 +64,7 @@ import tech.torbay.userservice.repository.NotificationRepository;
 import tech.torbay.userservice.repository.OrganisationPaymentRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.RegistrationLogsRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
 import tech.torbay.userservice.repository.UserLevelNotificationRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
@@ -122,6 +124,8 @@ public class ClientService {
 	UserRepository userRepository;
 	@Autowired
 	NotificationRepository notificationRepository;
+	@Autowired
+	RegistrationLogsRepository registrationLogsRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -661,6 +665,15 @@ public class ClientService {
 	        	map.put("organisationLogo", logo);
 	        else
 	        	map.put("organisationLogo", "");
+	        
+	        List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(UserType.CLIENT.getValue(), clientOrg.getClientOrganisationId());
+			for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+				ClientUser clientUser = clientUserRepository.findByClientId(registrationLogAdmin.getUserId());
+				map.put("adminFirstName", clientUser.getFirstName());
+				map.put("adminLastName", clientUser.getLastName());
+				map.put("adminEmail", clientUser.getEmail());
+			} 
+			
 			clientOrganisations.add(map);
 		}
 		

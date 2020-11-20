@@ -1158,15 +1158,16 @@ public class ClientService {
 				List<Notification> projectQuestionsAlertNotifications = notificationRepository.findAllProjectQuestionsAlertNotifications(clientOrganisationId);
 				List<Notification> bidWithdrawnAlertNotifications = notificationRepository.findBidWithdrawnAlertNotifications(clientOrganisationId);
 				
-				for(int index = 0; index < projectBidsNotifications.size(); index++) {
-					if(projectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
-						ProjectAwards projectAwards = projectAwardsRepository.findOneById(projectBidsNotifications.get(index).getNotificationCategoryId());
+				List<Notification> tempprojectBidsNotifications = new ArrayList<>(projectBidsNotifications);
+				for(int index = 0; index < tempprojectBidsNotifications.size(); index++) {
+					if(tempprojectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
+						ProjectAwards projectAwards = projectAwardsRepository.findOneById(tempprojectBidsNotifications.get(index).getNotificationCategoryId());
 						Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
 						VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAwards.getVendorOrganisationId()); 
 						String title = "Project award";
-						String message = "Project award: Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
-						projectBidsNotifications.get(index).setTitle(title);
-						projectBidsNotifications.get(index).setDescription(message);
+						String message = "Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
+						tempprojectBidsNotifications.get(index).setTitle(title);
+						tempprojectBidsNotifications.get(index).setDescription(message);
 					}
 				}
 				
@@ -1188,15 +1189,17 @@ public class ClientService {
 					filteredNotifications.add(notification);
 				}
 				
-				for(int index = 0; index < bidEndAlertNotifications.size(); index++) {
-					if(bidEndAlertNotifications.get(index).getNotificationCategoryType()==26)
-						bidEndAlertNotifications.get(index).setDescription(bidEndAlertNotifications.get(index).getDescription().replace("that may interests you will", "is set to"));
-					if(bidEndAlertNotifications.get(index).getNotificationCategoryType()==27)
-						bidEndAlertNotifications.get(index).setDescription(bidEndAlertNotifications.get(index).getDescription().replace("that may interests you has reached the bidding deadline", "has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project."));
+				List<Notification> tempbidEndAlertNotifications = new ArrayList<>(bidEndAlertNotifications);
+				for(int index = 0; index < tempbidEndAlertNotifications.size(); index++) {
+					if(tempbidEndAlertNotifications.get(index).getNotificationCategoryType()==26)
+						tempbidEndAlertNotifications.get(index).setDescription(tempbidEndAlertNotifications.get(index).getDescription().replace("that may interests you will", "is set to"));
+					if(tempbidEndAlertNotifications.get(index).getNotificationCategoryType()==27)
+						tempbidEndAlertNotifications.get(index).setDescription(tempbidEndAlertNotifications.get(index).getDescription().replace("that may interests you has reached the bidding deadline", "has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project."));
 				}
 				
-				for(int index = 0; index < allPostedProjectsForClientNotifications.size(); index++) {
-					Notification notification = allPostedProjectsForClientNotifications.get(index);
+				List<Notification> tempallPostedProjectsForClientNotifications = new ArrayList<>(allPostedProjectsForClientNotifications);
+				for(int index = 0; index < tempallPostedProjectsForClientNotifications.size(); index++) {
+					Notification notification = tempallPostedProjectsForClientNotifications.get(index);
 					if(notification.getNotificationCategoryType() == Constants.NotificationType.PROJECT_CREATE.getValue()) {
 						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
 						Project project = projectRepository.findByProjectId(notification.getNotificationCategoryId());
@@ -1204,15 +1207,18 @@ public class ClientService {
 						String userLastName = clientUser.getLastName();
 						String userName = userFirstName+" "+userLastName;
 						String title = "New project posting";
-						String message = "New project posting: User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
-						allPostedProjectsForClientNotifications.get(index).setTitle(title);
-						allPostedProjectsForClientNotifications.get(index).setDescription(message);
+						String message = "User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+						tempallPostedProjectsForClientNotifications.get(index).setTitle(title);
+						tempallPostedProjectsForClientNotifications.get(index).setDescription(message);
 					}
 				}
 				
-				filteredNotifications.addAll(projectBidsNotifications);
-				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
-				filteredNotifications.addAll(bidEndAlertNotifications);
+				filteredNotifications.addAll(tempprojectBidsNotifications);
+//				filteredNotifications.addAll(projectBidsNotifications);
+				filteredNotifications.addAll(tempallPostedProjectsForClientNotifications);
+//				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
+				filteredNotifications.addAll(tempbidEndAlertNotifications);
+//				filteredNotifications.addAll(bidEndAlertNotifications);
 				filteredNotifications.addAll(annualAlertNotifications);
 				filteredNotifications.addAll(accountChangesNotifications);
 				filteredNotifications.addAll(reviewRepliesFromVendorNotifications);
@@ -1343,15 +1349,16 @@ public class ClientService {
 				List<Notification> projectQuestionsAlertNotifications = notificationRepository.findAllProjectQuestionsAlertNotifications(clientOrganisationId);
 				List<Notification> bidWithdrawnAlertNotifications = notificationRepository.findBidWithdrawnAlertNotifications(clientOrganisationId);
 				
-				for(int index = 0; index < projectBidsNotifications.size(); index++) {
-					if(projectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
-						ProjectAwards projectAwards = projectAwardsRepository.findOneById(projectBidsNotifications.get(index).getNotificationCategoryId());
+				List<Notification> tempprojectBidsNotifications = new ArrayList<>(projectBidsNotifications);
+				for(int index = 0; index < tempprojectBidsNotifications.size(); index++) {
+					if(tempprojectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
+						ProjectAwards projectAwards = projectAwardsRepository.findOneById(tempprojectBidsNotifications.get(index).getNotificationCategoryId());
 						Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
 						VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAwards.getVendorOrganisationId()); 
 						String title = "Project award";
-						String message = "Project award: Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
-						projectBidsNotifications.get(index).setTitle(title);
-						projectBidsNotifications.get(index).setDescription(message);
+						String message = "Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
+						tempprojectBidsNotifications.get(index).setTitle(title);
+						tempprojectBidsNotifications.get(index).setDescription(message);
 					}
 				}
 				
@@ -1373,15 +1380,17 @@ public class ClientService {
 					filteredNotifications.add(notification);
 				}
 				
-				for(int index = 0; index < bidEndAlertNotifications.size(); index++) {
-					if(bidEndAlertNotifications.get(index).getNotificationCategoryType()==26)
-						bidEndAlertNotifications.get(index).setDescription(bidEndAlertNotifications.get(index).getDescription().replace("that may interests you will", "is set to"));
-					if(bidEndAlertNotifications.get(index).getNotificationCategoryType()==27)
-						bidEndAlertNotifications.get(index).setDescription(bidEndAlertNotifications.get(index).getDescription().replace("that may interests you has reached the bidding deadline", "has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project."));
+				List<Notification> tempbidEndAlertNotifications = new ArrayList<>(bidEndAlertNotifications);
+				for(int index = 0; index < tempbidEndAlertNotifications.size(); index++) {
+					if(tempbidEndAlertNotifications.get(index).getNotificationCategoryType()==26)
+						tempbidEndAlertNotifications.get(index).setDescription(tempbidEndAlertNotifications.get(index).getDescription().replace("that may interests you will", "is set to"));
+					if(tempbidEndAlertNotifications.get(index).getNotificationCategoryType()==27)
+						tempbidEndAlertNotifications.get(index).setDescription(tempbidEndAlertNotifications.get(index).getDescription().replace("that may interests you has reached the bidding deadline", "has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project."));
 				}
 				
-				for(int index = 0; index < allPostedProjectsForClientNotifications.size(); index++) {
-					Notification notification = allPostedProjectsForClientNotifications.get(index);
+				List<Notification> tempallPostedProjectsForClientNotifications = new ArrayList<>(allPostedProjectsForClientNotifications); 
+				for(int index = 0; index < tempallPostedProjectsForClientNotifications.size(); index++) {
+					Notification notification = tempallPostedProjectsForClientNotifications.get(index);
 					if(notification.getNotificationCategoryType() == Constants.NotificationType.PROJECT_CREATE.getValue()) {
 						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
 						Project project = projectRepository.findByProjectId(notification.getNotificationCategoryId());
@@ -1389,15 +1398,18 @@ public class ClientService {
 						String userLastName = clientUser.getLastName();
 						String userName = userFirstName+" "+userLastName;
 						String title = "New project posting";
-						String message = "New project posting: User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
-						allPostedProjectsForClientNotifications.get(index).setTitle(title);
-						allPostedProjectsForClientNotifications.get(index).setDescription(message);
+						String message = "User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+						tempallPostedProjectsForClientNotifications.get(index).setTitle(title);
+						tempallPostedProjectsForClientNotifications.get(index).setDescription(message);
 					}
 				}
 				
-				filteredNotifications.addAll(projectBidsNotifications);
-				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
-				filteredNotifications.addAll(bidEndAlertNotifications);
+				filteredNotifications.addAll(tempprojectBidsNotifications);
+//				filteredNotifications.addAll(projectBidsNotifications);
+				filteredNotifications.addAll(tempallPostedProjectsForClientNotifications);
+//				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
+				filteredNotifications.addAll(tempbidEndAlertNotifications);
+//				filteredNotifications.addAll(bidEndAlertNotifications);
 				filteredNotifications.addAll(annualAlertNotifications);
 				filteredNotifications.addAll(accountChangesNotifications);
 				filteredNotifications.addAll(reviewRepliesFromVendorNotifications);

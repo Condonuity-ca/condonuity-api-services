@@ -29,6 +29,7 @@ import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.Notification;
 import tech.torbay.userservice.entity.OrganisationPayment;
 import tech.torbay.userservice.entity.ProjectReviewRating;
+import tech.torbay.userservice.entity.RegistrationLogs;
 import tech.torbay.userservice.entity.ServiceCities;
 import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserProfileImages;
@@ -54,6 +55,7 @@ import tech.torbay.userservice.repository.ClientUserRepository;
 import tech.torbay.userservice.repository.NotificationRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
+import tech.torbay.userservice.repository.RegistrationLogsRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserRepository;
@@ -124,6 +126,8 @@ public class VendorService {
 	VendorPortfolioFilesRepository vendorPortfolioFilesRepository;
 	@Autowired
 	NotificationRepository notificationRepository;
+	@Autowired
+	RegistrationLogsRepository registrationLogsRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -729,6 +733,15 @@ public class VendorService {
 	        } catch(Exception exp) {
 		        	exp.printStackTrace();
 	        }
+	        
+	        List<RegistrationLogs> registrationLogs = registrationLogsRepository.findByUserTypeAndOrganisationId(UserType.VENDOR.getValue(), vendorOrg.getVendorOrganisationId());
+			for(RegistrationLogs registrationLogAdmin : registrationLogs) {
+				VendorUser vendorUser = vendorUserRepository.findByUserId(registrationLogAdmin.getUserId());
+				map.put("adminFirstName", vendorUser.getFirstName());
+				map.put("adminLastName", vendorUser.getLastName());
+				map.put("adminEmail", vendorUser.getEmail());
+			} 
+			
 	        vendorOrganisations.add(map);
 		}
 		

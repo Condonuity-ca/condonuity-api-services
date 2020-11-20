@@ -242,7 +242,7 @@ public class UserController {
             }
     )
 	@PostMapping("/support/unapprove/orgs/search")
-	public ResponseEntity<Object> getAllUnApproveAndRejectOrganisationsForSupportUser(@RequestBody Map<String, Object> requestData) {
+	public ResponseEntity<Object> getAllUnApproveAndRejectOrganisationsSearchForSupportUser(@RequestBody Map<String, Object> requestData) {
 		String userType = "";
 		List<Object> list = new ArrayList();
 		try {
