@@ -965,23 +965,19 @@ public class ProjectService {
 			projectInterests.add(bid.getVendorOrgId());
 		}
 		for(VendorProjectInterests interest : interests) {
-			for(VendorBid bid : bids) {
-				if(!interest.getProjectId().equals(bid.getProjectId())) {// remove duplicates
-					projectInterests.add(interest.getVendorOrganisationId());
-				}
-			}
+			projectInterests.add(interest.getVendorOrganisationId());
 		}
 		
 		List<Integer> filteredProjectInterests = new ArrayList<>(projectInterests);
 		List<VendorBid> liveBids = vendorBidRepository.getProjectLiveBids(projectId);
 		for(VendorBid bid : liveBids) {
-			for(Integer vendorOrgId : filteredProjectInterests) {
-				if(vendorOrgId.equals(bid.getVendorOrgId())) {// remove duplicates if interested project bidded and live or awarded
-					projectInterests.remove(vendorOrgId);
-				} else {
+//			for(Integer vendorOrgId : filteredProjectInterests) {
+//				if(vendorOrgId.equals(bid.getVendorOrgId())) {// remove duplicates if interested project bidded and live or awarded
+//					projectInterests.remove(vendorOrgId);
+//				} else {
 					projectInterests.add(bid.getVendorOrgId());
-				}
-			}
+//				}
+//			}
 		}
 		
 		HashSet<Integer> resultSet = new HashSet(projectInterests);

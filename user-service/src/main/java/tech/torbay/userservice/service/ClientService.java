@@ -1048,7 +1048,7 @@ public class ClientService {
 //				message = "User Account Deleted";
 //				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account deleted from Organisation";
 				message = "User deleted!";
-				subContent = "User deleted! One of the organization user has deleted User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" from the organization's account.";
+				subContent = "One of the organization user has deleted User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" from the organization's account.";
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}
@@ -1056,7 +1056,7 @@ public class ClientService {
 //				message = "User Account Update";
 //				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account updated in our Organisation";
 				message = "User account update!";
-				subContent = "User account update! User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" account information has been updated by One of the organization user";;
+				subContent = "User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" account information has been updated by One of the organization user";;
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}
@@ -1064,7 +1064,7 @@ public class ClientService {
 //				message = "Organisation Profile Information Updated";
 //				subContent = clientOrganisation.getOrganisationName() +" - our organisation profile information updated";
 				message = "Update";
-				subContent = "Update: Your organization's profile information was recently edited.";
+				subContent = "Your organization's profile information was recently edited.";
 				notification.setNotificationCategoryId(clientOrgId);
 				break;
 			}
@@ -1074,7 +1074,7 @@ public class ClientService {
 		notification.setNotificationCategoryType(notificationType);
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);

@@ -465,6 +465,13 @@ public class ClientService {
 		
 		return clientAssociation;
 	}
+	
+	public List<ClientAssociation> findClientAssociationByClientId(Integer clientId) {
+		// TODO Auto-generated method stub
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		
+		return clientAssociations;
+	}
 
 	public void SendAccountUpdateAlert(Integer clientUserId, Integer clientOrgId, int notificationType) {
 		// TODO Auto-generated method stub

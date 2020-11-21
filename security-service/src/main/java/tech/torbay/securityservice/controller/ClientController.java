@@ -276,6 +276,57 @@ public class ClientController {
 		List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
 		
 		if(existClient != null) {
+			
+			List<ClientAssociation> clientAssociations = clientService.findClientAssociationByClientId(existClient.getClientId());
+			int inactiveAccount = 0;
+			
+			if(clientAssociations.size() == 1) {
+				ClientAssociation clientAssociate = clientAssociations.get(0);
+				if(clientAssociate.getUserAccountStatus() == UserAccountStatus.INACTIVE.getValue() && 
+						clientAssociate.getAccountVerificationStatus() == UserAccountStatus.INVITED.getValue() &&
+								clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && 
+								clientAssociate.getUserInactiveDate().trim().length() > 0) {
+					try {// New User invite, bcoz no invite accepted yet
+		        		HttpHeaders headers = new HttpHeaders();
+				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
+				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
+				        // Invite Sent
+				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
+				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
+				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+		        	} catch(Exception exp) {
+		        		exp.printStackTrace();
+		        		ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+			        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		        	}
+				}
+			} else {
+				for(ClientAssociation clientAssociate : clientAssociations) {
+					if(clientAssociate.getUserAccountStatus() == UserAccountStatus.INACTIVE.getValue() && 
+							clientAssociate.getAccountVerificationStatus() == UserAccountStatus.INVITED.getValue() &&
+									clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() &&
+									clientAssociate.getUserInactiveDate().trim().length() > 0) {
+						inactiveAccount++;
+					}
+				}
+				
+				if(clientAssociations.size() == inactiveAccount) {
+					try {// New User invite, bcoz no invite accepted yet
+		        		HttpHeaders headers = new HttpHeaders();
+				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
+				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
+				        // Invite Sent
+				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
+				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
+				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
+		        	} catch(Exception exp) {
+		        		exp.printStackTrace();
+		        		ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
+			        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+		        	}
+				}
+			}
+			
 			//check alreadyIn in this organisation and active and throw error message
 			
 			ClientAssociation clientUserAssociation = clientService.findClientAssociationByClientIdAndOrganisationId(existClient.getClientId(), organisationId);
@@ -359,6 +410,7 @@ public class ClientController {
 		        	ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		        } else {
+		        	//New user Invite 
 		        	try {
 		        		HttpHeaders headers = new HttpHeaders();
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(clientUser.getClientId()).toUri());
