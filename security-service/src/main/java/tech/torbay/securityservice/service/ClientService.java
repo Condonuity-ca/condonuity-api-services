@@ -536,5 +536,24 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		return clientAssociationRepository.findAllByClientId(clientId);
 	}
+
+	public ClientUser makeInvited(ClientUser existClient, Integer clientOrganisationId, Integer userRole, Integer clientUserType) {
+		// TODO Auto-generated method stub
+		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(existClient.getClientId(), clientOrganisationId);
+		clientAssociation.setClientOrganisationId(clientOrganisationId);
+		clientAssociation.setClientId(existClient.getClientId());
+		clientAssociation.setClientUserType(clientUserType);
+		clientAssociation.setUserRole(userRole);
+		clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.NOT_VERIFIED.getValue());
+		clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
+		clientAssociation.setDeleteStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		
+		//2.1.3
+		if(clientAssociationRepository.save(clientAssociation) != null) {
+			return existClient;
+		} else {
+			return null;
+		}
+	}
 }
 

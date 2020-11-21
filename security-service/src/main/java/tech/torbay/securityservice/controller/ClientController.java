@@ -286,7 +286,11 @@ public class ClientController {
 						clientAssociate.getAccountVerificationStatus() == UserAccountStatus.INVITED.getValue() &&
 								clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && 
 								clientAssociate.getUserInactiveDate().trim().length() > 0) {
-					try {// New User invite, bcoz no invite accepted yet
+					try {
+						//make older invite delete(user_account_status = 2) into invited(user_account_status =0)
+						clientService.makeInvited(existClient, organisationId, userRole, clientUserType);
+						// New User invite, bcoz no invite accepted yet
+												
 		        		HttpHeaders headers = new HttpHeaders();
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
@@ -311,7 +315,10 @@ public class ClientController {
 				}
 				
 				if(clientAssociations.size() == inactiveAccount) {
-					try {// New User invite, bcoz no invite accepted yet
+					try {
+						//make older invite delete(user_account_status = 2) into invited(user_account_status =0)
+						clientService.makeInvited(existClient, organisationId, userRole, clientUserType);
+						// New User invite, bcoz no invite accepted yet
 		        		HttpHeaders headers = new HttpHeaders();
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
