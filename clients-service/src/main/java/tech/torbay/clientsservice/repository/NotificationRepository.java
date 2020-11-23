@@ -42,6 +42,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		")", nativeQuery = true)
     List<Notification> findAllProjectBidsNotifications(Integer clientOrganisationId);
     
+    @Query(value =" select nt.* from condonuitydev.notification nt " + 
+    		"inner join condonuitydev.projects pro  on pro.client_organisation_id = (?1) " + 
+    		"inner join condonuitydev.project_awards pa on nt.notification_category_id = pa.id " + 
+    		"where ( pa.project_id = pro.project_id and ( notification_category_type = 6) )", nativeQuery = true)
+	List<Notification> findAllProjectAwardsNotifications(Integer clientOrganisationId);
+    
     @Query(value ="select nt.* from condonuitydev.notification nt " + 
     		"inner join " + 
     		"condonuitydev.projects pro  on ( pro.client_organisation_id = (?1) ) " + 

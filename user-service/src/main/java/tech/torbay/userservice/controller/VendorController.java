@@ -169,11 +169,12 @@ public class VendorController {
 	public ResponseEntity<Object> deleteVendorUserById(@RequestBody Map<String, Object> requestData) {
 		
 		Integer vendorId = Integer.parseInt(String.valueOf(requestData.get("vendorId")));
+		Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
 		
 		HashMap<String, Object> response = new HashMap();
     	
     	if(vendorService.getUsersCountByOrganisationId(vendorId) > 1) {
-    		VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId);
+    		VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId, modifiedByUserId);
     		if(vendorUser != null) {
     			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
     			response.put("statusMessage", "Success");
@@ -189,7 +190,7 @@ public class VendorController {
     		}
     	} else {
     		if(vendorService.isInvitedVendor(vendorId)) {
-    			VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId);
+    			VendorUser vendorUser = vendorService.deleteVendorUserById(vendorId, modifiedByUserId);
         		if(vendorUser != null) {
         			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
         			response.put("statusMessage", "Success");

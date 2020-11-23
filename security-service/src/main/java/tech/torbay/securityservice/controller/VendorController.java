@@ -132,7 +132,7 @@ public class VendorController {
 	        		"Failed to create Vendor Organisation");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         } else {
-	        HttpHeaders headers = new HttpHeaders();
+//	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
 	        VendorUser vendorUser = vendorService.findByVendorUserId(vendorId);
 	        if(vendorUser != null) {
@@ -309,7 +309,7 @@ public class VendorController {
 	        	
 	        	try {
 		        	sendVendorEmailVerification(vendor_user);
-		        	vendorService.SendAccountUpdateAlert(vendor_user.getUserId(), vendor_user.getVendorOrganisationId(), NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
+		        	vendorService.SendAccountUpdateAlert(vendor_user, vendor_user.getVendorOrganisationId(), NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 		        } catch(Exception exp) {
 		        	exp.printStackTrace();
 		        }

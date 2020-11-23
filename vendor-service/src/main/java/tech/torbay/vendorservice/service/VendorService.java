@@ -918,7 +918,7 @@ public class VendorService {
 		}
 		if(externalMessageIds != null && externalMessageIds.size() > 0) {
 			List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
-			internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+			externalMessagesNotifications.addAll(externalMessageCommentsNotifications);
 		}
 		
 		internalMessagesNotifications.addAll(externalMessagesNotifications);

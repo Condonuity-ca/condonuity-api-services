@@ -1169,13 +1169,7 @@ public class ProjectService {
 				subContent = "Project "+project.getProjectName()+"( Project ID :"+project.getProjectId()+" ) has been updated by "+clientOrganisation.getOrganisationName();
 				break;
 			}
-			case 21 :{
-				message = "Project cancellation : ";
-				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
-				subContent = "Project "+project.getProjectName()+"( Project ID :"+project.getProjectId()+" ) has been cancelled by "+clientOrganisation.getOrganisationName();
-				break;
-			}
-			case 3 :{
+			case 3 :{//NOT USED
 				message = "Expiry";
 				subContent = "Project bidding expiring on "+project.getBidEndDate();
 				break;
@@ -1186,6 +1180,34 @@ public class ProjectService {
 		notification.setNotificationCategoryId(project.getProjectId());
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(project.getClientId());
+		notification.setOrganisationId(project.getClientOrganisationId());
+		notification.setTitle(message);
+		notification.setDescription(subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
+	
+	public void sendProjectCancelNotification(Project project, Integer clientUserId, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Changes";
+		String subContent = " project made changes";
+		switch(notificationType) {
+			case 33 :{
+				message = "Project cancellation : ";
+				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+				ClientUser clientUser = clientUserRepository.findByClientId(clientUserId);
+				String userName = clientUser.getFirstName()+" "+clientUser.getLastName();
+				subContent = "Project "+project.getProjectName()+" has been cancelled ( Project ID : "+project.getProjectId()+" ) by User "+userName + " from Condo "+ clientOrganisation.getOrganisationName();
+				break;
+			}
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(project.getProjectId());
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(clientUserId);
 		notification.setOrganisationId(project.getClientOrganisationId());
 		notification.setTitle(message);
 		notification.setDescription(subContent);
@@ -1453,7 +1475,7 @@ public class ProjectService {
 	        String firstName = (String) record[4];
 	        String lastName = (String) record[5];
 	        
-	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() ) {
+	        if(project.getStatus() == Constants.ProjectPostType.PUBLISHED.getValue() || project.getDeleteStatus() == Constants.DeleteStatus.INACTIVE.getValue()) {
 	        	List<Integer> ids = Stream.of(project.getTags().trim().split(","))
 				        .map(Integer::parseInt)
 				        .collect(Collectors.toList());
@@ -1574,10 +1596,10 @@ public class ProjectService {
 				break;
 			}
 			case 32 :{//PROJECT_QUESTION_ANSWER
-				message = "Project question answer";
+				message = "New question answer : ";
 //				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
 //				subContent = clientOrganisation.getOrganisationName() +" client answered to Project -"+ project.getProjectName()+" and question - "+projectQA.getQuestion()+" ?";
-				subContent = "New project answer: A new answer has been published to the Q & A section of Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+")";
+				subContent = "A new answer has been published to the Q & A section of Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+")";
 
 				notification.setUserType(UserType.CLIENT.getValue());
 				notification.setUserId(projectQA.getClientUserId());

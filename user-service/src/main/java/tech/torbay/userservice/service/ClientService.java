@@ -303,9 +303,9 @@ public class ClientService {
 		clientOrg.setDeleteStatus(clientOrganisation.getDeleteStatus());
 		clientOrg.setUserType(Constants.UserType.CLIENT.getValue());
 		ClientOrganisation clientOrgObj = clientOrganisationRepository.save(clientOrg);
-		if(clientOrgObj != null) {
-			SendAccountUpdateAlert(Invalid.ID.getValue(), clientOrg.getClientOrganisationId(), NotificationType.CLIENT_ORGANISATION_UPDATE.getValue());
-		}
+//		if(clientOrgObj != null) {
+//			SendAccountUpdateAlert(Invalid.ID.getValue(), clientOrg.getClientOrganisationId(), modifiedByUserId, NotificationType.CLIENT_ORGANISATION_UPDATE.getValue());
+//		}
 		return clientOrgObj;
 	}
 
@@ -869,25 +869,38 @@ public class ClientService {
 		Notification notification = new Notification();
 		String message = "Review";
 		String subContent = " review added";
+		
+		ClientOrganisation clientOrg = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId());
+		String corpName = clientOrg.getOrganisationName();
+		ClientUser clientUser = clientUserRepository.findByClientId(projectReviewRating.getClientId());
+		String userFirstName = clientUser.getFirstName();
+		String userLastName = clientUser.getLastName();
+		String userName = userFirstName +" "+ userLastName;
+		
 		switch(notificationType) {
 			case 7 :{
-				message = "New Review";
-				subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				message = "New Review!";
+	//			subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				
+				subContent = "User "+userName+" from Condo "+corpName+" added a new review.";
+				
 				notification.setUserType(UserType.CLIENT.getValue());
 				notification.setUserId(projectReviewRating.getClientId());
 				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
 				break;
 			}
-			case 8 :{
-				message = "New Reply";
-				String vendorOrgName = vendorOrganisationRepository.findByVendorOrganisationId(projectReviewRating.getVendorOrganisationId()).getCompanyName();
-				subContent = vendorOrgName +" Vendor Organisation replied to this review";
-				notification.setUserType(UserType.VENDOR.getValue());
-				notification.setUserId(projectReviewRating.getVendorId());
-				notification.setOrganisationId(projectReviewRating.getVendorOrganisationId());
+			case 71 :{
+				notificationType = 7;
+	//			message = "Review updated";
+	//			subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				message = "Edited review!";
+				subContent = "User "+userName+" from Condo "+corpName+" edited your review.";
+				notification.setUserType(UserType.CLIENT.getValue());
+				notification.setUserId(projectReviewRating.getClientId());
+				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
 				break;
 			}
-
+	
 		}
 		
 		notification.setNotificationCategoryType(notificationType);
@@ -1013,7 +1026,7 @@ public class ClientService {
         return clientObj;
 	}
 
-	public Object deleteClientUserById(Integer clientUserId, Integer clientOrgId) {
+	public Object deleteClientUserById(Integer clientUserId, Integer clientOrgId, Integer modifiedUserId) {
 		// TODO Auto-generated method stub
 		
 		ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUserId, clientOrgId);
@@ -1027,17 +1040,19 @@ public class ClientService {
 		
 		ClientAssociation clientAssociateObject = clientAssociationRepository.save(clientAssociate);
 		if(clientAssociateObject != null) {
-			SendAccountUpdateAlert(clientUserId, clientOrgId, NotificationType.CLIENT_USER_PROFILE_DELETE.getValue());
+			SendAccountUpdateAlert(clientUserId, clientOrgId, modifiedUserId, NotificationType.CLIENT_USER_PROFILE_DELETE.getValue());
 		}
 		return clientAssociateObject;
 	}
 	
-	private void SendAccountUpdateAlert(Integer clientUserId, Integer clientOrgId, int notificationType) {
+	private void SendAccountUpdateAlert(Integer clientUserId, Integer clientOrgId, Integer modifiedByUserId, int notificationType) {
 		// TODO Auto-generated method stub
 		Notification notification = new Notification();
 		String message = "Account Update";
 		String subContent = " account updated";
 		ClientUser clientuser = clientUserRepository.findByClientId(clientUserId);
+		ClientUser modifiedByClientUser = clientUserRepository.findByClientId(modifiedByUserId);
+		String modifiedBy = modifiedByClientUser.getFirstName()+" "+modifiedByClientUser.getLastName();
 		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrgId);
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(clientUserId);
@@ -1048,7 +1063,7 @@ public class ClientService {
 //				message = "User Account Deleted";
 //				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account deleted from Organisation";
 				message = "User deleted!";
-				subContent = "One of the organization user has deleted User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" from the organization's account.";
+				subContent = "User "+modifiedBy+" has deleted User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" from the organization's account.";
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}
@@ -1056,7 +1071,7 @@ public class ClientService {
 //				message = "User Account Update";
 //				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account updated in our Organisation";
 				message = "User account update!";
-				subContent = "User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" account information has been updated by One of the organization user";;
+				subContent = "User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" account information has been updated by User "+modifiedBy;
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}
@@ -1064,7 +1079,7 @@ public class ClientService {
 //				message = "Organisation Profile Information Updated";
 //				subContent = clientOrganisation.getOrganisationName() +" - our organisation profile information updated";
 				message = "Update";
-				subContent = "Your organization's profile information was recently edited.";
+				subContent = "Your organization's profile information was recently edited by User "+modifiedBy;
 				notification.setNotificationCategoryId(clientOrgId);
 				break;
 			}
@@ -1095,6 +1110,7 @@ public class ClientService {
     	Integer clientOrgId = Integer.parseInt(String.valueOf(requestData.get("clientOrgId")));
     	Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
     	Integer clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
+    	Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
     	
     	ClientAssociation clientAssociate = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientUserId, clientOrgId);
     	
@@ -1111,7 +1127,7 @@ public class ClientService {
     	
     	clientUserRepository.save(client);
     	
-    	SendAccountUpdateAlert(clientUserId, clientOrgId, NotificationType.CLIENT_USER_PROFILE_UPDATE.getValue());
+    	SendAccountUpdateAlert(clientUserId, clientOrgId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_UPDATE.getValue());
     	
     	return clientAssociate;
     	

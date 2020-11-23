@@ -253,6 +253,7 @@ public class ClientController {
 		// else create user and send email invite
 		
 		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
+		Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
 		String email = String.valueOf(requestData.get("email"));
 		String firstName = "", lastName = "";
 //		try {
@@ -295,8 +296,8 @@ public class ClientController {
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
 				        // Invite Sent
-				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
-				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
+				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole, modifiedByUserId);
+				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
 				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
 		        	} catch(Exception exp) {
 		        		exp.printStackTrace();
@@ -323,8 +324,8 @@ public class ClientController {
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
 				        // Invite Sent
-				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
-				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
+				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole, modifiedByUserId);
+				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
 				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
 		        	} catch(Exception exp) {
 		        		exp.printStackTrace();
@@ -379,7 +380,7 @@ public class ClientController {
 					clientService.addClientOrgAccountAssociation(organisationId, clientUserType, userRole, existClient, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue(), Constants.DeleteStatus.ACTIVE.getValue());
 					
 					sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
-					clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
+					clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
 					HttpHeaders headers = new HttpHeaders();
 			        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
 			        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
@@ -423,8 +424,8 @@ public class ClientController {
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(clientUser.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
 				        // Invite Sent
-				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), clientUser , organisationId, clientUserType, userRole);
-				        clientService.SendAccountUpdateAlert(clientUser.getClientId(), organisationId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
+				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), clientUser , organisationId, clientUserType, userRole, modifiedByUserId);
+				        clientService.SendAccountUpdateAlert(clientUser.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
 				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
 		        	} catch(Exception exp) {
 		        		exp.printStackTrace();
@@ -734,7 +735,7 @@ public class ClientController {
 
 	//Need to change like Registration flow
 	private void sendNewClientUserInviteEmail(String organisationName, ClientUser clientUser, Integer organisationId, Integer clientUserType,
-			Integer userRole) {
+			Integer userRole, Integer modifiedByUserId) {
 		// TODO Auto-generated method stub
 		
 		HashMap<String, Object> userObj = new HashMap();

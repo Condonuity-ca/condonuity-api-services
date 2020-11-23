@@ -473,12 +473,14 @@ public class ClientService {
 		return clientAssociations;
 	}
 
-	public void SendAccountUpdateAlert(Integer clientUserId, Integer clientOrgId, int notificationType) {
+	public void SendAccountUpdateAlert(Integer clientUserId, Integer clientOrgId, Integer modifiedByUserId, int notificationType) {
 		// TODO Auto-generated method stub
 		Notification notification = new Notification();
 		String message = "Account Update";
 		String subContent = " account updated";
 		ClientUser clientuser = clientUserRepository.findByClientId(clientUserId);
+		ClientUser modifiedByClientuser = clientUserRepository.findByClientId(modifiedByUserId);
+		String userName = modifiedByClientuser.getFirstName()+" "+modifiedByClientuser.getLastName();
 		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrgId);
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(clientUserId);
@@ -488,9 +490,7 @@ public class ClientService {
 			case 18 :{//CLIENT_USER_PROFILE_INVITE
 				message = "New User Invite!";
 //				subContent = "New user ("+clientuser.getEmail()+") invited from Organisation";
-				
-				subContent = "Organisation "+clientOrganisation.getOrganisationName()+" has sent an invitation to a new user: "+clientuser.getEmail();
-
+				subContent = /* "Organisation "+clientOrganisation.getOrganisationName() */"User "+userName+" has sent an invitation to a new user: "+clientuser.getEmail();
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}

@@ -329,8 +329,8 @@ public class ProjectController {
                     @ApiResponse(code = 200, message = "Project Cancelled Successfully")
             }
     )
-	@PutMapping("/client/project/cancel/{projectId}")
-	public ResponseEntity<Object> cancelProject(@PathVariable("projectId") Integer projectId) {
+	@PutMapping("/client/project/cancel/{projectId}/{clientUserId}")
+	public ResponseEntity<Object> cancelProject(@PathVariable("projectId") Integer projectId, @PathVariable("clientUserId") Integer clientUserId) {
 		
 		Project project = projectService.cancelProject(projectId);
         if (project == null) {
@@ -346,7 +346,7 @@ public class ProjectController {
             		StatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",
             		"Project cancelled successfully");
-        	SendProjectNotification(project, NotificationType.PROJECT_CANCEL);
+        	SendProjectCancelNotification(project, clientUserId, NotificationType.PROJECT_CANCEL);
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
         }
         
@@ -993,6 +993,11 @@ public class ProjectController {
 	private void SendProjectNotification(Project project, NotificationType notificationType) {
 		// TODO Auto-generated method stub
 		projectService.sendProjectNotification(project, notificationType.getValue());
+	}
+	
+	private void SendProjectCancelNotification(Project project,Integer clientUserId, NotificationType notificationType) {
+		// TODO Auto-generated method stub
+		projectService.sendProjectCancelNotification(project, clientUserId, notificationType.getValue());
 	}
 	
 	private void SendBidNotification(VendorBid vendorBid, NotificationType notificationType) {

@@ -20,7 +20,8 @@ public class VendorUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId = 0;
-	private Integer vendorOrganisationId = 0;
+    private Integer vendorOrganisationId = 0;
+	private Integer modifiedByUserId = 0;
 	private Integer userType = Constants.UserType.VENDOR.getValue();
     private Integer userRole = Constants.UserRole.USER.getValue();
     private String firstName = "";
@@ -55,6 +56,12 @@ public class VendorUser {
 	}
 	public void setVendorOrganisationId(Integer vendorOrganisationId) {
 		this.vendorOrganisationId = vendorOrganisationId;
+	}
+	public Integer getModifiedByUserId() {
+		return modifiedByUserId;
+	}
+	public void setModifiedByUserId(Integer modifiedByUserId) {
+		this.modifiedByUserId = modifiedByUserId;
 	}
 	public Integer getUserType() {
 		return userType;
@@ -126,11 +133,11 @@ public class VendorUser {
 	
 	@Override
 	public String toString() {
-		return "VendorUser [userId=" + userId + ", vendorOrganisationId=" + vendorOrganisationId + ", userType="
-				+ userType + ", userRole=" + userRole + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", phone=" + phone + ", email=" + email + ", accountStatus=" + accountStatus
-				+ ", accountVerificationStatus=" + accountVerificationStatus + ", deleteStatus=" + deleteStatus
-				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "VendorUser [userId=" + userId + ", vendorOrganisationId=" + vendorOrganisationId + ", modifiedByUserId="
+				+ modifiedByUserId + ", userType=" + userType + ", userRole=" + userRole + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", phone=" + phone + ", email=" + email + ", accountStatus="
+				+ accountStatus + ", accountVerificationStatus=" + accountVerificationStatus + ", deleteStatus="
+				+ deleteStatus + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 	
 }

@@ -25,6 +25,8 @@ public class ProjectAwards {
     @NotNull
 	private Integer projectId = 0;
     @NotNull
+	private Integer modifiedByUserId = 0;
+    @NotNull
     private Integer awardedBidId = 0;
     @NotNull
 	private Integer vendorOrganisationId = 0;
@@ -59,6 +61,14 @@ public class ProjectAwards {
 
 	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
+	}
+
+	public Integer getModifiedByUserId() {
+		return modifiedByUserId;
+	}
+
+	public void setModifiedByUserId(Integer modifiedByUserId) {
+		this.modifiedByUserId = modifiedByUserId;
 	}
 
 	public Integer getAwardedBidId() {
@@ -135,10 +145,10 @@ public class ProjectAwards {
 
 	@Override
 	public String toString() {
-		return "ProjectAwards [id=" + id + ", projectId=" + projectId + ", awardedBidId=" + awardedBidId
-				+ ", vendorOrganisationId=" + vendorOrganisationId + ", comments=" + comments + ", awardDate="
-				+ awardDate + ", totalPrice=" + totalPrice + ", startDate=" + startDate + ", duration=" + duration
-				+ ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
+		return "ProjectAwards [id=" + id + ", projectId=" + projectId + ", modifiedByUserId=" + modifiedByUserId
+				+ ", awardedBidId=" + awardedBidId + ", vendorOrganisationId=" + vendorOrganisationId + ", comments="
+				+ comments + ", awardDate=" + awardDate + ", totalPrice=" + totalPrice + ", startDate=" + startDate
+				+ ", duration=" + duration + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }

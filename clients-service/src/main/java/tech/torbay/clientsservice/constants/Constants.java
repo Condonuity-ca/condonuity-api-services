@@ -696,14 +696,11 @@ public class Constants {
 		// changes -c, expiry -e, new - n, won -w, lose -l, new bid - b, 
 		PROJECT_CREATE(1),
 		PROJECT_UPDATE(2),
-		PROJECT_CANCEL(21),
 	    PROJECT_EXPIRY(3),
 	    BID_CREATE(4),
 	    BID_UPDATE(5),
-	    BID_WITHDRAWN(51),
 		BID_WON_LOSE(6),
 		REVIEW_CREATE(7),
-		REVIEW_UPDATE(71),
 		REVIEW_COMMENT(8),
 		TASK_CREATE(9),
 		TASK_UPDATE(10),
@@ -728,7 +725,15 @@ public class Constants {
 		ANNUAL_CONTRACT_EXPIRING(29),
 		ANNUAL_CONTRACT_EXPIRED(30),
 		PROJECT_QUESTION_CREATE(31),
-		PROJECT_QUESTION_ANSWER(32);
+		PROJECT_QUESTION_ANSWER(32),
+		PROJECT_CANCEL(33),
+		BID_WITHDRAWN(34),
+		REVIEW_UPDATE(35),
+		USER_NAME_CHANGE(36),
+		USER_PHONE_CHANGE(37),
+		USER_NAME_PHONE_CHANGE(38),
+		USER_PASSWORD_CHANGE(39),
+		USER_IMAGE_CHANGE(40);
 
 	    private int value;
 	    private static Map map = new HashMap<>();

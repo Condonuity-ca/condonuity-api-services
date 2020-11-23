@@ -130,12 +130,13 @@ public class ClientController {
     	
     	Integer clientUserId = Integer.parseInt(String.valueOf(requestData.get("clientUserId")));
     	Integer clientOrgId = Integer.parseInt(String.valueOf(requestData.get("clientOrgId")));
+    	Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
     	
     	HashMap<String, Object> list = new HashMap();
     	
     	if(clientService.getUsersCountByOrganisationId(clientOrgId) > 1) {
     		
-    		Object client = clientService.deleteClientUserById(clientUserId, clientOrgId);
+    		Object client = clientService.deleteClientUserById(clientUserId, clientOrgId, modifiedByUserId);
     		
     		if(client != null) {
     			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
@@ -154,7 +155,7 @@ public class ClientController {
     	} else {
     		
     		if(clientService.isInvitedClient(clientUserId, clientOrgId)) {
-    			Object client = clientService.deleteClientUserById(clientUserId, clientOrgId);
+    			Object client = clientService.deleteClientUserById(clientUserId, clientOrgId, modifiedByUserId);
         		
         		if(client != null) {
         			list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());

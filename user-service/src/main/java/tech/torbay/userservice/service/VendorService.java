@@ -147,6 +147,8 @@ public class VendorService {
 
 	public VendorOrganisation addVendorOrgnisation(VendorOrganisation vendorOrganisation) {
 		// TODO Auto-generated method stub
+		vendorOrganisation.setExpertiseCategory("");
+		vendorOrganisation.setCountryCode("");
 		return vendorOrganisationRepository.save(vendorOrganisation);
 	}
 
@@ -773,12 +775,16 @@ public class VendorService {
 			String licenses = String.valueOf(vendorOrganisationData.get("licenses")); // string - abc,abc,acbc
 			String products = String.valueOf(vendorOrganisationData.get("products")); // string - abc,abc,acbc
 			String brands = String.valueOf(vendorOrganisationData.get("brands")); // string - abc,abc,acbc
-			String memberships = String.valueOf(vendorOrganisationData.get("memberships")); // string - abc,abc,acbc
+			String memberships = String.valueOf(vendorOrganisationData.get("memberships")); 
+			// string - abc,abc,acbc
+			Integer modifiedByUserId = Integer.parseInt(String.valueOf(vendorOrganisationData.get("modifiedByUserId"))); // string - abc,abc,acbc
 			
 			VendorOrganisation vendorOrg = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 			vendorOrganisation.setActiveStatus(vendorOrg.getActiveStatus());
 			vendorOrganisation.setDeleteStatus(vendorOrg.getDeleteStatus());
 			vendorOrganisation.setUserType(vendorOrg.getUserType());
+			vendorOrganisation.setExpertiseCategory("");
+			vendorOrganisation.setCountryCode("");
 			vendorOrganisation = vendorOrganisationRepository.save(vendorOrganisation);
 			
 			
@@ -841,7 +847,7 @@ public class VendorService {
 			    	vendorMembershipsRepository.save(new VendorMemberships(vendorOrganisation.getVendorOrganisationId(),membership,""));
 			    }
 			    
-			    SendAccountUpdateAlert(Invalid.ID.getValue(), vendorOrganisation.getVendorOrganisationId(), NotificationType.VENDOR_ORGANISATION_UPDATE.getValue());
+			    SendAccountUpdateAlert(Invalid.ID.getValue(), vendorOrganisation.getVendorOrganisationId(), modifiedByUserId, NotificationType.VENDOR_ORGANISATION_UPDATE.getValue());
 			    
 				return vendorOrganisation;
 			}
@@ -1122,48 +1128,51 @@ public class VendorService {
 		return paymentDetails;
 	}
 
-	public VendorUser deleteVendorUserById(Integer vendorUserId) {
+	public VendorUser deleteVendorUserById(Integer vendorUserId, Integer modifiedbyUserId) {
 		// TODO Auto-generated method stub
 		VendorUser vendorUser = vendorUserRepository.findByUserId(vendorUserId);
 		vendorUser.setAccountStatus(UserAccountStatus.INACTIVE.getValue());
 		VendorUser vendorUserObj = vendorUserRepository.save(vendorUser);
 		if(vendorUserObj != null) {
-			SendAccountUpdateAlert(vendorUserId, vendorUser.getVendorOrganisationId(), NotificationType.VENDOR_USER_PROFILE_DELETE.getValue());
+			SendAccountUpdateAlert(vendorUserId, vendorUser.getVendorOrganisationId(), modifiedbyUserId, NotificationType.VENDOR_USER_PROFILE_DELETE.getValue());
 		}
 		return vendorUserObj;
 	}
 	
-	private void SendAccountUpdateAlert(Integer vendorUserId, Integer vendorOrgId, int notificationType) {
+	private void SendAccountUpdateAlert(Integer vendorUserId, Integer vendorOrgId, Integer modifiedbyUserId, int notificationType) {
 		// TODO Auto-generated method stub
 		Notification notification = new Notification();
 		String message = "Account Update";
 		String subContent = " account updated";
 		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUserId);
+		VendorUser modifiedbyVendoruser = vendorUserRepository.findByUserId(modifiedbyUserId);
 		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
 		notification.setUserType(UserType.VENDOR.getValue());
 		notification.setUserId(vendorUserId);
 		notification.setOrganisationId(vendorOrgId);
 		
+		String userName = modifiedbyVendoruser.getFirstName()+" "+modifiedbyVendoruser.getLastName();
+		
 		switch(notificationType) {
-			case 23 :{//CLIENT_USER_PROFILE_DELETE
+			case 23 :{//VENDOR_USER_PROFILE_DELETE
 				message = "User deleted!";
 //				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account deleted from Organisation";
-				subContent = "One of the organization user has deleted User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" from the organization's account.";
+				subContent = "User "+userName+" has deleted User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" from the organization's account.";
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
-			case 24 :{//CLIENT_USER_PROFILE_UPDATE
+			case 24 :{//VENDOR_USER_PROFILE_UPDATE
 				message = "User account update!";
 //				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account updated in our Organisation";
-				subContent = "User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" account information has been updated by One of the organization user";
+				subContent = "User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" account information has been updated by User "+userName;
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
-			case 25 :{//CLIENT_ORGANISATION_UPDATE
+			case 25 :{//VENDOR_ORGANISATION_UPDATE
 				message = "Update";
 				
 //				subContent = vendorOrganisation.getCompanyName() +" - our organisation profile information updated";
-				subContent = "Update: Your organization's profile information was recently edited.";
+				subContent = "Your organization's profile information was recently edited by User "+userName;
 				notification.setNotificationCategoryId(vendorOrgId);
 				break;
 			}
@@ -1191,7 +1200,8 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		
 		Integer vendorUserId = Integer.parseInt(String.valueOf(requestData.get("userId")));
-    	Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
+		Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
+    	Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
 //    	String firstName = String.valueOf(requestData.get("firstName"));
 //    	String lastName = String.valueOf(requestData.get("lastName"));
     	
@@ -1204,7 +1214,7 @@ public class VendorService {
 		VendorUser vendorUserObj = vendorUserRepository.save(vendorUser);
 		
 		if(vendorUserObj != null) {
-			SendAccountUpdateAlert(vendorUserId, vendorUser.getVendorOrganisationId(), NotificationType.VENDOR_USER_PROFILE_UPDATE.getValue());
+			SendAccountUpdateAlert(vendorUserId, vendorUser.getVendorOrganisationId(), modifiedByUserId, NotificationType.VENDOR_USER_PROFILE_UPDATE.getValue());
 		}
 		
 		return vendorUserObj;
@@ -1261,7 +1271,8 @@ public class VendorService {
 			vendorOrganisation.setCompanyName(companyName);
 			vendorOrganisation.setDescription(description);
 			vendorOrganisation.setVendorTags(vendorTags);
-			
+			vendorOrganisation.setExpertiseCategory("");
+			vendorOrganisation.setCountryCode("");
 			vendorOrganisationRepository.save(vendorOrganisation);
 			
 			try {
@@ -1296,7 +1307,8 @@ public class VendorService {
 			vendorOrganisation.setEmployeesCount(Integer.parseInt(employeesCount));
 			vendorOrganisation.setEstablishedDate(establishedDate);
 			vendorOrganisation.setAnnualRevenue(annualRevenue);
-			
+			vendorOrganisation.setExpertiseCategory("");
+			vendorOrganisation.setCountryCode("");
 			vendorOrganisationRepository.save(vendorOrganisation);
 			
 		    return vendorOrganisation;
@@ -1339,6 +1351,8 @@ public class VendorService {
 			vendorOrganisation.setContactPerson(contactPerson);
 			vendorOrganisation.setContactPersonPhone(contactPersonPhone);
 			vendorOrganisation.setContactPersonEmail(contactPersonEmail);
+			vendorOrganisation.setExpertiseCategory("");
+			vendorOrganisation.setCountryCode("");
 			
 			vendorOrganisationRepository.save(vendorOrganisation);
 			

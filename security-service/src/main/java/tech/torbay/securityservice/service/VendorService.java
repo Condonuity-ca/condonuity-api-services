@@ -137,6 +137,8 @@ public class VendorService {
 			
 			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			VendorOrganisation vendorOrganisation = mapper.convertValue(vendorOrganisationData.get("organisation"), VendorOrganisation.class);
+			vendorOrganisation.setExpertiseCategory("");
+			vendorOrganisation.setCountryCode("");
 			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.REGISTERED.getValue());
 //			vendorOrganisation.setActiveStatus(OrganisationAccountStatus.ACTIVE.getValue());//support user will activate the organisation
 			vendorOrganisation.setDeleteStatus(DeleteStatus.ACTIVE.getValue());
@@ -437,23 +439,26 @@ public class VendorService {
 				return vendorOrganisations;
 	}
 	
-	public void SendAccountUpdateAlert(Integer vendorUserId, Integer vendorOrgId, int notificationType) {
+	public void SendAccountUpdateAlert(VendorUser vendorUser, Integer vendorOrgId, int notificationType) {
 		// TODO Auto-generated method stub
 		Notification notification = new Notification();
 		String message = "Account Update";
 		String subContent = " account updated";
-		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUserId);
+		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUser.getUserId());
+		VendorUser modifiedByVendorUser = vendorUserRepository.findByUserId(vendorUser.getModifiedByUserId());
+		String userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
 		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
 		notification.setUserType(UserType.CLIENT.getValue());
-		notification.setUserId(vendorUserId);
+		notification.setUserId(vendorUser.getModifiedByUserId());
 		notification.setOrganisationId(vendorOrgId);
 		
 		switch(notificationType) {
 			case 22 :{//VENDOR_USER_PROFILE_INVITE
 				message = "New User Invite!";
 //				subContent = "New user ("+vendoruser.getEmail()+") invited from Organisation";
-				subContent = "Organisation "+vendorOrganisation.getCompanyName()+" has sent an invitation to a new user with email address: "+vendoruser.getEmail();
-				notification.setNotificationCategoryId(vendorUserId);
+			subContent = /*"Organisation "
+					+  vendorOrganisation.getCompanyName() */ "User "+ userName+" has sent an invitation to a new user with email address: "+vendoruser.getEmail();
+				notification.setNotificationCategoryId(vendorUser.getModifiedByUserId());
 				break;
 			}
 

@@ -1121,6 +1121,7 @@ public class ClientService {
 //				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 				
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
+				List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(clientOrganisationId);
 				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
 				List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(clientOrganisationId); 
 			
@@ -1138,7 +1139,7 @@ public class ClientService {
 				} 
 				if(externalMessageIds != null && externalMessageIds.size() > 0) {
 					List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
-					internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+					externalMessagesNotifications.addAll(externalMessageCommentsNotifications);
 				}
 				
 				 
@@ -1160,15 +1161,32 @@ public class ClientService {
 				
 				List<Notification> tempprojectBidsNotifications = new ArrayList<>(projectBidsNotifications);
 				for(int index = 0; index < tempprojectBidsNotifications.size(); index++) {
-					if(tempprojectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
-						ProjectAwards projectAwards = projectAwardsRepository.findOneById(tempprojectBidsNotifications.get(index).getNotificationCategoryId());
-						Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
-						VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAwards.getVendorOrganisationId()); 
-						String title = "Project award";
-						String message = "Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
-						tempprojectBidsNotifications.get(index).setTitle(title);
-						tempprojectBidsNotifications.get(index).setDescription(message);
+					//won lose
+//					if(tempprojectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
+//						ProjectAwards projectAwards = projectAwardsRepository.findOneById(tempprojectBidsNotifications.get(index).getNotificationCategoryId());
+//						Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
+//						VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAwards.getVendorOrganisationId()); 
+//						String title = "Project award";
+//						String message = "Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
+//						tempprojectBidsNotifications.get(index).setTitle(title);
+//						tempprojectBidsNotifications.get(index).setDescription(message);
+//					}
+				}
+				
+				List<Notification> tempProjectAwardsNotifications = new ArrayList<>(projectAwardsNotifications);
+				for(int index = 0; index < tempProjectAwardsNotifications.size(); index++) {
+					ProjectAwards projectAward = projectAwardsRepository.findOneById(tempProjectAwardsNotifications.get(index).getNotificationCategoryId());
+					Project project = projectRepository.findByProjectId(projectAward.getProjectId());
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAward.getVendorOrganisationId());
+					String userName = "";
+					if(projectAward.getModifiedByUserId() != null && projectAward.getModifiedByUserId() > 0) {
+						ClientUser clientUser = clientUserRepository.findByClientId(projectAward.getModifiedByUserId());
+						userName = clientUser.getFirstName()+" "+clientUser.getLastName();
 					}
+					String title = "Project award";
+					String message = "User "+userName+" awarded Project "+ project.getProjectName()+" (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
+					tempprojectBidsNotifications.get(index).setTitle(title);
+					tempprojectBidsNotifications.get(index).setDescription(message);
 				}
 				
 				internalMessagesNotifications.addAll(taskNotifications);
