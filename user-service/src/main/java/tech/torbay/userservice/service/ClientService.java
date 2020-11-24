@@ -296,16 +296,16 @@ public class ClientService {
 		return clientUserRepository.save(clientObj);
 	}
 
-	public ClientOrganisation updateOrganisation(ClientOrganisation clientOrg) {
+	public ClientOrganisation updateOrganisation(ClientOrganisation clientOrg, Integer modifiedByUserId) {
 		// TODO Auto-generated method stub
 		ClientOrganisation clientOrganisation =  clientOrganisationRepository.findByClientOrganisationId(clientOrg.getClientOrganisationId());
 		clientOrg.setActiveStatus(clientOrganisation.getActiveStatus());
 		clientOrg.setDeleteStatus(clientOrganisation.getDeleteStatus());
 		clientOrg.setUserType(Constants.UserType.CLIENT.getValue());
 		ClientOrganisation clientOrgObj = clientOrganisationRepository.save(clientOrg);
-//		if(clientOrgObj != null) {
-//			SendAccountUpdateAlert(Invalid.ID.getValue(), clientOrg.getClientOrganisationId(), modifiedByUserId, NotificationType.CLIENT_ORGANISATION_UPDATE.getValue());
-//		}
+		if(clientOrgObj != null) {
+			SendAccountUpdateAlert(Invalid.ID.getValue(), clientOrg.getClientOrganisationId(), modifiedByUserId, NotificationType.CLIENT_ORGANISATION_UPDATE.getValue());
+		}
 		return clientOrgObj;
 	}
 

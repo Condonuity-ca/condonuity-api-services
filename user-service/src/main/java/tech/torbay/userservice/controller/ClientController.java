@@ -376,9 +376,9 @@ public class ClientController {
                     @ApiResponse(code = 200, message = "client organisation details updated successfully")
             }
     )
-	@PutMapping("/client/org")
-	public ResponseEntity<Object> updateOrganisation(@RequestBody ClientOrganisation clientOrg) {
-		if(clientService.updateOrganisation(clientOrg) != null) {
+	@PutMapping("/client/org/{modifiedByUserId}")
+	public ResponseEntity<Object> updateOrganisation(@PathVariable("modifiedByUserId") Integer modifiedByUserId, @RequestBody ClientOrganisation clientOrg) {
+		if(clientService.updateOrganisation(clientOrg, modifiedByUserId) != null) {
 			ResponseMessage responseMessage = new ResponseMessage(
 					APIStatusCode.REQUEST_SUCCESS.getValue(),
             		"Success",

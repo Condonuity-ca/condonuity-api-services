@@ -23,6 +23,7 @@ import tech.torbay.vendorservice.entity.Notification;
 import tech.torbay.vendorservice.entity.NotificationViewsHistory;
 import tech.torbay.vendorservice.entity.OrganisationPayment;
 import tech.torbay.vendorservice.entity.Project;
+import tech.torbay.vendorservice.entity.ProjectAwards;
 import tech.torbay.vendorservice.entity.ProjectReviewRating;
 import tech.torbay.vendorservice.entity.UserLevelNotification;
 import tech.torbay.vendorservice.entity.UserProfileImages;
@@ -47,6 +48,7 @@ import tech.torbay.vendorservice.repository.ExternalMessageCommentRepository;
 import tech.torbay.vendorservice.repository.NotificationRepository;
 import tech.torbay.vendorservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.vendorservice.repository.PredefinedTagsRepository;
+import tech.torbay.vendorservice.repository.ProjectAwardsRepository;
 import tech.torbay.vendorservice.repository.ProjectRepository;
 import tech.torbay.vendorservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.vendorservice.repository.UserLevelNotificationRepository;
@@ -117,6 +119,8 @@ public class VendorService {
 	ProjectRepository projectRepository;
 	@Autowired
 	VendorBidRepository vendorBidRepository;
+	@Autowired
+	ProjectAwardsRepository projectAwardsRepository;
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -894,6 +898,7 @@ public class VendorService {
 		//4.All bids(include competitor) Alert
 		List<Notification> allAccountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(vendorOrganisationId);
 		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications = notificationRepository.findAllOtherCompetitorBidAwardsForVendorBiddedProjectNotifications(vendorOrganisationId);
 		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
 		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
@@ -947,16 +952,20 @@ public class VendorService {
 			tempallOtherCompetitorBidsNotifications.get(index).setTitle(title);
 			tempallOtherCompetitorBidsNotifications.get(index).setDescription(message);
 			
-			if(tempallOtherCompetitorBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID_WON_LOSE
-				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
-				title = "Hard luck!";
-				message = "Project "+project.getProjectName()+" has been awarded to another bidder (Project ID: "+project.getProjectId()+"), by "+clientOrganisation.getOrganisationName();
-				tempallOtherCompetitorBidsNotifications.get(index).setTitle(title);
-				tempallOtherCompetitorBidsNotifications.get(index).setDescription(message);	
-			}
-			
 		}
 		
+		List<Notification> tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications = new ArrayList<>(allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications);
+		for(int index = 0; index < tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.size(); index++) {
+			ProjectAwards projectAward = projectAwardsRepository.findOneById(tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.get(index).getNotificationCategoryId());
+			Project project = projectRepository.findByProjectId(projectAward.getProjectId());
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+			//BID_WON_LOSE
+			String title = "Hard luck!";
+			String message = "Project "+project.getProjectName()+" has been awarded to another bidder (Project ID: "+project.getProjectId()+"), by "+clientOrganisation.getOrganisationName();
+			tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.get(index).setTitle(title);
+			tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.get(index).setDescription(message);	
+			
+		}
 		List<Notification> tempallOtherCompetitorBidsForInterestedProjectsNotifications = new ArrayList<>(allOtherCompetitorBidsForInterestedProjectsNotifications);
 		for(int index = 0; index < tempallOtherCompetitorBidsForInterestedProjectsNotifications.size(); index++) {
 			VendorBid vendorBid = vendorBidRepository.findOneById(tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).getNotificationCategoryId());
@@ -966,13 +975,6 @@ public class VendorService {
 			tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setTitle(title);
 			tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setDescription(message);
 			
-			if(tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).getNotificationCategoryType() == 6) {//BID_WON_LOSE
-				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
-				title = "Hard luck!";
-				message = "Project "+project.getProjectName()+" has been awarded to another bidder (Project ID: "+project.getProjectId()+"), by "+clientOrganisation.getOrganisationName();
-				tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setTitle(title);
-				tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setDescription(message);	
-			}
 		}
 		
 		List<Notification> tempbiddedProjectCancelledNotifications = new ArrayList<>(biddedProjectCancelledNotifications);
@@ -1001,6 +1003,7 @@ public class VendorService {
 		filteredNotifications.addAll(projectBidsNotifications);
 		//if same project award more than 1 time may lead notification issue in future, needs to check this
 		filteredNotifications.addAll(projectAwardsNotifications);
+		filteredNotifications.addAll(tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications);
 		filteredNotifications.addAll(projectInterestNotifications);
 		filteredNotifications.addAll(reviewRatingNotifications);
 		

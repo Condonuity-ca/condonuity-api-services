@@ -105,9 +105,22 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		" ( bid_other.project_id = pro.project_id ) " +
     		"where (" + 
     		"( bid_other.id = nt.notification_category_id and nt.organisation_id != (?1) ) and " + 
-    		"( notification_category_type = 4 or notification_category_type = 5 or notification_category_type = 6) )", 
+    		"( notification_category_type = 4 or notification_category_type = 5 ) )", 
     		nativeQuery = true)
 	List<Notification> findAllOtherCompetitorBidsForVendorBiddedProjectNotifications(Integer vendorOrganisationId);
+    
+    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    		"inner join " + 
+    		"condonuitydev.bids bd on ( bd.vendor_org_id = (?1) ) " + 
+    		"inner join " + 
+    		"condonuitydev.projects pro " + 
+    		"on ( pro.project_id = bd.project_id ) " + 
+    		"inner join condonuitydev.project_awards pa on pa.project_id = pro.project_id " + 
+    		"where ( " + 
+    		"( notification_category_id = pa.id and nt.organisation_id != (?1) ) and " + 
+    		"( notification_category_type = 6) )", 
+    		nativeQuery = true)
+	List<Notification> findAllOtherCompetitorBidAwardsForVendorBiddedProjectNotifications(Integer vendorOrganisationId);
     
     @Query(value ="select nt.* from condonuitydev.notification nt " +
     		"inner join " + 
