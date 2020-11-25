@@ -295,13 +295,13 @@ public class ClientService {
 		int changeType = 0;
 		int changeTypeName = 0;
 		int changeTypePhone = 0;
-		if(clientObj.getFirstName().equals(client.getFirstName())) {
+		if(!clientObj.getFirstName().equals(client.getFirstName())) {
 			changeTypeName = 1;
 		} 
-		if(clientObj.getLastName().equals(client.getLastName())) {
+		if(!clientObj.getLastName().equals(client.getLastName())) {
 			changeTypeName = 1;
 		} 
-		if(clientObj.getPhone().equals(client.getPhone())) {
+		if(!clientObj.getPhone().equals(client.getPhone())) {
 			changeTypePhone = 1;
 		}
 		
