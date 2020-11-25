@@ -286,12 +286,6 @@ public class ClientService {
 		
 		ClientUser clientObj = clientUserRepository.findByClientId(client.getClientId());
 		
-		clientObj.setCity(client.getCity());
-		clientObj.setPhone(client.getPhone());
-		clientObj.setFirstName(client.getFirstName());
-		clientObj.setLastName(client.getLastName());
-		clientObj.setLegalName(client.getLegalName());
-		clientObj.setCountryCode(client.getCountryCode());
 		int changeType = 0;
 		int changeTypeName = 0;
 		int changeTypePhone = 0;
@@ -311,7 +305,16 @@ public class ClientService {
 			changeType = NotificationType.USER_NAME_CHANGE.getValue();
 		} else if(changeTypePhone == 1) {
 			changeType = NotificationType.USER_PHONE_CHANGE.getValue();
+		} else {
+			changeType = NotificationType.USER_NAME_PHONE_CHANGE.getValue();
 		}
+		
+		clientObj.setCity(client.getCity());
+		clientObj.setPhone(client.getPhone());
+		clientObj.setFirstName(client.getFirstName());
+		clientObj.setLastName(client.getLastName());
+		clientObj.setLegalName(client.getLegalName());
+		clientObj.setCountryCode(client.getCountryCode());
 		
 		SendUserProfileUpdateAlert(client, changeType );
 		

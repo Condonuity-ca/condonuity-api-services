@@ -755,10 +755,6 @@ public class VendorService {
 		
 		VendorUser vendorUserObj = vendorUserRepository.findByUserId(vendorUser.getUserId());
 		
-		vendorUserObj.setFirstName(vendorUser.getFirstName());
-		vendorUserObj.setLastName(vendorUser.getLastName());
-		vendorUserObj.setPhone(vendorUser.getPhone());
-		
 		int changeType = 0;
 		int changeTypeName = 0;
 		int changeTypePhone = 0;
@@ -781,6 +777,10 @@ public class VendorService {
 		}
 		
 		SendUserProfileUpdateAlert(vendorUser, changeType );
+		
+		vendorUserObj.setFirstName(vendorUser.getFirstName());
+		vendorUserObj.setLastName(vendorUser.getLastName());
+		vendorUserObj.setPhone(vendorUser.getPhone());
 		
 		return vendorUserRepository.save(vendorUserObj);
 	}
@@ -1246,7 +1246,7 @@ public class VendorService {
 		notification.setNotificationCategoryType(notificationType);
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);

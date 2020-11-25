@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tech.torbay.userservice.Utils.Utils;
 import tech.torbay.userservice.constants.Constants;
+import tech.torbay.userservice.constants.Constants.Invalid;
+import tech.torbay.userservice.constants.Constants.NotificationType;
 import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.ProjectPostTo;
 import tech.torbay.userservice.constants.Constants.ProjectPostType;
@@ -41,6 +43,7 @@ import tech.torbay.userservice.entity.ExternalMessageComment;
 import tech.torbay.userservice.entity.ExternalMessageOrganisations;
 import tech.torbay.userservice.entity.InternalMessage;
 import tech.torbay.userservice.entity.InternalMessageComment;
+import tech.torbay.userservice.entity.Notification;
 import tech.torbay.userservice.entity.PredefinedTags;
 import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
@@ -73,6 +76,7 @@ import tech.torbay.userservice.repository.ExternalMessageOrganisationsRepository
 import tech.torbay.userservice.repository.ExternalMessageRepository;
 import tech.torbay.userservice.repository.InternalMessageCommentRepository;
 import tech.torbay.userservice.repository.InternalMessageRepository;
+import tech.torbay.userservice.repository.NotificationRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
 import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
@@ -166,6 +170,8 @@ public class UserService {
 	AmenitiesRepository amenitiesRepository;
 	@Autowired
 	VendorServicesCitiesRepository vendorServicesCitiesRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 	
 	public User findByEmail(String email) {
 		// TODO Auto-generated method stub
@@ -182,7 +188,32 @@ public class UserService {
 		}
 //		user.setPassword(/* SecurityAES.encrypt( */user.get("password")/* ) */);
 		userObj.setPassword(password);
+		SendChangePasswordAlert(userId, userType, NotificationType.USER_PASSWORD_CHANGE.getValue());
 		return userRepository.save(userObj);
+	}
+	
+	private void SendChangePasswordAlert(Integer userId, Integer userType, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Update";
+		String subContent = "Your user account information was recently changed: Password Reset";
+//		if(userType == UserType.CLIENT.getValue()) {
+//			ClientUser clientUser = clientUserRepository.findByClientId(userId);
+//		} else if(userType == UserType.VENDOR.getValue()) {
+//			VendorUser vendoruser = vendorUserRepository.findByUserId(userId);
+//		}
+		notification.setUserType(userType);
+		notification.setUserId(userId);
+		notification.setOrganisationId(Invalid.ID.getValue());
+		
+		
+		notification.setNotificationCategoryType(notificationType);
+		
+		notification.setTitle(message);
+		notification.setDescription(subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 
 	public List<Map<String, Object>> getClientSearchResults(Map<String, Object> requestData) {
