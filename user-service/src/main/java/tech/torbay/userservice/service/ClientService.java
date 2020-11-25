@@ -292,12 +292,39 @@ public class ClientService {
 		clientObj.setLastName(client.getLastName());
 		clientObj.setLegalName(client.getLegalName());
 		clientObj.setCountryCode(client.getCountryCode());
+		int changeType = 0;
+		int changeTypeName = 0;
+		int changeTypePhone = 0;
+		if(clientObj.getFirstName().equals(client.getFirstName())) {
+			changeTypeName = 1;
+		} 
+		if(clientObj.getLastName().equals(client.getLastName())) {
+			changeTypeName = 1;
+		} 
+		if(clientObj.getPhone().equals(client.getPhone())) {
+			changeTypePhone = 1;
+		}
+		
+		if(changeTypePhone == 1 && changeTypeName == 1) {
+			changeType = NotificationType.USER_NAME_PHONE_CHANGE.getValue();
+		} else if(changeTypeName == 1) {
+			changeType = NotificationType.USER_NAME_CHANGE.getValue();
+		} else if(changeTypePhone == 1) {
+			changeType = NotificationType.USER_PHONE_CHANGE.getValue();
+		}
+		
+		SendUserProfileUpdateAlert(client, changeType );
 		
 		return clientUserRepository.save(clientObj);
 	}
 
-	public ClientOrganisation updateOrganisation(ClientOrganisation clientOrg, Integer modifiedByUserId) {
+	public ClientOrganisation updateOrganisation(Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
+		
+		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+		ClientOrganisation clientOrg = mapper.convertValue(requestData.get("clientOrganisation"), ClientOrganisation.class);
+		Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
+		
 		ClientOrganisation clientOrganisation =  clientOrganisationRepository.findByClientOrganisationId(clientOrg.getClientOrganisationId());
 		clientOrg.setActiveStatus(clientOrganisation.getActiveStatus());
 		clientOrg.setDeleteStatus(clientOrganisation.getDeleteStatus());
@@ -1094,6 +1121,44 @@ public class ClientService {
 		
 		notificationRepository.save(notification);
 	}
+	
+	private void SendUserProfileUpdateAlert(ClientUser clientUser, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		String modifiedBy = clientUser.getFirstName()+" "+clientUser.getLastName();
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(clientUser.getClientId());
+		notification.setOrganisationId(Invalid.ID.getValue());
+		notification.setNotificationCategoryId(clientUser.getClientId());
+		//Update: Your user account information was recently changed: Change type
+		message = "Update";
+		subContent = "Your user account information was recently changed: ";
+		String changeType = "";
+		switch(notificationType) {
+			case 36 :{
+				changeType = "Name";
+				break;
+			}
+			case 37 :{
+				changeType = "Phone";
+				break;
+			}
+			case 38 :{
+				changeType = "Name and Phone";
+				break;
+			}
+
+		}
+		subContent = subContent + changeType;
+		notification.setNotificationCategoryType(notificationType);
+		notification.setTitle(message);
+		notification.setDescription(subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
 
 	public int getUsersCountByOrganisationId(Integer clientOrgId) {
 		// TODO Auto-generated method stub
@@ -1856,7 +1921,7 @@ public class ClientService {
 		int targetOrganisationId = clientTask.getClientOrganisationId();
 		notification.setFromOrganisationId(sourceOrganisationId);
 //		notification.setToUserId(externalMessageComment.getUserId());
-//		notification.setToUserType(externalMessageComment.getUserType());
+		notification.setToUserType(UserType.CLIENT.getValue());
 		notification.setToOrganisationId(targetOrganisationId);
 		
 		userLevelNotificationRepository.save(notification);

@@ -1120,6 +1120,8 @@ public class ClientService {
 //				List<Notification> notifications = notificationRepository.findAll();
 //				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 				
+				List<Notification> userProfileNotifications = notificationRepository.getUserProfileNotifications(clientId);
+				
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
 				List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(clientOrganisationId);
 				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
@@ -1231,6 +1233,7 @@ public class ClientService {
 					}
 				}
 				
+				filteredNotifications.addAll(userProfileNotifications);
 				filteredNotifications.addAll(tempprojectBidsNotifications);
 //				filteredNotifications.addAll(projectBidsNotifications);
 				filteredNotifications.addAll(tempallPostedProjectsForClientNotifications);
@@ -1331,6 +1334,8 @@ public class ClientService {
 //				List<Notification> notifications = notificationRepository.findAll();
 //				List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 				
+				List<Notification> userProfileNotifications = notificationRepository.getUserProfileNotifications(clientId);
+				
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
 				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
 				List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(clientOrganisationId); 
@@ -1422,6 +1427,7 @@ public class ClientService {
 					}
 				}
 				
+				filteredNotifications.addAll(userProfileNotifications);
 				filteredNotifications.addAll(tempprojectBidsNotifications);
 //				filteredNotifications.addAll(projectBidsNotifications);
 				filteredNotifications.addAll(tempallPostedProjectsForClientNotifications);

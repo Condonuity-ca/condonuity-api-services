@@ -758,9 +758,71 @@ public class VendorService {
 		vendorUserObj.setFirstName(vendorUser.getFirstName());
 		vendorUserObj.setLastName(vendorUser.getLastName());
 		vendorUserObj.setPhone(vendorUser.getPhone());
+		
+		int changeType = 0;
+		int changeTypeName = 0;
+		int changeTypePhone = 0;
+		if(vendorUserObj.getFirstName().equals(vendorUser.getFirstName())) {
+			changeTypeName = 1;
+		} 
+		if(vendorUserObj.getLastName().equals(vendorUser.getLastName())) {
+			changeTypeName = 1;
+		} 
+		if(vendorUserObj.getPhone().equals(vendorUser.getPhone())) {
+			changeTypePhone = 1;
+		}
+		
+		if(changeTypePhone == 1 && changeTypeName == 1) {
+			changeType = NotificationType.USER_NAME_PHONE_CHANGE.getValue();
+		} else if(changeTypeName == 1) {
+			changeType = NotificationType.USER_NAME_CHANGE.getValue();
+		} else if(changeTypePhone == 1) {
+			changeType = NotificationType.USER_PHONE_CHANGE.getValue();
+		}
+		
+		SendUserProfileUpdateAlert(vendorUser, changeType );
+		
 		return vendorUserRepository.save(vendorUserObj);
 	}
 
+	private void SendUserProfileUpdateAlert(VendorUser vendorUser, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		String modifiedBy = vendorUser.getFirstName()+" "+vendorUser.getLastName();
+		notification.setUserType(UserType.VENDOR.getValue());
+		notification.setUserId(vendorUser.getUserId());
+		notification.setOrganisationId(Invalid.ID.getValue());
+		notification.setNotificationCategoryId(vendorUser.getUserId());
+		//Update: Your user account information was recently changed: Change type
+		message = "Update";
+		subContent = "Your user account information was recently changed: ";
+		String changeType = "";
+		switch(notificationType) {
+			case 36 :{
+				changeType = "Name";
+				break;
+			}
+			case 37 :{
+				changeType = "Phone";
+				break;
+			}
+			case 38 :{
+				changeType = "Name and Phone";
+				break;
+			}
+
+		}
+		subContent = subContent + changeType;
+		notification.setNotificationCategoryType(notificationType);
+		notification.setTitle(message);
+		notification.setDescription(subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		
+		notificationRepository.save(notification);
+	}
+	
 	public Object updateVendorOrganisation(Map<String, Object> vendorOrganisationData) {
 		// TODO Auto-generated method stub
 		try {

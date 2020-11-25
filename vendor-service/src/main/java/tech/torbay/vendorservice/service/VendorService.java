@@ -886,6 +886,7 @@ public class VendorService {
 		
 //		List<Notification> notifications = notificationRepository.findAll();
 //		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
+		List<Notification> userProfileNotifications = notificationRepository.getUserProfileNotifications(vendorId);
 		
 		List<Notification> allOpenProjectsNotifications = notificationRepository.findAllOpenProjectBidsNotifications();
 		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
@@ -999,6 +1000,7 @@ public class VendorService {
 			
 		}
 		
+		filteredNotifications.addAll(userProfileNotifications);
 		filteredNotifications.addAll(allOpenProjectsNotifications);
 		filteredNotifications.addAll(projectBidsNotifications);
 		//if same project award more than 1 time may lead notification issue in future, needs to check this
@@ -1041,8 +1043,10 @@ public class VendorService {
 					sendorLegalCompanyName = clientOrganisation.getManagementCompany();
 				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
 					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
-					sendorOrganisationName = vendorOrganisation.getCompanyName();
-					sendorLegalCompanyName = vendorOrganisation.getLegalName();
+					if(vendorOrganisation != null) {
+						sendorOrganisationName = vendorOrganisation.getCompanyName();
+						sendorLegalCompanyName = vendorOrganisation.getLegalName();
+					}
 				}
 			} else {
 				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
@@ -1109,6 +1113,8 @@ public class VendorService {
 //		List<Notification> notifications = notificationRepository.findAll();
 //		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
 		
+		List<Notification> userProfileNotifications = notificationRepository.getUserProfileNotifications(vendorId);
+		
 		List<Notification> allOpenProjectsNotifications = notificationRepository.findAllOpenProjectBidsNotifications();
 		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
 		List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(vendorOrganisationId);
@@ -1120,6 +1126,7 @@ public class VendorService {
 		//4.All bids(include competitor) Alert
 		List<Notification> allAccountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(vendorOrganisationId);
 		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications = notificationRepository.findAllOtherCompetitorBidAwardsForVendorBiddedProjectNotifications(vendorOrganisationId);
 		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
 		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
@@ -1164,10 +1171,12 @@ public class VendorService {
 			filteredNotifications.add(notification);
 		}
 		
+		filteredNotifications.addAll(userProfileNotifications);
 		filteredNotifications.addAll(allOpenProjectsNotifications);
 		filteredNotifications.addAll(projectBidsNotifications);
 		//if same project award more than 1 time may lead notification issue in future, needs to check this
 		filteredNotifications.addAll(projectAwardsNotifications);
+		filteredNotifications.addAll(allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications);
 		filteredNotifications.addAll(projectInterestNotifications);
 		filteredNotifications.addAll(reviewRatingNotifications);
 		

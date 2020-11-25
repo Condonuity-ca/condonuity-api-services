@@ -39,7 +39,7 @@ public interface UserLevelNotificationRepository extends JpaRepository<UserLevel
     @Query(value = "SELECT * FROM condonuitydev.user_level_notification where " + 
     		"( notification_category_type = 9 or " + 
     		"notification_category_type = 10 or " +
-    		"notification_category_type = 11 ) and to_organisation_id = (?1) and ( to_user_id = (?2) or to_user_id = 0 ) and to_user_type = 1" 
+    		"notification_category_type = 11 ) and to_organisation_id = (?1) and to_user_type = 1" 
     		, nativeQuery = true)
 	List<UserLevelNotification> findAllTaskNotifications(Integer clientOrganisationId, Integer clientId);
     
