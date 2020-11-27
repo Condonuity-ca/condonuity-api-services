@@ -1220,11 +1220,26 @@ public class UserController {
 		        			"User Already Accepted an Invitation using this Hash");
 		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 				} else {
-					ResponseMessage responseMessage = new ResponseMessage(
-		        			APIStatusCode.REQUEST_SUCCESS.getValue(),
-		        			"Success",
-		        			"User not used this hash for accepting an invite");
-		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+//					ResponseMessage responseMessage = new ResponseMessage(
+//		        			APIStatusCode.REQUEST_SUCCESS.getValue(),
+//		        			"Success",
+//		        			"User not used this hash for accepting an invite");
+//		        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+					boolean isPasswordRequired = false;
+					User user = userService.findByIdAndUserType(userId, userType);
+					if(user.getPassword() != null && user.getPassword().trim().length() > 0) {
+						isPasswordRequired = false;
+					} else {
+						isPasswordRequired = true;
+					}
+					
+					HashMap<String, Object> list = new HashMap();
+					list.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+				 	list.put("statusMessage", "Success");
+				 	list.put("responseMessage", "User not used this hash for accepting an invite");
+				 	list.put("isPasswordRequired",isPasswordRequired);
+				 	
+				 	return new ResponseEntity<Object>(list, HttpStatus.OK);
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

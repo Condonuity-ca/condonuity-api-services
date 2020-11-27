@@ -13,6 +13,7 @@ import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
 import tech.torbay.securityservice.constants.Constants.UserType;
+import tech.torbay.securityservice.constants.Constants.VerificationStatus;
 import tech.torbay.securityservice.entity.ClientAssociation;
 import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
@@ -392,15 +393,20 @@ public class ClientService {
 		if(clientOrg != null && clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() 
 				&& clientOrg.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() ) {
 			ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(clientInfo.getClientId(), clientInfo.getPrimaryOrgId());
-			if(clientAssociation.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociation.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+			if(clientAssociation.getDeleteStatus().equals(DeleteStatus.ACTIVE.getValue()) && 
+					clientAssociation.getUserAccountStatus().equals(UserAccountStatus.ACTIVE.getValue()) &&
+					clientAssociation.getAccountVerificationStatus().equals(VerificationStatus.VERIFIED.getValue())) {
 				clientInfo.setPrimaryOrgId(clientAssociation.getClientOrganisationId());
 				return clientInfo;
 			} else {
 				List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientInfo.getClientId());
 				
 				for (ClientAssociation clientAssociate : clientAssociations) {
-					if(clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && clientAssociate.getUserAccountStatus() == UserAccountStatus.ACTIVE.getValue()) {
+					if(clientAssociate.getDeleteStatus().equals(DeleteStatus.ACTIVE.getValue()) && 
+							clientAssociate.getUserAccountStatus().equals(UserAccountStatus.ACTIVE.getValue()) && 
+							clientAssociate.getAccountVerificationStatus().equals(VerificationStatus.VERIFIED.getValue())) {
 						clientInfo.setPrimaryOrgId(clientAssociate.getClientOrganisationId());
+						setPrimaryOrganisationId(clientInfo, clientAssociate.getClientOrganisationId());
 						return clientInfo;
 					}
 				}

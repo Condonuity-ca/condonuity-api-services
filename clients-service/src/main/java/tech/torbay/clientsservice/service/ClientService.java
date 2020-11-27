@@ -1187,8 +1187,8 @@ public class ClientService {
 					}
 					String title = "Project award";
 					String message = "User "+userName+" awarded Project "+ project.getProjectName()+" (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
-					tempprojectBidsNotifications.get(index).setTitle(title);
-					tempprojectBidsNotifications.get(index).setDescription(message);
+					tempProjectAwardsNotifications.get(index).setTitle(title);
+					tempProjectAwardsNotifications.get(index).setDescription(message);
 				}
 				
 				internalMessagesNotifications.addAll(taskNotifications);
@@ -1235,6 +1235,7 @@ public class ClientService {
 				
 				filteredNotifications.addAll(userProfileNotifications);
 				filteredNotifications.addAll(tempprojectBidsNotifications);
+				filteredNotifications.addAll(tempProjectAwardsNotifications);
 //				filteredNotifications.addAll(projectBidsNotifications);
 				filteredNotifications.addAll(tempallPostedProjectsForClientNotifications);
 //				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
@@ -1268,8 +1269,10 @@ public class ClientService {
 							sendorLegalCompanyName = clientOrganisation.getManagementCompany();
 						} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
 							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
-							sendorOrganisationName = vendorOrganisation.getCompanyName();
-							sendorLegalCompanyName = vendorOrganisation.getLegalName();
+							if(vendorOrganisation != null) {
+								sendorOrganisationName = vendorOrganisation.getCompanyName();
+								sendorLegalCompanyName = vendorOrganisation.getLegalName();								
+							}
 						}
 					} else {
 						if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
@@ -1337,6 +1340,7 @@ public class ClientService {
 				List<Notification> userProfileNotifications = notificationRepository.getUserProfileNotifications(clientId);
 				
 				List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(clientOrganisationId);
+				List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(clientOrganisationId);
 				List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(clientOrganisationId); 
 				List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(clientOrganisationId); 
 				
@@ -1373,17 +1377,17 @@ public class ClientService {
 				List<Notification> bidWithdrawnAlertNotifications = notificationRepository.findBidWithdrawnAlertNotifications(clientOrganisationId);
 				
 				List<Notification> tempprojectBidsNotifications = new ArrayList<>(projectBidsNotifications);
-				for(int index = 0; index < tempprojectBidsNotifications.size(); index++) {
-					if(tempprojectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
-						ProjectAwards projectAwards = projectAwardsRepository.findOneById(tempprojectBidsNotifications.get(index).getNotificationCategoryId());
-						Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
-						VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAwards.getVendorOrganisationId()); 
-						String title = "Project award";
-						String message = "Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
-						tempprojectBidsNotifications.get(index).setTitle(title);
-						tempprojectBidsNotifications.get(index).setDescription(message);
-					}
-				}
+//				for(int index = 0; index < tempprojectBidsNotifications.size(); index++) {
+//					if(tempprojectBidsNotifications.get(index).getNotificationCategoryType() == 6) {//BID WON LOSE
+//						ProjectAwards projectAwards = projectAwardsRepository.findOneById(tempprojectBidsNotifications.get(index).getNotificationCategoryId());
+//						Project project = projectRepository.findByProjectId(projectAwards.getProjectId());
+//						VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(projectAwards.getVendorOrganisationId()); 
+//						String title = "Project award";
+//						String message = "Project "+project.getProjectName()+" awarded (Project ID: "+project.getProjectId()+") to Contractor "+vendorOrganisation.getCompanyName();
+//						tempprojectBidsNotifications.get(index).setTitle(title);
+//						tempprojectBidsNotifications.get(index).setDescription(message);
+//					}
+//				}
 				
 				internalMessagesNotifications.addAll(taskNotifications);
 				internalMessagesNotifications.addAll(externalMessagesNotifications);
@@ -1429,6 +1433,7 @@ public class ClientService {
 				
 				filteredNotifications.addAll(userProfileNotifications);
 				filteredNotifications.addAll(tempprojectBidsNotifications);
+				filteredNotifications.addAll(projectAwardsNotifications);
 //				filteredNotifications.addAll(projectBidsNotifications);
 				filteredNotifications.addAll(tempallPostedProjectsForClientNotifications);
 //				filteredNotifications.addAll(allPostedProjectsForClientNotifications);
@@ -1462,8 +1467,10 @@ public class ClientService {
 							sendorLegalCompanyName = clientOrganisation.getManagementCompany();
 						} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
 							VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
-							sendorOrganisationName = vendorOrganisation.getCompanyName();
-							sendorLegalCompanyName = vendorOrganisation.getLegalName();
+							if(vendorOrganisation != null) {
+								sendorOrganisationName = vendorOrganisation.getCompanyName();
+								sendorLegalCompanyName = vendorOrganisation.getLegalName();
+							}
 						}
 					} else {
 						if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {

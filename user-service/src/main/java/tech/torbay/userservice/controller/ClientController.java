@@ -224,7 +224,6 @@ public class ClientController {
 	@GetMapping("/client/orgs")
 	public ResponseEntity<Object> getAllActiveClientOrganisations() {
 		List<Object> list = clientService.getAllActiveClientOrganisations();
-		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
 			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
@@ -1118,7 +1117,7 @@ public class ClientController {
 		clientService.sendTaskCommentNotification(clientTaskComment, notificationType.getValue());
 	}
 	
-	@Scheduled(cron = "0 0 6 * * ?") /* (fixedDelay = 1000 * 60 * 60 * 24) */
+	@Scheduled(cron = "0 0 5 * * ?") /* (fixedDelay = 1000 * 60 * 60 * 24) */
 	public void publish() {
 	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
 	    try {
@@ -1132,6 +1131,7 @@ public class ClientController {
 
 	private void CheckIsClientContractExpiring() {
 		// TODO Auto-generated method stub
+		logger.info("Current time is :: " + Calendar.getInstance().getTime());
 		clientService.CheckIsContractExpiring();
 	}
 }

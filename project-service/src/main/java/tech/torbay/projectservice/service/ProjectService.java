@@ -1383,13 +1383,13 @@ public class ProjectService {
 		Notification notification = new Notification();
 		String message = "Congratulations!";
 //		String subContent = " Bid Awarded";
-		String subContent = "Congratulations! You have been awarded with project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
+		String subContent = "You have been awarded with project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
 		notification.setUserType(UserType.VENDOR.getValue());
 		
 		notification.setNotificationCategoryType(notificationType);
 		notification.setNotificationCategoryId(projectAwardsObj.getId());
 		
-		notification.setUserId(0);
+		notification.setUserId(projectAwardsObj.getModifiedByUserId());
 		
 		notification.setOrganisationId(projectAwardsObj.getVendorOrganisationId());
 		notification.setTitle(message);

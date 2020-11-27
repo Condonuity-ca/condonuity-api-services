@@ -6,7 +6,6 @@ import java.util.Map;
 public class Constants {
 
 	public static final String TIME_ZONE = "UTC";
-//	public static final String TIME_ZONE_EST = "EST";
 	public static final String TIME_ZONE_EST = "UTC-5";
 	public static final int END_DATE_PROJECTS_CONSTANT = 30;
 	public static final int HOURS_24 = 24;

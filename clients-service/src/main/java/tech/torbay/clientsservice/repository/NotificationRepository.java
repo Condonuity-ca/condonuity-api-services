@@ -127,6 +127,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     @Query(value =" select nt.* from condonuitydev.notification nt " + 
     		"where ( nt.user_type = 1 and nt.user_id = (?1) and ( notification_category_type = 36 or "
     		+ "notification_category_type = 37 or "
-    		+ "notification_category_type = 38 ) )", nativeQuery = true)
+    		+ "notification_category_type = 38 or "
+    		+ "notification_category_type = 39 or "
+    		+ "notification_category_type = 40 ) )", nativeQuery = true)
 	List<Notification> getUserProfileNotifications(Integer clientId);
 }

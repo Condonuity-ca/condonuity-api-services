@@ -1212,8 +1212,10 @@ public class VendorService {
 					sendorLegalCompanyName = clientOrganisation.getManagementCompany();
 				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
 					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
-					sendorOrganisationName = vendorOrganisation.getCompanyName();
-					sendorLegalCompanyName = vendorOrganisation.getLegalName();
+					if(vendorOrganisation != null) {
+						sendorOrganisationName = vendorOrganisation.getCompanyName();
+						sendorLegalCompanyName = vendorOrganisation.getLegalName();	
+					}
 				}
 			} else {
 				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {

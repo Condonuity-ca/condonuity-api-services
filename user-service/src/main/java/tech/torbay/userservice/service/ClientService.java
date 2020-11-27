@@ -2067,10 +2067,10 @@ public class ClientService {
         	
         	System.out.println("expireIn : "+ expireIn);
         	
-        	if(expireIn == 1) {
+        	if(expireIn == 30) {
         		// project expire in 1 day
         		SendClientContractExpiringNotification(Constants.DAY_30, clientContract, NotificationType.ANNUAL_CONTRACT_EXPIRING.getValue());
-        	} else if(expireIn == 2) {
+        	} else if(expireIn == 60) {
         		// project expire in 2 days
         		SendClientContractExpiringNotification(Constants.DAY_60, clientContract, NotificationType.ANNUAL_CONTRACT_EXPIRING.getValue());
         	} else if(expireIn == 0){
@@ -2098,7 +2098,7 @@ public class ClientService {
 //				message = "Annual Contract Expired";
 //				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expired";
 				message = "Annual contract Expired!";
-				subContent = "Contract "+clientContract.getNotes()+" has expired";
+				subContent = "Contract "+clientContract.getNotes()+" has expired.";
 				
 				break;
 			}
@@ -2112,7 +2112,7 @@ public class ClientService {
 		notification.setNotificationCategoryId(clientContract.getId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);

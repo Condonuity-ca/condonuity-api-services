@@ -481,7 +481,7 @@ public class VendorController {
 			        		"Vendor User Account Created Successfully");
 					// Invite Sent
 					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
-					
+					vendorService.SendVendorNewRExistingUserInviteAlert(vendor_user, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(
@@ -532,7 +532,7 @@ public class VendorController {
 		        		"Vendor User Invited Successfully");
 				// Invite Sent
 				sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
-				
+				vendorService.SendVendorNewRExistingUserInviteAlert(vendor_user, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 				return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 			} else {
 				ResponseMessage responseMessage = new ResponseMessage(

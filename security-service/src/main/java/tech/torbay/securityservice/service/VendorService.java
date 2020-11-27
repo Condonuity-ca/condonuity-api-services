@@ -447,10 +447,44 @@ public class VendorService {
 		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUser.getUserId());
 		VendorUser modifiedByVendorUser = vendorUserRepository.findByUserId(vendorUser.getModifiedByUserId());
 		String userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
-		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
+//		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(vendorUser.getModifiedByUserId());
 		notification.setOrganisationId(vendorOrgId);
+		
+		switch(notificationType) {
+			case 22 :{//VENDOR_USER_PROFILE_INVITE
+				message = "New User Invite!";
+//				subContent = "New user ("+vendoruser.getEmail()+") invited from Organisation";
+			subContent = /*"Organisation "
+					+  vendorOrganisation.getCompanyName() */ "User "+ userName+" has sent an invitation to a new user with email address: "+vendoruser.getEmail();
+				notification.setNotificationCategoryId(vendorUser.getModifiedByUserId());
+				break;
+			}
+
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		
+		notification.setTitle(message);
+		notification.setDescription(subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
+	
+	public void SendVendorNewRExistingUserInviteAlert(VendorUser vendorUser, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUser.getUserId());
+		VendorUser modifiedByVendorUser = vendorUserRepository.findByUserId(vendorUser.getModifiedByUserId());
+		String userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
+//		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
+		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserId(vendorUser.getModifiedByUserId());
+		notification.setOrganisationId(vendorUser.getVendorOrganisationId());
 		
 		switch(notificationType) {
 			case 22 :{//VENDOR_USER_PROFILE_INVITE

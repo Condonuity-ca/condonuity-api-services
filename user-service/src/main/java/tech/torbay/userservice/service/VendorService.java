@@ -774,6 +774,8 @@ public class VendorService {
 			changeType = NotificationType.USER_NAME_CHANGE.getValue();
 		} else if(changeTypePhone == 1) {
 			changeType = NotificationType.USER_PHONE_CHANGE.getValue();
+		} else {
+			changeType = NotificationType.USER_NAME_PHONE_CHANGE.getValue();
 		}
 		
 		SendUserProfileUpdateAlert(vendorUser, changeType );

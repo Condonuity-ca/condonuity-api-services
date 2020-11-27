@@ -7,6 +7,7 @@ public class Constants {
 
 	public static final Integer MAX_USER_COUNT = 12;
 	public static final String TIME_ZONE = "UTC";
+	public static final String TIME_ZONE_EST = "UTC-5";
 	public static final int DAY_30 = 30;
 	public static final int DAY_60 = 60;
 	public static final int DAY_0 = 0;

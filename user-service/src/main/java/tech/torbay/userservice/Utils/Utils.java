@@ -116,9 +116,9 @@ public class Utils {
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			
-			String today = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).toLocalDate().toString();
-			String plus30Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_30).toLocalDate().toString();
-			String plus60Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE)).plusDays(Constants.DAY_60).toLocalDate().toString();
+			String today = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE_EST)).toLocalDate().toString();
+			String plus30Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE_EST)).plusDays(Constants.DAY_30).toLocalDate().toString();
+			String plus60Days = date.toInstant().atZone(ZoneId.of(Constants.TIME_ZONE_EST)).plusDays(Constants.DAY_60).toLocalDate().toString();
 			
 			System.out.println("today : "+ today);
 			System.out.println("expiryDate : "+ expiryDate);
