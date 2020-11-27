@@ -448,7 +448,7 @@ public class VendorService {
 		VendorUser modifiedByVendorUser = vendorUserRepository.findByUserId(vendorUser.getModifiedByUserId());
 		String userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
 //		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
-		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserType(UserType.VENDOR.getValue());
 		notification.setUserId(vendorUser.getModifiedByUserId());
 		notification.setOrganisationId(vendorOrgId);
 		

@@ -481,6 +481,18 @@ public class UserController {
 				
 				if(user != null) {
 					if(user.getUserType() == UserType.CLIENT.getValue()) {
+						
+						ClientUser clientUser = clientService.findById(user.getUserId());
+						if(clientUser != null && clientUser.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+							HashMap<String, Object> response = new HashMap();
+							response.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+							response.put("statusMessage", "User Account Deleted");
+							response.put("responseMessage", "User Account Deleted from System By Admin");
+							response.put("userId", user.getUserId());
+							response.put("userType", user.getUserType());
+							return new ResponseEntity<Object>(response, HttpStatus.OK);
+						}
+						
 						List<ClientAssociation> clientAssociations = clientService.findClientAssociationById(user.getUserId());
 						if(clientAssociations == null) {
 							//no need any action
@@ -523,6 +535,17 @@ public class UserController {
 							} //no action required
 						}
 					} else if(user.getUserType() == UserType.VENDOR.getValue()) {
+						VendorUser vendorUser = vendorService.findByVendorUserId(user.getUserId());
+						if(vendorUser != null && vendorUser.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+							HashMap<String, Object> response = new HashMap();
+							response.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+							response.put("statusMessage", "User Account Deleted");
+							response.put("responseMessage", "User Account Deleted from System By Admin");
+							response.put("userId", user.getUserId());
+							response.put("userType", user.getUserType());
+							return new ResponseEntity<Object>(response, HttpStatus.OK);
+						}
+						
 						if(user.getPassword() == null || user.getPassword().trim().length() == 0) {
 							
 							// Send Email Alert to Reset Password

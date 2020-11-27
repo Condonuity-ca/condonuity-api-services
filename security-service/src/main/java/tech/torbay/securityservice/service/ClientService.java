@@ -223,26 +223,32 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		//New client User Registration
 		try {
-			if(clientUserRepository.save(clientUser) != null){
-				
+			ClientUser clientUserObj = clientUserRepository.findByEmail(clientUser.getEmail());
+			
+			
+			if(clientUserObj == null){
+				clientUserRepository.save(clientUser);
 				clientUser = clientUserRepository.findByEmail(clientUser.getEmail());
 				
-				
-				System.out.println(clientUser.toString());
-				
-				User user = new User();
-				user.setUserId(clientUser.getClientId());
-				user.setUsername(clientUser.getEmail());
-				user.setUserType(Constants.UserType.CLIENT.getValue());
-				
-				System.out.println(user.toString());
-				//2.1.2
-				userRepository.save(user);
-				
-				return clientUser;
 			} else {
-				return null;
+				if(clientUserObj != null) {
+					clientUser = clientUserObj;
+				}
 			}
+			
+			System.out.println(clientUser.toString());
+			
+			User user = new User();
+			user.setUserId(clientUser.getClientId());
+			user.setUsername(clientUser.getEmail());
+			user.setUserType(Constants.UserType.CLIENT.getValue());
+			
+			System.out.println(user.toString());
+			//2.1.2
+			userRepository.save(user);
+			
+			return clientUser;
+			
 		} catch(Exception exp) {
 			exp.printStackTrace();
 		}

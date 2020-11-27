@@ -274,20 +274,16 @@ public class VendorController {
 	public ResponseEntity<Object> addVendorUser(@RequestBody VendorUser vendorUser, UriComponentsBuilder builder) {
 		
 		// check vendor user already exist or not
-		VendorUser vuObj = vendorService.findByEmail(vendorUser.getEmail());
-		if( vuObj != null) {
+		User userObj = userService.findByEmail(vendorUser.getEmail());
+		if( userObj != null) {
 			
 			HashMap<String, Object> list = new HashMap();
-			if(vuObj.getVendorOrganisationId() ==  0) {
-				list.put("isNew",true);
-			} else {
-				list.put("isNew",false);
-			}
+			list.put("isNew",false);
 			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
 			list.put("statusMessage", "Failed");
 			list.put("responseMessage", "User Record Already Exists");
-			list.put("userId",vuObj.getUserId());
-			list.put("userType",UserType.VENDOR.getValue());
+			list.put("userId",userObj.getUserId());
+			list.put("userType",userObj.getUserType());
 			
         	return new ResponseEntity<Object>(list,HttpStatus.OK);
 			
@@ -427,6 +423,17 @@ public class VendorController {
 		
 		
 		VendorUser existVendorUserObj = vendorService.findByEmail(vendorUser.getEmail());
+		
+		VendorUser vendorUserObj = vendorService.findByEmail(vendorUser.getEmail());
+		if(vendorUserObj != null && vendorUserObj.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+			HashMap<String, Object> response = new HashMap();
+			response.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+			response.put("statusMessage", "User Account Deleted");
+			response.put("responseMessage", "User Account Deleted from System By Admin");
+			response.put("userId", vendorUserObj.getUserId());
+			response.put("userType", UserType.VENDOR.getValue());
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
 		
 		if(existVendorUserObj != null ) {
 			

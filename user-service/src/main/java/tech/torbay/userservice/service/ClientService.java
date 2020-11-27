@@ -260,6 +260,23 @@ public class ClientService {
 		        	map.put("clientUserType", clientAssociate.getClientUserType());
 			        map.put("userRole", clientAssociate.getUserRole());
 			        map.put("userAccountStatus", clientAssociate.getUserAccountStatus());
+			        
+			        int activeStatus = clientAssociate.getUserAccountStatus();
+			        int deleteStatus = clientUser.getDeleteStatus();
+			        
+			        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+			        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+			 	        	map.put("accountStatus","Registered");
+			 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+			 	        	map.put("accountStatus","Active");
+			 	        } else if(activeStatus == UserAccountStatus.INACTIVE.getValue()){
+			 	        	map.put("accountStatus","Rejected");
+			 	        } 
+			        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+			        	map.put("accountStatus","Deleted");
+			        } else {
+			        	map.put("accountStatus","Deleted");
+			        }
 			        map.put("userActiveFrom", clientAssociate.getCreatedAt());
 			        map.put("userActiveTo", clientAssociate.getUserInactiveDate());
 			        String logo = getOrganisationLogo(clientOrg.getClientOrganisationId());

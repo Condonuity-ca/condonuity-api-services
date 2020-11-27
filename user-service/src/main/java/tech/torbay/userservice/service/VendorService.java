@@ -1196,7 +1196,7 @@ public class VendorService {
 		// TODO Auto-generated method stub
 		VendorUser vendorUser = vendorUserRepository.findByUserId(vendorUserId);
 		vendorUser.setAccountStatus(UserAccountStatus.INACTIVE.getValue());
-		vendorUser.setDeleteStatus(UserAccountStatus.INACTIVE.getValue());
+//		vendorUser.setDeleteStatus(UserAccountStatus.INACTIVE.getValue());-Delete status will remove user from system
 		vendorUser.setModifiedByUserId(modifiedByUserId);
 		VendorUser vendorUserObj = vendorUserRepository.save(vendorUser);
 		if(vendorUserObj != null) {

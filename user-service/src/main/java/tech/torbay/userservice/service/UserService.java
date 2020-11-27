@@ -2872,6 +2872,23 @@ private List<Map<String, Object>> getProjectsBundleForVendorMarketplace(Integer 
 		        map.remove("vendorOrganisationId");
 		        map.put("vendorOrganisation",vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId()));
 		        
+		        int activeStatus = vendorUser.getAccountStatus();
+		        int deleteStatus = vendorUser.getDeleteStatus();
+		        
+		        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
+		        	 if(activeStatus == UserAccountStatus.INVITED.getValue()) {
+		 	        	map.put("accountStatus","Invited");
+		 	        } else if(activeStatus == UserAccountStatus.ACTIVE.getValue()){
+		 	        	map.put("accountStatus","Active");
+		 	        } else if(activeStatus == UserAccountStatus.INACTIVE.getValue()){
+		 	        	map.put("accountStatus","Inactive");
+		 	        } 
+		        } else if ( deleteStatus == UserAccountStatus.INACTIVE.getValue() || activeStatus == UserAccountStatus.INACTIVE.getValue()) {
+		        	map.put("accountStatus","Deleted");
+		        } else {
+		        	map.put("accountStatus","Deleted");
+		        }
+		        
 		        searchedVendorUsers.add(map);
 	        }
 			

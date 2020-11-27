@@ -192,11 +192,12 @@ public class ClientController {
 		if( user != null ) {
 			
 			HashMap<String, Object> list = new HashMap();
-			if(user.getUserType() == UserType.CLIENT.getValue() & clientService.getAllOrganisationsForClientUser(user.getUserId()) == 0) {
-				list.put("isNew",true);
-			} else {
-				list.put("isNew",false);
-			}
+//			if(user.getUserType() == UserType.CLIENT.getValue() & clientService.getAllOrganisationsForClientUser(user.getUserId()) == 0) {
+//				list.put("isNew",true);
+//			} else {
+//				list.put("isNew",false);
+//			}
+			list.put("isNew",false);
 			
 			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
 			list.put("statusMessage", "Failed");
@@ -265,10 +266,22 @@ public class ClientController {
 		Integer userRole = Integer.parseInt(String.valueOf(requestData.get("userRole")));
 		Integer clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
 		
+		//check is Client Account Active in System
+		ClientUser client_user = clientService.findByEmail(email);
+		if(client_user != null && client_user.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+			HashMap<String, Object> response = new HashMap();
+			response.put("statusCode", APIStatusCode.INACTIVE_USER.getValue());
+			response.put("statusMessage", "User Account Deleted");
+			response.put("responseMessage", "User Account Deleted from System By Admin");
+			response.put("userId", client_user.getClientId());
+			response.put("userType", UserType.CLIENT.getValue());
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+		
 		ClientUser clientUserObj = new ClientUser();
 		clientUserObj.setEmail(email);
 		clientUserObj.setFirstName(firstName);
-		clientUserObj.setLastName(lastName);;
+		clientUserObj.setLastName(lastName);
 		clientUserObj.setUserType(Constants.UserType.CLIENT.getValue());
 		
 		ClientOrganisation clientOrg = clientService.getClientOrganisationById(organisationId);
