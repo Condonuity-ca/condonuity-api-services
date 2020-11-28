@@ -545,7 +545,7 @@ public class ClientController {
             }
     )
 	@PutMapping("/client/review/inactive/{reviewId}")
-	public ResponseEntity<Object> updateClientReview(@PathVariable("reviewId") Integer reviewId) {
+	public ResponseEntity<Object> deleteClientReview(@PathVariable("reviewId") Integer reviewId) {
 		//if client user based reviews
 //		List<Map<String, Object>> clientAllReviews = clientService.getAllClientReviews(clientId, clientOrganisationId);
 		boolean isRated = clientService.deleteReview(reviewId);

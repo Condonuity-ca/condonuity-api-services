@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.clientsservice.Utils.Utils;
 import tech.torbay.clientsservice.constants.Constants;
+import tech.torbay.clientsservice.constants.Constants.NotificationType;
 import tech.torbay.clientsservice.constants.Constants.TaskStatus;
 import tech.torbay.clientsservice.constants.Constants.UserAccountStatus;
 import tech.torbay.clientsservice.constants.Constants.UserType;
@@ -526,7 +527,7 @@ public class ClientService {
 				} else {
 					return false;
 				}
-				
+				sendVendorReviewRatingNotification(projectRRObj, NotificationType.REVIEW_UPDATE.getValue());
 			}
 		} catch(Exception exp) {
 			exp.printStackTrace();
@@ -1527,5 +1528,50 @@ public class ClientService {
 				return clientNotifications;
 	}
 
+	public void sendVendorReviewRatingNotification(ProjectReviewRating projectReviewRating, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Review";
+		String subContent = " review added";
+		
+		ClientOrganisation clientOrg = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId());
+		String corpName = clientOrg.getOrganisationName();
+		ClientUser clientUser = clientUserRepository.findByClientId(projectReviewRating.getClientId());
+		String userFirstName = clientUser.getFirstName();
+		String userLastName = clientUser.getLastName();
+		String userName = userFirstName +" "+ userLastName;
+		
+		switch(notificationType) {
+			case 7 :{
+				message = "New Review!";
+	//			subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+				
+				subContent = "User "+userName+" from Condo "+corpName+" added a new review.";
+				
+				notification.setUserType(UserType.CLIENT.getValue());
+				notification.setUserId(projectReviewRating.getClientId());
+				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
+				break;
+			}
+			case 35 :{
+				message = "Edited review!";
+				subContent = "User "+userName+" from Condo "+corpName+" edited your review.";
+				notification.setUserType(UserType.CLIENT.getValue());
+				notification.setUserId(projectReviewRating.getClientId());
+				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
+				break;
+			}
+	
+		}
+		
+		notification.setNotificationCategoryType(notificationType);
+		notification.setNotificationCategoryId(projectReviewRating.getId());
+		
+		notification.setTitle(message);
+		notification.setDescription(subContent);
+		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
+	}
 }
 

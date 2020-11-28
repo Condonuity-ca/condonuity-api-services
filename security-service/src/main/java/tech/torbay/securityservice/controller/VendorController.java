@@ -459,6 +459,13 @@ public class VendorController {
 						vendorUser.setUserId(existVendorUserObj.getUserId());
 						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 						return SendExistVendorUserInvitation(vendorUser);
+					} else if(existVendorUserObj.getAccountStatus() == UserAccountStatus.INACTIVE.getValue() 
+							&& existVendorUserObj.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
+						// Newly added need to check - if client flow ok or not
+						// Existing User - if inactive can re-invite by any vendor organisation flow newly added
+						vendorUser.setUserId(existVendorUserObj.getUserId());
+						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
+						return SendExistVendorUserInvitation(vendorUser);
 					}
 				}
 					
@@ -519,20 +526,6 @@ public class VendorController {
 	
 	public ResponseEntity<Object> SendExistVendorUserInvitation(@RequestBody VendorUser vendorUser) {
 		
-		
-		User existUser= userService.findByIdAndUserType(vendorUser.getUserId(), UserType.CLIENT.getValue());
-		if(existUser != null && existUser.getUserType() == UserType.CLIENT.getValue()) {
-			HashMap<String, Object> list = new HashMap();
-			
-			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
-			list.put("statusMessage", "Failed");
-			list.put("responseMessage", "Client User Record Already Exists");
-			list.put("userId",existUser.getUserId());
-			list.put("userType",existUser.getUserType());
-			
-        	return new ResponseEntity<Object>(list,HttpStatus.OK);
-		}
-
 		List<VendorUser> vendorUsers = vendorService.getAllVendorUsersInOrganisation(vendorUser.getVendorOrganisationId());
 		if(vendorUsers.size() < Constants.MAX_USER_COUNT) {
 			vendorUser.setUserType(Constants.UserType.VENDOR.getValue());
