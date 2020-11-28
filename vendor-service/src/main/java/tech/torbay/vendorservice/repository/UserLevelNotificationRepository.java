@@ -25,7 +25,8 @@ public interface UserLevelNotificationRepository extends JpaRepository<UserLevel
 
     @Query(value = "SELECT * FROM condonuitydev.user_level_notification " + 
     		"INNER JOIN condonuitydev.external_message_organisations emo "+
-    		"ON ( emo.external_message_id = notification_category_id and emo.target_user_type = 2 and emo.target_organisation_id = (?1)) " +
+    		"ON ( emo.external_message_id = notification_category_id and ( ( emo.target_user_type = 2 and emo.target_organisation_id = (?1)) " +
+    		"or (from_organisation_id = (?1)  and from_user_type = 2)) )" + 
     		"where ( notification_category_type = 15 or " + 
     		"notification_category_type = 16 or " + 
     		"notification_category_type = 17) ;", nativeQuery = true)

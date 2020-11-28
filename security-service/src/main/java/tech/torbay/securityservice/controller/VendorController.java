@@ -435,11 +435,20 @@ public class VendorController {
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
 		
+		if(vendorUser.getVendorOrganisationId() == null || vendorUser.getVendorOrganisationId() == 0) {
+			HashMap<String, Object> response = new HashMap();
+			response.put("statusCode", APIStatusCode.BAD_REQUEST.getValue());
+			response.put("statusMessage", "Invalid Organisation Details");
+			response.put("responseMessage", "Invalid Organisation Details");
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+		
 		if(existVendorUserObj != null ) {
 			
 			if(existVendorUserObj.getVendorOrganisationId() == null || existVendorUserObj.getVendorOrganisationId() == 0) {
 				//not yet registered
 				vendorUser.setUserId(existVendorUserObj.getUserId());
+				vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 				return SendExistVendorUserInvitation(vendorUser);
 			} else {
 			
@@ -448,6 +457,7 @@ public class VendorController {
 					//registered but not yet approved by admin
 					if(vendorOrg.getActiveStatus() == UserAccountStatus.INVITED.getValue()) {
 						vendorUser.setUserId(existVendorUserObj.getUserId());
+						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 						return SendExistVendorUserInvitation(vendorUser);
 					}
 				}
@@ -487,8 +497,8 @@ public class VendorController {
 			        		"Success",
 			        		"Vendor User Account Created Successfully");
 					// Invite Sent
-					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
 					vendorService.SendVendorNewRExistingUserInviteAlert(vendor_user, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
+					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(

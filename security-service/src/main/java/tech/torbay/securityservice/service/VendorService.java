@@ -482,7 +482,7 @@ public class VendorService {
 		VendorUser modifiedByVendorUser = vendorUserRepository.findByUserId(vendorUser.getModifiedByUserId());
 		String userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
 //		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
-		notification.setUserType(UserType.CLIENT.getValue());
+		notification.setUserType(UserType.VENDOR.getValue());
 		notification.setUserId(vendorUser.getModifiedByUserId());
 		notification.setOrganisationId(vendorUser.getVendorOrganisationId());
 		
@@ -492,7 +492,7 @@ public class VendorService {
 //				subContent = "New user ("+vendoruser.getEmail()+") invited from Organisation";
 			subContent = /*"Organisation "
 					+  vendorOrganisation.getCompanyName() */ "User "+ userName+" has sent an invitation to a new user with email address: "+vendoruser.getEmail();
-				notification.setNotificationCategoryId(vendorUser.getModifiedByUserId());
+				notification.setNotificationCategoryId(vendorUser.getUserId());
 				break;
 			}
 

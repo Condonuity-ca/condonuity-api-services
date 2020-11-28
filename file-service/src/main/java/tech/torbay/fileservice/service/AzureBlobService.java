@@ -28,11 +28,13 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 
 import tech.torbay.fileservice.constants.Constants;
+import tech.torbay.fileservice.constants.Constants.NotificationType;
 import tech.torbay.fileservice.constants.Constants.UserType;
 import tech.torbay.fileservice.entity.BidFiles;
 import tech.torbay.fileservice.entity.ClientOrganisationProfileImages;
 import tech.torbay.fileservice.entity.ClientRegistrationFiles;
 import tech.torbay.fileservice.entity.CommentFiles;
+import tech.torbay.fileservice.entity.Notification;
 import tech.torbay.fileservice.entity.ProjectAwardFiles;
 import tech.torbay.fileservice.entity.ProjectFiles;
 import tech.torbay.fileservice.entity.SupportFileUploadLogs;
@@ -45,6 +47,7 @@ import tech.torbay.fileservice.repository.BidFilesRepository;
 import tech.torbay.fileservice.repository.ClientOrganisationProfileImagesRepository;
 import tech.torbay.fileservice.repository.ClientRegistrationFilesRepository;
 import tech.torbay.fileservice.repository.CommentFilesRepository;
+import tech.torbay.fileservice.repository.NotificationRepository;
 import tech.torbay.fileservice.repository.ProjectAwardFilesRepository;
 import tech.torbay.fileservice.repository.ProjectFilesRepository;
 import tech.torbay.fileservice.repository.SupportFileUploadLogsRepository;
@@ -86,6 +89,8 @@ public class AzureBlobService {
 	VendorPortfolioFilesRepository vendorPortfolioFilesRepository;
 	@Autowired
 	SupportFileUploadLogsRepository supportFileUploadLogsRepository;
+	@Autowired
+	NotificationRepository notificationRepository;
 	
 	boolean URI_ACCESS_REQUIRED = true;
 	boolean URI_ACCESS_NOT_REQUIRED = false;
@@ -543,7 +548,7 @@ public class AzureBlobService {
 				userProfileImages.setFileUrl(uri.toString());
 			}
 			
-			
+			SendProfileImageUpdateAlertNotification(userProfileImages, NotificationType.USER_IMAGE_CHANGE.getValue());
 			userProfileImages = userProfileImagesRepository.save(userProfileImages);
 			if(userProfileImages != null) {
 				return uri;
@@ -556,6 +561,34 @@ public class AzureBlobService {
 		}
 		
 		return null;
+	}
+	
+	private void SendProfileImageUpdateAlertNotification(UserProfileImages userProfileImages, int notificationType) {
+		// TODO Auto-generated method stub
+		Notification notification = new Notification();
+		String message = "Account Update";
+		String subContent = " account updated";
+		notification.setUserType(userProfileImages.getUserType());
+		notification.setUserId(userProfileImages.getUserId());
+		notification.setOrganisationId(Constants.Invalid.ID.getValue());
+		notification.setNotificationCategoryId(userProfileImages.getUserId());
+		//Update: Your user account information was recently changed: Change type
+		message = "Update";
+		subContent = "Your user account information was recently changed: ";
+		String changeType = "";
+		switch(notificationType) {
+			case 40 :{
+				changeType = "Picture Uploaded";
+				break;
+			}
+		}
+		subContent = subContent + changeType;
+		notification.setNotificationCategoryType(notificationType);
+		notification.setTitle(message);
+		notification.setDescription(subContent);
+		notification.setStatus(Constants.DeleteStatus.ACTIVE.getValue());;
+		
+		notificationRepository.save(notification);
 	}
 
 	public URI uploadVendorOrganisationProfileImage(Integer organisationId, String containerName, MultipartFile multipartFile) {

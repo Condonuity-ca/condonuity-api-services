@@ -936,10 +936,7 @@ public class ClientService {
 				notification.setOrganisationId(projectReviewRating.getClientOrganisationId());
 				break;
 			}
-			case 71 :{
-				notificationType = 7;
-	//			message = "Review updated";
-	//			subContent = clientOrganisationRepository.findByClientOrganisationId(projectReviewRating.getClientOrganisationId()).getOrganisationName()+" Client organisation added a new review"/*" project with "+project.getTags()*/;
+			case 35 :{
 				message = "Edited review!";
 				subContent = "User "+userName+" from Condo "+corpName+" edited your review.";
 				notification.setUserType(UserType.CLIENT.getValue());
@@ -954,7 +951,7 @@ public class ClientService {
 		notification.setNotificationCategoryId(projectReviewRating.getId());
 		
 		notification.setTitle(message);
-		notification.setDescription(message+" - "+subContent);
+		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
@@ -964,7 +961,6 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		
 		try {
-			
 			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			List vendorCategoryRatingsObj = mapper.convertValue(ratings.get("categoryRatings"), List.class);
 			
@@ -1016,6 +1012,7 @@ public class ClientService {
 				}
 				
 			}
+			sendVendorReviewRatingNotification(projectRRObj, NotificationType.REVIEW_UPDATE.getValue());
 		} catch(Exception exp) {
 			exp.printStackTrace();
 			return false;
