@@ -492,7 +492,16 @@ public class ClientService {
 		String subContent = " account updated";
 		ClientUser clientuser = clientUserRepository.findByClientId(clientUserId);
 		ClientUser modifiedByClientuser = clientUserRepository.findByClientId(modifiedByUserId);
-		String userName = modifiedByClientuser.getFirstName()+" "+modifiedByClientuser.getLastName();
+		String userName = "";
+		if(modifiedByClientuser != null) {
+			userName = modifiedByClientuser.getFirstName()+" "+modifiedByClientuser.getLastName();
+		} else {
+			userName = "Support User";
+		}
+		
+		if(modifiedByClientuser != null && userName.trim().length() == 0) {//Invited User
+			userName = modifiedByClientuser.getEmail();
+		}
 		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrgId);
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(clientUserId);
@@ -552,13 +561,24 @@ public class ClientService {
 	public ClientUser makeInvited(ClientUser existClient, Integer clientOrganisationId, Integer userRole, Integer clientUserType) {
 		// TODO Auto-generated method stub
 		ClientAssociation clientAssociation = clientAssociationRepository.findByClientIdAndClientOrganisationId(existClient.getClientId(), clientOrganisationId);
-		clientAssociation.setClientOrganisationId(clientOrganisationId);
-		clientAssociation.setClientId(existClient.getClientId());
-		clientAssociation.setClientUserType(clientUserType);
-		clientAssociation.setUserRole(userRole);
-		clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.NOT_VERIFIED.getValue());
-		clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
-		clientAssociation.setDeleteStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		if(clientAssociation != null) {
+			clientAssociation.setClientOrganisationId(clientOrganisationId);
+			clientAssociation.setClientId(existClient.getClientId());
+			clientAssociation.setClientUserType(clientUserType);
+			clientAssociation.setUserRole(userRole);
+			clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.NOT_VERIFIED.getValue());
+			clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
+			clientAssociation.setDeleteStatus(Constants.UserAccountStatus.ACTIVE.getValue());	
+		} else {
+			clientAssociation = new ClientAssociation();
+			clientAssociation.setClientOrganisationId(clientOrganisationId);
+			clientAssociation.setClientId(existClient.getClientId());
+			clientAssociation.setClientUserType(clientUserType);
+			clientAssociation.setUserRole(userRole);
+			clientAssociation.setAccountVerificationStatus(Constants.VerificationStatus.NOT_VERIFIED.getValue());
+			clientAssociation.setUserAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
+			clientAssociation.setDeleteStatus(Constants.UserAccountStatus.ACTIVE.getValue());
+		}
 		
 		//2.1.3
 		if(clientAssociationRepository.save(clientAssociation) != null) {

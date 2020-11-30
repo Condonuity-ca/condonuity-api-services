@@ -254,7 +254,12 @@ public class ClientController {
 		// else create user and send email invite
 		
 		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
-		Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
+		Integer modifiedByUserId = 0;
+		try {
+			modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
 		String email = String.valueOf(requestData.get("email"));
 		String firstName = "", lastName = "";
 //		try {

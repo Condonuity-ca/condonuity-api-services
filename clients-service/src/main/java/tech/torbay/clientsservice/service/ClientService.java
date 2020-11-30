@@ -527,8 +527,8 @@ public class ClientService {
 				} else {
 					return false;
 				}
-				sendVendorReviewRatingNotification(projectRRObj, NotificationType.REVIEW_UPDATE.getValue());
 			}
+			sendVendorReviewRatingNotification(projectRRObj, NotificationType.REVIEW_UPDATE.getValue());
 		} catch(Exception exp) {
 			exp.printStackTrace();
 			return false;

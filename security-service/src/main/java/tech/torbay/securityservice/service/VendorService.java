@@ -480,7 +480,17 @@ public class VendorService {
 		String subContent = " account updated";
 		VendorUser vendoruser = vendorUserRepository.findByUserId(vendorUser.getUserId());
 		VendorUser modifiedByVendorUser = vendorUserRepository.findByUserId(vendorUser.getModifiedByUserId());
-		String userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
+		String userName = "";
+		if(modifiedByVendorUser != null) {
+			userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
+		} else {
+			userName = "Support User";
+		}
+		
+		if(modifiedByVendorUser != null && userName.trim().length() == 0) {//Invited User
+			userName = modifiedByVendorUser.getEmail();
+		}
+		
 //		VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(vendorOrgId);
 		notification.setUserType(UserType.VENDOR.getValue());
 		notification.setUserId(vendorUser.getModifiedByUserId());

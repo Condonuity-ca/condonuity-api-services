@@ -217,7 +217,7 @@ public class SupportUserController {
         			"Client Organisation Name Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
-		if(clientService.checkOrganisationCoporationNumberAvailable(corporationNumber)) {
+		if(clientService.checkOrganisationCoporationNumberAvailable(corporationNumber, clientOrganisationId)) {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.CONFLICT.getValue(),
         			"Failed",

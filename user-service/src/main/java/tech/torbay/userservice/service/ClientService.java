@@ -937,6 +937,7 @@ public class ClientService {
 				break;
 			}
 			case 35 :{
+				notificationType = 7;
 				message = "Edited review!";
 				subContent = "User "+userName+" from Condo "+corpName+" edited your review.";
 				notification.setUserType(UserType.CLIENT.getValue());
@@ -2152,11 +2153,15 @@ public class ClientService {
 		return false;
 	}
 	
-	public boolean checkOrganisationCoporationNumberAvailable(String corporationNumber) {
+	public boolean checkOrganisationCoporationNumberAvailable(String corporationNumber, Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		List<ClientOrganisation> clientOrgs = clientOrganisationRepository.findByCorporateNumber(corporationNumber);
 		if( clientOrgs != null && clientOrgs.size() > 0) {
-			return true;
+			for(ClientOrganisation clientOrg : clientOrgs) {
+				if(!clientOrg.getCorporateNumber().equals(corporationNumber)) {
+					return true;
+				}
+			}
 		}
 		
 		return false;
