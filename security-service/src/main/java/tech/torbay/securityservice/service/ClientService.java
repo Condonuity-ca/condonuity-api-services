@@ -496,7 +496,7 @@ public class ClientService {
 		if(modifiedByClientuser != null) {
 			userName = modifiedByClientuser.getFirstName()+" "+modifiedByClientuser.getLastName();
 		} else {
-			userName = "Support User";
+			userName = "Support Team";
 		}
 		
 		if(modifiedByClientuser != null && userName.trim().length() == 0) {//Invited User
@@ -586,6 +586,13 @@ public class ClientService {
 		} else {
 			return null;
 		}
+	}
+
+	public int getActiveOrInvitedClientUsers(Integer organisationId) {
+		// TODO Auto-generated method stub
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllActiveOrInvitedUsers(organisationId);
+		
+		return clientAssociations.size();
 	}
 }
 

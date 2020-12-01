@@ -448,7 +448,8 @@ public class VendorController {
 			if(existVendorUserObj.getVendorOrganisationId() == null || existVendorUserObj.getVendorOrganisationId() == 0) {
 				//not yet registered
 				vendorUser.setUserId(existVendorUserObj.getUserId());
-				vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
+//				Common invite logic added for existing
+//				vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 				return SendExistVendorUserInvitation(vendorUser);
 			} else {
 			
@@ -457,14 +458,16 @@ public class VendorController {
 					//registered but not yet approved by admin
 					if(vendorOrg.getActiveStatus() == UserAccountStatus.INVITED.getValue()) {
 						vendorUser.setUserId(existVendorUserObj.getUserId());
-						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
+						//Common invite logic added for existing
+//						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 						return SendExistVendorUserInvitation(vendorUser);
 					} else if(existVendorUserObj.getAccountStatus() == UserAccountStatus.INACTIVE.getValue() 
 							&& existVendorUserObj.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
 						// Newly added need to check - if client flow ok or not
 						// Existing User - if inactive can re-invite by any vendor organisation flow newly added
 						vendorUser.setUserId(existVendorUserObj.getUserId());
-						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
+//						Common invite logic added for existing
+//						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 						return SendExistVendorUserInvitation(vendorUser);
 					}
 				}
@@ -504,8 +507,8 @@ public class VendorController {
 			        		"Success",
 			        		"Vendor User Account Created Successfully");
 					// Invite Sent
-					vendorService.SendVendorNewRExistingUserInviteAlert(vendor_user, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 					sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
+					vendorService.SendVendorNewRExistingUserInviteAlert(vendor_user, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				} else {
 					ResponseMessage responseMessage = new ResponseMessage(

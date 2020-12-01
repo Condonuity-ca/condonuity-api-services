@@ -39,6 +39,7 @@ import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.NotificationType;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
+import tech.torbay.securityservice.constants.Constants.UserRole;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.ClientAssociation;
@@ -313,6 +314,10 @@ public class ClientController {
 		        		HttpHeaders headers = new HttpHeaders();
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
+				        int users = clientService.getActiveOrInvitedClientUsers(organisationId);
+				        if(users == 0) {
+				        	userRole = UserRole.ADMIN.getValue();
+				        }
 				        // Invite Sent
 				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole, modifiedByUserId);
 				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
@@ -341,6 +346,10 @@ public class ClientController {
 		        		HttpHeaders headers = new HttpHeaders();
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
+				        int users = clientService.getActiveOrInvitedClientUsers(organisationId);
+				        if(users == 0) {
+				        	userRole = UserRole.ADMIN.getValue();
+				        }
 				        // Invite Sent
 				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole, modifiedByUserId);
 				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
