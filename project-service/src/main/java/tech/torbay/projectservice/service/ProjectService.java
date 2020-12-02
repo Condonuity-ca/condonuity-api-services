@@ -1238,14 +1238,12 @@ public class ProjectService {
 				break;
 			}
 			case 5 :{
-				message = "Changes";
-				subContent = "Project Bid made changes";
+				message = "Bid Update";
+				subContent = "Vendor "+vendorOrganisation.getCompanyName()+" updated the bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
 				notification.setUserType(UserType.VENDOR.getValue());
 				break;
 			}
-			case 51 :{
-//				message = "Changes";
-//				subContent = " Project Bid made changes";
+			case 34 :{
 				message = "Bid withdrawn!";
 				subContent = "Vendor "+vendorOrganisation.getCompanyName()+" withdrew the bid to Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
 				notification.setUserType(UserType.VENDOR.getValue());

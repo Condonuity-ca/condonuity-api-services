@@ -55,8 +55,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		"( pro.project_id = nt.notification_category_id ) and " + 
     		"( notification_category_type = 1 " + 
     		"or notification_category_type = 2 " + 
-    		"or notification_category_type = 21 " + 
-    		"or notification_category_type = 3 ) " + 
+    		"or notification_category_type = 3 " + 
+    		"or notification_category_type = 33 ) " + 
     		")", nativeQuery = true)
     List<Notification> findAllPostedProjectsForClient(Integer clientOrganisationId);
     
