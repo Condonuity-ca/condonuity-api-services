@@ -39,6 +39,7 @@ import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.NotificationType;
 import tech.torbay.securityservice.constants.Constants.UserAccountStatus;
+import tech.torbay.securityservice.constants.Constants.UserRole;
 import tech.torbay.securityservice.constants.Constants.UserType;
 import tech.torbay.securityservice.email.SpringBootEmail;
 import tech.torbay.securityservice.entity.User;
@@ -498,6 +499,10 @@ public class VendorController {
 				vendorUser.setAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
 				vendorUser.setAccountVerificationStatus(Constants.UserAccountStatus.INVITED.getValue());
 				vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+				int users = vendorService.getActiveOrInvitedVendorUsers(vendorUser.getVendorOrganisationId());
+		        if(users == 0) {
+		        	vendorUser.setUserRole(UserRole.ADMIN.getValue());
+		        }
 				VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
 				VendorOrganisation vendorOrg = vendorService.getVendorOrganisationById(vendorUser.getVendorOrganisationId());
 				
@@ -535,6 +540,10 @@ public class VendorController {
 			vendorUser.setAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
 			vendorUser.setAccountVerificationStatus(Constants.UserAccountStatus.INVITED.getValue());
 			vendorUser.setDeleteStatus(Constants.DeleteStatus.ACTIVE.getValue());
+			int users = vendorService.getActiveOrInvitedVendorUsers(vendorUser.getVendorOrganisationId());
+	        if(users == 0) {
+	        	vendorUser.setUserRole(UserRole.ADMIN.getValue());
+	        }
 			VendorUser vendor_user = vendorService.updateVendorUser(vendorUser);
 			VendorOrganisation vendorOrg = vendorService.getVendorOrganisationById(vendorUser.getVendorOrganisationId());
 			

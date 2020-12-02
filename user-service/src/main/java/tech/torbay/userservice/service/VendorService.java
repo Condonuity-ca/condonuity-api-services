@@ -758,13 +758,13 @@ public class VendorService {
 		int changeType = 0;
 		int changeTypeName = 0;
 		int changeTypePhone = 0;
-		if(vendorUserObj.getFirstName().equals(vendorUser.getFirstName())) {
+		if(!vendorUserObj.getFirstName().equals(vendorUser.getFirstName())) {
 			changeTypeName = 1;
 		} 
-		if(vendorUserObj.getLastName().equals(vendorUser.getLastName())) {
+		if(!vendorUserObj.getLastName().equals(vendorUser.getLastName())) {
 			changeTypeName = 1;
 		} 
-		if(vendorUserObj.getPhone().equals(vendorUser.getPhone())) {
+		if(!vendorUserObj.getPhone().equals(vendorUser.getPhone())) {
 			changeTypePhone = 1;
 		}
 		
@@ -775,9 +775,10 @@ public class VendorService {
 		} else if(changeTypePhone == 1) {
 			changeType = NotificationType.USER_PHONE_CHANGE.getValue();
 		} else {
-			changeType = NotificationType.USER_NAME_PHONE_CHANGE.getValue();
+			changeType = 0;
 		}
 		
+		if(changeType != 0)
 		SendUserProfileUpdateAlert(vendorUser, changeType );
 		
 		vendorUserObj.setFirstName(vendorUser.getFirstName());
@@ -812,6 +813,11 @@ public class VendorService {
 			}
 			case 38 :{
 				changeType = "Name and Phone";
+				break;
+			}
+			case 0 :{
+				notificationType = 38;
+				changeType = "No change";
 				break;
 			}
 

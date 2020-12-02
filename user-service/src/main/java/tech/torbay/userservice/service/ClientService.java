@@ -323,7 +323,7 @@ public class ClientService {
 		} else if(changeTypePhone == 1) {
 			changeType = NotificationType.USER_PHONE_CHANGE.getValue();
 		} else {
-			changeType = NotificationType.USER_NAME_PHONE_CHANGE.getValue();
+			changeType = 0;
 		}
 		
 		clientObj.setCity(client.getCity());
@@ -333,6 +333,7 @@ public class ClientService {
 		clientObj.setLegalName(client.getLegalName());
 		clientObj.setCountryCode(client.getCountryCode());
 		
+		if(changeType != 0)
 		SendUserProfileUpdateAlert(client, changeType );
 		
 		return clientUserRepository.save(clientObj);
@@ -1165,6 +1166,11 @@ public class ClientService {
 			}
 			case 38 :{
 				changeType = "Name and Phone";
+				break;
+			}
+			case 0 :{
+				notificationType = 38;
+				changeType = "No change";
 				break;
 			}
 

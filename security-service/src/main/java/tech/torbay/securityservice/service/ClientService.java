@@ -496,7 +496,7 @@ public class ClientService {
 		if(modifiedByClientuser != null) {
 			userName = modifiedByClientuser.getFirstName()+" "+modifiedByClientuser.getLastName();
 		} else {
-			userName = "Support Team";
+			userName = "from Support Team";
 		}
 		
 		if(modifiedByClientuser != null && userName.trim().length() == 0) {//Invited User

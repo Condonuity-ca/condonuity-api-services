@@ -484,7 +484,7 @@ public class VendorService {
 		if(modifiedByVendorUser != null) {
 			userName = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
 		} else {
-			userName = "Support User";
+			userName = "from Support Team";
 		}
 		
 		if(modifiedByVendorUser != null && userName.trim().length() == 0) {//Invited User
@@ -515,6 +515,13 @@ public class VendorService {
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());;
 		
 		notificationRepository.save(notification);
+	}
+
+	public int getActiveOrInvitedVendorUsers(Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		List<VendorUser> vendorUsers = vendorUserRepository.findAllActiveAndInvitedVendorUsers(vendorOrganisationId);
+		
+		return vendorUsers.size();
 	}
 	
 }

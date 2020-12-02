@@ -307,6 +307,10 @@ public class ClientController {
 								clientAssociate.getDeleteStatus() == DeleteStatus.ACTIVE.getValue() && 
 								clientAssociate.getUserInactiveDate().trim().length() > 0) {
 					try {
+						int users = clientService.getActiveOrInvitedClientUsers(organisationId);
+				        if(users == 0) {
+				        	userRole = UserRole.ADMIN.getValue();
+				        }
 						//make older invite delete(user_account_status = 2) into invited(user_account_status =0)
 						clientService.makeInvited(existClient, organisationId, userRole, clientUserType);
 						// New User invite, bcoz no invite accepted yet
@@ -314,10 +318,6 @@ public class ClientController {
 		        		HttpHeaders headers = new HttpHeaders();
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
-				        int users = clientService.getActiveOrInvitedClientUsers(organisationId);
-				        if(users == 0) {
-				        	userRole = UserRole.ADMIN.getValue();
-				        }
 				        // Invite Sent
 				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole, modifiedByUserId);
 				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
@@ -340,16 +340,16 @@ public class ClientController {
 				
 				if(clientAssociations.size() == inactiveAccount) {
 					try {
+						int users = clientService.getActiveOrInvitedClientUsers(organisationId);
+				        if(users == 0) {
+				        	userRole = UserRole.ADMIN.getValue();
+				        }
 						//make older invite delete(user_account_status = 2) into invited(user_account_status =0)
 						clientService.makeInvited(existClient, organisationId, userRole, clientUserType);
 						// New User invite, bcoz no invite accepted yet
 		        		HttpHeaders headers = new HttpHeaders();
 				        headers.setLocation(builder.path("/client/{id}").buildAndExpand(existClient.getClientId()).toUri());
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
-				        int users = clientService.getActiveOrInvitedClientUsers(organisationId);
-				        if(users == 0) {
-				        	userRole = UserRole.ADMIN.getValue();
-				        }
 				        // Invite Sent
 				        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole, modifiedByUserId);
 				        clientService.SendAccountUpdateAlert(existClient.getClientId(), organisationId, modifiedByUserId, NotificationType.CLIENT_USER_PROFILE_INVITE.getValue());
@@ -438,6 +438,10 @@ public class ClientController {
 			
 			if(existUser == null && clientUsers.size() < Constants.MAX_USER_COUNT) {
 				// Add Client and user-org Association 
+				int users = clientService.getActiveOrInvitedClientUsers(organisationId);
+		        if(users == 0) {
+		        	userRole = UserRole.ADMIN.getValue();
+		        }
 				ClientUser clientUser = clientService.addClient(organisationId, clientUserType, userRole, clientUserObj);
 		        clientService.setPrimaryOrganisationId(clientUser, organisationId);
 				
