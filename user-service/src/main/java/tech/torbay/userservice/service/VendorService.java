@@ -827,7 +827,7 @@ public class VendorService {
 		notification.setTitle(message);
 		notification.setDescription(subContent);
 		notification.setStatus(Constants.UserAccountStatus.ACTIVE.getValue());
-		
+		//test
 		notificationRepository.save(notification);
 	}
 	
