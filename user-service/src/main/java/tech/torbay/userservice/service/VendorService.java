@@ -23,17 +23,22 @@ import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.AvailableVendorProfiles;
-import tech.torbay.userservice.entity.ClientContract;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientUser;
+import tech.torbay.userservice.entity.ExternalMessageComment;
 import tech.torbay.userservice.entity.Notification;
+import tech.torbay.userservice.entity.NotificationViewsHistory;
 import tech.torbay.userservice.entity.OrganisationPayment;
+import tech.torbay.userservice.entity.Project;
+import tech.torbay.userservice.entity.ProjectAwards;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.RegistrationLogs;
 import tech.torbay.userservice.entity.ServiceCities;
 import tech.torbay.userservice.entity.User;
+import tech.torbay.userservice.entity.UserLevelNotification;
 import tech.torbay.userservice.entity.UserProfileImages;
 import tech.torbay.userservice.entity.UserWishList;
+import tech.torbay.userservice.entity.VendorBid;
 import tech.torbay.userservice.entity.VendorBrands;
 import tech.torbay.userservice.entity.VendorCategoryRatings;
 import tech.torbay.userservice.entity.VendorInsurance;
@@ -52,14 +57,20 @@ import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.repository.AvailableVendorProfilesRepository;
 import tech.torbay.userservice.repository.ClientOrganisationRepository;
 import tech.torbay.userservice.repository.ClientUserRepository;
+import tech.torbay.userservice.repository.ExternalMessageCommentRepository;
 import tech.torbay.userservice.repository.NotificationRepository;
+import tech.torbay.userservice.repository.NotificationViewsHistoryRepository;
 import tech.torbay.userservice.repository.PredefinedTagsRepository;
+import tech.torbay.userservice.repository.ProjectAwardsRepository;
+import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.RegistrationLogsRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
+import tech.torbay.userservice.repository.UserLevelNotificationRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserRepository;
 import tech.torbay.userservice.repository.UserWishListRepository;
+import tech.torbay.userservice.repository.VendorBidRepository;
 import tech.torbay.userservice.repository.VendorBrandsRepository;
 import tech.torbay.userservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.userservice.repository.VendorInsuranceRepository;
@@ -128,6 +139,19 @@ public class VendorService {
 	NotificationRepository notificationRepository;
 	@Autowired
 	RegistrationLogsRepository registrationLogsRepository;
+	@Autowired
+	VendorBidRepository vendorBidRepository;
+	@Autowired
+	ProjectRepository projectRepository;
+	@Autowired
+	UserLevelNotificationRepository userLevelNotificationRepository;
+	@Autowired
+	ProjectAwardsRepository projectAwardsRepository;
+	@Autowired
+	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
+	@Autowired
+	ExternalMessageCommentRepository externalMessageCommentRepository;
+	
 
 	public List<VendorUser> findAllVendorUsers() {
 //		// TODO Auto-generated method stub
@@ -1223,20 +1247,24 @@ public class VendorService {
 		notification.setUserId(vendorUserId);
 		notification.setOrganisationId(vendorOrgId);
 		
-		String userName = modifiedbyVendoruser.getFirstName()+" "+modifiedbyVendoruser.getLastName();
+		String modifiedBy = modifiedbyVendoruser.getFirstName()+" "+modifiedbyVendoruser.getLastName();
+		String username = vendoruser.getFirstName()+" "+vendoruser.getLastName();
+		if(username.trim().length() == 0) {
+			username = "( with Email : "+vendoruser.getEmail() +" )";
+		}
 		
 		switch(notificationType) {
 			case 23 :{//VENDOR_USER_PROFILE_DELETE
 				message = "User deleted!";
 //				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account deleted from Organisation";
-				subContent = "User "+userName+" has deleted User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" from the organization's account.";
+				subContent = "User "+modifiedBy+" has deleted User "+username+" from the organization's account.";
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
 			case 24 :{//VENDOR_USER_PROFILE_UPDATE
 				message = "User account update!";
 //				subContent = vendoruser.getFirstName()+" "+vendoruser.getLastName()+" user account updated in our Organisation";
-				subContent = "User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" account information has been updated by User "+userName;
+				subContent = "User "+vendoruser.getFirstName()+" "+vendoruser.getLastName()+" account information has been updated by User "+modifiedBy;
 				notification.setNotificationCategoryId(vendorUserId);
 				break;
 			}
@@ -1244,7 +1272,7 @@ public class VendorService {
 				message = "Update";
 				
 //				subContent = vendorOrganisation.getCompanyName() +" - our organisation profile information updated";
-				subContent = "Your organization's profile information was recently edited by User "+userName;
+				subContent = "Your organization's profile information was recently edited by User "+modifiedBy;
 				notification.setNotificationCategoryId(vendorOrgId);
 				break;
 			}
@@ -1741,5 +1769,399 @@ public class VendorService {
 		notificationRepository.save(notification);
 	}
 	
+	/*Vendor Notifications*/
+	public List<Map<String,Object>> getVendorNotifications(Integer vendorId, Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		List<Notification> filteredNotifications = new ArrayList<Notification>();
+		
+//		List<Notification> notifications = notificationRepository.findAll();
+//		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
+		List<Notification> userProfileNotifications = notificationRepository.getUserProfileNotifications(vendorId);
+		
+		List<Notification> allOpenProjectsNotifications = notificationRepository.findAllOpenProjectBidsNotifications();
+		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
+		List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(vendorOrganisationId);
+		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
+		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
+		//1.bidEnd Alert
+		//2.Account Alert
+		//3.Project QA Alert
+		//4.All bids(include competitor) Alert
+		List<Notification> allAccountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications = notificationRepository.findAllOtherCompetitorBidAwardsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
+		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> biddedProjectCancelledNotifications = notificationRepository.findAllProjectCancelledNotifications(vendorOrganisationId);;
+		
+		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
+		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
+		
+		List<Integer> externalThreadIds = new ArrayList();
+		List<Integer> externalMessageIds = new ArrayList();
+				
+		for(UserLevelNotification ecternalMessageNotification : externalMessagesNotifications) {
+			externalThreadIds.add(ecternalMessageNotification.getNotificationCategoryId());
+		}
+		
+		if(externalThreadIds != null && externalThreadIds.size() > 0) {
+			List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
+			for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+				externalMessageIds.add(externalMessageComment.getId());
+			}	
+		}
+		if(externalMessageIds != null && externalMessageIds.size() > 0) {
+			List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
+			externalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+		}
+		
+		internalMessagesNotifications.addAll(externalMessagesNotifications);
+		
+		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
+			Notification notification = new Notification();
+			notification.setId(userLevelNotification.getId());
+			notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());
+			notification.setNotificationCategoryType(userLevelNotification.getNotificationCategoryType());
+			notification.setTitle(userLevelNotification.getTitle());
+			notification.setDescription(userLevelNotification.getDescription());
+			notification.setUserId(userLevelNotification.getFromUserId());
+			notification.setUserType(userLevelNotification.getFromUserType());
+			notification.setCreatedAt(userLevelNotification.getCreatedAt());
+			notification.setModifiedDate(userLevelNotification.getModifiedDate());
+			
+			filteredNotifications.add(notification);
+		}
+		
+		List<Notification> tempallOtherCompetitorBidsNotifications = new ArrayList<>(allOtherCompetitorBidsNotifications);
+		for(int index = 0; index < tempallOtherCompetitorBidsNotifications.size(); index++) {
+			VendorBid vendorBid = vendorBidRepository.findOneById(tempallOtherCompetitorBidsNotifications.get(index).getNotificationCategoryId());
+			Project project = projectRepository.findByProjectId(vendorBid.getProjectId());
+			String title = "Bid alert";
+			String message = "Project "+project.getProjectName()+" received a new bid from another contractor (Project ID: "+project.getProjectId()+").";
+			tempallOtherCompetitorBidsNotifications.get(index).setTitle(title);
+			tempallOtherCompetitorBidsNotifications.get(index).setDescription(message);
+			
+		}
+		
+		List<Notification> tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications = new ArrayList<>(allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications);
+		for(int index = 0; index < tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.size(); index++) {
+			ProjectAwards projectAward = projectAwardsRepository.findOneById(tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.get(index).getNotificationCategoryId());
+			Project project = projectRepository.findByProjectId(projectAward.getProjectId());
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+			//BID_WON_LOSE
+			String title = "Hard luck!";
+			String message = "Project "+project.getProjectName()+" has been awarded to another bidder (Project ID: "+project.getProjectId()+"), by "+clientOrganisation.getOrganisationName();
+			tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.get(index).setTitle(title);
+			tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications.get(index).setDescription(message);	
+			
+		}
+		List<Notification> tempallOtherCompetitorBidsForInterestedProjectsNotifications = new ArrayList<>(allOtherCompetitorBidsForInterestedProjectsNotifications);
+		for(int index = 0; index < tempallOtherCompetitorBidsForInterestedProjectsNotifications.size(); index++) {
+			VendorBid vendorBid = vendorBidRepository.findOneById(tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).getNotificationCategoryId());
+			Project project = projectRepository.findByProjectId(vendorBid.getProjectId());
+			String title = "Bid alert";
+			String message = "Project "+project.getProjectName()+" received a new bid from another contractor (Project ID: "+project.getProjectId()+").";
+			tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setTitle(title);
+			tempallOtherCompetitorBidsForInterestedProjectsNotifications.get(index).setDescription(message);
+			
+		}
+		
+		List<Notification> tempbiddedProjectCancelledNotifications = new ArrayList<>(biddedProjectCancelledNotifications);
+		for(int index = 0; index < tempbiddedProjectCancelledNotifications.size(); index++) {
+			Project project = projectRepository.findByProjectId(tempbiddedProjectCancelledNotifications.get(index).getNotificationCategoryId());
+			ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
+			String title = "Project cancellation";
+			String message = "Project "+project.getProjectName()+" has been cancelled (Project ID: "+project.getProjectId()+"), by Condo "+clientOrganisation.getOrganisationName();
+			tempbiddedProjectCancelledNotifications.get(index).setTitle(title);
+			tempbiddedProjectCancelledNotifications.get(index).setDescription(message);
+		}
+		
+		List<Notification> tempbidEndAlertNotifications = new ArrayList<>(bidEndAlertNotifications);
+		for(int index = 0; index < tempbidEndAlertNotifications.size(); index++) {
+			if(tempbidEndAlertNotifications.get(index).getNotificationCategoryType() == 26) {
+				String message = tempbidEndAlertNotifications.get(index).getDescription().replace(" is set to", " that may interests you will");
+				tempbidEndAlertNotifications.get(index).setDescription(message);
+			} else {
+				String message = tempbidEndAlertNotifications.get(index).getDescription().replace(" has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project.", " that may interests you has reached the bidding deadline");
+				tempbidEndAlertNotifications.get(index).setDescription(message);
+			}
+			
+		}
+		
+		filteredNotifications.addAll(userProfileNotifications);
+		filteredNotifications.addAll(allOpenProjectsNotifications);
+		filteredNotifications.addAll(projectBidsNotifications);
+		//if same project award more than 1 time may lead notification issue in future, needs to check this
+		filteredNotifications.addAll(projectAwardsNotifications);
+		filteredNotifications.addAll(tempallOtherCompetitorBidAwardsForVendorBiddedProjectNotifications);
+		filteredNotifications.addAll(projectInterestNotifications);
+		filteredNotifications.addAll(reviewRatingNotifications);
+		
+		filteredNotifications.addAll(allAccountChangesNotifications);
+		filteredNotifications.addAll(tempallOtherCompetitorBidsNotifications);//based on vendor bided projects
+//		filteredNotifications.addAll(allOtherCompetitorBidsNotifications);//based on vendor bided projects
+		filteredNotifications.addAll(tempallOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
+//		filteredNotifications.addAll(allOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
+		filteredNotifications.addAll(tempbidEndAlertNotifications);
+//		filteredNotifications.addAll(bidEndAlertNotifications);
+		filteredNotifications.addAll(allInterestedProjectsQANotifications);
+		filteredNotifications.addAll(allBiddedProjectsQANotifications);
+		filteredNotifications.addAll(tempbiddedProjectCancelledNotifications);
+//		filteredNotifications.addAll(biddedProjectCancelledNotifications);
+		
+		
+		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
+		
+		List<Map<String,Object>> vendorNotifications = new ArrayList();
+		
+		for(Notification notification : uniqueNotifications) {
+			ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
+			
+			String sendorFirstName = "";
+			String sendorLastName = "";
+			String sendorOrganisationName = "";
+			String sendorLegalCompanyName = "";
+			
+			if(notification.getUserId() == 0) {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getOrganisationId() != 0) {
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(notification.getOrganisationId());
+					
+					sendorOrganisationName = clientOrganisation.getOrganisationName();
+					sendorLegalCompanyName = clientOrganisation.getManagementCompany();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
+					if(vendorOrganisation != null) {
+						sendorOrganisationName = vendorOrganisation.getCompanyName();
+						sendorLegalCompanyName = vendorOrganisation.getLegalName();
+					}
+				}
+			} else {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
+					ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+					
+					sendorFirstName = clientUser.getFirstName();
+					sendorLastName = clientUser.getLastName();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
+					VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
+					sendorFirstName = vendorUser.getFirstName();
+					sendorLastName = vendorUser.getLastName();
+				}
+			}
+			
+			mapNotification.put("senderFirstName", sendorFirstName);
+			mapNotification.put("senderLastName", sendorLastName);
+			mapNotification.put("senderOrganisationName", sendorOrganisationName);
+			mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
+			mapNotification.put("isViewed",false);
+			
+			List<NotificationViewsHistory> notificationViewsHistoryByOrganisation = notificationViewsHistoryRepository.findByOrganisationIdAndUserIdAndUserTypeAndNotificationId(vendorOrganisationId, vendorId, UserType.VENDOR.getValue(), notification.getId());
+//			List<NotificationViewsHistory> notificationViewsHistoryByUser = notificationViewsHistoryRepository.findByUserIdAndUserTypeAndNotificationId(vendorId, UserType.VENDOR.getValue(), notification.getId());
+			int count = 0;
+			if(notificationViewsHistoryByOrganisation != null) {
+				for(NotificationViewsHistory notificationViews : notificationViewsHistoryByOrganisation) {
+					if(notificationViews.getNotificationId().equals(notification.getId())) {
+						mapNotification.put("isViewed",true);
+						count++;
+					}
+				}
+			}
+			
+//			if(notificationViewsHistoryByUser != null)
+//			for(NotificationViewsHistory notificationViews : notificationViewsHistoryByUser) {
+//				if(notificationViews.getNotificationId() == notification.getId()) {
+//					mapNotification.put("isViewed",true);
+//					count++;
+//				}
+//			}
+			vendorNotifications.add(mapNotification);
+		}
+		
+		//refer - getVendorReadNotifications
+//		for(Map<String,Object> notification : vendorNotifications) {
+//			if(String.valueOf(notification.get("isViewed")).equals("false")) {
+//				NotificationViewsHistory notificationView = new NotificationViewsHistory();
+//				notificationView.setNotificationId(Integer.parseInt(notification.get("id").toString()));
+//				notificationView.setOrganisationId(vendorOrganisationId);
+//				notificationView.setUserId(vendorId);
+//				notificationView.setUserType(UserType.VENDOR.getValue());
+//				
+//				notificationViewsHistoryRepository.save(notificationView);
+//			}
+//		}
+		
+		
+		return vendorNotifications;
+	}
+	
+	public List<Map<String,Object>> getVendorReadNotifications(Integer vendorId, Integer vendorOrganisationId) {
+		// TODO Auto-generated method stub
+		List<Notification> filteredNotifications = new ArrayList<Notification>();
+		
+//		List<Notification> notifications = notificationRepository.findAll();
+//		List<Notification> notifications = notificationViewsHistoryRepository.findAll();
+		
+		List<Notification> userProfileNotifications = notificationRepository.getUserProfileNotifications(vendorId);
+		
+		List<Notification> allOpenProjectsNotifications = notificationRepository.findAllOpenProjectBidsNotifications();
+		List<Notification> projectBidsNotifications = notificationRepository.findAllProjectBidsNotifications(vendorOrganisationId);
+		List<Notification> projectAwardsNotifications = notificationRepository.findAllProjectAwardsNotifications(vendorOrganisationId);
+		List<Notification> projectInterestNotifications = notificationRepository.findAllProjectInterestNotifications(vendorOrganisationId);
+		List<Notification> reviewRatingNotifications = notificationRepository.findAllReviewRatingNotifications(vendorOrganisationId);
+		//1.bidEnd Alert
+		//2.Account Alert
+		//3.Project QA Alert
+		//4.All bids(include competitor) Alert
+		List<Notification> allAccountChangesNotifications = notificationRepository.findAllAccountChangesNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsNotifications = notificationRepository.findAllOtherCompetitorBidsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications = notificationRepository.findAllOtherCompetitorBidAwardsForVendorBiddedProjectNotifications(vendorOrganisationId);
+		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
+		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
+		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> biddedProjectCancelledNotifications = notificationRepository.findAllProjectCancelledNotifications(vendorOrganisationId);;
+		
+		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
+		List<UserLevelNotification> externalMessagesNotifications = userLevelNotificationRepository.findAllExternalMessagesNotifications(vendorOrganisationId);
+		
+		List<Integer> externalThreadIds = new ArrayList();
+		List<Integer> externalMessageIds = new ArrayList();
+				
+		for(UserLevelNotification ecternalMessageNotification : externalMessagesNotifications) {
+			externalThreadIds.add(ecternalMessageNotification.getNotificationCategoryId());
+		}
+		
+		if(externalThreadIds != null && externalThreadIds.size() > 0) {
+			List<ExternalMessageComment> externalMessageComments = externalMessageCommentRepository.findAllByThreadId(externalThreadIds);
+			for(ExternalMessageComment externalMessageComment : externalMessageComments) {
+				externalMessageIds.add(externalMessageComment.getId());
+			}	
+		}
+		if(externalMessageIds != null && externalMessageIds.size() > 0) {
+			List<UserLevelNotification> externalMessageCommentsNotifications = userLevelNotificationRepository.findAllExternalMessageCommentsNotifications(externalMessageIds);
+			internalMessagesNotifications.addAll(externalMessageCommentsNotifications);
+		}
+		
+		internalMessagesNotifications.addAll(externalMessagesNotifications);
+		
+		for (UserLevelNotification userLevelNotification : internalMessagesNotifications) {
+			Notification notification = new Notification();
+			notification.setId(userLevelNotification.getId());
+			notification.setNotificationCategoryId(userLevelNotification.getNotificationCategoryId());
+			notification.setNotificationCategoryType(userLevelNotification.getNotificationCategoryType());
+			notification.setTitle(userLevelNotification.getTitle());
+			notification.setDescription(userLevelNotification.getDescription());
+			notification.setUserId(userLevelNotification.getFromUserId());
+			notification.setUserType(userLevelNotification.getFromUserType());
+			notification.setCreatedAt(userLevelNotification.getCreatedAt());
+			notification.setModifiedDate(userLevelNotification.getModifiedDate());
+			
+			filteredNotifications.add(notification);
+		}
+		
+		filteredNotifications.addAll(userProfileNotifications);
+		filteredNotifications.addAll(allOpenProjectsNotifications);
+		filteredNotifications.addAll(projectBidsNotifications);
+		//if same project award more than 1 time may lead notification issue in future, needs to check this
+		filteredNotifications.addAll(projectAwardsNotifications);
+		filteredNotifications.addAll(allOtherCompetitorBidAwardsForVendorBiddedProjectNotifications);
+		filteredNotifications.addAll(projectInterestNotifications);
+		filteredNotifications.addAll(reviewRatingNotifications);
+		
+		filteredNotifications.addAll(allAccountChangesNotifications);
+//		filteredNotifications.addAll(tempallOtherCompetitorBidsNotifications);//based on vendor bided projects
+		filteredNotifications.addAll(allOtherCompetitorBidsNotifications);//based on vendor bided projects
+//		filteredNotifications.addAll(tempallOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
+		filteredNotifications.addAll(allOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
+		filteredNotifications.addAll(bidEndAlertNotifications);
+		filteredNotifications.addAll(allInterestedProjectsQANotifications);
+		filteredNotifications.addAll(allBiddedProjectsQANotifications);
+//		filteredNotifications.addAll(tempbiddedProjectCancelledNotifications);
+		filteredNotifications.addAll(biddedProjectCancelledNotifications);
+		
+		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
+		
+		List<Map<String,Object>> vendorNotifications = new ArrayList();
+		
+		for(Notification notification : uniqueNotifications) {
+			ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+			Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
+			
+			String sendorFirstName = "";
+			String sendorLastName = "";
+			String sendorOrganisationName = "";
+			String sendorLegalCompanyName = "";
+			
+			if(notification.getUserId() == 0) {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getOrganisationId() != 0) {
+					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(notification.getOrganisationId());
+					
+					sendorOrganisationName = clientOrganisation.getOrganisationName();
+					sendorLegalCompanyName = clientOrganisation.getManagementCompany();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
+					if(vendorOrganisation != null) {
+						sendorOrganisationName = vendorOrganisation.getCompanyName();
+						sendorLegalCompanyName = vendorOrganisation.getLegalName();	
+					}
+				}
+			} else {
+				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
+					ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+					
+					sendorFirstName = clientUser.getFirstName();
+					sendorLastName = clientUser.getLastName();
+				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
+					VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
+					sendorFirstName = vendorUser.getFirstName();
+					sendorLastName = vendorUser.getLastName();
+				}
+			}
+			
+			mapNotification.put("senderFirstName", sendorFirstName);
+			mapNotification.put("senderLastName", sendorLastName);
+			mapNotification.put("senderOrganisationName", sendorOrganisationName);
+			mapNotification.put("senderLegalCompanyName", sendorLegalCompanyName);
+			mapNotification.put("isViewed",false);
+			
+			List<NotificationViewsHistory> notificationViewsHistoryByOrganisation = notificationViewsHistoryRepository.findByOrganisationIdAndUserIdAndUserTypeAndNotificationId(vendorOrganisationId, vendorId, UserType.VENDOR.getValue(), notification.getId());
+//			List<NotificationViewsHistory> notificationViewsHistoryByUser = notificationViewsHistoryRepository.findByUserIdAndUserTypeAndNotificationId(vendorId, UserType.VENDOR.getValue(), notification.getId());
+			int count = 0;
+			if(notificationViewsHistoryByOrganisation != null) {
+				for(NotificationViewsHistory notificationViews : notificationViewsHistoryByOrganisation) {
+					if(notificationViews.getNotificationId().equals(notification.getId())) {
+						mapNotification.put("isViewed",true);
+						count++;
+					}
+				}
+			}
+			
+//			if(notificationViewsHistoryByUser != null)
+//			for(NotificationViewsHistory notificationViews : notificationViewsHistoryByUser) {
+//				if(notificationViews.getNotificationId() == notification.getId()) {
+//					mapNotification.put("isViewed",true);
+//					count++;
+//				}
+//			}
+			vendorNotifications.add(mapNotification);
+		}
+		for(Map<String,Object> notification : vendorNotifications) {
+			if(String.valueOf(notification.get("isViewed")).equals("false")) {
+				NotificationViewsHistory notificationView = new NotificationViewsHistory();
+				notificationView.setNotificationId(Integer.parseInt(notification.get("id").toString()));
+				notificationView.setOrganisationId(vendorOrganisationId);
+				notificationView.setUserId(vendorId);
+				notificationView.setUserType(UserType.VENDOR.getValue());
+				
+				notificationViewsHistoryRepository.save(notificationView);
+			}
+		}
+		
+		
+		return vendorNotifications;
+	}
+
 }
 

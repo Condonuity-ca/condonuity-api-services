@@ -27,4 +27,7 @@ public interface ExternalMessageCommentRepository extends JpaRepository<External
 	@Query(value="update condonuitydev.external_message_comment set delete_status = (?1) where id = (?2);", nativeQuery = true)
 	int setDeleteStatusById(Integer activeStatus, Integer externalMessageCommentId);
 	
+	 @Query(value = "SELECT emc.* FROM condonuitydev.external_message_comment emc " + 
+	    		"  WHERE ( emc.thread_id IN (?1))", nativeQuery = true)
+	List<ExternalMessageComment> findAllByThreadId(List<Integer> externalThreadIds);
 }

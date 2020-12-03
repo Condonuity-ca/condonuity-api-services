@@ -1103,13 +1103,16 @@ public class ClientService {
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(clientUserId);
 		notification.setOrganisationId(clientOrgId);
-		
+		String username = clientuser.getFirstName()+" "+clientuser.getLastName();
+		if(username.trim().length() == 0) {
+			username = "( with Email : "+clientuser.getEmail() +" )";
+		}
 		switch(notificationType) {
 			case 19 :{//CLIENT_USER_PROFILE_DELETE
 //				message = "User Account Deleted";
 //				subContent = clientuser.getFirstName()+" "+clientuser.getLastName()+" user account deleted from Organisation";
 				message = "User deleted!";
-				subContent = "User "+modifiedBy+" has deleted User "+clientuser.getFirstName()+" "+clientuser.getLastName()+" from the organization's account.";
+				subContent = "User "+modifiedBy+" has deleted User "+username+" from the organization's account.";
 				notification.setNotificationCategoryId(clientUserId);
 				break;
 			}

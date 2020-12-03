@@ -786,4 +786,73 @@ public class VendorController {
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 		}
 	}
+	
+	@ApiOperation(value = "Fetching All Vendor Notifications Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor Notifications fetched successfully")
+            }
+    )
+	@GetMapping("/vendor/notifications/{vendorId}/{vendorOrganisationId}")
+	public ResponseEntity<Object> getVendorNotifications(@PathVariable("vendorId") Integer vendorId, @PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
+		List<Map<String, Object>> list = vendorService.getVendorNotifications(vendorId, vendorOrganisationId);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			long count = getCountOfUnreadMessages(list);
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All notifications fetched successfully");
+			response.put("notifications", list);
+			response.put("unreadMessagesCount", count);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	// to check the db connection issue, I am making comment changes in this build internal_v_10.5
+
+	private long getCountOfUnreadMessages(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		long countBigCustomers = list
+				  .stream()
+				  .filter(notification -> notification.get("isViewed").toString().equals("false"))
+				  .count();
+		
+		return countBigCustomers;
+	}
+	
+	@ApiOperation(value = "Fetching All Vendor Notifications Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor Notifications fetched successfully")
+            }
+    )
+	@GetMapping("/vendor/notifications/read/{vendorId}/{vendorOrganisationId}")
+	public ResponseEntity<Object> getVendorReadNotifications(@PathVariable("vendorId") Integer vendorId, @PathVariable("vendorOrganisationId") Integer vendorOrganisationId) {
+		List<Map<String, Object>> list = vendorService.getVendorReadNotifications(vendorId, vendorOrganisationId);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+//			long count = getCountOfUnreadMessages(list);
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All notifications read successfully");
+//			response.put("notifications", list);
+//			response.put("unreadMessagesCount", count);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
 } 
