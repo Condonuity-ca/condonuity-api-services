@@ -2111,7 +2111,7 @@ public class ClientService {
 //				message = "Annual Contract Expiring";
 //				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expiring in "+expireIn+ " days";
 				message = "Annual contract expiration alert!";
-				subContent = "Contract "+clientContract.getNotes()+" is set to expire in "+expireIn+" days!";
+				subContent = "Contract "+clientContract.getVendorName()+" is set to expire in "+expireIn+" days!";
 				
 				break;
 			}
@@ -2119,7 +2119,7 @@ public class ClientService {
 //				message = "Annual Contract Expired";
 //				subContent = "Annual Contract with vendor "+clientContract.getVendorName()+" is expired";
 				message = "Annual contract Expired!";
-				subContent = "Contract "+clientContract.getNotes()+" has expired.";
+				subContent = "Contract "+clientContract.getVendorName()+" has expired.";
 				
 				break;
 			}

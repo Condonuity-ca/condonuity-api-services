@@ -69,7 +69,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		" inner join " + 
     		" condonuitydev.project_reviews_ratings prr on " + 
     		" ( prr.id = nt.notification_category_id and prr.vendor_organisation_id = (?1) and " + 
-    		" notification_category_type = 7 )", nativeQuery = true)
+    		" notification_category_type = 7 or notification_category_type = 35)", nativeQuery = true)
 	List<Notification> findAllReviewRatingNotifications(Integer vendorOrganisationId);
     
     @Query(value ="select nt.* from condonuitydev.notification nt " + 
@@ -158,4 +158,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		+ "notification_category_type = 39 or "
     		+ "notification_category_type = 40 ) )", nativeQuery = true)
 	List<Notification> getUserProfileNotifications(Integer vendorId);
+    
+//    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+//    		"INNER JOIN condonuitydev.project_reviews_ratings prr " + 
+//    		"ON ( prr.id = notification_category_id ) " + 
+//    		"where (" + 
+//    		"( notification_category_type = 35 ) and prr.vendor_organisation_id = (?1)" + 
+//    		")", nativeQuery = true)
+//	List<Notification> findAllEditedReviewsNotifications(Integer vendorOrganisationId);
 }

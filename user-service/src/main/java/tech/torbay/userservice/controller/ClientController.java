@@ -1057,7 +1057,6 @@ public class ClientController {
     )
 	@GetMapping("/client/org/building/repo/{clientOrgId}")
 	public ResponseEntity<Object> getClientBuildingRepositories(@PathVariable("clientOrgId") Integer clientOrgId) {
-		
 		List<ClientBuildingRepository> clientTasks= clientService.getClientBuildingRepositories(clientOrgId);
         if (clientTasks == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
@@ -1118,7 +1117,7 @@ public class ClientController {
 	}
 	
 	@Scheduled(cron = "0 0 5 * * ?") /* (fixedDelay = 1000 * 60 * 60 * 24) */
-	public void publish() {
+	public void run() {
 	    logger.info("Current time is :: " + Calendar.getInstance().getTime());
 	    try {
 //			cronJobSch();
