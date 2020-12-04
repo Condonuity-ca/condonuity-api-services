@@ -594,5 +594,15 @@ public class ClientService {
 		
 		return clientAssociations.size();
 	}
+
+	public int isOrganisationAccountAvailable(Integer clientId) {
+		// TODO Auto-generated method stub
+		List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientId);
+		if(clientAssociations != null ) {
+			return clientAssociations.size();
+		} else {
+			return 0;
+		}
+	}
 }
 

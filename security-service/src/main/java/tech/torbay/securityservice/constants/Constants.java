@@ -121,7 +121,11 @@ public class Constants {
 		RESET_PASSWORD(5),
 		LINK_EXPIRED(5),
 		DUPLICATE_CORPORATION_NUMBER(7),
-		FIELD_VALIDATION_ERROR(11);
+		FIELD_VALIDATION_ERROR(11),
+		USER_ACCOUNT_DELETED(12),
+		CLIENT_USER_RECORD_EXISTS(13),
+		VENDOR_USER_RECORD_EXISTS(14),
+		INVITE_RESEND(15);		
 	    
 	    private int value;
 	    private static Map map = new HashMap<>();

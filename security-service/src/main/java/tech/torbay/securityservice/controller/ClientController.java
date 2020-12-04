@@ -47,9 +47,11 @@ import tech.torbay.securityservice.entity.ClientOrganisation;
 import tech.torbay.securityservice.entity.ClientUser;
 import tech.torbay.securityservice.entity.RegistrationLogs;
 import tech.torbay.securityservice.entity.User;
+import tech.torbay.securityservice.entity.VendorUser;
 import tech.torbay.securityservice.repository.ClientUserRepository;
 import tech.torbay.securityservice.service.ClientService;
 import tech.torbay.securityservice.service.UserService;
+import tech.torbay.securityservice.service.VendorService;
 import tech.torbay.securityservice.statusmessage.ResponseMessage;
 import tech.torbay.securityservice.utils.Utils;
 
@@ -65,6 +67,8 @@ public class ClientController {
     ClientService clientService;
     @Autowired
     UserService userService;
+    @Autowired
+    VendorService vendorService;
 
 	/*New APIs Structure*/
     
@@ -192,21 +196,72 @@ public class ClientController {
 		User user = userService.findByEmail(client.getEmail());
 		if( user != null ) {
 			
-			HashMap<String, Object> list = new HashMap();
-//			if(user.getUserType() == UserType.CLIENT.getValue() & clientService.getAllOrganisationsForClientUser(user.getUserId()) == 0) {
-//				list.put("isNew",true);
-//			} else {
-//				list.put("isNew",false);
-//			}
-			list.put("isNew",false);
-			
-			list.put("statusCode", APIStatusCode.CONFLICT.getValue());
-			list.put("statusMessage", "Failed");
-			list.put("responseMessage", "User Record Already Exists");
-			list.put("userId",user.getUserId());
-			list.put("userType",user.getUserType());
-			
-        	return new ResponseEntity<Object>(list,HttpStatus.OK);
+			if(user.getUserType() == UserType.CLIENT.getValue()) {
+				ClientUser clientUser = clientService.findById(user.getUserId());
+				if(clientUser.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+					HashMap<String, Object> list = new HashMap(); 
+					list.put("isNew",false);
+					list.put("statusCode", APIStatusCode.USER_ACCOUNT_DELETED.getValue());
+					list.put("statusMessage", "Failed"); 
+					list.put("responseMessage","Client User Record Already Exists and Deleted"); 
+					list.put("userId",user.getUserId());
+					list.put("userType",user.getUserType());
+					return new ResponseEntity<Object>(list,HttpStatus.OK);
+				} else {
+					int activeCount = clientService.isOrganisationAccountAvailable(clientUser.getClientId());
+					if(activeCount == 0) {
+						HashMap<String, Object> list = new HashMap(); 
+						list.put("isNew",true);
+						list.put("statusCode", APIStatusCode.CONFLICT.getValue());
+						list.put("statusMessage", "Failed"); 
+						list.put("responseMessage","Client User Record Already Exists and Registration Invite can resend"); 
+						list.put("userId",user.getUserId());
+						list.put("userType",user.getUserType());
+						return new ResponseEntity<Object>(list,HttpStatus.OK);
+					} else {
+						HashMap<String, Object> list = new HashMap(); 
+						list.put("isNew",false);
+						list.put("statusCode", APIStatusCode.CLIENT_USER_RECORD_EXISTS.getValue());
+						list.put("statusMessage", "Failed"); 
+						list.put("responseMessage","Client User Record Already Exists"); 
+						list.put("userId",user.getUserId());
+						list.put("userType",user.getUserType());
+						return new ResponseEntity<Object>(list,HttpStatus.OK);
+					}
+					
+				}
+
+			} else if(user.getUserType() == UserType.VENDOR.getValue()) {
+				VendorUser vendorUserObj = vendorService.findByVendorUserId(user.getUserId());
+				if(vendorUserObj.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
+					HashMap<String, Object> list = new HashMap(); 
+					list.put("isNew",false);
+					list.put("statusCode", APIStatusCode.USER_ACCOUNT_DELETED.getValue());
+					list.put("statusMessage", "Failed"); 
+					list.put("responseMessage","Vendor User Record Already Exists and Deleted"); 
+					list.put("userId",user.getUserId());
+					list.put("userType",user.getUserType());
+					return new ResponseEntity<Object>(list,HttpStatus.OK);
+				} else {
+					HashMap<String, Object> list = new HashMap(); 
+					list.put("isNew",false);
+					list.put("statusCode", APIStatusCode.VENDOR_USER_RECORD_EXISTS.getValue());
+					list.put("statusMessage", "Failed"); 
+					list.put("responseMessage","Vendor User Record Already Exists"); 
+					list.put("userId",user.getUserId());
+					list.put("userType",user.getUserType());
+					return new ResponseEntity<Object>(list,HttpStatus.OK);
+				}
+			} else {
+				HashMap<String, Object> list = new HashMap(); 
+				list.put("isNew",false);
+				list.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+				list.put("statusMessage", "Failed"); 
+				list.put("responseMessage","User Record Already Exists"); 
+				list.put("userId",user.getUserId());
+				list.put("userType",user.getUserType());
+				return new ResponseEntity<Object>(list,HttpStatus.OK);
+			}
 		} else {
 			ClientUser clientUser;
 			try {
