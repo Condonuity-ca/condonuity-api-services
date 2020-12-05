@@ -7,12 +7,18 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.file.CloudFileClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.util.unit.DataSize;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
+
+import javax.servlet.MultipartConfigElement;
 
 @Configuration
 public class BeanConfig {
@@ -39,4 +45,19 @@ public class BeanConfig {
 		return cloudBlobClient().getContainerReference(environment.getProperty("azure.storage.container.name"));
 	}
 
+//	@Bean
+//	public MultipartConfigElement multipartConfigElement() {
+//	    MultipartConfigFactory factory = new MultipartConfigFactory();
+//	    factory.setMaxFileSize(DataSize.ofBytes(100000000L));
+//	    factory.setMaxRequestSize(DataSize.ofBytes(100000000L));
+//	    return factory.createMultipartConfig();
+//	}
+	
+//	@Bean
+//	public MultipartResolver multipartResolver() {
+//	    CommonsMultipartResolver multipartResolver
+//	      = new CommonsMultipartResolver();
+//	    multipartResolver.setMaxUploadSize(5242880);
+//	    return multipartResolver;
+//	}
 }
