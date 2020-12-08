@@ -1159,8 +1159,19 @@ public class ProjectService {
 //				subContent = " posted in Marketplace"/*" project with "+project.getTags()*/;
 				
 				message = "Fresh opportunity!"; 
+				String userName = "";
 				ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(project.getClientOrganisationId());
 				subContent = clientOrganisation.getOrganisationName() +" published a new project to the marketplace (\""+project.getProjectName()+"\", Project ID: "+project.getProjectId()+").";
+				if(project.getClientId() != null && project.getClientId() != 0 && project.getClientId() > 0) {
+					ClientUser clientUser = clientUserRepository.findByClientId(project.getClientId());
+					if(clientUser != null) {
+						userName = clientUser.getFirstName()+" "+clientUser.getLastName();
+					}
+				}
+				if(userName.trim().length() > 0) {
+					subContent = "User "+userName+" from "+clientOrganisation.getOrganisationName() +" published a new project to the marketplace (\""+project.getProjectName()+"\", Project ID: "+project.getProjectId()+").";
+				}
+				
 				break;
 			}
 			case 2 :{
