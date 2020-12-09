@@ -1218,9 +1218,25 @@ public class ClientService {
 						tempbidEndAlertNotifications.get(index).setDescription(tempbidEndAlertNotifications.get(index).getDescription().replace("that may interests you has reached the bidding deadline", "has reached its biding deadline. Contractors will no longer be permitted to submit bids for this project."));
 				}
 				
-				List<Notification> tempallPostedProjectsForClientNotifications = new ArrayList<>(allPostedProjectsForClientNotifications);
-				for(int index = 0; index < tempallPostedProjectsForClientNotifications.size(); index++) {
-					Notification notification = tempallPostedProjectsForClientNotifications.get(index);
+//				List<Notification> tempallPostedProjectsForClientNotifications = new ArrayList<>(allPostedProjectsForClientNotifications);
+//				for(int index = 0; index < tempallPostedProjectsForClientNotifications.size(); index++) {
+//					Notification notification = tempallPostedProjectsForClientNotifications.get(index);
+//					if(notification.getNotificationCategoryType() == Constants.NotificationType.PROJECT_CREATE.getValue()) {
+//						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+//						Project project = projectRepository.findByProjectId(notification.getNotificationCategoryId());
+//						String userFirstName = clientUser.getFirstName();
+//						String userLastName = clientUser.getLastName();
+//						String userName = userFirstName+" "+userLastName;
+//						String title = "New project posting";
+//						String message = "User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+//						tempallPostedProjectsForClientNotifications.get(index).setTitle(title);
+//						tempallPostedProjectsForClientNotifications.get(index).setDescription(message);
+//					}
+//				}
+				
+				List<Notification> tempallPostedProjectsForClientNotifications = new ArrayList<>();
+				for(int index = 0; index < allPostedProjectsForClientNotifications.size(); index++) {
+					Notification notification = allPostedProjectsForClientNotifications.get(index);
 					if(notification.getNotificationCategoryType() == Constants.NotificationType.PROJECT_CREATE.getValue()) {
 						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
 						Project project = projectRepository.findByProjectId(notification.getNotificationCategoryId());
@@ -1229,8 +1245,9 @@ public class ClientService {
 						String userName = userFirstName+" "+userLastName;
 						String title = "New project posting";
 						String message = "User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
-						tempallPostedProjectsForClientNotifications.get(index).setTitle(title);
-						tempallPostedProjectsForClientNotifications.get(index).setDescription(message);
+						notification.setTitle(title);
+						notification.setDescription(message);
+						tempallPostedProjectsForClientNotifications.add(notification);
 					}
 				}
 				
