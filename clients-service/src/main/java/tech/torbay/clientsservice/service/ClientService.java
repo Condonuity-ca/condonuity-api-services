@@ -1434,20 +1434,20 @@ public class ClientService {
 				}
 				
 				List<Notification> tempallPostedProjectsForClientNotifications = new ArrayList<>(allPostedProjectsForClientNotifications); 
-				for(int index = 0; index < tempallPostedProjectsForClientNotifications.size(); index++) {
-					Notification notification = tempallPostedProjectsForClientNotifications.get(index);
-					if(notification.getNotificationCategoryType() == Constants.NotificationType.PROJECT_CREATE.getValue()) {
-						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
-						Project project = projectRepository.findByProjectId(notification.getNotificationCategoryId());
-						String userFirstName = clientUser.getFirstName();
-						String userLastName = clientUser.getLastName();
-						String userName = userFirstName+" "+userLastName;
-						String title = "New project posting";
-						String message = "User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
-						tempallPostedProjectsForClientNotifications.get(index).setTitle(title);
-						tempallPostedProjectsForClientNotifications.get(index).setDescription(message);
-					}
-				}
+//				for(int index = 0; index < tempallPostedProjectsForClientNotifications.size(); index++) {
+//					Notification notification = tempallPostedProjectsForClientNotifications.get(index);
+//					if(notification.getNotificationCategoryType() == Constants.NotificationType.PROJECT_CREATE.getValue()) {
+//						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+//						Project project = projectRepository.findByProjectId(notification.getNotificationCategoryId());
+//						String userFirstName = clientUser.getFirstName();
+//						String userLastName = clientUser.getLastName();
+//						String userName = userFirstName+" "+userLastName;
+//						String title = "New project posting";
+//						String message = "User "+userName+" posted a new project in Marketplace: Project "+project.getProjectName()+" (Project ID: "+project.getProjectId()+").";
+//						tempallPostedProjectsForClientNotifications.get(index).setTitle(title);
+//						tempallPostedProjectsForClientNotifications.get(index).setDescription(message);
+//					}
+//				}
 				
 				filteredNotifications.addAll(userProfileNotifications);
 				filteredNotifications.addAll(tempprojectBidsNotifications);
