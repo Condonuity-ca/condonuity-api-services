@@ -36,6 +36,7 @@ import tech.torbay.userservice.entity.ClientTask;
 import tech.torbay.userservice.entity.ClientTaskComments;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.OrganisationPayment;
+import tech.torbay.userservice.entity.UnclaimedVendorWishList;
 import tech.torbay.userservice.entity.UserWishList;
 import tech.torbay.userservice.service.ClientService;
 import tech.torbay.userservice.statusmessage.ResponseMessage;
@@ -535,11 +536,40 @@ public class ClientController {
             }
     )
 	@PostMapping("/client/org/preference/add")
-	public ResponseEntity<Object> addClientAsFavourite(
+	public ResponseEntity<Object> addvendorAsFavourite(
 			@RequestBody Map<String, Object> requestData) {
 		
 		UserWishList userWishListObj = clientService.addVendorAsFavourite(requestData);
         if (userWishListObj == null) {
+        	ResponseMessage responseMessage = new ResponseMessage(
+        			APIStatusCode.REQUEST_FAILED.getValue(),
+	        		"Failed",
+	        		"Failed to add Vendor Preference");
+        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
+        } else {
+	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setLocation(builder.path("/vendor/{id}").buildAndExpand(vendor.getVendorId()).toUri());
+	        ResponseMessage responseMessage = new ResponseMessage(
+	        		APIStatusCode.REQUEST_SUCCESS.getValue(),
+	        		"Success",
+	        		"Preferenced Vendor Added Successfully");
+			return new ResponseEntity<Object>(responseMessage, /* headers, */ HttpStatus.OK);
+        }
+	}
+	
+	@ApiOperation(value = "Adding Preferenced Vendor Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Preferenced Vendor Added Successfully"),
+                    @ApiResponse(code = 201, message = "Preferenced Vendor Created Successfully")
+            }
+    )
+	@PostMapping("/client/org/preference/vendor/profile/add")
+	public ResponseEntity<Object> addVendorProfileAsFavourite(
+			@RequestBody Map<String, Object> requestData) {
+		
+		UnclaimedVendorWishList unclaimedVendorWishList = clientService.addVendorProfileAsFavourite(requestData);
+        if (unclaimedVendorWishList == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.REQUEST_FAILED.getValue(),
 	        		"Failed",

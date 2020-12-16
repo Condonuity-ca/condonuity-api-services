@@ -42,6 +42,7 @@ import tech.torbay.userservice.entity.Project;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.RegistrationLogs;
 import tech.torbay.userservice.entity.ServiceCities;
+import tech.torbay.userservice.entity.UnclaimedVendorWishList;
 import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserLevelNotification;
 import tech.torbay.userservice.entity.UserProfileImages;
@@ -66,6 +67,7 @@ import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.RegistrationLogsRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
+import tech.torbay.userservice.repository.UnclaimedVendorWishListRepository;
 import tech.torbay.userservice.repository.UserLevelNotificationRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserRepository;
@@ -126,6 +128,8 @@ public class ClientService {
 	NotificationRepository notificationRepository;
 	@Autowired
 	RegistrationLogsRepository registrationLogsRepository;
+	@Autowired
+	UnclaimedVendorWishListRepository unclaimedVendorWishListRepository;
 
 	public List<ClientUser> getAllClientUsers() {
 //		// TODO Auto-generated method stub
@@ -800,6 +804,28 @@ public class ClientService {
 		userWish.setInterestStatus(interestStatus);
 		
 		return userWishListRepository.save(userWish);
+	}
+	
+	public UnclaimedVendorWishList addVendorProfileAsFavourite(Map<String, Object> userWishList) {
+		// TODO Auto-generated method stub
+		
+		
+		
+		Integer clientOrgId = (Integer) userWishList.get("clientOrgId");
+		Integer vendorProfileId = (Integer) userWishList.get("vendorProfileId");
+		Integer clientUserId = (Integer) userWishList.get("clientUserId");
+		Integer interestStatus = (Integer) userWishList.get("interestStatus");
+		
+		UnclaimedVendorWishList unclaimedVendorWishList = unclaimedVendorWishListRepository.findByClientOrgIdAndVendorProfileId(clientOrgId, vendorProfileId);
+		if(unclaimedVendorWishList == null) {
+			unclaimedVendorWishList = new UnclaimedVendorWishList();
+		} 
+		unclaimedVendorWishList.setClientOrgId(clientOrgId);
+		unclaimedVendorWishList.setVendorProfileId(vendorProfileId);
+		unclaimedVendorWishList.setClientUserId(clientUserId);
+		unclaimedVendorWishList.setInterestStatus(interestStatus);
+		
+		return unclaimedVendorWishListRepository.save(unclaimedVendorWishList);
 	}
 
 	public boolean rateVendorByCategory(Map<String, Object> ratings) {

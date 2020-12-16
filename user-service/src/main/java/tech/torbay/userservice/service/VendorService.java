@@ -34,6 +34,7 @@ import tech.torbay.userservice.entity.ProjectAwards;
 import tech.torbay.userservice.entity.ProjectReviewRating;
 import tech.torbay.userservice.entity.RegistrationLogs;
 import tech.torbay.userservice.entity.ServiceCities;
+import tech.torbay.userservice.entity.UnclaimedVendorWishList;
 import tech.torbay.userservice.entity.User;
 import tech.torbay.userservice.entity.UserLevelNotification;
 import tech.torbay.userservice.entity.UserProfileImages;
@@ -66,6 +67,7 @@ import tech.torbay.userservice.repository.ProjectRepository;
 import tech.torbay.userservice.repository.ProjectReviewRatingRepository;
 import tech.torbay.userservice.repository.RegistrationLogsRepository;
 import tech.torbay.userservice.repository.ServiceCitiesRepository;
+import tech.torbay.userservice.repository.UnclaimedVendorWishListRepository;
 import tech.torbay.userservice.repository.UserLevelNotificationRepository;
 import tech.torbay.userservice.repository.UserProfileImagesRepository;
 import tech.torbay.userservice.repository.UserRepository;
@@ -151,6 +153,8 @@ public class VendorService {
 	NotificationViewsHistoryRepository notificationViewsHistoryRepository;
 	@Autowired
 	ExternalMessageCommentRepository externalMessageCommentRepository;
+	@Autowired
+	UnclaimedVendorWishListRepository unclaimedVendorWishListRepository;
 	
 
 	public List<VendorUser> findAllVendorUsers() {
@@ -1255,8 +1259,7 @@ public class VendorService {
 	        map.put("vendorOrganisationId", 0);
 	        map.remove("allocatedvendorOrgId");
 	        
-//	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorProfileId(), Constants.UserType.VENDOR.getValue() );
-	        
+	        UnclaimedVendorWishList unclaimedVendorWishList = unclaimedVendorWishListRepository.findByClientOrgIdAndVendorProfileId(clientOrgId, vendorOrg.getVendorProfileId());	        
 	        //empty
 	        map.put("vendorTags","");
 	        if(vendorOrg.getCity() != null ) {
@@ -1280,11 +1283,11 @@ public class VendorService {
 	        map.put("serviceCities",String.join(",", servicesCities));
 //	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        map.put("rating",0);
-//	        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
-//	        	map.put("isPreferred", "true");
-//	        } else {
+	        if(unclaimedVendorWishList != null && unclaimedVendorWishList.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
+	        	map.put("isPreferred", "true");
+	        } else {
 	        	map.put("isPreferred", "false");
-//	        }
+	        }
 	        try {
 //		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
 //		        if(logo != null)
