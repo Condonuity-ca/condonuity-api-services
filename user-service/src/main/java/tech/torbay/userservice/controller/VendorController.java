@@ -1,6 +1,7 @@
 package tech.torbay.userservice.controller;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +91,43 @@ public class VendorController {
 			response.put("responseMessage", "Vendor Organisation details fetched successfully");
 			response.put("vendor", vendorOrganisation);
 			response.put("vendorPortfolios", vendorPortfolio);
+			response.put("vendorInsurances", vendorInsurance);
+			response.put("vendorRegistrationFiles", vendorRegistrationFiles);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetch A Vendor Details Implementation")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "A vendor details fetched successfully")
+            }
+    )
+	@GetMapping("/vendor/unclaimed/org/{id}")
+	public ResponseEntity<Object> getUnclaimedOrganisationById(@PathVariable("id") Integer vendorProfileId) {
+		Object vendorOrganisation = vendorService.getVendorProfileById(vendorProfileId);
+//		List<Map<String, Object>> vendorPortfolio = vendorService.getVendorPortfolio(vendorOrganisationId);
+//		List<VendorInsurance> vendorInsurance = vendorService.getVendorInsurance(vendorOrganisationId);
+//		List<Map<String, Object>> vendorRegistrationFiles = vendorService.getVendorRegistrationFiles(vendorOrganisationId);
+	
+		List<VendorPortfolio> portfolios = new ArrayList<>();
+		List<VendorInsurance> vendorInsurance = new ArrayList<>();
+		List<VendorRegistrationFiles> vendorRegistrationFiles = new ArrayList<>();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(vendorOrganisation != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "Vendor Organisation details fetched successfully");
+			response.put("vendor", vendorOrganisation);
+			response.put("vendorPortfolios", portfolios);
 			response.put("vendorInsurances", vendorInsurance);
 			response.put("vendorRegistrationFiles", vendorRegistrationFiles);
 			

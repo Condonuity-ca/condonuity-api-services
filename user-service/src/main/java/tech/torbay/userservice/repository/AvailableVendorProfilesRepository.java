@@ -14,13 +14,13 @@ public interface AvailableVendorProfilesRepository extends JpaRepository<Availab
 
     List<AvailableVendorProfiles> findAll();
 
-    AvailableVendorProfiles save(VendorOrganisation vendorOrganisation);
+    AvailableVendorProfiles save(AvailableVendorProfiles availableVendorProfiles);
 	
     AvailableVendorProfiles findByAllocatedVendorOrgId(Integer id);
     
     AvailableVendorProfiles findByVendorProfileId(Integer id);
 
-	@Query(value="Select avp.* FROM condonuitydev.available_vendor_profiles vo where avp.active_status =(?1);", nativeQuery = true)
-	List<VendorOrganisation> findAllByActiveStatus(int activeStatus);
+	@Query(value="Select avp.* FROM condonuitydev.available_vendor_profiles avp where ( avp.active_status =(?1) and avp.allocated_vendor_org_id = 0);", nativeQuery = true)
+	List<AvailableVendorProfiles> findAllByActiveStatus(int activeStatus);
 
 }

@@ -388,6 +388,10 @@ public class ProjectService {
 
 	private void checkIsProjectsClosed() {
 		// TODO Auto-generated method stub
+		List<Project> projects = projectRepository.getClosingProjects();
+		for (Project project : projects) {
+			SendProjectBidDateExpiringNotification(Constants.DAY_0, project, NotificationType.PROJECT_BIDDING_EXPIRED.getValue());
+		}
 		projectRepository.updateClosedProjects();
 	}
 

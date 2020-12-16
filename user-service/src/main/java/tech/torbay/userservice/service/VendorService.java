@@ -275,6 +275,65 @@ public class VendorService {
 		return null/* vendorOrganisationRepository.findByVendorOrganisationId(id) */;
 	}
 	
+	public Map<String, Object> getVendorProfileById(Integer vendorProfileId) {
+		// TODO Auto-generated method stub
+		
+		try {
+			AvailableVendorProfiles vendorOrg = availableVendorProfilesRepository.findByVendorProfileId(vendorProfileId);
+			
+			
+			ObjectMapper objMapper = new ObjectMapper();
+	        Map<String, Object> mappedObj = objMapper.convertValue(vendorOrg, Map.class);
+	        
+//	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
+//	        	mappedObj.put("vendorTags",getVendorTagsWithId(vendorOrg.getVendorTags()));
+//	        } else {
+	        	mappedObj.put("vendorTags","[]");
+//	        }
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		mappedObj.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		mappedObj.put("city","");
+	        	}
+	        	
+	        } else {
+	        	mappedObj.put("city","");
+			}
+	        mappedObj.put("rating",0);
+	        mappedObj.put("detailedRating",null);
+	        mappedObj.put("reviewsRatings","[]");
+	        
+	        
+	        
+	        mappedObj.put("vendorServicesCities","[]");
+	        mappedObj.put("services","[]");
+	        mappedObj.put("products","[]");
+	        mappedObj.put("brands","[]");
+	        mappedObj.put("licenses","[]");
+	        mappedObj.put("memberships","[]");
+	        
+	        try {
+//	        String logo = getOrganisationLogo(vendorOrganisationId);
+//	        if(logo != null)
+//	        	mappedObj.put("vendorProfileImageUrl", logo);
+//	        else
+	        	mappedObj.put("vendorProfileImageUrl", "");
+	        } catch(Exception exp) {
+	        	exp.printStackTrace();
+	        }
+	        
+			return mappedObj;
+			
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		
+		return null/* vendorOrganisationRepository.findByVendorOrganisationId(id) */;
+	}
+	
 	public String getOrganisationLogo(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
 		VendorOrganisationProfileImages vendorOrgProfileImage =  vendorOrganisationProfileImagesRepository.findByVendorOrganisationId(vendorOrganisationId);
@@ -485,6 +544,7 @@ public class VendorService {
 	public List<Object> getAllActiveVendorOrganisations() {
 		// TODO Auto-generated method stub
 		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
+		List<AvailableVendorProfiles> uncliamedVendorProfiles = availableVendorProfilesRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
 		
 		List<Object> vendorOrganisations = new ArrayList();
 		
@@ -524,6 +584,58 @@ public class VendorService {
 		        if(logo != null)
 		        	map.put("vendorProfileImageUrl", logo);
 		        else
+		        	map.put("vendorProfileImageUrl", "");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
+	        }
+	        vendorOrganisations.add(map);
+		}
+		
+		//Available - Unclaimed vendor profiles
+		for(AvailableVendorProfiles vendorOrg : uncliamedVendorProfiles) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileId", vendorOrg.getVendorProfileId());
+	        map.put("vendorOrganisationId", 0);
+	        map.remove("allocatedvendorOrgId");
+	        
+//	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorProfileId(), Constants.UserType.VENDOR.getValue() );
+	        
+	        //empty
+	        map.put("vendorTags","");
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
+//	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+	        List<String> servicesCities = new ArrayList();
+//	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+//	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+//	        	servicesCities.add(serviceCity.getCityName());
+//	        }
+	        map.put("serviceCities",String.join(",", servicesCities));
+//	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        map.put("rating",0);
+//	        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
+//	        	map.put("isPreferred", "true");
+//	        } else {
+	        	map.put("isPreferred", "false");
+//	        }
+	        try {
+//		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
+//		        if(logo != null)
+//		        	map.put("vendorProfileImageUrl", logo);
+//		        else
 		        	map.put("vendorProfileImageUrl", "");
 	        } catch(Exception exp) {
 		        	exp.printStackTrace();
@@ -1077,6 +1189,7 @@ public class VendorService {
 	public List<Object> getAllVendorOrganisationsByClientOrgId(Integer clientOrgId) {
 		// TODO Auto-generated method stub
 		List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
+		List<AvailableVendorProfiles> uncliamedVendorProfiles = availableVendorProfilesRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
 		
 		List<Object> vendorOrganisations = new ArrayList();
 		
@@ -1085,6 +1198,7 @@ public class VendorService {
 	        // object -> Map
 	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
 	        map.put("isPreferred", "false");
+	        map.put("vendorProfileId", 0);
 	        
 	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorOrganisationId(), Constants.UserType.VENDOR.getValue() );
 	        
@@ -1129,7 +1243,58 @@ public class VendorService {
 	        }
 	        vendorOrganisations.add(map);
 		}
-    			
+	
+		//Available - Unclaimed vendor profiles
+		for(AvailableVendorProfiles vendorOrg : uncliamedVendorProfiles) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileId", vendorOrg.getVendorProfileId());
+	        map.put("vendorOrganisationId", 0);
+	        map.remove("allocatedvendorOrgId");
+	        
+//	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorProfileId(), Constants.UserType.VENDOR.getValue() );
+	        
+	        //empty
+	        map.put("vendorTags","");
+	        if(vendorOrg.getCity() != null ) {
+	        	try {
+	        		Integer city = Integer.parseInt(vendorOrg.getCity());
+	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        		map.put("city",serviceCity.getCityName());
+	        	} catch(Exception exp) {
+	        		map.put("city","");
+	        	}
+	        	
+	        } else {
+	        	map.put("city","");
+			}
+//	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+	        List<String> servicesCities = new ArrayList();
+//	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+//	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+//	        	servicesCities.add(serviceCity.getCityName());
+//	        }
+	        map.put("serviceCities",String.join(",", servicesCities));
+//	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        map.put("rating",0);
+//	        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
+//	        	map.put("isPreferred", "true");
+//	        } else {
+	        	map.put("isPreferred", "false");
+//	        }
+	        try {
+//		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
+//		        if(logo != null)
+//		        	map.put("vendorProfileImageUrl", logo);
+//		        else
+		        	map.put("vendorProfileImageUrl", "");
+	        } catch(Exception exp) {
+		        	exp.printStackTrace();
+	        }
+	        vendorOrganisations.add(map);
+		}
 		return vendorOrganisations;
 	}
 
