@@ -290,6 +290,7 @@ public class VendorService {
 //	        } else {
 	        	mappedObj.put("vendorTags","[]");
 //	        }
+	        	mappedObj.put("vendorOrganisationId", 0);
 	        if(vendorOrg.getCity() != null ) {
 	        	try {
 	        		Integer city = Integer.parseInt(vendorOrg.getCity());
@@ -553,7 +554,7 @@ public class VendorService {
 	        // object -> Map
 	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
 	        
-	        
+	        map.put("vendorProfileId", 0);
 	        if(vendorOrg.getVendorTags() != null && vendorOrg.getVendorTags().size() > 0) {
 	        	map.put("vendorTags",getVendorTags(vendorOrg.getVendorTags()));
 	        } else {
