@@ -14,7 +14,7 @@ public class Constants {
 //	public static final String USER_ACCOUNT_REMOVE_ALERT = "User Account Deleted From the System By Admin";
 	public static final String USER_ACCOUNT_REMOVE_ALERT = "Your user account has been deactivated on the system by the admin";
 //	public static final String USER_ACCOUNT_ACTIVE_ALERT = "User Account Status Changed to Active By Admin";
-	public static final String USER_ACCOUNT_ACTIVE_ALERT = "Your corporation profile has been activated by the system Admin";
+	public static final String USER_ACCOUNT_ACTIVE_ALERT = "Your user account has been activated by the system Admin";
 //	public static final String ORGANISATION_ACCOUNT_REMOVE_ALERT = "Organisation Account Deleted From the System By Admin";
 	public static final String ORGANISATION_ACCOUNT_REMOVE_ALERT = "Your corporation profile has been deactivated by the system Admin";
 //	public static final String ORGANISATION_ACCOUNT_ACTIVE_ALERT = "Organisation Account Status Changed to Active By Admin";
