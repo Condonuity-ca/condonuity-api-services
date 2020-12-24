@@ -58,8 +58,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		" inner join " + 
     		" condonuitydev.bids bd on " + 
     		" ( bd.project_id = vpi.project_id) " +
-//    		" where (nt.organisation_id != (?1) "+ // it will fetch only non-self-vendor-bids , but now all bids info will be fetched
-    		" where ( " +
+    		" where (nt.organisation_id != (?1) and "+ // it will fetch only non-self-vendor-bids , but now all bids info will be fetched
+//    		" where ( " +
     		" (bd.id = nt.notification_category_id ) and " +
     		" ( notification_category_type = 4 or notification_category_type = 5 or notification_category_type = 6 ) " + 
     		")", nativeQuery = true)
@@ -86,12 +86,22 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     @Query(value ="select nt.* from condonuitydev.notification nt " + 
     		" inner join " + 
     		" condonuitydev.bids bd on " + 
-    		" ( bd.project_id = nt.notification_category_id and bd.vendor_org_id = (?1) )" + 
+    		" ( bd.project_id = nt.notification_category_id and bd.vendor_org_id = (?1) )" +
     		"where " + 
     		"( notification_category_type = 26 " + 
     		"or notification_category_type = 27 " + 
     		")", nativeQuery = true)
     List<Notification> findBidEndAlertForProjectBids(Integer vendorOrganisationId);
+    
+    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    		" inner join " + 
+    		" condonuitydev.vendor_project_interests vpi on " + 
+    		" ( vpi.project_id = nt.notification_category_id and vpi.vendor_organisation_id = (?1) )" +
+    		"where " + 
+    		"( notification_category_type = 26 " + 
+    		"or notification_category_type = 27 " + 
+    		")", nativeQuery = true)
+    List<Notification> findBidEndAlertForProjectBidInterests(Integer vendorOrganisationId);
     
     
     @Query(value ="select nt.* from condonuitydev.notification nt " +

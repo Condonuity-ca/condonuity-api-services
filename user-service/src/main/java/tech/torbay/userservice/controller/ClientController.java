@@ -847,7 +847,7 @@ public class ClientController {
     )
 	@GetMapping("/client/org/contracts/{clientOrgId}")
 	public ResponseEntity<Object> getClientContracts(@PathVariable("clientOrgId") Integer clientOrgId) {
-		
+		run();
 		List<ClientContract> clientContracts= clientService.getClientContracts(clientOrgId);
         if (clientContracts == null) {
         	ResponseMessage responseMessage = new ResponseMessage(

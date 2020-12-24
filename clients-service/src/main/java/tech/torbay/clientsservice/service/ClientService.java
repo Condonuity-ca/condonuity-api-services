@@ -1248,6 +1248,8 @@ public class ClientService {
 						notification.setTitle(title);
 						notification.setDescription(message);
 						tempallPostedProjectsForClientNotifications.add(notification);
+					} else {
+						tempallPostedProjectsForClientNotifications.add(notification);
 					}
 				}
 				

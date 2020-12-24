@@ -1962,7 +1962,8 @@ public class VendorService {
 		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
 		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
-		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> bidEndAlertForBidsNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> bidEndAlertForInterestsNotifications = notificationRepository.findBidEndAlertForProjectBidInterests(vendorOrganisationId);
 		List<Notification> biddedProjectCancelledNotifications = notificationRepository.findAllProjectCancelledNotifications(vendorOrganisationId);;
 		
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
@@ -2046,8 +2047,8 @@ public class VendorService {
 			tempbiddedProjectCancelledNotifications.get(index).setTitle(title);
 			tempbiddedProjectCancelledNotifications.get(index).setDescription(message);
 		}
-		
-		List<Notification> tempbidEndAlertNotifications = new ArrayList<>(bidEndAlertNotifications);
+		bidEndAlertForBidsNotifications.addAll(bidEndAlertForInterestsNotifications);
+		List<Notification> tempbidEndAlertNotifications = new ArrayList<>(bidEndAlertForBidsNotifications);
 		for(int index = 0; index < tempbidEndAlertNotifications.size(); index++) {
 			if(tempbidEndAlertNotifications.get(index).getNotificationCategoryType() == 26) {
 				String message = tempbidEndAlertNotifications.get(index).getDescription().replace(" is set to", " that may interests you will");
@@ -2189,7 +2190,8 @@ public class VendorService {
 		List<Notification> allOtherCompetitorBidsForInterestedProjectsNotifications = notificationRepository.findAllBidsForVendorInterestedProjectsNotifications(vendorOrganisationId);
 		List<Notification> allBiddedProjectsQANotifications = notificationRepository.findAllOnlyBiddedProjectsQANotifications(vendorOrganisationId);
 		List<Notification> allInterestedProjectsQANotifications = notificationRepository.findAllOnlyInterestedProjectsQANotifications(vendorOrganisationId);
-		List<Notification> bidEndAlertNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> bidEndAlertForBidsNotifications = notificationRepository.findBidEndAlertForProjectBids(vendorOrganisationId);
+		List<Notification> bidEndAlertForInterestsNotifications = notificationRepository.findBidEndAlertForProjectBidInterests(vendorOrganisationId);
 		List<Notification> biddedProjectCancelledNotifications = notificationRepository.findAllProjectCancelledNotifications(vendorOrganisationId);;
 		
 		List<UserLevelNotification> internalMessagesNotifications = userLevelNotificationRepository.findAllInternalMessagesNotifications(vendorOrganisationId);
@@ -2244,7 +2246,8 @@ public class VendorService {
 		filteredNotifications.addAll(allOtherCompetitorBidsNotifications);//based on vendor bided projects
 //		filteredNotifications.addAll(tempallOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
 		filteredNotifications.addAll(allOtherCompetitorBidsForInterestedProjectsNotifications);//based on vendor interested projects
-		filteredNotifications.addAll(bidEndAlertNotifications);
+		filteredNotifications.addAll(bidEndAlertForBidsNotifications);
+		filteredNotifications.addAll(bidEndAlertForInterestsNotifications);
 		filteredNotifications.addAll(allInterestedProjectsQANotifications);
 		filteredNotifications.addAll(allBiddedProjectsQANotifications);
 //		filteredNotifications.addAll(tempbiddedProjectCancelledNotifications);
