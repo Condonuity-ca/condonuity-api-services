@@ -14,14 +14,14 @@ public interface ClientBuildingRepoRepository extends JpaRepository<ClientBuildi
 
     List<ClientBuildingRepository> findAll();
 	
-    @Query(value = "select br.* from condonuitydev.client_building_repository br where client_organisation_id = (?1) and status = 1", nativeQuery = true)	
+    @Query(value = "select br.* from client_building_repository br where client_organisation_id = (?1) and status = 1", nativeQuery = true)	
 	List<ClientBuildingRepository> findAllByClientOrganisationId(Integer clientOrganisationId);
     
     ClientBuildingRepository findOneById(Integer id);
     
     ClientBuildingRepository save(ClientBuildingRepository clientBuildingRepository);
 
-    @Query(value = "SELECT br.* FROM condonuitydev.client_building_repository br where client_organisation_id = (?1) and" + 
+    @Query(value = "SELECT br.* FROM client_building_repository br where client_organisation_id = (?1) and" + 
 			"	concat (br.unit_number, '.', br.date_of_lien, '.', br.first_name," + 
 			"	'.', br.last_name, '.', br.comments, '.', br.contact_number, '.', br.contact_email," + 
 			"	'.', br.vehicle_mode, '.', br.color, '.', br.license_number," + 
@@ -32,8 +32,8 @@ public interface ClientBuildingRepoRepository extends JpaRepository<ClientBuildi
     
     
     @Query(value = "SELECT br.*, cu.first_name, cu.last_name, cu.legal_name " + 
-    		"FROM condonuitydev.client_building_repository br " + 
-    		"INNER JOIN condonuitydev.client_user cu " + 
+    		"FROM client_building_repository br " + 
+    		"INNER JOIN client_user cu " + 
     		"ON ( br.created_by = cu.client_id or br.modified_by = cu.client_id) " + 
     		"where client_organisation_id = (?1) and " + 
     		" (br.unit_number LIKE (?2) or "+

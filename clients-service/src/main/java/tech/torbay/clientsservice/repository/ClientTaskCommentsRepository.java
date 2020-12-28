@@ -16,19 +16,19 @@ public interface ClientTaskCommentsRepository extends JpaRepository<ClientTaskCo
 
     List<ClientTaskComments> findAll();
 	
-    @Query(value = "select cc.* from condonuitydev.client_task_comments cc where task_id = (?1)", nativeQuery = true)	
+    @Query(value = "select cc.* from client_task_comments cc where task_id = (?1)", nativeQuery = true)	
 	List<ClientTaskComments> findAllByTaskId(Integer taskId);
     
     ClientTaskComments findOneById(Integer id);
     
     ClientTaskComments save(ClientTaskComments clientTask);
 
-    @Query(value = "insert into condonuitydev.client_task_comments tc values (?1)", nativeQuery = true)
+    @Query(value = "insert into client_task_comments tc values (?1)", nativeQuery = true)
 	ClientTaskComments saveComment(ClientTaskComments taskComment);
 
     @Modifying
 	@Transactional
-    @Query(value = "UPDATE condonuitydev.client_task_comments SET task_id = (?1) WHERE (id =(?2))", nativeQuery = true)
+    @Query(value = "UPDATE client_task_comments SET task_id = (?1) WHERE (id =(?2))", nativeQuery = true)
 	Integer updateTaskId(Integer taskId, Integer id);
 
 }

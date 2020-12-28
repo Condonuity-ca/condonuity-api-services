@@ -15,10 +15,10 @@ public interface VendorBidRepository extends JpaRepository<VendorBid, Integer> {
 
 	VendorBid findOneById (Integer vendorBidId);
 
-	@Query(value="SELECT b.* FROM condonuitydev.bids b WHERE project_id = (?1) AND bid_status != 1", nativeQuery = true)
+	@Query(value="SELECT b.* FROM bids b WHERE project_id = (?1) AND bid_status != 1", nativeQuery = true)
 	List<VendorBid> findVendorBidByProjectId(Integer id);
 	
-	@Query(value="SELECT COUNT(b.project_id) FROM condonuitydev.bids b WHERE project_id = (?1) AND bid_status != 1", nativeQuery = true)
+	@Query(value="SELECT COUNT(b.project_id) FROM bids b WHERE project_id = (?1) AND bid_status != 1", nativeQuery = true)
 	Integer getProjectBidsCount(Integer projectId);
 
 	@Query(name="VendorBid.CurrentProject")

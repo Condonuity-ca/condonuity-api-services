@@ -32,9 +32,9 @@ public interface InternalMessageRepository extends JpaRepository<InternalMessage
 //			int value,
 //			String keyword);
     @Query(value="SELECT DISTINCT im.*" + 
-    		"FROM condonuitydev.internal_message im " + 
-    		"INNER JOIN condonuitydev.client_user cu ON (im.user_id = cu.client_id) " + 
-    		"LEFT JOIN condonuitydev.internal_message_comment imc ON ( im.id = imc.thread_id) " + 
+    		"FROM internal_message im " + 
+    		"INNER JOIN client_user cu ON (im.user_id = cu.client_id) " + 
+    		"LEFT JOIN internal_message_comment imc ON ( im.id = imc.thread_id) " + 
     		"where ( im.organisation_id = (?1) and im.user_type = (?2) ) and " + 
     		"(imc.comment like (?3) or " + 
     		"imc.created_at like (?3) or " + 
@@ -51,9 +51,9 @@ public interface InternalMessageRepository extends JpaRepository<InternalMessage
 			String keyword);
     
     @Query(value="SELECT DISTINCT im.*" + 
-    		"FROM condonuitydev.internal_message im " + 
-    		"INNER JOIN condonuitydev.vendor_user vu ON (im.user_id = vu.user_id) " + 
-    		"LEFT JOIN condonuitydev.internal_message_comment imc ON ( im.id = imc.thread_id) " + 
+    		"FROM internal_message im " + 
+    		"INNER JOIN vendor_user vu ON (im.user_id = vu.user_id) " + 
+    		"LEFT JOIN internal_message_comment imc ON ( im.id = imc.thread_id) " + 
     		"where ( im.organisation_id = (?1) and im.user_type = (?2) ) and " + 
     		"(imc.comment like (?3) or " + 
     		"imc.created_at like (?3) or " + 

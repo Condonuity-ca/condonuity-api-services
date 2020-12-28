@@ -32,10 +32,10 @@ public interface ProjectReviewRatingRepository extends JpaRepository<ProjectRevi
     List<ProjectReviewRating> findAllByClientIdAndClientOrganisationId(Integer clientId, Integer clientOrganisationId);
 
     @Query(value = "SELECT rr.* " + 
-    		"FROM condonuitydev.project_reviews_ratings rr " + 
-    		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
+    		"FROM project_reviews_ratings rr " + 
+    		"LEFT JOIN vendor_organisation vo " + 
     		"ON ( rr.vendor_organisation_id = vo.vendor_organisation_id) " + 
-    		"LEFT JOIN condonuitydev.projects pro " + 
+    		"LEFT JOIN projects pro " + 
     		"ON ( rr.project_id = pro.project_id) " + 
     		"where ( rr.client_id = (?1) and rr.client_organisation_id = (?2)) and " + 
     		"concat (rr.rating, '.', rr.review_comments, '.', rr.reply_comments, " + 

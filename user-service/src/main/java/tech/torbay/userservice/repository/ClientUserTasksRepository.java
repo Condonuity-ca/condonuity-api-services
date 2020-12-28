@@ -24,6 +24,6 @@ public interface ClientUserTasksRepository extends JpaRepository<ClientUserTasks
 
 	@Modifying
 	@Transactional 
-	@Query(value ="delete from condonuitydev.client_user_tasks WHERE task_id = (?1)", nativeQuery = true)
+	@Query(value ="delete from client_user_tasks WHERE task_id = (?1)", nativeQuery = true)
 	void deleteByTaskId(Integer taskId);
 }

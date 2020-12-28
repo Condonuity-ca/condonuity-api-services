@@ -20,7 +20,7 @@ public interface AvailableVendorProfilesRepository extends JpaRepository<Availab
     
     AvailableVendorProfiles findByVendorProfileId(Integer id);
 
-	@Query(value="Select avp.* FROM condonuitydev.available_vendor_profiles avp where ( avp.active_status =(?1) and avp.allocated_vendor_org_id = 0);", nativeQuery = true)
+	@Query(value="Select avp.* FROM available_vendor_profiles avp where ( avp.active_status =(?1) and avp.allocated_vendor_org_id = 0);", nativeQuery = true)
 	List<AvailableVendorProfiles> findAllByActiveStatus(int activeStatus);
 
 }

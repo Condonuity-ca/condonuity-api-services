@@ -93,16 +93,16 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
 	    resultSetMapping="marketPlace")
 
 @NamedNativeQuery(
 	    name="Project.MarketPlaceSearch", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and " +
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and " +
 	    		"( concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
 				"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
 				"'.', pro.duration, '.', pro.description, " + 
@@ -115,11 +115,11 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 @NamedNativeQuery(
 	    name="Project.VendorCurrentProjectsSearch", 
 	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name " + 
-	    		"FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
-//	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
-	    		"LEFT JOIN condonuitydev.bids b ON b.project_id = pro.project_id " + 
+	    		"FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id " + 
+//	    		"LEFT JOIN vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
+	    		"LEFT JOIN bids b ON b.project_id = pro.project_id " + 
 	    		"WHERE ( (pro.status = 1 or pro.status = 2)  and "
 //	    		+ "( vpi.vendor_organisation_id = (?1) or"
 	    		+ " b.vendor_org_id = (?1)"
@@ -137,11 +137,11 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 @NamedNativeQuery(
 	    name="Project.VendorHistoryProjectsSearch", 
 	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name " + 
-	    		"FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
+	    		"FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id " + 
 //	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
-	    		"LEFT JOIN condonuitydev.bids b ON b.project_id = pro.project_id " + 
+	    		"LEFT JOIN bids b ON b.project_id = pro.project_id " + 
 	    		"WHERE ( (pro.status = 3 or pro.status = 4) and "
 //	    		+ "( vpi.vendor_organisation_id = (?1) or"
 	    		+ " b.vendor_org_id = (?1)"
@@ -160,11 +160,11 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 @NamedNativeQuery(
 	    name="Project.VendorFavoriteProjectsSearch", 
 	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name, co.organisation_name " + 
-	    		"FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
-	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
-	    		"LEFT JOIN condonuitydev.bids b ON b.project_id = pro.project_id " + 
+	    		"FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id " + 
+	    		"LEFT JOIN vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
+	    		"LEFT JOIN bids b ON b.project_id = pro.project_id " + 
 	    		"WHERE ( pro.status = 2 and ( vpi.vendor_organisation_id = (?1) or b.vendor_org_id = (?1))) " + 
 	    		"and ( concat ( " + 
 	    		"pro.project_name, '.', pro.tags, '.', pro.bid_end_date, '.', " + 

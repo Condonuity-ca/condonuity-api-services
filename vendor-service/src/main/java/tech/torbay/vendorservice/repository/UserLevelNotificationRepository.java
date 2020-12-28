@@ -17,7 +17,7 @@ public interface UserLevelNotificationRepository extends JpaRepository<UserLevel
     
     UserLevelNotification findOneById(Integer id);
     
-    @Query(value = "SELECT * FROM condonuitydev.user_level_notification where " + 
+    @Query(value = "SELECT * FROM user_level_notification where " + 
     		"( notification_category_type = 12 or " + 
     		"notification_category_type = 13 or " + 
     		"notification_category_type = 14) and to_organisation_id = (?1) and to_user_type = 2;", nativeQuery = true)

@@ -19,7 +19,7 @@ public interface ExternalMessageCommentRepository extends JpaRepository<External
 
 	List<ExternalMessageComment> findAllByThreadId(Integer threadId);
 
-	 @Query(value = "SELECT emc.* FROM condonuitydev.external_message_comment emc " + 
+	 @Query(value = "SELECT emc.* FROM external_message_comment emc " + 
 	    		"  WHERE ( emc.thread_id IN (?1) )", nativeQuery = true)
 	List<ExternalMessageComment> findAllByThreadId(List<Integer> externalThreadIds);
 	

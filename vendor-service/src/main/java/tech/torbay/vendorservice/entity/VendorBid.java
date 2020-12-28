@@ -47,18 +47,18 @@ import javax.persistence.Table;
 	})
 @NamedNativeQuery(
 	    name="VendorBid.CurrentProject", 
-	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
-	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    query="SELECT vb.*, pro.*, co.management_company FROM bids vb " + 
+	    		"INNER JOIN projects pro ON pro.project_id = vb.project_id " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 2"/*Constants.ProjectPostType.PUBLISHED.getValue()*/, 
 	    resultSetMapping="vendorCurrentProjects")
 
 
 @NamedNativeQuery(
 	    name="VendorBid.HistoryProject", 
-	    query="SELECT vb.*, pro.*, co.management_company FROM condonuitydev.bids vb " + 
-	    		"INNER JOIN condonuitydev.projects pro ON pro.project_id = vb.project_id " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    query="SELECT vb.*, pro.*, co.management_company FROM bids vb " + 
+	    		"INNER JOIN projects pro ON pro.project_id = vb.project_id " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"WHERE vb.vendor_org_id = (?1) AND pro.status = 3 OR pro.status = 4", 
 	    resultSetMapping="vendorHistoryProjects")
 

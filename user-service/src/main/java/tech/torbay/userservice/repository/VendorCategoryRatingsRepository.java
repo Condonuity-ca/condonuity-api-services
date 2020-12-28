@@ -15,8 +15,8 @@ public interface VendorCategoryRatingsRepository extends JpaRepository<VendorCat
 
     List<VendorCategoryRatings> findAll();
     
-    @Query(value = "SELECT vcr.* FROM condonuitydev.vendor_category_ratings vcr "
-    		+ "INNER JOIN condonuitydev.project_reviews_ratings prr ON prr.id = vcr.review_rating_id "
+    @Query(value = "SELECT vcr.* FROM vendor_category_ratings vcr "
+    		+ "INNER JOIN project_reviews_ratings prr ON prr.id = vcr.review_rating_id "
     		+ "where vcr.vendor_organisation_id = (?1) and " + 
 			"prr.status = (?2)"
 			, nativeQuery = true)

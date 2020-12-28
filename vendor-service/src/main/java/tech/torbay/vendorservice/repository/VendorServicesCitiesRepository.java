@@ -29,6 +29,6 @@ public interface VendorServicesCitiesRepository extends JpaRepository<VendorServ
 
 	@Modifying
 	@Transactional 
-	@Query(value ="delete from condonuitydev.vendor_services_cities WHERE vendor_organisation_id = (?1)", nativeQuery = true)
+	@Query(value ="delete from vendor_services_cities WHERE vendor_organisation_id = (?1)", nativeQuery = true)
 	void deleteByVendorOrganisationId(Integer vendorOrganisationId);
 }

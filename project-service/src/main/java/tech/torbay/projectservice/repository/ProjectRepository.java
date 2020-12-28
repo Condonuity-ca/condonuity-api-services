@@ -14,7 +14,7 @@ import tech.torbay.projectservice.entity.Project;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
-	@Query(value="select pro.* from condonuitydev.projects pro where pro.delete_status = 1", nativeQuery = true )
+	@Query(value="select pro.* from projects pro where pro.delete_status = 1", nativeQuery = true )
     List<Project> findAll();
     
     @Query(name="Project.MarketPlace")
@@ -24,10 +24,10 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	List<Project> findAllByClientOrganisationIdAndStatus(Integer id, int value);
 	
-	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and ( status = 1 or status = 2 ) and pro.delete_status = 1 ORDER BY pro.bid_end_date DESC", nativeQuery = true )
+	@Query(value="select pro.* from projects pro where client_organisation_id = (?1) and ( status = 1 or status = 2 ) and pro.delete_status = 1 ORDER BY pro.bid_end_date DESC", nativeQuery = true )
 	List<Project> findAllCurrentProjects(Integer id);
 	
-	@Query(value="select pro.* from condonuitydev.projects pro where client_organisation_id = (?1) and ( status = 3 or status = 4) and pro.delete_status = 1 ORDER BY pro.bid_end_date DESC", nativeQuery = true )
+	@Query(value="select pro.* from projects pro where client_organisation_id = (?1) and ( status = 3 or status = 4) and pro.delete_status = 1 ORDER BY pro.bid_end_date DESC", nativeQuery = true )
 	List<Project> findAllAwardedProjects(Integer id);
 	
 	Project findOneByProjectId(Integer projectId);
@@ -37,10 +37,10 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
 	@Transactional
 	@Modifying
-	@Query(value = "Update condonuitydev.projects set status = 3 where bid_end_date < now() and (status = 2);", nativeQuery = true)
+	@Query(value = "Update projects set status = 3 where bid_end_date < now() and (status = 2);", nativeQuery = true)
 	void updateClosedProjects();
 	
-	@Query(value = "select pro.* from condonuitydev.projects pro where bid_end_date < now() and (status = 2);", nativeQuery = true)
+	@Query(value = "select pro.* from projects pro where bid_end_date < now() and (status = 2);", nativeQuery = true)
 	List<Project> getClosingProjects();
 	
 	@Query(name="Project.MarketPlaceSupportUser")

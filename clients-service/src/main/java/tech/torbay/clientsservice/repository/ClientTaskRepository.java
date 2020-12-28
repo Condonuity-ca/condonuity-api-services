@@ -13,7 +13,7 @@ public interface ClientTaskRepository extends JpaRepository<ClientTask, Integer>
 
     List<ClientTask> findAll();
 	
-    @Query(value = "select cc.* from condonuitydev.client_tasks cc where client_organisation_id = (?1) and status = 1", nativeQuery = true)	
+    @Query(value = "select cc.* from client_tasks cc where client_organisation_id = (?1) and status = 1", nativeQuery = true)	
 	List<ClientTask> findAllByClientOrganisationId(Integer clientOrganisationId);
     
     ClientTask findOneById(Integer id);
@@ -21,15 +21,15 @@ public interface ClientTaskRepository extends JpaRepository<ClientTask, Integer>
     ClientTask save(ClientTask clientTask);
 
     @Query(value = "SELECT DISTINCT ct.* " + 
-    		"FROM condonuitydev.client_tasks ct " + 
-    		"INNER JOIN condonuitydev.client_user cu " + 
+    		"FROM client_tasks ct " + 
+    		"INNER JOIN client_user cu " + 
     		"ON (ct.created_by = cu.client_id or ct.modified_by = cu.client_id) " + 
-    		"LEFT JOIN condonuitydev.client_user_tasks cut " + 
+    		"LEFT JOIN client_user_tasks cut " + 
     		"ON ( ct.id = cut.task_id) \r\n" + 
-    		"LEFT JOIN condonuitydev.client_user cu1 ON (cut.client_id = cu1.client_id) " + 
-    		"LEFT JOIN condonuitydev.client_task_comments ctc " + 
+    		"LEFT JOIN client_user cu1 ON (cut.client_id = cu1.client_id) " + 
+    		"LEFT JOIN client_task_comments ctc " + 
     		"ON ( ct.id = ctc.task_id) " + 
-    		"LEFT JOIN condonuitydev.client_user cu2 ON (ctc.client_id = cu2.client_id) " +
+    		"LEFT JOIN client_user cu2 ON (ctc.client_id = cu2.client_id) " +
     		"where ( ct.client_organisation_id = (?1) and status = 1 ) and " + 
     		"concat (ct.task_description, '.', ct.closure_date, " + 
     		"'.', ct.others_name, '.', ct.created_at, '.', ct.modified_date) " + 

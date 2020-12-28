@@ -59,15 +59,15 @@ import tech.torbay.projectservice.constants.Constants.DeleteStatus;
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
-	    query="SELECT pro.*, co.management_company, co.organisation_name, co.city, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and pro.delete_status = 1;", 
+	    query="SELECT pro.*, co.management_company, co.organisation_name, co.city, cu.first_name, cu.last_name FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and pro.delete_status = 1;", 
 	    resultSetMapping="marketPlace")
 @NamedNativeQuery(
 	    name="Project.MarketPlaceSupportUser", 
-	    query="SELECT pro.*, co.management_company, co.organisation_name, co.city, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 or pro.delete_status = 2;", 
+	    query="SELECT pro.*, co.management_company, co.organisation_name, co.city, cu.first_name, cu.last_name FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 or pro.delete_status = 2;", 
 	    resultSetMapping="marketPlaceSupportUser")
 public class Project {
 

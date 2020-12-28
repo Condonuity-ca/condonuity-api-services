@@ -23,26 +23,26 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
     List<ExternalMessage> findAllBySourceOrganisationIdAndSourceUserType(Integer sourceOrganisationId, Integer sourceUserType);
 
     @Query(value="SELECT DISTINCT em.* " + 
-    		"FROM condonuitydev.external_message em " + 
-    		"INNER JOIN condonuitydev.external_message_organisations emo " + 
+    		"FROM external_message em " + 
+    		"INNER JOIN external_message_organisations emo " + 
     		"ON " + 
     		"(em.id = emo.external_message_id) " + 
-    		"INNER JOIN condonuitydev.client_organisation co " + 
+    		"INNER JOIN client_organisation co " + 
     		"ON ( " + 
     		"(em.source_organisation_id = co.client_organisation_id and em.source_user_type = 1) " + 
     		"OR " + 
     		"(emo.target_organisation_id = co.client_organisation_id and emo.target_user_type = 1)" + 
     		") " + 
-    		"LEFT JOIN condonuitydev.client_user cu " + 
+    		"LEFT JOIN client_user cu " + 
     		"ON ( " + 
     		"(em.source_user_id = cu.client_id and em.source_user_type = 1) " + 
     		") " + 
-    		"LEFT JOIN condonuitydev.vendor_user vu " + 
+    		"LEFT JOIN vendor_user vu " + 
     		"ON ( " + 
     		"(em.source_user_id = vu.user_id and em.source_user_type = 2) " + 
     		") " + 
-    		"LEFT JOIN condonuitydev.external_message_comment emc ON ( em.id = emc.thread_id) " +     		
-    		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
+    		"LEFT JOIN external_message_comment emc ON ( em.id = emc.thread_id) " +     		
+    		"LEFT JOIN vendor_organisation vo " + 
     		"ON ( " + 
     		"(em.source_organisation_id = vo.vendor_organisation_id and em.source_user_type = 2) " + 
     		"OR " + 
@@ -90,26 +90,26 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
 			String keyword);
 
 	@Query(value="SELECT DISTINCT em.* " + 
-    		"FROM condonuitydev.external_message em " + 
-    		"INNER JOIN condonuitydev.external_message_organisations emo " + 
+    		"FROM external_message em " + 
+    		"INNER JOIN external_message_organisations emo " + 
     		"ON " + 
     		"(em.id = emo.external_message_id) " + 
-    		"INNER JOIN condonuitydev.client_organisation co " + 
+    		"INNER JOIN client_organisation co " + 
     		"ON ( " + 
     		"(em.source_organisation_id = co.client_organisation_id and em.source_user_type = 1) " + 
     		"OR " + 
     		"(emo.target_organisation_id = co.client_organisation_id and emo.target_user_type = 1)" + 
     		") " + 
-    		"LEFT JOIN condonuitydev.client_user cu " + 
+    		"LEFT JOIN client_user cu " + 
     		"ON ( " + 
     		"(em.source_user_id = cu.client_id and em.source_user_type = 1) " + 
     		") " + 
-    		"LEFT JOIN condonuitydev.vendor_user vu " + 
+    		"LEFT JOIN vendor_user vu " + 
     		"ON ( " + 
     		"(em.source_user_id = vu.user_id and em.source_user_type = 2) " + 
     		") " + 
-    		"LEFT JOIN condonuitydev.external_message_comment emc ON ( em.id = emc.thread_id) " +     		
-    		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
+    		"LEFT JOIN external_message_comment emc ON ( em.id = emc.thread_id) " +     		
+    		"LEFT JOIN vendor_organisation vo " + 
     		"ON ( " + 
     		"(em.source_organisation_id = vo.vendor_organisation_id and em.source_user_type = 2) " + 
     		"OR " + 
@@ -158,30 +158,30 @@ public interface ExternalMessageRepository extends JpaRepository<ExternalMessage
 
 	@Modifying
 	@Transactional
-	@Query(value="update condonuitydev.external_message set delete_status = (?1) where id = (?2);", nativeQuery = true)
+	@Query(value="update external_message set delete_status = (?1) where id = (?2);", nativeQuery = true)
 	int setDeleteStatusById(Integer activeStatus, Integer externalMessageId);
 
 	 @Query(value="SELECT DISTINCT em.* " + 
-	    		"FROM condonuitydev.external_message em " + 
-	    		"INNER JOIN condonuitydev.external_message_organisations emo " + 
+	    		"FROM external_message em " + 
+	    		"INNER JOIN external_message_organisations emo " + 
 	    		"ON " + 
 	    		"(em.id = emo.external_message_id) " + 
-	    		"INNER JOIN condonuitydev.client_organisation co " + 
+	    		"INNER JOIN client_organisation co " + 
 	    		"ON ( " + 
 	    		"(em.source_organisation_id = co.client_organisation_id and em.source_user_type = 1) " + 
 	    		"OR " + 
 	    		"(emo.target_organisation_id = co.client_organisation_id and emo.target_user_type = 1)" + 
 	    		") " + 
-	    		"LEFT JOIN condonuitydev.client_user cu " + 
+	    		"LEFT JOIN client_user cu " + 
 	    		"ON ( " + 
 	    		"(em.source_user_id = cu.client_id and em.source_user_type = 1) " + 
 	    		") " + 
-	    		"LEFT JOIN condonuitydev.vendor_user vu " + 
+	    		"LEFT JOIN vendor_user vu " + 
 	    		"ON ( " + 
 	    		"(em.source_user_id = vu.user_id and em.source_user_type = 2) " + 
 	    		") " + 
-	    		"LEFT JOIN condonuitydev.external_message_comment emc ON ( em.id = emc.thread_id) " +     		
-	    		"LEFT JOIN condonuitydev.vendor_organisation vo " + 
+	    		"LEFT JOIN external_message_comment emc ON ( em.id = emc.thread_id) " +     		
+	    		"LEFT JOIN vendor_organisation vo " + 
 	    		"ON ( " + 
 	    		"(em.source_organisation_id = vo.vendor_organisation_id and em.source_user_type = 2) " + 
 	    		"OR " + 

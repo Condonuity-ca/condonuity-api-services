@@ -25,6 +25,6 @@ public interface ClientAmenitiesRepository extends JpaRepository<ClientAmenities
 	
 	@Modifying
 	@Transactional 
-	@Query(value ="delete from condonuitydev.client_organization_amenities WHERE client_organisation_id = (?1)", nativeQuery = true)
+	@Query(value ="delete from client_organization_amenities WHERE client_organisation_id = (?1)", nativeQuery = true)
 	void deleteByClientOrganisationId(Integer clientOrganisationId);
 }

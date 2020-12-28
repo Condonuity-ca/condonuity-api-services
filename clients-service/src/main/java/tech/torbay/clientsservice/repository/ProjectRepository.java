@@ -25,7 +25,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	@Query("select pro from Project pro where pro.projectId IN (?1)")
 	List<Project> getAllVendorProjects(List<Integer> ids);
 
-	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and " + 
+	@Query(value = "SELECT pro.* FROM projects pro where client_organisation_id = (?1) and " + 
 			"concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
 			"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
 			"'.', pro.duration, '.', pro.description, " + 
@@ -39,7 +39,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	
 //	SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = 1 and concat (pro.project_name, pro.description) like "%remove%";
 	
-	@Query(value = "SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = (?1) and " + 
+	@Query(value = "SELECT pro.* FROM projects pro where client_organisation_id = (?1) and " + 
 			"pro.tags LIKE (?2)"
 			, nativeQuery = true)
 	List<Project> findAllByTagKeyword(Integer clientOrganisationId, String keyword);

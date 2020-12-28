@@ -18,7 +18,7 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
     @Query("select co from ClientOrganisation co where co.clientOrganisationId IN (?1)")
 	List<ClientOrganisation> findByClientOrganisationId(List<Integer> ids);
     
-	@Query(value = "SELECT co.* FROM condonuitydev.client_organisation co where " + 
+	@Query(value = "SELECT co.* FROM client_organisation co where " + 
 			"concat (co.organisation_name, '.', co.management_company, '.', co.corporate_number, '.', " + 
 			"co.registration_date, '.', co.address, '.', co.city, '.', co.province, '.', co.postal_code, '.', " + 
 			"co.country_code, '.', co.phone_number, '.', co.fax_number or co.units, '.', " + 

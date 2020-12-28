@@ -64,16 +64,16 @@ import javax.validation.constraints.Size;
 	})
 @NamedNativeQuery(
 	    name="Project.MarketPlace", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2;", 
 	    resultSetMapping="marketPlace")
 
 @NamedNativeQuery(
 	    name="Project.MarketPlaceSearch", 
-	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and " +
+	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id WHERE pro.status = 2 and " +
 	    		"( concat ( pro.project_name, '.', pro.tags, '.', pro.bid_end_date, " + 
 				"'.', pro.project_start_date, '.', pro.project_completion_deadline, '.', pro.estimated_budget, " +
 				"'.', pro.duration, '.', pro.description, " + 
@@ -86,11 +86,11 @@ import javax.validation.constraints.Size;
 @NamedNativeQuery(
 	    name="Project.VendorProjectsSearch", 
 	    query="SELECT DISTINCT pro.*, co.management_company, cu.first_name, cu.last_name " + 
-	    		"FROM condonuitydev.projects pro " + 
-	    		"INNER JOIN condonuitydev.client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
-	    		"INNER JOIN condonuitydev.client_user cu ON cu.client_id = pro.client_id " + 
-	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
-	    		"LEFT JOIN condonuitydev.bids b ON b.project_id = pro.project_id " + 
+	    		"FROM projects pro " + 
+	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
+	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id " + 
+	    		"LEFT JOIN vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
+	    		"LEFT JOIN bids b ON b.project_id = pro.project_id " + 
 	    		"WHERE ( pro.status = 2 and ( vpi.vendor_organisation_id = (?1) or b.vendor_org_id = (?1))) " + 
 	    		"and ( concat ( " + 
 	    		"pro.project_name, '.', pro.tags, '.', pro.bid_end_date, '.', " + 

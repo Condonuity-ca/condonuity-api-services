@@ -14,7 +14,7 @@ public interface ServiceCitiesRepository extends JpaRepository<ServiceCities, In
 
 	List<ServiceCities> findAll();
 	
-	@Query(value = "select distinct city_province from condonuitydev.service_cities", nativeQuery = true )
+	@Query(value = "select distinct city_province from service_cities", nativeQuery = true )
     List<String> findAllCityProvinces();
     
 	ServiceCities findOneById(Integer id);

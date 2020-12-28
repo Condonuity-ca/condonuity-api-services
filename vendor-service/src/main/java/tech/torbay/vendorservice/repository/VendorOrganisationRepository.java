@@ -17,7 +17,7 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	
 	VendorOrganisation findByVendorOrganisationId(Integer id);
 
-	@Query(value = "SELECT vo.* FROM condonuitydev.vendor_organisation vo where" + 
+	@Query(value = "SELECT vo.* FROM vendor_organisation vo where" + 
 			"	concat (vo.legal_name, '.', vo.company_name, '.', vo.contact_person," + 
 			"	'.', vo.address, '.', vo.city, '.', vo.province, '.', vo.postal_code," + 
 			"	'.', vo.expertise_category, '.', vo.country_code, '.', vo.email," + 
@@ -28,7 +28,7 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 			, nativeQuery = true)
 	List<VendorOrganisation> findAllByKeyword(String keyword);
 
-	@Query(value = "SELECT vo.* FROM condonuitydev.vendor_organisation vo where vendor_organisation_id IN (?1) and" + 
+	@Query(value = "SELECT vo.* FROM vendor_organisation vo where vendor_organisation_id IN (?1) and" + 
 			"	concat (vo.legal_name, '.', vo.company_name, '.', vo.contact_person," + 
 			"	'.', vo.address, '.', vo.city, '.', vo.province, '.', vo.postal_code," + 
 			"	'.', vo.expertise_category, '.', vo.country_code, '.', vo.email," + 
@@ -39,10 +39,10 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 			, nativeQuery = true)
 	List<VendorOrganisation> findAllByKeyword(List<Integer> vendorIds, String keyword);
 
-	@Query(value = "SELECT vo.* FROM condonuitydev.vendor_organisation vo where vendor_organisation_id IN (?1)", nativeQuery = true)
+	@Query(value = "SELECT vo.* FROM vendor_organisation vo where vendor_organisation_id IN (?1)", nativeQuery = true)
 	List<VendorOrganisation> findAllByVendorOrganisationId(List<Integer> vendorIds);
 
-	@Query(value = "select vendor_organisation_id, company_name from condonuitydev.vendor_organisation", nativeQuery = true)
+	@Query(value = "select vendor_organisation_id, company_name from vendor_organisation", nativeQuery = true)
 	List<Object[]> findAllCompanyName();
 
 //	List<VendorOrganisation> findAllOrderByCompanyNameAsc();

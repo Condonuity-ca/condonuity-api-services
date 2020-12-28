@@ -13,7 +13,7 @@ public interface ClientContractRepository extends JpaRepository<ClientContract, 
 
     List<ClientContract> findAll();
 	
-    @Query(value = "select cc.* from condonuitydev.client_contract cc where client_organisation_id = (?1) and status = 1", nativeQuery = true)	
+    @Query(value = "select cc.* from client_contract cc where client_organisation_id = (?1) and status = 1", nativeQuery = true)	
 	List<ClientContract> findAllByClientOrganisationId(Integer clientOrganisationId);
     
     ClientContract findOneById(Integer id);
@@ -21,7 +21,7 @@ public interface ClientContractRepository extends JpaRepository<ClientContract, 
     ClientContract save(ClientContract clientContract);
 
     @Query(value = "SELECT cc.* " + 
-    		"FROM condonuitydev.client_contract cc " + 
+    		"FROM client_contract cc " + 
     		"where ( client_organisation_id = (?1) and status = 1) and " + 
     		"concat (cc.vendor_name, '.', cc.services, '.', cc.signed_date, " + 
     		"'.', cc.expiry_date, '.', cc.cost, '.', cc.expected_increase, " + 

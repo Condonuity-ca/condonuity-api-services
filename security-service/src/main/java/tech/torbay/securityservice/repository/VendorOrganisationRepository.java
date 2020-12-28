@@ -18,9 +18,9 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	
 	VendorOrganisation findByVendorOrganisationId(Integer id);
 	
-	@Query(value ="select vo.* from condonuitydev.vendor_organisation vo where lower(vo.company_name) = (?1)", nativeQuery = true)
+	@Query(value ="select vo.* from vendor_organisation vo where lower(vo.company_name) = (?1)", nativeQuery = true)
 	List<VendorOrganisation> findByCompanyName(String companyName);
 
-	@Query(value ="select vo.* from condonuitydev.vendor_organisation vo where lower(vo.legal_name) = (?1)", nativeQuery = true)
+	@Query(value ="select vo.* from vendor_organisation vo where lower(vo.legal_name) = (?1)", nativeQuery = true)
 	List<VendorOrganisation> findByLegalName(String legalName);
 }

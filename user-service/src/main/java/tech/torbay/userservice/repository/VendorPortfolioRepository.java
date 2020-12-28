@@ -14,7 +14,7 @@ public interface VendorPortfolioRepository extends JpaRepository<VendorPortfolio
 
 	Optional<VendorPortfolio> findById(Integer id);
 	
-	@Query(value = "select port.* from condonuitydev.vendor_portfolio port where id = (?1)", nativeQuery = true)
+	@Query(value = "select port.* from vendor_portfolio port where id = (?1)", nativeQuery = true)
     VendorPortfolio findOneById(Integer id);
 
     VendorPortfolio save(VendorPortfolio vendorPortfolio);

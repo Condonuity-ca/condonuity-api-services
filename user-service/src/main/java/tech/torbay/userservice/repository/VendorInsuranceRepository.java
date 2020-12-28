@@ -23,6 +23,6 @@ public interface VendorInsuranceRepository extends JpaRepository<VendorInsurance
 	
 	@Modifying
 	@Transactional
-	@Query(value ="DELETE FROM condonuitydev.insurance WHERE vendor_organisation_id = (?1)", nativeQuery = true)
+	@Query(value ="DELETE FROM insurance WHERE vendor_organisation_id = (?1)", nativeQuery = true)
 	void deleteByVendorOrganisationId(Integer vendorOrganisationId);
 }

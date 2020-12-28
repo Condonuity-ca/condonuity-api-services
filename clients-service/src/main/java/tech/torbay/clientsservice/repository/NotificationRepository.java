@@ -29,11 +29,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 //    		"( notification_category_type = 1 or notification_category_type = 2 or notification_category_type = 3 ) )", nativeQuery = true)
 //	List<Notification> findAllProjectInterestNotifications(Integer vendorOrganisationId);
 
-    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    @Query(value ="select nt.* from notification nt " + 
     		"inner join " + 
-    		"condonuitydev.projects pro  on ( pro.client_organisation_id = (?1) ) " + 
+    		"projects pro  on ( pro.client_organisation_id = (?1) ) " + 
     		"inner join " + 
-    		"condonuitydev.bids bd on ( pro.project_id = bd.project_id ) " + 
+    		"bids bd on ( pro.project_id = bd.project_id ) " + 
     		"where (" + 
     		"( bd.id = nt.notification_category_id ) and " + 
     		"( notification_category_type = 4 " + 
@@ -43,15 +43,15 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		")", nativeQuery = true)
     List<Notification> findAllProjectBidsNotifications(Integer clientOrganisationId);
     
-    @Query(value =" select nt.* from condonuitydev.notification nt " + 
-    		"inner join condonuitydev.projects pro  on pro.client_organisation_id = (?1) " + 
-    		"inner join condonuitydev.project_awards pa on nt.notification_category_id = pa.id " + 
+    @Query(value =" select nt.* from notification nt " + 
+    		"inner join projects pro  on pro.client_organisation_id = (?1) " + 
+    		"inner join project_awards pa on nt.notification_category_id = pa.id " + 
     		"where ( pa.project_id = pro.project_id and ( notification_category_type = 6) )", nativeQuery = true)
 	List<Notification> findAllProjectAwardsNotifications(Integer clientOrganisationId);
     
-    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    @Query(value ="select nt.* from notification nt " + 
     		"inner join " + 
-    		"condonuitydev.projects pro  on ( pro.client_organisation_id = (?1) ) " + 
+    		"projects pro  on ( pro.client_organisation_id = (?1) ) " + 
     		"where (" + 
     		"( pro.project_id = nt.notification_category_id ) and " + 
     		"( notification_category_type = 1 " + 
@@ -61,9 +61,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		")", nativeQuery = true)
     List<Notification> findAllPostedProjectsForClient(Integer clientOrganisationId);
     
-    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    @Query(value ="select nt.* from notification nt " + 
     		"inner join " + 
-    		"condonuitydev.projects pro  on ( pro.client_organisation_id = (?1) ) " + 
+    		"projects pro  on ( pro.client_organisation_id = (?1) ) " + 
     		"where (" + 
     		"( pro.project_id = nt.notification_category_id ) and " + 
     		"( notification_category_type = 26 " + 
@@ -71,9 +71,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		")", nativeQuery = true)
     List<Notification> findBidEndAlertForProjects(Integer clientOrganisationId);
     
-    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    @Query(value ="select nt.* from notification nt " + 
     		"inner join " + 
-    		"condonuitydev.client_contract cc  on ( cc.client_organisation_id = (?1) ) " + 
+    		"client_contract cc  on ( cc.client_organisation_id = (?1) ) " + 
     		"where (" + 
     		"( cc.id = nt.notification_category_id ) and " + 
     		"( notification_category_type = 29 " + 
@@ -81,7 +81,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		")", nativeQuery = true)
     List<Notification> findAllContractExpiryAlert(Integer clientOrganisationId);
     
-    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    @Query(value ="select nt.* from notification nt " + 
     		"where (" + 
     		"( nt.organisation_id = (?1)) and " + 
     		"( nt.user_type = 1 ) and " + 
@@ -92,21 +92,21 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		")", nativeQuery = true)
     List<Notification> findAllAccountChangesNotifications(Integer clientOrganisationId);
     
-    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    @Query(value ="select nt.* from notification nt " + 
     		"inner join " + 
-    		"condonuitydev.project_reviews_ratings prr  on ( prr.client_organisation_id = (?1) ) " + 
+    		"project_reviews_ratings prr  on ( prr.client_organisation_id = (?1) ) " + 
     		"where (" + 
     		"( prr.id = nt.notification_category_id ) and " + 
     		"( notification_category_type = 8 )" + 
     		")", nativeQuery = true)
 	List<Notification> findAllReviewRepliesNotificationsFromVendors(Integer clientOrganisationId);
     
-    @Query(value =" select nt.* from condonuitydev.notification nt" + 
+    @Query(value =" select nt.* from notification nt" + 
     		" inner join " + 
-    		" condonuitydev.projects pro on " + 
+    		" projects pro on " + 
     		" ( pro.client_organisation_id = (?1) )" +
     		" inner join " + 
-    		" condonuitydev.project_questions pq on" + 
+    		" project_questions pq on" + 
     		" ( pq.project_id = pro.project_id ) " +
     		" where ( " +
     		" (pq.projectqa_id = nt.notification_category_id ) and " +
@@ -114,18 +114,18 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     		")", nativeQuery = true)
 	List<Notification> findAllProjectQuestionsAlertNotifications(Integer clientOrganisationId);
     
-    @Query(value ="select nt.* from condonuitydev.notification nt " + 
+    @Query(value ="select nt.* from notification nt " + 
     		"inner join " + 
-    		"condonuitydev.projects pro  on ( pro.client_organisation_id = (?1) ) " + 
+    		"projects pro  on ( pro.client_organisation_id = (?1) ) " + 
     		"inner join " + 
-    		"condonuitydev.bids bd on ( pro.project_id = bd.project_id ) " + 
+    		"bids bd on ( pro.project_id = bd.project_id ) " + 
     		"where (" + 
     		"( bd.id = nt.notification_category_id ) and " + 
     		"( notification_category_type = 51 ) " + 
     		")", nativeQuery = true)
     List<Notification> findBidWithdrawnAlertNotifications(Integer clientOrganisationId);
 
-    @Query(value =" select nt.* from condonuitydev.notification nt " + 
+    @Query(value =" select nt.* from notification nt " + 
     		"where ( nt.user_type = 1 and nt.user_id = (?1) and ( notification_category_type = 36 or "
     		+ "notification_category_type = 37 or "
     		+ "notification_category_type = 38 or "
