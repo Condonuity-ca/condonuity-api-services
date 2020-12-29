@@ -140,7 +140,7 @@ import tech.torbay.userservice.constants.Constants.DeleteStatus;
 	    		"FROM projects pro " + 
 	    		"INNER JOIN client_organisation co ON co.client_organisation_id = pro.client_organisation_id " + 
 	    		"INNER JOIN client_user cu ON cu.client_id = pro.client_id " + 
-//	    		"LEFT JOIN condonuitydev.vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
+//	    		"LEFT JOIN vendor_project_interests vpi ON vpi.project_id = pro.project_id " + 
 	    		"LEFT JOIN bids b ON b.project_id = pro.project_id " + 
 	    		"WHERE ( (pro.status = 3 or pro.status = 4) and "
 //	    		+ "( vpi.vendor_organisation_id = (?1) or"

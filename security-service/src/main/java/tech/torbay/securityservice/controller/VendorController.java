@@ -681,7 +681,8 @@ public class VendorController {
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
 		String encryptVendorUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()
+//		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()
+		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()
 		+"&hash="+ encryptVendorUser
 		+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 		
@@ -720,7 +721,8 @@ public class VendorController {
 		
 		String encryptUser = SecurityAES.encrypt(responseJsonString);
 		
-		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
+//		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
+		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
 		+"&userType="+Constants.UserType.VENDOR.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
