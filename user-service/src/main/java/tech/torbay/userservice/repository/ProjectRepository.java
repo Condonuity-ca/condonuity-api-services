@@ -71,10 +71,10 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 			, nativeQuery = true)
 	List<Project> findAllMarketplaceByKeyword(String keyword, List<Integer> status);
 	
-	//SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = 1 and  
+	//SELECT pro.* FROM projects pro where client_organisation_id = 1 and  
 //	 (pro.project_name LIKE '%remove%' or pro.description LIKE '%remove%' )
 	
-//	SELECT pro.* FROM condonuitydev.projects pro where client_organisation_id = 1 and concat (pro.project_name, pro.description) like "%remove%";
+//	SELECT pro.* FROM projects pro where client_organisation_id = 1 and concat (pro.project_name, pro.description) like "%remove%";
 	
 	@Query(value = "SELECT pro.* FROM projects pro where client_organisation_id = (?1) and pro.status IN (?3) and " + 
 			"pro.tags LIKE (?2)"
