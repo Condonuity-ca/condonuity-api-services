@@ -38,8 +38,8 @@ public interface ClientOrganisationRepository extends JpaRepository<ClientOrgani
 	@Query(value="Select co.* FROM client_organisation co where co.active_status =(?1) or co.active_status = 2;", nativeQuery = true)
 	List<ClientOrganisation> findAllByActiveStatus(int activeStatus);
 	
-//	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.organisation_name or co.management_company LIKE '%29%';")
-//	@Query("SELECT co.* FROM condonuitydev.client_organisation co where co.client_organisation_id = (?1) and ( co.organisation_name or co.management_company ) LIKE '%(?2)%';")
+//	@Query("SELECT co.* FROM client_organisation co where co.organisation_name or co.management_company LIKE '%29%';")
+//	@Query("SELECT co.* FROM client_organisation co where co.client_organisation_id = (?1) and ( co.organisation_name or co.management_company ) LIKE '%(?2)%';")
 	
 	@Query(value = "SELECT co.* FROM client_organisation co where  ( co.active_status = 0 or co.active_status = 2)and " + 
 			"concat (co.organisation_name, '.', co.management_company, '.', co.corporate_number, '.', " + 
