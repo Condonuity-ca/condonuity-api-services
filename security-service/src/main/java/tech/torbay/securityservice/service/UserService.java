@@ -201,6 +201,28 @@ public class UserService {
 		}
 
 		userRepository.save(userObj);
+	} 
+	
+	public void updateIncorrectLoginAttempt(String username) {
+		
+		User userObj = userRepository.findByUsername(username);
+		try {
+			int incorrectAttempt = userObj.getIncorrectAttempt();
+			if(userObj != null) {
+				incorrectAttempt++;
+				userObj.setIncorrectAttempt(incorrectAttempt);
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		userRepository.save(userObj);
+	}
+	
+	public void updateLoginAttemptSuccess(String username) {
+		
+		User userObj = userRepository.findByUsername(username);
+		userObj.setIncorrectAttempt(Constants.RESET_LOGIN_ATTEMPT_COUNT);
+		userRepository.save(userObj);
 	}
 
 	public List<PredefinedTags> findAllPredefinedTags() {

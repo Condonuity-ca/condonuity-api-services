@@ -40,6 +40,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.securityservice.config.SecurityAES;
+import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
 import tech.torbay.securityservice.constants.Constants.DeleteStatus;
 import tech.torbay.securityservice.constants.Constants.OrganisationAccountStatus;
@@ -121,13 +122,14 @@ public class UserController {
 		}
 		
 		User userInfo = userService.Login(user.getUsername(), user.getPassword());
+		logger.info("userInfo : "+userInfo);
 		try {
 			if(userInfo != null) {
 				String Token = getAuthToken(user.getUsername(), userInfo.getPassword());
+				userService.updateLoginAttemptSuccess(user.getUsername());
 				if(userInfo.getUserType() == 1) {
 					
 					ClientUser clientInfo = clientService.findById(userInfo.getUserId());
-					logger.info("clientInfo : "+clientInfo);
 					if(clientInfo != null ) {
 						
 						if(clientInfo.getDeleteStatus() == DeleteStatus.INACTIVE.getValue()) {
@@ -400,6 +402,19 @@ public class UserController {
 				list.put("responseMessage", "Invalid Credentials");
 				list.put("userId", userObj.getUserId());
 				list.put("userType", userObj.getUserType());
+				
+				userService.updateIncorrectLoginAttempt(user.getUsername());
+				
+				if(userObj.getIncorrectAttempt() > Constants.MAX_INCORRECT_LOGIN_ATTEMPT_COUNT) {
+					list = new HashMap();
+					list.put("statusCode", APIStatusCode.ACCOUNT_BLOCKED_BY_MAX_INCORRECT_LOGIN_ATTEMPT.getValue());
+					list.put("statusMessage", "Failed");
+					list.put("responseMessage", "User Account Blocked Due to Maximum Incorrect Login Attempt");
+					list.put("userId", userObj.getUserId());
+					list.put("userType", userObj.getUserType());
+					
+					return new ResponseEntity<>(list, HttpStatus.OK);
+				}
 				
 				return new ResponseEntity<>(list, HttpStatus.OK);
 			}
