@@ -125,6 +125,16 @@ public class UserController {
 		logger.info("userInfo : "+userInfo);
 		try {
 			if(userInfo != null) {
+				if(userInfo.getIncorrectAttempt() > Constants.MAX_INCORRECT_LOGIN_ATTEMPT_COUNT) {
+					HashMap<String, Object> list = new HashMap();
+					list.put("statusCode", APIStatusCode.ACCOUNT_BLOCKED_BY_MAX_INCORRECT_LOGIN_ATTEMPT.getValue());
+					list.put("statusMessage", "Failed");
+					list.put("responseMessage", "User Account Blocked Due to Maximum Incorrect Login Attempt");
+					list.put("userId", userInfo.getUserId());
+					list.put("userType", userInfo.getUserType());
+					
+					return new ResponseEntity<>(list, HttpStatus.OK);
+				}
 				String Token = getAuthToken(user.getUsername(), userInfo.getPassword());
 				userService.updateLoginAttemptSuccess(user.getUsername());
 				if(userInfo.getUserType() == 1) {

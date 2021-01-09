@@ -119,7 +119,7 @@ public class UserService {
 		} catch (Exception exp) {
 			exp.printStackTrace();
 		}
-
+		updateLoginAttemptSuccess(userObj.getUsername());
 		return userRepository.save(userObj);
 	}
 	
@@ -136,6 +136,7 @@ public class UserService {
 		userObj.setPassword(SecurityAES.encrypt(password ) );
 //		userObj.setPassword(password);
 
+		updateLoginAttemptSuccess(userObj.getUsername());
 
 		return userRepository.save(userObj);
 	}
