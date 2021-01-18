@@ -210,7 +210,7 @@ public class SupportUserController {
         			"Client Organisation Corporation Number Field Is Empty");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
-		if(clientService.checkOrganisationNameAvailable(corporationName)) {
+		if(clientService.checkOrganisationNameAvailable(corporationName, clientOrganisationId)) {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.CONFLICT.getValue(),
         			"Failed",

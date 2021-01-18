@@ -10,6 +10,7 @@ public class Constants {
 	public static final Integer MAX_INCORRECT_LOGIN_ATTEMPT_COUNT = 10;
 	public static final Integer RESET_LOGIN_ATTEMPT_COUNT = 0;
 	public static final String TIME_ZONE = "UTC";
+	public static final String TIME_ZONE_EST = "UTC-5";
 	public static final long EXPIRY_DURATION_IN_DAYS = 7;
 
 	public enum UserType {

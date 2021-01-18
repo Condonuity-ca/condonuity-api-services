@@ -1122,9 +1122,12 @@ public class ClientService {
 		Notification notification = new Notification();
 		String message = "Account Update";
 		String subContent = " account updated";
+		String modifiedBy = "";
 		ClientUser clientuser = clientUserRepository.findByClientId(clientUserId);
 		ClientUser modifiedByClientUser = clientUserRepository.findByClientId(modifiedByUserId);
-		String modifiedBy = modifiedByClientUser.getFirstName()+" "+modifiedByClientUser.getLastName();
+		if(modifiedByClientUser != null) {
+			modifiedBy = modifiedByClientUser.getFirstName()+" "+modifiedByClientUser.getLastName();
+		}
 		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrgId);
 		notification.setUserType(UserType.CLIENT.getValue());
 		notification.setUserId(clientUserId);
@@ -2182,11 +2185,15 @@ public class ClientService {
 		return false;
 	}
 	
-	public boolean checkOrganisationNameAvailable(String organisationName) {
+	public boolean checkOrganisationNameAvailable(String organisationName, Integer clientOrganisationId) {
 		// TODO Auto-generated method stub
 		List<ClientOrganisation> clientOrgs = clientOrganisationRepository.findByOrganisationName(organisationName);
 		if( clientOrgs != null && clientOrgs.size() > 0) {
-			return true;
+			for(ClientOrganisation clientOrg : clientOrgs) {
+				if(!clientOrg.getClientOrganisationId().equals(clientOrganisationId)) {
+					return true;
+				}
+			}
 		}
 		
 		return false;
@@ -2197,7 +2204,7 @@ public class ClientService {
 		List<ClientOrganisation> clientOrgs = clientOrganisationRepository.findByCorporateNumber(corporationNumber);
 		if( clientOrgs != null && clientOrgs.size() > 0) {
 			for(ClientOrganisation clientOrg : clientOrgs) {
-				if(!clientOrg.getCorporateNumber().equals(corporationNumber)) {
+				if(!clientOrg.getClientOrganisationId().equals(clientOrganisationId)) {
 					return true;
 				}
 			}

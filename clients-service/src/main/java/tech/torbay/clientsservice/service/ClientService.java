@@ -1,7 +1,10 @@
 package tech.torbay.clientsservice.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1272,6 +1275,9 @@ public class ClientService {
 				
 				List<Map<String,Object>> clientNotifications = new ArrayList();
 				
+				// notifications only need to send based on user created date 
+				ClientUser clientUserCreated = clientUserRepository.findByClientId(clientId);
+				String createdAt = clientUserCreated.getCreatedAt();
 				for(Notification notification : uniqueNotifications) {
 					ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 					Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
@@ -1302,8 +1308,10 @@ public class ClientService {
 							sendorLastName = clientUser.getLastName();
 						} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
 							VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
-							sendorFirstName = vendorUser.getFirstName();
-							sendorLastName = vendorUser.getLastName();
+							if(vendorUser != null) {
+								sendorFirstName = vendorUser.getFirstName();
+								sendorLastName = vendorUser.getLastName();
+							}
 						}
 					}
 					
@@ -1332,7 +1340,42 @@ public class ClientService {
 //							count++;
 //						}
 //					}
-					clientNotifications.add(mapNotification);
+					
+					//check user eligible for notification
+					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+				        Date userCreatedAt = null, notificationCreatedAt = null;
+						try {
+							userCreatedAt = sdf.parse(createdAt);
+							notificationCreatedAt = sdf.parse(notification.getCreatedAt());
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						boolean eligible = true;
+				        // after() method
+				        if(userCreatedAt.after(notificationCreatedAt)) {
+				            System.out.println(userCreatedAt + " is after " + notificationCreatedAt);
+				            //not eligible
+				            eligible = false;
+				        }
+
+				        // before() method
+				        if(userCreatedAt.before(notificationCreatedAt)) {
+				            System.out.println(userCreatedAt + " is before " + notificationCreatedAt);
+				          //eligible
+				            eligible = true;
+				        }
+
+				        // equals() method
+				        if(userCreatedAt.equals(notificationCreatedAt)) {
+				            System.out.println(userCreatedAt + " is equal to " + notificationCreatedAt);
+				          //eligible
+				            eligible = true;
+				        }
+				        if(eligible)
+				        	clientNotifications.add(mapNotification);
 				}
 				// Refer - getClientReadNotifications
 //				for(Map<String,Object> notification : clientNotifications) {
@@ -1469,7 +1512,9 @@ public class ClientService {
 				List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
 				
 				List<Map<String,Object>> clientNotifications = new ArrayList();
-				
+				// notifications only need to send based on user created date 
+				ClientUser clientUserCreated = clientUserRepository.findByClientId(clientId);
+				String createdAt = clientUserCreated.getCreatedAt();
 				for(Notification notification : uniqueNotifications) {
 					ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 					Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
@@ -1530,7 +1575,44 @@ public class ClientService {
 //							count++;
 //						}
 //					}
-					clientNotifications.add(mapNotification);
+					//case1- all notification , from org creation
+//					clientNotifications.add(mapNotification);
+					//case 2 - only after user creation
+					//check user eligible for notification
+					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+				        Date userCreatedAt = null, notificationCreatedAt = null;
+						try {
+							userCreatedAt = sdf.parse(createdAt);
+							notificationCreatedAt = sdf.parse(notification.getCreatedAt());
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						boolean eligible = true;
+				        // after() method
+				        if(userCreatedAt.after(notificationCreatedAt)) {
+				            System.out.println(userCreatedAt + " is after " + notificationCreatedAt);
+				            //not eligible
+				            eligible = false;
+				        }
+
+				        // before() method
+				        if(userCreatedAt.before(notificationCreatedAt)) {
+				            System.out.println(userCreatedAt + " is before " + notificationCreatedAt);
+				          //eligible
+				            eligible = true;
+				        }
+
+				        // equals() method
+				        if(userCreatedAt.equals(notificationCreatedAt)) {
+				            System.out.println(userCreatedAt + " is equal to " + notificationCreatedAt);
+				          //eligible
+				            eligible = true;
+				        }
+				        if(eligible)
+				        	clientNotifications.add(mapNotification);
 				}
 				for(Map<String,Object> notification : clientNotifications) {
 					if(String.valueOf(notification.get("isViewed")).equals("false")) {
