@@ -7,7 +7,10 @@ import java.util.Map;
 public class Constants {
 	
 	public static final Integer MAX_USER_COUNT = 12;
+	public static final Integer MAX_INCORRECT_LOGIN_ATTEMPT_COUNT = 10;
+	public static final Integer RESET_LOGIN_ATTEMPT_COUNT = 0;
 	public static final String TIME_ZONE = "UTC";
+	public static final String TIME_ZONE_EST = "UTC-5";
 	public static final long EXPIRY_DURATION_IN_DAYS = 7;
 
 	public enum UserType {
@@ -125,7 +128,8 @@ public class Constants {
 		USER_ACCOUNT_DELETED(12),
 		CLIENT_USER_RECORD_EXISTS(13),
 		VENDOR_USER_RECORD_EXISTS(14),
-		INVITE_RESEND(15);		
+		INVITE_RESEND(15),		
+		ACCOUNT_BLOCKED_BY_MAX_INCORRECT_LOGIN_ATTEMPT(16);		
 	    
 	    private int value;
 	    private static Map map = new HashMap<>();

@@ -444,13 +444,24 @@ public class MessageService {
 				targetOrg.put("organisationLogo",getClientOrganisationLogo(clientOrganisation.getClientOrganisationId()));
 				
 			} else if(extTargetOrg.getTargetUserType() == Constants.UserType.VENDOR.getValue()) {
-				
-				VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(extTargetOrg.getTargetOrganisationId());
-				targetOrg.put("organisationId",vendorOrganisation.getVendorOrganisationId());
-				targetOrg.put("legalName",vendorOrganisation.getLegalName());
-				targetOrg.put("organisationName",vendorOrganisation.getCompanyName());
-				targetOrg.put("organisationLogoName",vendorOrganisation.getLogoName());
-				targetOrg.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+				try {
+					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(extTargetOrg.getTargetOrganisationId());
+					if(vendorOrganisation != null) {
+						targetOrg.put("organisationId",vendorOrganisation.getVendorOrganisationId());
+						targetOrg.put("legalName",vendorOrganisation.getLegalName());
+						targetOrg.put("organisationName",vendorOrganisation.getCompanyName());
+						targetOrg.put("organisationLogoName",vendorOrganisation.getLogoName());
+						targetOrg.put("organisationLogo",getVendorOrganisationLogo(vendorOrganisation.getVendorOrganisationId()));
+					} else {
+						targetOrg.put("organisationId","0");
+						targetOrg.put("legalName","NA");
+						targetOrg.put("organisationName","NA");
+						targetOrg.put("organisationLogoName","NA");
+						targetOrg.put("organisationLogo","NA");
+					}
+				} catch(Exception exp) {
+					exp.printStackTrace();
+				}
 			}
 			
 			targetOrganisations.add(targetOrg);

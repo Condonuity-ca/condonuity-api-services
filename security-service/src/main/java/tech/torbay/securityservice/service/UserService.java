@@ -119,7 +119,7 @@ public class UserService {
 		} catch (Exception exp) {
 			exp.printStackTrace();
 		}
-
+		updateLoginAttemptSuccess(userObj.getUsername());
 		return userRepository.save(userObj);
 	}
 	
@@ -136,6 +136,7 @@ public class UserService {
 		userObj.setPassword(SecurityAES.encrypt(password ) );
 //		userObj.setPassword(password);
 
+		updateLoginAttemptSuccess(userObj.getUsername());
 
 		return userRepository.save(userObj);
 	}
@@ -200,6 +201,28 @@ public class UserService {
 			userInviteLogsRepository.save(userInviteLogs);
 		}
 
+		userRepository.save(userObj);
+	} 
+	
+	public void updateIncorrectLoginAttempt(String username) {
+		
+		User userObj = userRepository.findByUsername(username);
+		try {
+			int incorrectAttempt = userObj.getIncorrectAttempt();
+			if(userObj != null) {
+				incorrectAttempt++;
+				userObj.setIncorrectAttempt(incorrectAttempt);
+			}
+		} catch(Exception exp) {
+			exp.printStackTrace();
+		}
+		userRepository.save(userObj);
+	}
+	
+	public void updateLoginAttemptSuccess(String username) {
+		
+		User userObj = userRepository.findByUsername(username);
+		userObj.setIncorrectAttempt(Constants.RESET_LOGIN_ATTEMPT_COUNT);
 		userRepository.save(userObj);
 	}
 

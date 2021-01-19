@@ -30,6 +30,7 @@ public class User {
     private Integer userId = 0;
     private Integer userType = 0;
     private String termsAcceptedDate = "";
+    private Integer incorrectAttempt = 0;
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -85,6 +86,14 @@ public class User {
 
 	public void setTermsAcceptedDate(String termsAcceptedDate) {
 		this.termsAcceptedDate = termsAcceptedDate;
+	}
+
+	public Integer getIncorrectAttempt() {
+		return incorrectAttempt;
+	}
+
+	public void setIncorrectAttempt(Integer incorrectAttempt) {
+		this.incorrectAttempt = incorrectAttempt;
 	}
 
 	public String getCreatedAt() {

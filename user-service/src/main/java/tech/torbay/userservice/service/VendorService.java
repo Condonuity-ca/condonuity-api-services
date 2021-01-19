@@ -1,7 +1,10 @@
 package tech.torbay.userservice.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -2085,7 +2088,9 @@ public class VendorService {
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
 		
 		List<Map<String,Object>> vendorNotifications = new ArrayList();
-		
+		// notifications only need to send based on user created date 
+		VendorUser vendorUserCreated = vendorUserRepository.findByUserId(vendorId);
+		String createdAt = vendorUserCreated.getCreatedAt();
 		for(Notification notification : uniqueNotifications) {
 			ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
@@ -2146,7 +2151,44 @@ public class VendorService {
 //					count++;
 //				}
 //			}
-			vendorNotifications.add(mapNotification);
+			//case1- all notification , from org creation
+//			vendorNotifications.add(mapNotification);
+			//case 2 - only after user creation
+			//check user eligible for notification
+			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		        Date userCreatedAt = null, notificationCreatedAt = null;
+				try {
+					userCreatedAt = sdf.parse(createdAt);
+					notificationCreatedAt = sdf.parse(notification.getCreatedAt());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				boolean eligible = true;
+		        // after() method
+		        if(userCreatedAt.after(notificationCreatedAt)) {
+		            System.out.println(userCreatedAt + " is after " + notificationCreatedAt);
+		            //not eligible
+		            eligible = false;
+		        }
+
+		        // before() method
+		        if(userCreatedAt.before(notificationCreatedAt)) {
+		            System.out.println(userCreatedAt + " is before " + notificationCreatedAt);
+		          //eligible
+		            eligible = true;
+		        }
+
+		        // equals() method
+		        if(userCreatedAt.equals(notificationCreatedAt)) {
+		            System.out.println(userCreatedAt + " is equal to " + notificationCreatedAt);
+		          //eligible
+		            eligible = true;
+		        }
+		        if(eligible)
+		        	vendorNotifications.add(mapNotification);
 		}
 		
 		//refer - getVendorReadNotifications
@@ -2256,7 +2298,9 @@ public class VendorService {
 		List<Notification> uniqueNotifications = filteredNotifications.stream().distinct().collect(Collectors.toList());
 		
 		List<Map<String,Object>> vendorNotifications = new ArrayList();
-		
+		// notifications only need to send based on user created date 
+		VendorUser vendorUserCreated = vendorUserRepository.findByUserId(vendorId);
+		String createdAt = vendorUserCreated.getCreatedAt();
 		for(Notification notification : uniqueNotifications) {
 			ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			Map<String,Object> mapNotification = mapper.convertValue(notification, Map.class);
@@ -2317,7 +2361,44 @@ public class VendorService {
 //					count++;
 //				}
 //			}
-			vendorNotifications.add(mapNotification);
+			//case1- all notification , from org creation
+//			vendorNotifications.add(mapNotification);
+			//case 2 - only after user creation
+			//check user eligible for notification
+			 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		        Date userCreatedAt = null, notificationCreatedAt = null;
+				try {
+					userCreatedAt = sdf.parse(createdAt);
+					notificationCreatedAt = sdf.parse(notification.getCreatedAt());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				boolean eligible = true;
+		        // after() method
+		        if(userCreatedAt.after(notificationCreatedAt)) {
+		            System.out.println(userCreatedAt + " is after " + notificationCreatedAt);
+		            //not eligible
+		            eligible = false;
+		        }
+
+		        // before() method
+		        if(userCreatedAt.before(notificationCreatedAt)) {
+		            System.out.println(userCreatedAt + " is before " + notificationCreatedAt);
+		          //eligible
+		            eligible = true;
+		        }
+
+		        // equals() method
+		        if(userCreatedAt.equals(notificationCreatedAt)) {
+		            System.out.println(userCreatedAt + " is equal to " + notificationCreatedAt);
+		          //eligible
+		            eligible = true;
+		        }
+		        if(eligible)
+		        	vendorNotifications.add(mapNotification);
 		}
 		for(Map<String,Object> notification : vendorNotifications) {
 			if(String.valueOf(notification.get("isViewed")).equals("false")) {
