@@ -841,6 +841,7 @@ public class ClientService {
 			Integer clientOrganisationId = (Integer) ratings.get("clientOrganisationId");
 			String reviewComments = (String) ratings.get("reviewComments");
 			String overAllRating = (String) ratings.get("overAllRating");
+			String lastEngagedDate = (String) ratings.get("lastEngagedDate");
 			
 			
 			Integer projectId = null;
@@ -868,6 +869,7 @@ public class ClientService {
 			projectRRObj.setReviewComments(reviewComments);;
 			projectRRObj.setRating(overAllRating);
 			projectRRObj.setStatus(UserAccountStatus.ACTIVE.getValue());
+			projectRRObj.setLastEngagedDate(lastEngagedDate);
 			
 //			return projectReviewRatingRepository.setReplyComments(projectReviewRating.getId(), projectReviewRating.getReplyComments());
 			ProjectReviewRating projectRR = projectReviewRatingRepository.save(projectRRObj);

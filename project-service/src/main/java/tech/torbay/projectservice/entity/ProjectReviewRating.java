@@ -31,6 +31,16 @@ public class ProjectReviewRating {
     private String rating;
     private String reviewComments;
     private String replyComments;
+    private Integer status;
+    private String lastEngagedDate;
+    
+    public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
     
     @Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -112,6 +122,14 @@ public class ProjectReviewRating {
 		this.replyComments = replyComments;
 	}
 
+	public String getLastEngagedDate() {
+		return lastEngagedDate;
+	}
+
+	public void setLastEngagedDate(String lastEngagedDate) {
+		this.lastEngagedDate = lastEngagedDate;
+	}
+
 	public String getCreatedAt() {
 		return createdAt;
 	}
@@ -133,8 +151,8 @@ public class ProjectReviewRating {
 		return "ProjectReviewRating [id=" + id + ", projectId=" + projectId + ", clientId=" + clientId
 				+ ", clientOrganisationId=" + clientOrganisationId + ", vendorOrganisationId=" + vendorOrganisationId
 				+ ", vendorId=" + vendorId + ", rating=" + rating + ", reviewComments=" + reviewComments
-				+ ", replyComments=" + replyComments + ", createdAt=" + createdAt + ", modifiedDate=" + modifiedDate
-				+ "]";
+				+ ", replyComments=" + replyComments + ", lastEngagedDate=" + lastEngagedDate + ", createdAt="
+				+ createdAt + ", modifiedDate=" + modifiedDate + "]";
 	}
 
 }
