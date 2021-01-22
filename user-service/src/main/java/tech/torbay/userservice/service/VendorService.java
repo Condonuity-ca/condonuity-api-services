@@ -1917,7 +1917,12 @@ public class VendorService {
 		String message = "Account Update";
 		String subContent = " account updated";
 		VendorUser modifiedByVendorUser = vendorUserRepository.findByUserId(modifiedByUserId);
-		String modifiedBy = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
+		String modifiedBy = "";
+		if(modifiedByVendorUser != null) {
+			modifiedBy = modifiedByVendorUser.getFirstName()+" "+modifiedByVendorUser.getLastName();
+		} else if(modifiedByUserId > 0) {
+			modifiedBy = "Support User";
+		}
 		notification.setUserType(UserType.VENDOR.getValue());
 		notification.setUserId(modifiedByUserId);
 		notification.setOrganisationId(vendorOrganisation.getVendorOrganisationId());
