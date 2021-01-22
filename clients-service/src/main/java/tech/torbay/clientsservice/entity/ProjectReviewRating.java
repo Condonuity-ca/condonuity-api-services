@@ -32,6 +32,7 @@ public class ProjectReviewRating {
     private String reviewComments;
     private String replyComments;
     private Integer status;
+    private String lastEngagedDate;
     
     public Integer getStatus() {
 		return status;
@@ -119,6 +120,14 @@ public class ProjectReviewRating {
 
 	public void setReplyComments(String replyComments) {
 		this.replyComments = replyComments;
+	}
+
+	public String getLastEngagedDate() {
+		return lastEngagedDate;
+	}
+
+	public void setLastEngagedDate(String lastEngagedDate) {
+		this.lastEngagedDate = lastEngagedDate;
 	}
 
 	public String getCreatedAt() {
