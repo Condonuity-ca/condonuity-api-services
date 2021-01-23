@@ -35,7 +35,7 @@ public class ClientUser {
 	}
 	
     public ClientUser(String email) {
-    	this.email = email;
+    	this.email = email.toLowerCase();
 	}
     
 	@Id
@@ -136,10 +136,10 @@ public class ClientUser {
 		this.clientId = clientId;
 	}
 	public String getEmail() {
-		return email;
+		return email.toLowerCase();
 	}
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = email.toLowerCase();
 	}
 	public String getFirstName() {
 		return firstName;
