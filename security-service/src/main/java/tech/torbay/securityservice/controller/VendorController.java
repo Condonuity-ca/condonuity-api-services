@@ -544,7 +544,7 @@ public class VendorController {
 						//Common invite logic added for existing
 //						vendorService.SendVendorNewRExistingUserInviteAlert(vendorUser, NotificationType.VENDOR_USER_PROFILE_INVITE.getValue());
 						return SendExistVendorUserInvitation(vendorUser);
-					} else if(existVendorUserObj.getAccountStatus() == UserAccountStatus.INACTIVE.getValue() 
+					} else if((existVendorUserObj.getAccountStatus() == UserAccountStatus.INACTIVE.getValue() || existVendorUserObj.getAccountStatus() == UserAccountStatus.INVITED.getValue()) 
 							&& existVendorUserObj.getDeleteStatus() == DeleteStatus.ACTIVE.getValue()) {
 						// Newly added need to check - if client flow ok or not
 						// Existing User - if inactive can re-invite by any vendor organisation flow newly added
