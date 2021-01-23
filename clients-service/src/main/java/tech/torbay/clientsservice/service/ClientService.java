@@ -500,6 +500,7 @@ public class ClientService {
 			Integer reviewId = (Integer) ratings.get("reviewId");
 			String reviewComments = (String) ratings.get("reviewComments");
 			String overAllRating = (String) ratings.get("overAllRating");
+			String lastEngagedDate = (String) ratings.get("lastEngagedDate");
 			
 			
 			Integer projectId = null;
@@ -510,6 +511,7 @@ public class ClientService {
 			if(projectRRObj != null) {
 				projectRRObj.setReviewComments(reviewComments);;
 				projectRRObj.setRating(overAllRating);
+				projectRRObj.setLastEngagedDate(lastEngagedDate);
 				ProjectReviewRating projectRR = projectReviewRatingRepository.save(projectRRObj);
 			} else {
 				return false;

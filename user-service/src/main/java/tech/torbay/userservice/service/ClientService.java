@@ -966,7 +966,7 @@ public class ClientService {
 				break;
 			}
 			case 35 :{
-				notificationType = 7;
+//				notificationType = 7;
 				message = "Edited review!";
 				subContent = "User "+userName+" from Condo "+corpName+" edited your review.";
 				notification.setUserType(UserType.CLIENT.getValue());
@@ -1000,6 +1000,7 @@ public class ClientService {
 			Integer clientOrganisationId = (Integer) ratings.get("clientOrganisationId");
 			String reviewComments = (String) ratings.get("reviewComments");
 			String overAllRating = (String) ratings.get("overAllRating");
+			String lastEngagedDate = (String) ratings.get("lastEngagedDate");
 			
 			
 			Integer projectId = null;
@@ -1020,6 +1021,7 @@ public class ClientService {
 			if(projectRRObj != null) {
 				projectRRObj.setReviewComments(reviewComments);;
 				projectRRObj.setRating(overAllRating);
+				projectRRObj.setLastEngagedDate(lastEngagedDate);
 				ProjectReviewRating projectRR = projectReviewRatingRepository.save(projectRRObj);
 			} else {
 				return false;
