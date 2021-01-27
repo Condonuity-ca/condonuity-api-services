@@ -2125,9 +2125,17 @@ public class VendorService {
 					sendorFirstName = clientUser.getFirstName();
 					sendorLastName = clientUser.getLastName();
 				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
-					VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
-					sendorFirstName = vendorUser.getFirstName();
-					sendorLastName = vendorUser.getLastName();
+					// project awards - userId is client Id, but notification for vendor so override user object from client
+					if(notification.getNotificationCategoryType() == Constants.NotificationType.BID_WON_LOSE.getValue()) {
+						ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
+						
+						sendorFirstName = clientUser.getFirstName();
+						sendorLastName = clientUser.getLastName();
+					} else {
+						VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
+						sendorFirstName = vendorUser.getFirstName();
+						sendorLastName = vendorUser.getLastName();
+					}
 				}
 			}
 			
