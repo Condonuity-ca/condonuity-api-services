@@ -46,6 +46,12 @@ public interface VendorOrganisationRepository extends JpaRepository<VendorOrgani
 	@Query(value="Select vo.* FROM vendor_organisation vo where vo.active_status =(?1) or vo.active_status = 2;", nativeQuery = true)
 	List<VendorOrganisation> findAllByActiveStatus(int activeStatus);
 	
+	@Query(name="Vendor.BrowseContractorVendor")
+	List<Object[]> findTempAllByActiveStatus(int activeStatus);
+	
+	@Query(name="Vendor.BrowseContractorClient")
+	List<Object[]> findTempAllByActiveStatusForClient(int activeStatus, int clientOrgId);
+	
 	@Query(value = "SELECT vo.* FROM vendor_organisation vo where ( vo.active_status = 0 or vo.active_status = 2) and" + 
 			"	concat (vo.legal_name, '.', vo.company_name, '.', vo.contact_person," + 
 			"	'.', vo.address, '.', vo.city, '.', vo.province, '.', vo.postal_code," + 

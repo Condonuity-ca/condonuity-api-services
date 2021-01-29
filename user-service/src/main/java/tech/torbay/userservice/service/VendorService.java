@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -514,11 +515,6 @@ public class VendorService {
         	double sumCategoryAccuracy = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
         	double sumCategoryQuality = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.QUALITY.getValue()).mapToDouble(VendorCategoryRatings::getRating).sum();
         	
-        	System.out.print("sumCategoryResponsiveness "+ sumCategoryResponsiveness);
-        	System.out.print("sumCategoryProfessionalism "+ sumCategoryProfessionalism);
-        	System.out.print("sumCategoryAccuracy "+ sumCategoryAccuracy);
-        	System.out.print("sumCategoryQuality "+ sumCategoryQuality);
-        	
         	long responsivenessCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.RESPONSIVENESS.getValue()).count();
         	long professionalismCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.PROFESSIONALISM.getValue()).count();
         	long accuracyCount = vendorRatings.stream().filter(o -> o.getRatingCategory() == Constants.VendorRatingCategory.ACCURACY.getValue()).count();
@@ -529,11 +525,6 @@ public class VendorService {
         			((sumCategoryProfessionalism/responsivenessCount) * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100) +
         			((sumCategoryAccuracy/accuracyCount) * Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100) +
         			((sumCategoryQuality/qualityCount) * Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
-        	
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue() "+ sumCategoryResponsiveness * Constants.VendorRatingCategoryPercentage.RESPONSIVENESS.getValue()/100);
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue() "+ sumCategoryProfessionalism * Constants.VendorRatingCategoryPercentage.PROFESSIONALISM.getValue()/100);
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.ACCURACY.getValue() "+ sumCategoryAccuracy *Constants.VendorRatingCategoryPercentage.ACCURACY.getValue()/100);
-        	System.out.print("sumCategoryResponsiveness/Constants.VendorRatingCategoryPercentage.QUALITY.getValue() "+ sumCategoryQuality *Constants.VendorRatingCategoryPercentage.QUALITY.getValue()/100);
         	
         	
         	return overAllRating;
@@ -579,13 +570,13 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
-	        List<String> servicesCities = new ArrayList();
-	        for(VendorServicesCities vendorCity : vendorServicesCities) {
-	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
-	        	servicesCities.add(serviceCity.getCityName());
-	        }
-	        map.put("serviceCities",String.join(",", servicesCities));
+//	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+//	        List<String> servicesCities = new ArrayList();
+//	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+//	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+//	        	servicesCities.add(serviceCity.getCityName());
+//	        }
+	        map.put("serviceCities", String.join(",", vendorServicesCitiesRepository.getServiceCities(vendorOrg.getVendorOrganisationId())));
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        try {
 		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
@@ -602,16 +593,12 @@ public class VendorService {
 		//Available - Unclaimed vendor profiles
 		for(AvailableVendorProfiles vendorOrg : uncliamedVendorProfiles) {
 			ObjectMapper oMapper = new ObjectMapper();
-	        // object -> Map
 	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
 	        map.put("isPreferred", "false");
 	        map.put("vendorProfileId", vendorOrg.getVendorProfileId());
 	        map.put("vendorOrganisationId", 0);
 	        map.remove("allocatedvendorOrgId");
 	        
-//	        UserWishList userWish = userWishListRepository.findByWisherOrgIdAndWisherUserTypeAndFavouriteOrgIdAndFavouriteUserType(clientOrgId, Constants.UserType.CLIENT.getValue(), vendorOrg.getVendorProfileId(), Constants.UserType.VENDOR.getValue() );
-	        
-	        //empty
 	        map.put("vendorTags","");
 	        if(vendorOrg.getCity() != null ) {
 	        	try {
@@ -625,29 +612,11 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-//	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
 	        List<String> servicesCities = new ArrayList();
-//	        for(VendorServicesCities vendorCity : vendorServicesCities) {
-//	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
-//	        	servicesCities.add(serviceCity.getCityName());
-//	        }
 	        map.put("serviceCities",String.join(",", servicesCities));
-//	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        map.put("rating",0);
-//	        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
-//	        	map.put("isPreferred", "true");
-//	        } else {
-	        	map.put("isPreferred", "false");
-//	        }
-	        try {
-//		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
-//		        if(logo != null)
-//		        	map.put("vendorProfileImageUrl", logo);
-//		        else
-		        	map.put("vendorProfileImageUrl", "");
-	        } catch(Exception exp) {
-		        	exp.printStackTrace();
-	        }
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileImageUrl", "");
 	        vendorOrganisations.add(map);
 		}
 		
@@ -683,13 +652,7 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
-	        List<String> servicesCities = new ArrayList();
-	        for(VendorServicesCities vendorCity : vendorServicesCities) {
-	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
-	        	servicesCities.add(serviceCity.getCityName());
-	        }
-	        map.put("serviceCities",String.join(",", servicesCities));
+	        map.put("serviceCities",String.join(",", vendorServicesCitiesRepository.getServiceCities(vendorOrg.getVendorOrganisationId())));
 	        int activeStatus = vendorOrg.getActiveStatus();
 	        int deleteStatus = vendorOrg.getDeleteStatus();
 	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
@@ -767,13 +730,7 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
-	        List<String> servicesCities = new ArrayList();
-	        for(VendorServicesCities vendorCity : vendorServicesCities) {
-	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
-	        	servicesCities.add(serviceCity.getCityName());
-	        }
-	        map.put("serviceCities",String.join(",", servicesCities));
+	        map.put("serviceCities",String.join(",", vendorServicesCitiesRepository.getServiceCities(vendorOrg.getVendorOrganisationId())));
 	        int activeStatus = vendorOrg.getActiveStatus();
 	        int deleteStatus = vendorOrg.getDeleteStatus();
 	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
@@ -848,13 +805,13 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
-	        List<String> servicesCities = new ArrayList();
-	        for(VendorServicesCities vendorCity : vendorServicesCities) {
-	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
-	        	servicesCities.add(serviceCity.getCityName());
-	        }
-	        map.put("serviceCities",String.join(",", servicesCities));
+//	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
+//	        List<String> servicesCities = new ArrayList();
+//	        for(VendorServicesCities vendorCity : vendorServicesCities) {
+//	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
+//	        	servicesCities.add(serviceCity.getCityName());
+//	        }
+	        map.put("serviceCities",String.join(",", vendorServicesCitiesRepository.getServiceCities(vendorOrg.getVendorOrganisationId())));
 	        int activeStatus = vendorOrg.getActiveStatus();
 	        int deleteStatus = vendorOrg.getDeleteStatus();
 	        if( deleteStatus == UserAccountStatus.ACTIVE.getValue()){
@@ -1227,13 +1184,9 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
-	        List<String> servicesCities = new ArrayList();
-	        for(VendorServicesCities vendorCity : vendorServicesCities) {
-	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
-	        	servicesCities.add(serviceCity.getCityName());
-	        }
-	        map.put("serviceCities",String.join(",", servicesCities));
+	        
+	        map.put("serviceCities",String.join(",", vendorServicesCitiesRepository.getServiceCities(vendorOrg.getVendorOrganisationId())));
+	        
 	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        if(userWish != null && userWish.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
 	        	map.put("isPreferred", "true");
@@ -1262,7 +1215,7 @@ public class VendorService {
 	        map.put("vendorOrganisationId", 0);
 	        map.remove("allocatedvendorOrgId");
 	        
-	        UnclaimedVendorWishList unclaimedVendorWishList = unclaimedVendorWishListRepository.findByClientOrgIdAndVendorProfileId(clientOrgId, vendorOrg.getVendorProfileId());	        
+//	        UnclaimedVendorWishList unclaimedVendorWishList = unclaimedVendorWishListRepository.findByClientOrgIdAndVendorProfileId(clientOrgId, vendorOrg.getVendorProfileId());	        
 	        //empty
 	        map.put("vendorTags","");
 	        if(vendorOrg.getCity() != null ) {
@@ -1277,34 +1230,143 @@ public class VendorService {
 	        } else {
 	        	map.put("city","");
 			}
-//	        List<VendorServicesCities> vendorServicesCities = vendorServicesCitiesRepository.findByVendorOrganisationId(vendorOrg.getVendorOrganisationId());
 	        List<String> servicesCities = new ArrayList();
-//	        for(VendorServicesCities vendorCity : vendorServicesCities) {
-//	        	ServiceCities serviceCity = servicesCitiesRepository.findOneById(vendorCity.getServiceCityId());
-//	        	servicesCities.add(serviceCity.getCityName());
-//	        }
 	        map.put("serviceCities",String.join(",", servicesCities));
-//	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
 	        map.put("rating",0);
-	        if(unclaimedVendorWishList != null && unclaimedVendorWishList.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
-	        	map.put("isPreferred", "true");
-	        } else {
-	        	map.put("isPreferred", "false");
-	        }
-	        try {
-//		        String logo = getOrganisationLogo(vendorOrg.getVendorOrganisationId());
-//		        if(logo != null)
-//		        	map.put("vendorProfileImageUrl", logo);
-//		        else
-		        	map.put("vendorProfileImageUrl", "");
-	        } catch(Exception exp) {
-		        	exp.printStackTrace();
-	        }
+//	        if(unclaimedVendorWishList != null && unclaimedVendorWishList.getInterestStatus() == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
+//	        	map.put("isPreferred", "true");
+//	        } else {
+//	        	map.put("isPreferred", "false");
+//	        }
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileImageUrl", "");
 	        vendorOrganisations.add(map);
 		}
 		return vendorOrganisations;
 	}
 
+	public List<Object> getTempAllVendorOrganisationsByClientOrgId(Integer clientOrgId) {
+		// TODO Auto-generated method stub
+		List<Object[]> vendorOrgsAllTemp = vendorOrganisationRepository.findTempAllByActiveStatusForClient(UserAccountStatus.ACTIVE.getValue(), clientOrgId);
+		
+		List<Object> vendorOrganisations = new ArrayList();
+		vendorOrgsAllTemp.stream().forEach((record) -> {
+	        VendorOrganisation vendorOrg = (VendorOrganisation) record[0];
+	        String city_name = (String) record[1];
+	        Integer interestStatus = (Integer) record[2];
+	        String serviceCities = (String) record[3];
+	        String tagNames = (String) record[4];
+	        String fileUrl = (String) record[5];
+	        
+	        ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileId", 0);
+	        map.put("vendorTags",tagNames);
+	        if(city_name != null ) {
+	        	map.put("city",city_name);
+	        } else {
+	        	map.put("city","");
+			}
+	        
+//	        map.put("serviceCities",String.join(",", vendorServicesCitiesRepository.getServiceCities(vendorOrg.getVendorOrganisationId())));
+	        map.put("serviceCities",serviceCities);
+	        
+	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        if(interestStatus != null && interestStatus == ProjectInterestStatus.LIKE.getValue()) {//check if you found error
+	        	map.put("isPreferred", "true");
+	        } else {
+	        	map.put("isPreferred", "false");
+	        }
+	        if(fileUrl != null)
+	        	map.put("vendorProfileImageUrl", fileUrl);
+	        else
+	        	map.put("vendorProfileImageUrl", "");
+	        vendorOrganisations.add(map);
+		 });
+		
+		List<AvailableVendorProfiles> uncliamedVendorProfiles = availableVendorProfilesRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
+		
+		//Available - Unclaimed vendor profiles
+		for(AvailableVendorProfiles vendorOrg : uncliamedVendorProfiles) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileId", vendorOrg.getVendorProfileId());
+	        map.put("vendorOrganisationId", 0);
+	        map.remove("allocatedvendorOrgId");
+	        map.put("vendorTags","");
+	        List<String> servicesCities = new ArrayList();
+	        map.put("serviceCities",String.join(",", servicesCities));
+	        map.put("rating",0);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileImageUrl", "");
+	        vendorOrganisations.add(map);
+		}
+		return vendorOrganisations;
+	}
+	
+	public List<Object> getTempAllVendorOrganisations() {
+		// TODO Auto-generated method stub
+		List<Object[]> vendorOrgsAllTemp = vendorOrganisationRepository.findTempAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
+		
+		List<Object> vendorOrganisations = new ArrayList();
+		vendorOrgsAllTemp.stream().forEach((record) -> {
+	        VendorOrganisation vendorOrg = (VendorOrganisation) record[0];
+	        String city_name = (String) record[1];
+	        String serviceCities = (String) record[2];
+	        String tagNames = (String) record[3];
+	        String fileUrl = (String) record[4];
+	        
+	        ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileId", 0);
+	        map.put("vendorTags",tagNames);
+	        if(city_name != null ) {
+	        	map.put("city",city_name);
+	        } else {
+	        	map.put("city","");
+			}
+	        
+//	        map.put("serviceCities",String.join(",", vendorServicesCitiesRepository.getServiceCities(vendorOrg.getVendorOrganisationId())));
+	        map.put("serviceCities",serviceCities);
+	        
+	        map.put("rating",getVendorCategoryRatings(vendorOrg.getVendorOrganisationId()));
+	        map.put("isPreferred", "false");
+	        if(fileUrl != null)
+	        	map.put("vendorProfileImageUrl", fileUrl);
+	        else
+	        	map.put("vendorProfileImageUrl", "");
+	        vendorOrganisations.add(map);
+		 });
+		
+		List<AvailableVendorProfiles> uncliamedVendorProfiles = availableVendorProfilesRepository.findAllByActiveStatus(UserAccountStatus.ACTIVE.getValue());
+		
+		//Available - Unclaimed vendor profiles
+		for(AvailableVendorProfiles vendorOrg : uncliamedVendorProfiles) {
+			ObjectMapper oMapper = new ObjectMapper();
+	        // object -> Map
+	        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileId", vendorOrg.getVendorProfileId());
+	        map.put("vendorOrganisationId", 0);
+	        map.remove("allocatedvendorOrgId");
+	        map.put("vendorTags","");
+	        List<String> servicesCities = new ArrayList();
+	        map.put("serviceCities",String.join(",", servicesCities));
+	        map.put("rating",0);
+	        map.put("isPreferred", "false");
+	        map.put("vendorProfileImageUrl", "");
+	        vendorOrganisations.add(map);
+		}
+		return vendorOrganisations;
+	}
+
+	
 	private Object getVendorTagsWithId(List<VendorTags> vendorTags) {
 		// TODO Auto-generated method stub
 		try {
