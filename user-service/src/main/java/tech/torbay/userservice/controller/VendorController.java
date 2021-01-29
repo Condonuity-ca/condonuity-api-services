@@ -255,14 +255,43 @@ public class VendorController {
 	}
 	
 	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
+	@ApiResponses(
+			value = {
+					@ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
+			}
+			)
+	@GetMapping("/vendor/orgs")
+	public ResponseEntity<Object> getAllActiveVendorOrganisations() {
+//		List<Object> list = vendorService.getAllActiveVendorOrganisations();
+		List<Object> list = vendorService.getTempAllVendorOrganisations();
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
+			response.put("vendorOrgs", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	
+	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
             }
     )
-	@GetMapping("/vendor/orgs")
-	public ResponseEntity<Object> getAllActiveVendorOrganisations() {
-		List<Object> list = vendorService.getAllActiveVendorOrganisations();
+	@GetMapping("/vendor/temp/orgs")
+	public ResponseEntity<Object> getTempAllActiveVendorOrganisations() {
+		List<Object> list = vendorService.getTempAllVendorOrganisations();
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
@@ -316,7 +345,35 @@ public class VendorController {
     )
 	@GetMapping("/vendor/orgs/{clientOrgId}")
 	public ResponseEntity<Object> getAllVendorOrganisationsByClientOrgId(@PathVariable("clientOrgId") Integer clientOrgId) {
-		List<Object> list = vendorService.getAllVendorOrganisationsByClientOrgId(clientOrgId);
+//		List<Object> list = vendorService.getAllVendorOrganisationsByClientOrgId(clientOrgId);
+		List<Object> list = vendorService.getTempAllVendorOrganisationsByClientOrgId(clientOrgId);
+		
+		HashMap<String, Object> response = new HashMap();
+		if(list != null) {
+			response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+			response.put("statusMessage", "Success");
+			response.put("responseMessage", "All Vendors in Condonuity Application fetched successfully");
+			response.put("vendorOrgs", list);
+			
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		} else {
+			response.put("statusCode", APIStatusCode.REQUEST_FAILED.getValue());
+			response.put("statusMessage", "Failed");
+			response.put("responseMessage", "Database Error");
+
+			return new ResponseEntity<Object>(response, HttpStatus.OK);
+		}
+	}
+	
+	@ApiOperation(value = "Fetching All Vendor Organisation Details in Condonuity Application")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "All Vendor organisation details fetched successfully in Condonuity Application")
+            }
+    )
+	@GetMapping("/vendor/orgs/temp/{clientOrgId}")
+	public ResponseEntity<Object> getTempAllVendorOrganisationsByClientOrgId(@PathVariable("clientOrgId") Integer clientOrgId) {
+		List<Object> list = vendorService.getTempAllVendorOrganisationsByClientOrgId(clientOrgId);
 		
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {

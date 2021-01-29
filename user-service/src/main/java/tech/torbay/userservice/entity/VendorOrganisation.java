@@ -13,6 +13,77 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "vendor_organisation")
+
+@SqlResultSetMappings({
+	  @SqlResultSetMapping(
+	      name="browseContractorClient",
+	      entities={
+	    		  @EntityResult(entityClass=VendorOrganisation.class)
+	    		  },
+	      columns={
+	    		  @ColumnResult(name="city_name"),
+	    		  @ColumnResult(name="interest_status"),
+	    		  @ColumnResult(name="service_cities"),
+	    		  @ColumnResult(name="tag_names"),
+	    		  @ColumnResult(name="file_url")
+	    		  }
+	  ),
+	  @SqlResultSetMapping(
+		      name="browseContractorVendor",
+		      entities={
+		    		  @EntityResult(entityClass=VendorOrganisation.class)
+		    		  },
+		      columns={
+		    		  @ColumnResult(name="city_name"),
+		    		  @ColumnResult(name="service_cities"),
+		    		  @ColumnResult(name="tag_names"),
+		    		  @ColumnResult(name="file_url")
+		    		  }
+		  )
+	})
+
+
+@NamedNativeQuery(
+		name = "Vendor.BrowseContractorClient", 
+	    query= "Select vo.* , sc.city_name, uwl.interest_status, " + 
+	    		"( " + 
+	    		"	SELECT GROUP_CONCAT(sc1.city_name) AS site_list " + 
+	    		"    FROM vendor_services_cities vsc  " + 
+	    		"    INNER JOIN service_cities sc1 ON sc1.id = vsc.service_city_id  " + 
+	    		"    WHERE vsc.vendor_organisation_id = vo.vendor_organisation_id " + 
+	    		") as service_cities , " + 
+	    		"(" + 
+	    		"SELECT GROUP_CONCAT(pt.tag_name) AS service_tags FROM vendor_tags vt  " + 
+	    		"INNER JOIN predefined_tags pt ON pt.tag_id = vt.tag_id  " + 
+	    		"WHERE vt.vendor_id = vo.vendor_organisation_id " + 
+	    		") as tag_names , " + 
+	    		"vopi.file_url  FROM vendor_organisation vo " + 
+	    		"LEFT JOIN service_cities sc on sc.id = vo.city " + 
+	    		"LEFT JOIN user_wish_list uwl on ( uwl.wisher_org_id = (?2) and uwl.wisher_user_type = 1 and uwl.favourite_org_id = vo.vendor_organisation_id and uwl.favourite_user_type = 2) " + 
+	    		"LEFT JOIN vendor_organisation_profile_images vopi on vopi.vendor_organisation_id = vo.vendor_organisation_id " + 
+	    		"where vo.active_status = (?1) or vo.active_status = 2 ;", 
+	    resultSetMapping="browseContractorClient")
+
+@NamedNativeQuery(
+		name = "Vendor.BrowseContractorVendor",
+	    query= "Select vo.* , sc.city_name, " + 
+	    		"( " + 
+	    		"	SELECT GROUP_CONCAT(sc1.city_name) AS site_list " + 
+	    		"    FROM vendor_services_cities vsc  " + 
+	    		"    INNER JOIN service_cities sc1 ON sc1.id = vsc.service_city_id  " + 
+	    		"    WHERE vsc.vendor_organisation_id = vo.vendor_organisation_id " + 
+	    		") as service_cities , " + 
+	    		"(" + 
+	    		"SELECT GROUP_CONCAT(pt.tag_name) AS service_tags FROM vendor_tags vt  " + 
+	    		"INNER JOIN predefined_tags pt ON pt.tag_id = vt.tag_id  " + 
+	    		"WHERE vt.vendor_id = vo.vendor_organisation_id " + 
+	    		") as tag_names , " + 
+	    		"vopi.file_url  FROM vendor_organisation vo " + 
+	    		"LEFT JOIN service_cities sc on sc.id = vo.city " + 
+	    		"LEFT JOIN vendor_organisation_profile_images vopi on vopi.vendor_organisation_id = vo.vendor_organisation_id " + 
+	    		"where vo.active_status = (?1) or vo.active_status = 2 ;", 
+	    resultSetMapping="browseContractorVendor")
+
 public class VendorOrganisation {
 
     public VendorOrganisation() {
