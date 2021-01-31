@@ -1676,5 +1676,12 @@ public class ClientService {
 		
 		notificationRepository.save(notification);
 	}
+
+	public void checkUnreadClientNotifications() {
+		// TODO Auto-generated method stub
+		
+		
+		
+	}
 }
 

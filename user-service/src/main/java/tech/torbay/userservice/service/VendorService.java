@@ -1,5 +1,6 @@
 package tech.torbay.userservice.service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +29,7 @@ import tech.torbay.userservice.constants.Constants.ProjectInterestStatus;
 import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
+import tech.torbay.userservice.email.SpringBootEmail;
 import tech.torbay.userservice.entity.AvailableVendorProfiles;
 import tech.torbay.userservice.entity.ClientOrganisation;
 import tech.torbay.userservice.entity.ClientUser;
@@ -2195,8 +2199,13 @@ public class VendorService {
 						sendorLastName = clientUser.getLastName();
 					} else {
 						VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
-						sendorFirstName = vendorUser.getFirstName();
-						sendorLastName = vendorUser.getLastName();
+						if(vendorUser != null) {
+							sendorFirstName = vendorUser.getFirstName();
+							sendorLastName = vendorUser.getLastName();
+						} else {
+							sendorFirstName = "";
+							sendorLastName = "";
+						}
 					}
 				}
 			}
@@ -2489,6 +2498,49 @@ public class VendorService {
 		
 		
 		return vendorNotifications;
+	}
+
+	public void checkUnreadVendorNotifications() {
+		// TODO Auto-generated method stub
+		List<VendorUser> vendorUsers = vendorUserRepository.findAllActiveVendorUserByAccountAndVerificationAndDeleteStatus();
+		
+		for(VendorUser vendorUser : vendorUsers) {
+			List<Map<String, Object>> notifications = getVendorNotifications(vendorUser.getUserId(), vendorUser.getVendorOrganisationId());
+			sendUnreadNotificationAlertNotification(vendorUser, getCountOfUnreadMessages(notifications));
+		}
+	}
+	
+	private long getCountOfUnreadMessages(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		long countBigCustomers = list
+				  .stream()
+				  .filter(notification -> notification.get("isViewed").toString().equals("false"))
+				  .count();
+		
+		return countBigCustomers;
+	}
+	
+	private void sendUnreadNotificationAlertNotification(VendorUser vendorUser, long notficationCount) {
+		// TODO Auto-generated method stub
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+		
+		try {
+			
+			String content, subject;
+			subject = "Notifications Received";
+			content = "You have "+notficationCount+" unread notifications , log in to Condonuity! ";
+			VendorOrganisation vendorOrg = vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId());
+			springBootEmail.sendUnreadNotificationAlertNotification(vendorUser.getEmail(), vendorUser.getFirstName()+" "+vendorUser.getLastName(), notficationCount, vendorOrg.getCompanyName() , content, subject);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
 	}
 
 }

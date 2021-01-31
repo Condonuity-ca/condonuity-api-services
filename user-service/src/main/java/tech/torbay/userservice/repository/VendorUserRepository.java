@@ -71,4 +71,7 @@ public interface VendorUserRepository extends JpaRepository<VendorUser, Integer>
 	List<VendorUser> findUsersByVendorOrganisationIdAndActiveStatusAndDeleteStatus(Integer organisationId, int activeStatus,
 			int deleteStatus);
 
+	@Query(value = "select vu.* from vendor_user vu where ( vu.account_status = 1 AND vu.account_verification_status = 1 AND vu.delete_status = 1 )", nativeQuery = true)
+	List<VendorUser> findAllActiveVendorUserByAccountAndVerificationAndDeleteStatus();
+
 }
