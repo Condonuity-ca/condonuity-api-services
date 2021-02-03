@@ -70,7 +70,7 @@ public class SpringBootEmail {
 //        + content +"</div>\r\n" + 
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -159,7 +159,7 @@ public class SpringBootEmail {
         // true = text/html
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Reset your password</div>\r\n" +
@@ -203,7 +203,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 //        + content +"</div>\r\n" + 
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -249,7 +249,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        // true = text/html
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
@@ -286,7 +286,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        // true = text/html
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
@@ -321,7 +321,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        String loginURL = "http://condonuityuat.canadacentral.cloudapp.azure.com/"; 
+		        String loginURL = "http://condonuitytest.eastus.cloudapp.azure.com/"; 
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
 		        if ( content.toLowerCase().contains("approved")) {
@@ -330,7 +330,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        	loginURLContent = "";
 		        }
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
@@ -364,7 +364,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // default = text/plain
 		        //helper.setText("Check attachment for image!");
-		        String loginURL = "http://condonuityuat.canadacentral.cloudapp.azure.com/";
+		        String loginURL = "http://condonuitytest.eastus.cloudapp.azure.com/";
 		        // true = text/html
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
@@ -374,7 +374,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        	loginURLContent = "";
 		        }
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
@@ -411,11 +411,11 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        String loginURL = "http://condonuityuat.canadacentral.cloudapp.azure.com/"; 
+		        String loginURL = "http://condonuitytest.eastus.cloudapp.azure.com/"; 
 		        String header = "Notifications Alert";
 		        String loginURLContent = "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" ;
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuityuat.canadacentral.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +

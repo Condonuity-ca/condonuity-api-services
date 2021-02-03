@@ -567,7 +567,8 @@ public class SupportUserController {
 		
 		
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
-		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
+//		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
+		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
@@ -608,7 +609,8 @@ public class SupportUserController {
 		
 		
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
-		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
+//		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
+		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
@@ -647,7 +649,8 @@ public class SupportUserController {
 			String encryptUser = SecurityAES.encrypt(responseJsonString);
 			
 			//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
-			String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
+//			String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
+			String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
 			+"&userType="+Constants.UserType.VENDOR.getValue()
 			+"&hash="+ encryptUser
 			+"&expiry="+Utils.getLinkValidityTime();

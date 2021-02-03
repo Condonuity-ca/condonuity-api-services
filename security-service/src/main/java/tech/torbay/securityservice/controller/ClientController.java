@@ -756,7 +756,8 @@ public class ClientController {
 		String encryptClientUser = SecurityAES.encrypt(responseJsonString);
 		
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+clientUser.getEmail()
-		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/register-organization?email="+clientUser.getEmail()
+//		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/register-organization?email="+clientUser.getEmail()
+		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/register-organization?email="+clientUser.getEmail()
 		+"&hash="+ encryptClientUser
 		+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
@@ -798,7 +799,8 @@ public class ClientController {
 		
 		
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
-		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
+//		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
+		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
@@ -841,7 +843,8 @@ public class ClientController {
 		
 		
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
-		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
+//		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
+		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();

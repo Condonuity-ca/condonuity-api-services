@@ -936,7 +936,8 @@ public class UserController {
 		System.out.println("encrypt hash :"+encryptUser);
 		
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password?email="+email
-		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/create-password?email="+email
+//		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/create-password?email="+email
+		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/create-password?email="+email
 				+"&hash="+encryptUser
 				+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
