@@ -3,6 +3,8 @@ package tech.torbay.userservice.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import tech.torbay.userservice.entity.AvailableVendorProfiles;
 import tech.torbay.userservice.entity.ClientUser;
 import tech.torbay.userservice.entity.VendorOrganisation;
 import tech.torbay.userservice.entity.VendorPortfolio;

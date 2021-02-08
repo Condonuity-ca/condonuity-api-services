@@ -28,6 +28,7 @@ import tech.torbay.userservice.constants.Constants.UserAccountStatus;
 import tech.torbay.userservice.constants.Constants.UserType;
 import tech.torbay.userservice.constants.Constants.VendorRatingCategoryPercentage;
 import tech.torbay.userservice.entity.Amenities;
+import tech.torbay.userservice.entity.AvailableVendorProfiles;
 import tech.torbay.userservice.entity.ClientAmenities;
 import tech.torbay.userservice.entity.ClientBuildingRepository;
 import tech.torbay.userservice.entity.ClientContract;
@@ -61,6 +62,7 @@ import tech.torbay.userservice.entity.VendorTags;
 import tech.torbay.userservice.entity.VendorUser;
 import tech.torbay.userservice.exception.ResourceNotFoundException;
 import tech.torbay.userservice.repository.AmenitiesRepository;
+import tech.torbay.userservice.repository.AvailableVendorProfilesRepository;
 import tech.torbay.userservice.repository.ClientAmenitiesRepository;
 import tech.torbay.userservice.repository.ClientBuildingRepoRepository;
 import tech.torbay.userservice.repository.ClientContractRepository;
@@ -110,6 +112,8 @@ public class UserService {
 	PredefinedTagsRepository predefinedTagsRepository;
 	@Autowired
 	VendorOrganisationRepository vendorOrganisationRepository;
+	@Autowired
+	AvailableVendorProfilesRepository availableVendorProfilesRepository;
 	@Autowired
 	UserWishListRepository userWishListRepository;
 	@Autowired
@@ -1453,6 +1457,24 @@ public class UserService {
         map.put("vendorProfileImageUrl",getOrganisationLogo(vendorOrg.getVendorOrganisationId(), UserType.VENDOR.getValue()));
         return map;
 	}
+	
+	private Map<String, Object> getAvailableVendorOrganisationProfileObj(AvailableVendorProfiles vendorOrg) {
+		// TODO Auto-generated method stub
+		ObjectMapper oMapper = new ObjectMapper();
+        Map<String, Object> map = oMapper.convertValue(vendorOrg, Map.class);
+        map.put("vendorOrganisationId", 0);
+        map.put("isPreferred", "false");
+        
+        map.put("vendorTags",vendorOrg.getExpertiseCategory());
+        map.put("city",getCityName(vendorOrg.getCity()));
+        map.put("rating","0");
+        
+        List<String> servicesCities = new ArrayList();
+        map.put("serviceCities",String.join(",", servicesCities));
+        
+        map.put("vendorProfileImageUrl","");
+        return map;
+	}
 
 	private Map<String, Object> getProjectObject(Project project) {
 		// TODO Auto-generated method stub
@@ -1606,9 +1628,13 @@ public class UserService {
 				} 
 				
 				List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllByKeyword(keyword);
+				List<AvailableVendorProfiles> vendorOrgsAll_VAP = availableVendorProfilesRepository.findAllByKeywordVAP(keyword);
 				
 				for(VendorOrganisation vendorOrg : vendorOrgsAll) {
-			        result.add(getVendorOrganisationObj(vendorOrg));
+					result.add(getVendorOrganisationObj(vendorOrg));
+				}
+				for(AvailableVendorProfiles vendorOrg : vendorOrgsAll_VAP) {
+			        result.add(getAvailableVendorOrganisationProfileObj(vendorOrg));
 				}
 		    	
 				if(tagContainedVendors != null && tagContainedVendors.size() > 0) {

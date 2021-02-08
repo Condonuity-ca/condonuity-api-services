@@ -124,8 +124,10 @@ public class SpringBootEmail {
 //		    mailSender.setPort(587); //ttls
 	    mailSender.setPort(465); //ssl
 	     
-	    mailSender.setUsername("condonuitydev@gmail.com");
-	    mailSender.setPassword("yixtxkshnfaykpsh");
+//	    mailSender.setUsername("condonuitydev@gmail.com");
+//	    mailSender.setPassword("yixtxkshnfaykpsh");
+	    mailSender.setUsername("No-Reply@condonuity.ca");
+	    mailSender.setPassword("xzawboabvqykafpv");
 	     
 	    Properties props = mailSender.getJavaMailProperties();
 	    props.put("mail.transport.protocol", "smtp");
