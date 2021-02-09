@@ -47,7 +47,7 @@ import tech.torbay.userservice.statusmessage.ResponseMessage;
 @RequestMapping("/api")
 public class SupportUserController {
 	private static final Logger logger = LoggerFactory.getLogger(SupportUserController.class);
-	
+
 	@Autowired
 	private SupportUserService supportUserService;
 	@Autowired
@@ -56,7 +56,7 @@ public class SupportUserController {
 	private UserService userService;
 	@Autowired
 	private VendorService vendorService;
-	
+
 	@ApiOperation(value = "Organisation Activation / De-Activation implementation by Support User and alerts using Email")
     @ApiResponses(
             value = {
@@ -66,13 +66,13 @@ public class SupportUserController {
 	@PutMapping("/support/organisation/approval/status")
 	private ResponseEntity<Object> UpdateOragnisationApprovalStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
 		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("approvalStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateOrganisationApprovalStatus(organisationId, userType, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -87,7 +87,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "Organisation Activation / De-Activation implementation by Support User and alerts using Email")
     @ApiResponses(
             value = {
@@ -97,13 +97,13 @@ public class SupportUserController {
 	@PutMapping("/support/organisation/status")
 	private ResponseEntity<Object> UpdateOragnisationActivationStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
 		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateOrganisationActivationStatus(organisationId, userType, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -118,7 +118,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "User Activation / De-Activation implementation by Support User and alerts using Email")
     @ApiResponses(
             value = {
@@ -128,14 +128,14 @@ public class SupportUserController {
 	@PutMapping("/support/user/status")
 	private ResponseEntity<Object> UpdateUserActivationStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 //		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 		Integer userId = Integer.parseInt(String.valueOf(requestData.get("userId")));
 		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
 		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateUserActivationStatus(userId, /* organisationId, */ userType, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -150,7 +150,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "Review Activation / De-Activation implementation by Support User")
     @ApiResponses(
             value = {
@@ -160,12 +160,12 @@ public class SupportUserController {
 	@PutMapping("/support/review/status")
 	private ResponseEntity<Object> InactiveReview(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 		Integer reviewRatingId = Integer.parseInt(String.valueOf(requestData.get("reviewRatingId")));
 		Integer activeStatus =  Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateReviewActivationStatus(reviewRatingId, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -180,7 +180,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "Update Client Corporation Name and Number implementation by Support User")
     @ApiResponses(
             value = {
@@ -190,12 +190,12 @@ public class SupportUserController {
 	@PutMapping("/support/client/corporation/update")
 	private ResponseEntity<Object> UpdateClientCorporationNumber(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 		Integer clientOrganisationId = Integer.parseInt(String.valueOf(requestData.get("clientOrganisationId")));
 		String corporationName = String.valueOf(requestData.get("corporationName"));
 		String corporationNumber =  String.valueOf(requestData.get("corporationNumber"));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
+
 		if(corporationName == null || corporationName.trim().length() == 0) {
 			ResponseMessage responseMessage = new ResponseMessage(
         			APIStatusCode.FIELD_VALIDATION_ERROR.getValue(),
@@ -224,7 +224,7 @@ public class SupportUserController {
         			"Client Organisation Corporation Number Already Exist");
         	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 		}
-		
+
 		if (!supportUserService.updateClientCorporationInformation(clientOrganisationId, corporationName, corporationNumber, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -239,7 +239,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "Project Activation / De-Activation Implementation by Support User")
     @ApiResponses(
             value = {
@@ -249,13 +249,13 @@ public class SupportUserController {
 	@PutMapping("/support/client/project/status")
 	private ResponseEntity<Object> UpdateProjectActivationStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 //		Integer clientOrganisationId = Integer.parseInt(String.valueOf(requestData.get("clientOrganisationId")));
 		Integer projectId = Integer.parseInt(String.valueOf(requestData.get("projectId")));
 		Integer activeStatus = Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateProjectActivationStatus(/*clientOrganisationId,*/ projectId, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -270,7 +270,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "External Message Activation / De-Activation Implementation by Support User")
     @ApiResponses(
             value = {
@@ -280,12 +280,12 @@ public class SupportUserController {
 	@PutMapping("/support/external/message/status")
 	private ResponseEntity<Object> UpdateExternalMessageActivationStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 		Integer externalMessageId = Integer.parseInt(String.valueOf(requestData.get("externalMessageId")));
 		Integer activeStatus = Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateExternalMessageActivationStatus(externalMessageId, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -300,7 +300,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "External Message Comment Activation / De-Activation Implementation by Support User")
     @ApiResponses(
             value = {
@@ -310,12 +310,12 @@ public class SupportUserController {
 	@PutMapping("/support/external/message/comment/status")
 	private ResponseEntity<Object> UpdateExternalMessageCommentActivationStatus(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 		Integer externalMessageCommentId = Integer.parseInt(String.valueOf(requestData.get("externalMessageCommentId")));
 		Integer activeStatus = Integer.parseInt(String.valueOf(requestData.get("activeStatus")));
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateExternalMessageCommentActivationStatus(externalMessageCommentId, activeStatus, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -330,7 +330,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "Update User Name implementation by Support User")
     @ApiResponses(
             value = {
@@ -340,7 +340,7 @@ public class SupportUserController {
 	@PutMapping("/support/user/profile/update")
 	private ResponseEntity<Object> UpdateUserProfile(@RequestBody Map<String, Object> requestData) {
 		// TODO Auto-generated method stub
-		
+
 		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 		Integer	userId = Integer.parseInt(String.valueOf(requestData.get("userId")));
 		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
@@ -352,8 +352,8 @@ public class SupportUserController {
 			clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
 		}
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (!supportUserService.updateUserProfile(userId, organisationId, userType, firstName, lastName, userRole, clientUserType, supportUserId)) {
 	    	ResponseMessage responseMessage = new ResponseMessage(
 	    			APIStatusCode.REQUEST_FAILED.getValue(),
@@ -368,7 +368,7 @@ public class SupportUserController {
 	    	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "Update User Name implementation by Support User")
     @ApiResponses(
             value = {
@@ -378,7 +378,7 @@ public class SupportUserController {
 	@PostMapping("/support/user/profile/add")
 	private ResponseEntity<Object> CreateUserProfile(@RequestBody Map<String, Object> requestData, UriComponentsBuilder builder) {
 		// TODO Auto-generated method stub
-		
+
 		Integer organisationId = Integer.parseInt(String.valueOf(requestData.get("organisationId")));
 		Integer userType =  Integer.parseInt(String.valueOf(requestData.get("userType")));
 		String email =  String.valueOf(requestData.get("email"));
@@ -390,47 +390,47 @@ public class SupportUserController {
 			clientUserType = Integer.parseInt(String.valueOf(requestData.get("clientUserType")));
 		}
 		Integer supportUserId =  Integer.parseInt(String.valueOf(requestData.get("supportUserId")));
-		
-		
+
+
 		if (userType == UserType.CLIENT.getValue()) {
 			ClientUser clientUserObj = new ClientUser();
 			clientUserObj.setEmail(email);
 			clientUserObj.setFirstName(firstName);
 			clientUserObj.setLastName(lastName);;
 			clientUserObj.setUserType(Constants.UserType.CLIENT.getValue());
-			
+
 			ClientOrganisation clientOrg = clientService.getClientOrganisationById(organisationId);
-			
+
 			ClientUser existClient = clientService.findByEmail(email);
 			List<ClientAssociation> clientUsers = clientService.getAllClientUsersInOrganisation(organisationId);
 			if(existClient != null) {
 				try {
 //					if Association Not-found/association-verification-pending/user-not-active  Send Invite
 //					if(clientService.checkClientOrgAssociationFound(existClient.getClientId(), organisationId)) {
-//						
-//						
+//
+//
 //						// Invite Sent
 //						sendNewClientUserInviteEmail(existClient , organisationId, clientUserType, userRole);
-//						
+//
 //						HttpHeaders headers = new HttpHeaders();
 //				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
 //				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
-//					} 
+//					}
 //					else {
 //						//else return already associated
 //						 ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Client Already Associated with Same Organisation");
 //						 return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 //					}
-					
+
 //					 Invite Sent
-					
+
 					if(clientUsers.size() < Constants.MAX_USER_COUNT) {
-						
+
 						//add- new client org associate with invite status
 						clientService.addClientOrgAccountAssociation(organisationId, clientUserType, userRole, existClient, Constants.UserAccountStatus.INVITED.getValue(), Constants.VerificationStatus.NOT_VERIFIED.getValue());
-						
+
 						sendExistClientUserInviteEmail(clientOrg.getOrganisationName(), existClient , organisationId, clientUserType, userRole);
-						
+
 						HttpHeaders headers = new HttpHeaders();
 				        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","Exist Client Invite Sent Successfully");
 				        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.OK);
@@ -438,8 +438,8 @@ public class SupportUserController {
 						ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.MAX_USERS_COUNT_ERROR.getValue(),"Failed","Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
 			        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
 					}
-					
-					
+
+
 				} catch(Exception exp) {
 					exp.printStackTrace();
 					ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering Invite to Exist Client User Failed");
@@ -449,20 +449,20 @@ public class SupportUserController {
 				User existUser= userService.findByEmail(email);
 				if(existUser != null && existUser.getUserType() == UserType.VENDOR.getValue()) {
 					HashMap<String, Object> list = new HashMap();
-					
+
 					list.put("statusCode", APIStatusCode.CONFLICT.getValue());
 					list.put("statusMessage", "Failed");
 					list.put("responseMessage", "Client User Record Already Exists");
 					list.put("userId",existUser.getUserId());
 					list.put("userType",existUser.getUserType());
-					
+
 		        	return new ResponseEntity<Object>(list,HttpStatus.OK);
 				}
-				
+
 				if(existUser == null && clientUsers.size() < Constants.MAX_USER_COUNT) {
-					// Add Client and user-org Association 
+					// Add Client and user-org Association
 					ClientUser clientUser = clientService.addClientAndAssociation(organisationId, clientUserType, userRole, clientUserObj);
-			        
+
 			        if (clientUser == null ) {
 			        	ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_FAILED.getValue(),"Failed","Registering New Client User Failed");
 			        	return new ResponseEntity<Object>(responseMessage,HttpStatus.OK);
@@ -473,7 +473,7 @@ public class SupportUserController {
 					        ResponseMessage responseMessage = new ResponseMessage(APIStatusCode.REQUEST_SUCCESS.getValue(),"Success","New Client Record Created Successfully");
 					        // Invite Sent
 					        sendNewClientUserInviteEmail(clientOrg.getOrganisationName(), clientUser , organisationId, clientUserType, userRole);
-					        
+
 					        return new ResponseEntity<Object>(responseMessage,headers, HttpStatus.CREATED);
 			        	} catch(Exception exp) {
 			        		exp.printStackTrace();
@@ -488,10 +488,10 @@ public class SupportUserController {
 			        		"Maximum of "+Constants.MAX_USER_COUNT+" Client User Added in this Organisation");
 					return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 				}
-				
+
 			}
 	    } else if(userType == UserType.VENDOR.getValue()){
-	    	
+
 	    	VendorUser vendorUser = new VendorUser();
 	    	vendorUser.setEmail(email);
 	    	vendorUser.setFirstName(firstName);
@@ -499,9 +499,9 @@ public class SupportUserController {
 	    	vendorUser.setUserType(Constants.UserType.VENDOR.getValue());
 	    	vendorUser.setVendorOrganisationId(organisationId);
 //	    	vendorUser.set(organisationId);
-			
+
 	    	VendorUser existVendorUserObj = vendorService.findByEmail(vendorUser.getEmail());
-			
+
 			if(existVendorUserObj != null ) {
 				ResponseMessage responseMessage = new ResponseMessage(
 						APIStatusCode.CONFLICT.getValue(),
@@ -515,7 +515,7 @@ public class SupportUserController {
 					vendorUser.setAccountStatus(Constants.UserAccountStatus.INVITED.getValue());
 					VendorUser vendor_user = vendorService.createVendorUser(vendorUser);
 					VendorOrganisation vendorOrg = vendorService.getVendorOrgById(vendorUser.getVendorOrganisationId());
-					
+
 					if(vendor_user != null ) {
 						ResponseMessage responseMessage = new ResponseMessage(
 								APIStatusCode.REQUEST_SUCCESS.getValue(),
@@ -523,7 +523,7 @@ public class SupportUserController {
 				        		"Vendor User Account Created Successfully");
 						// Invite Sent
 						sendNewVendorUserInviteEmail(vendor_user , vendorUser.getVendorOrganisationId(), vendorOrg.getCompanyName());
-						
+
 						return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 					} else {
 						ResponseMessage responseMessage = new ResponseMessage(
@@ -548,31 +548,31 @@ public class SupportUserController {
 			return new ResponseEntity<Object>(responseMessage, HttpStatus.OK);
 	    }
 	}
-	
+
 	private void sendExistClientUserInviteEmail(String organisationName, ClientUser clientUser, Integer organisationId, Integer clientUserType,
 			Integer userRole) {
 		// TODO Auto-generated method stub
-		
+
 		HashMap<String, Object> userObj = new HashMap();
-		
+
 		userObj.put("email", clientUser.getEmail());
 		userObj.put("userId", clientUser.getClientId());
 		userObj.put("userType", Constants.UserType.CLIENT.getValue());
 		userObj.put("organisationId", organisationId);
 		userObj.put("organisationName", organisationName);
-		
+
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
-		
+
 		String encryptUser = SecurityAES.encrypt(responseJsonString);
-		
-		
+
+
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
-		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
+		String content = "https://app.condonuity.ca/register/client-accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
-		
+
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
@@ -581,7 +581,7 @@ public class SupportUserController {
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) { 
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -594,27 +594,27 @@ public class SupportUserController {
 	private void sendNewClientUserInviteEmail(String organisationName, ClientUser clientUser, Integer organisationId, Integer clientUserType,
 			Integer userRole) {
 		// TODO Auto-generated method stub
-		
+
 		HashMap<String, Object> userObj = new HashMap();
-		
+
 		userObj.put("email", clientUser.getEmail());
 		userObj.put("userId", clientUser.getClientId());
 		userObj.put("userType", Constants.UserType.CLIENT.getValue());
 		userObj.put("organisationId", organisationId);
 		userObj.put("organisationName", organisationName);
-		
+
 		String responseJsonString = Utils.ClasstoJsonString(userObj);
-		
+
 		String encryptUser = SecurityAES.encrypt(responseJsonString);
-		
-		
+
+
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
-		String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
+		String content = "https://app.condonuity.ca/register/accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
-		
+
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //			springBootEmail.sendEmail(email);
@@ -623,7 +623,7 @@ public class SupportUserController {
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) { 
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -631,30 +631,30 @@ public class SupportUserController {
 		}
 		System.out.println("Done");
 	}
-	
+
 	// Need to change as Registration flow
 		private void sendNewVendorUserInviteEmail(VendorUser vendorUser, Integer organisationId, String organisationName) {
 			// TODO Auto-generated method stub
 
 			HashMap<String, Object> userObj = new HashMap();
-			
+
 			userObj.put("email", vendorUser.getEmail());
 			userObj.put("userId", vendorUser.getUserId());
 			userObj.put("userType", Constants.UserType.VENDOR.getValue());
 			userObj.put("organisationId", organisationId);
 			userObj.put("organisationName", organisationName);
-			
+
 			String responseJsonString = Utils.ClasstoJsonString(userObj);
-			
+
 			String encryptUser = SecurityAES.encrypt(responseJsonString);
-			
+
 			//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
 //			String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
-			String content = "http://condonuitytest.eastus.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
+			String content = "https://app.condonuity.ca/register/accept-invite?email="+vendorUser.getEmail()
 			+"&userType="+Constants.UserType.VENDOR.getValue()
 			+"&hash="+ encryptUser
 			+"&expiry="+Utils.getLinkValidityTime();
-			
+
 			System.out.println("Sending Email...");
 			SpringBootEmail springBootEmail = new SpringBootEmail();
 //				springBootEmail.sendEmail(email);
@@ -663,7 +663,7 @@ public class SupportUserController {
 			} catch (MessagingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) { 
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -671,7 +671,7 @@ public class SupportUserController {
 			}
 			System.out.println("Done");
 		}
-	
+
 	@ApiOperation(value = "Get List of Client/ Vendor Unapproved Organisatiotn")
     @ApiResponses(
             value = {
@@ -680,7 +680,7 @@ public class SupportUserController {
     )
 	@GetMapping("/support/unapproved/organisations")
 	public ResponseEntity<Object> getUnApprovedVendorAndClientList() {
-		
+
 		Map<String, Object> results = supportUserService.getUnApprovedVendorAndClientList();
         if (results == null) {
         	ResponseMessage responseMessage = new ResponseMessage(
@@ -699,11 +699,11 @@ public class SupportUserController {
 //			}
 			list.put("responseMessage", "Un Approved Organisation List Fetched Successfully");
 			list.put("results", results);
-//			
+//
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
         }
 	}
-	
+
 	@ApiOperation(value = "Get All Reviews (Both ACTIVE/INACTIVE) Based On VendorOrganisationId for Support User")
     @ApiResponses(
             value = {
@@ -726,11 +726,11 @@ public class SupportUserController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Vendor Organisation details fetched successfully with All Active /Inactive Reviews");
 			list.put("vendorOrganisation", allReviews);
-			
+
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 	    }
 	}
-	
+
 	@ApiOperation(value = "Get All Client Reviews (Both ACTIVE/INACTIVE) Based On clientOrganisationId for Support User")
     @ApiResponses(
             value = {
@@ -753,9 +753,9 @@ public class SupportUserController {
 			list.put("statusMessage", "Success");
 			list.put("responseMessage", "Client Organisation reviews fetched successfully with All Active /Inactive Reviews");
 			list.put("clientReviews", allReviews);
-			
+
 			return new ResponseEntity<Object>(list, HttpStatus.OK);
 	    }
 	}
-	
+
 }

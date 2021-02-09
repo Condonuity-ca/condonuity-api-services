@@ -24,9 +24,9 @@ public class SpringBootEmail {
 	// Send a normal text email
 	@Autowired
     private JavaMailSender javaMailSender;
-	
+
 	public void sendEmail(String toEmail) {
-		
+
 		javaMailSender = getJavaMailSender();
 
         SimpleMailMessage msg = new SimpleMailMessage();
@@ -40,17 +40,17 @@ public class SpringBootEmail {
         javaMailSender.send(msg);
 
     }
-	
-	
+
+
 	public void sendWelcomeEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException {
-		
+
 		javaMailSender = getJavaMailSender();
 
         MimeMessage msg = javaMailSender.createMimeMessage();
 
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-		
+
         helper.setTo(toEmail);
         msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
@@ -59,30 +59,30 @@ public class SpringBootEmail {
         //helper.setText("Check attachment for image!");
 
         // true = text/html
-//        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" + 
-//        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
-//        		"</div>\r\n" + 
-//        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
-//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" + 
-//        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
+//        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" +
+//        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" +
+//        		"</div>\r\n" +
+//        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" +
+//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" +
+//        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" +
 //        		"</div>"+
 //        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify your email to continue Registration\n"
-//        + content +"</div>\r\n" + 
+//        + content +"</div>\r\n" +
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
         		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Thank you for you registration request</div>\r\n" +
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please verify your email to continue Registration" +"</div>\r\n" +
-        		
+
          "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">VERIFY EMAIL</a>" +"</div>\r\n" +
 //        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
         "<div style=\"font-size: 16px;color:#97a3b4;\">*This request will expire after 7 days \n</div>\r\n" +
-        "</div>\r\n" +				
+        "</div>\r\n" +
 				"</div>", true);
-        
+
 
 		// hard coded a file path
         //FileSystemResource file = new FileSystemResource(new File("path/android.png"));
@@ -93,18 +93,18 @@ public class SpringBootEmail {
         javaMailSender.send(msg);
 
     }
-	
-	
+
+
 //	@Bean
 //	public JavaMailSender getJavaMailSender() {
 //	    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 //	    mailSender.setHost("gator4061.hostgator.com");
 ////		    mailSender.setPort(587); //ttls
 //	    mailSender.setPort(465); //ssl
-//	     
+//
 //	    mailSender.setUsername("mayaclinic@onlinedemo.co");
 //	    mailSender.setPassword("mayaclinic@123");
-//	     
+//
 //	    Properties props = mailSender.getJavaMailProperties();
 //	    props.put("mail.transport.protocol", "smtp");
 //	    props.put("mail.smtp.auth", "true");
@@ -113,22 +113,22 @@ public class SpringBootEmail {
 //	    props.put("mail.smtp.socketFactory.port", "465"); //SSL Port
 //		props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory"); //SSL Factory Class
 //	    props.put("mail.debug", "true");
-//	     
+//
 //	    return mailSender;
 //	}
-	
+
 	@Bean
 	public JavaMailSender getJavaMailSender() {
 	    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 	    mailSender.setHost("smtp.gmail.com");
 //		    mailSender.setPort(587); //ttls
 	    mailSender.setPort(465); //ssl
-	     
+
 //	    mailSender.setUsername("condonuitydev@gmail.com");
 //	    mailSender.setPassword("yixtxkshnfaykpsh");
 	    mailSender.setUsername("No-Reply@condonuity.ca");
 	    mailSender.setPassword("xzawboabvqykafpv");
-	     
+
 	    Properties props = mailSender.getJavaMailProperties();
 	    props.put("mail.transport.protocol", "smtp");
 	    props.put("mail.smtp.auth", "true");
@@ -137,7 +137,7 @@ public class SpringBootEmail {
 	    props.put("mail.smtp.socketFactory.port", "465"); //SSL Port
 		props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory"); //SSL Factory Class
 	    props.put("mail.debug", "true");
-	     
+
 	    return mailSender;
 	}
 
@@ -150,7 +150,7 @@ public class SpringBootEmail {
 
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-		
+
         helper.setTo(toEmail);
         msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Reset your password");
@@ -161,31 +161,31 @@ public class SpringBootEmail {
         // true = text/html
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Reset your password</div>\r\n" +
         		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">We've received your request to reset your password related to the email address: (<a style=\"color:#d84d34;\">"+ toEmail +"</a>) </div>\r\n" +
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Please click the button to reset your password" +"</div>\r\n" +
-        		
+
          "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">RESET PASSWORD</a>" +"</div>\r\n" +
 //        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
         "<div style=\"font-size: 16px;color:#97a3b4;\">*This request will expire after 7 days \n</div>\r\n" +
-        "</div>\r\n" +				
+        "</div>\r\n" +
 				"</div>", true);
 
         javaMailSender.send(msg);
 	}
-	
+
 public void sendInviteAcceptEmailWithAttachment(String toEmail, String username, String organisationName, String content) throws MessagingException, IOException {
-		
+
 		javaMailSender = getJavaMailSender();
 
         MimeMessage msg = javaMailSender.createMimeMessage();
 
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-		
+
         helper.setTo(toEmail);
         msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
@@ -194,30 +194,30 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
         //helper.setText("Check attachment for image!");
 
         // true = text/html
-//        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" + 
-//        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" + 
-//        		"</div>\r\n" + 
-//        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" + 
-//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" + 
-//        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" + 
+//        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" +
+//        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" +
+//        		"</div>\r\n" +
+//        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" +
+//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" +
+//        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" +
 //        		"</div>"+
 //        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify your email to continue Registration\n"
-//        + content +"</div>\r\n" + 
+//        + content +"</div>\r\n" +
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
         		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+username+"</div>\r\n" +
 				"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">You have received an invitation from "+organisationName +"</div>\r\n" +
-        		
+
          "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ content +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">ACCEPT INVITE</a>" +"</div>\r\n" +
 //        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
         "<div style=\"font-size: 16px;color:#97a3b4;\">This request will expire after 7 days \n</div>\r\n" +
-        "</div>\r\n" +				
+        "</div>\r\n" +
 				"</div>", true);
-        
+
 
 		// hard coded a file path
         //FileSystemResource file = new FileSystemResource(new File("path/android.png"));
@@ -240,7 +240,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // true = multipart message
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-				
+
 		        helper.setTo(userEmail);
 		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject("User Account Status Update");
@@ -251,22 +251,22 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        // true = text/html
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+username+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your User Account Status Update Alert for following Organisations, \n"+String.join(", ", organisationName) +"</div>\r\n" +
-		        		
+
 		         "<div style=\"margin-top:40px;background:#fff;margin-bottom:40px;\"><a style=\"min-height:40px;color:#d84d34;padding:20px 10px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
 		        "<div style=\"font-size: 16px;color:#97a3b4;\">do not reply to this email \n</div>\r\n" +
-		        "</div>\r\n" +				
+		        "</div>\r\n" +
 						"</div>", true);
 
 		        javaMailSender.send(msg);
 	}
-	
+
 	public void sendOrganisationAlertEmailForRemovalFromSystem(String userEmail, String organisationName,
 			String content) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
@@ -277,7 +277,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // true = multipart message
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-				
+
 		        helper.setTo(userEmail);
 		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject("Organisation Account Status Update");
@@ -288,22 +288,22 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        // true = text/html
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+organisationName+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your Organisation Account Status Update Alert \n</div>\r\n" +
-		        		
+
 		         "<div style=\"margin-top:40px;background:#fff;margin-bottom:40px;\"><a style=\"min-height:40px;color:#d84d34;padding:20px 10px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
 		        "<div style=\"font-size: 16px;color:#97a3b4;\">do not reply to this email \n</div>\r\n" +
-		        "</div>\r\n" +				
+		        "</div>\r\n" +
 						"</div>", true);
 
 		        javaMailSender.send(msg);
 	}
-	
+
 	public void SendOrganisationAlertForApprovalFromSystem(String userEmail, String organisationName,
 			String content, String subject) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
@@ -314,7 +314,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // true = multipart message
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-				
+
 		        helper.setTo(userEmail);
 		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject(subject);
@@ -323,7 +323,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        String loginURL = "http://condonuitytest.eastus.cloudapp.azure.com/"; 
+		        String loginURL = "https://app.condonuity.ca/";
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
 		        if ( content.toLowerCase().contains("approved")) {
@@ -332,23 +332,23 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        	loginURLContent = "";
 		        }
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+organisationName+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your Organisation Account Status Update Alert \n</div>\r\n" +
-		        		
+
 		         "<div style=\"margin-top:40px;background:#fff;margin-bottom:40px;\"><a style=\"min-height:40px;color:#d84d34;padding:20px 10px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
 				loginURLContent+
 		        "<div style=\"font-size: 16px;color:#97a3b4;\">do not reply to this email \n</div>\r\n" +
-		        "</div>\r\n" +				
+		        "</div>\r\n" +
 						"</div>", true);
 
 		        javaMailSender.send(msg);
 	}
-	
+
 	public void SendUserAlertForApprovalFromSystem(String userEmail, String username, List<String> organisationName,
 			String content, String subject) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
@@ -359,14 +359,14 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // true = multipart message
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-				
+
 		        helper.setTo(userEmail);
 		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject(subject);
 
 		        // default = text/plain
 		        //helper.setText("Check attachment for image!");
-		        String loginURL = "http://condonuitytest.eastus.cloudapp.azure.com/";
+		        String loginURL = "https://app.condonuity.ca/";
 		        // true = text/html
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
@@ -376,24 +376,24 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        	loginURLContent = "";
 		        }
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+username+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Your User Account Status Update Alert for following Organisations, \n"+String.join(", ", organisationName) +"</div>\r\n" +
-		        		
+
 					 "<div style=\"margin-top:40px;background:#fff;margin-bottom:40px;\"><a style=\"min-height:40px;color:#d84d34;padding:20px 10px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
 					// "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
 					 loginURLContent+
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
 		        "<div style=\"font-size: 16px;color:#97a3b4;\">do not reply to this email \n</div>\r\n" +
-		        "</div>\r\n" +				
+		        "</div>\r\n" +
 						"</div>", true);
 
 		        javaMailSender.send(msg);
 	}
-	
+
 	public void sendUnreadNotificationAlertNotification(String userEmail, String username, long notificationCount, String organisationName,
 			String content, String subject) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
@@ -404,7 +404,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // true = multipart message
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-				
+
 		        helper.setTo(userEmail);
 		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject(subject);
@@ -413,24 +413,24 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        String loginURL = "http://condonuitytest.eastus.cloudapp.azure.com/"; 
+		        String loginURL = "https://app.condonuity.ca/";
 		        String header = "Notifications Alert";
 		        String loginURLContent = "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" ;
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\"http://condonuitytest.eastus.cloudapp.azure.com/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
 		        		"<div style=\"font-size:16px;color:#97a3b4;line-height:32px;padding:2px 20px;\">Hi, "+username+"</div>\r\n" +
 						"<div style=\"font-size: 16px;margin-top:30px;color:#373F49;\">Unread Notification Alert From "+organisationName+"\n</div>\r\n" +
-		        		
+
 		         "<div style=\"margin-top:40px;background:#fff;margin-bottom:40px;\"><a style=\"min-height:40px;color:#d84d34;padding:20px 10px;text-decoration:none\">"+content+"</a>" +"</div>\r\n" +
 //		        "<div style=\"font-size: 16px;color:#97a3b4;\">Thanks,\r\n\nCondonuity Team \n</div>\r\n" +
 				loginURLContent+
 		        "<div style=\"font-size: 16px;color:#97a3b4;\">do not reply to this email \n</div>\r\n" +
-		        "</div>\r\n" +				
+		        "</div>\r\n" +
 						"</div>", true);
 
 		        javaMailSender.send(msg);
 	}
-} 
+}
