@@ -1,5 +1,6 @@
 package tech.torbay.clientsservice.service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +21,7 @@ import com.google.common.collect.Lists;
 
 import tech.torbay.clientsservice.Utils.Utils;
 import tech.torbay.clientsservice.constants.Constants;
+import tech.torbay.clientsservice.constants.Constants.DeleteStatus;
 import tech.torbay.clientsservice.constants.Constants.NotificationType;
 import tech.torbay.clientsservice.constants.Constants.TaskStatus;
 import tech.torbay.clientsservice.constants.Constants.UserAccountStatus;
@@ -70,6 +74,7 @@ import tech.torbay.clientsservice.repository.UserWishListRepository;
 import tech.torbay.clientsservice.repository.VendorCategoryRatingsRepository;
 import tech.torbay.clientsservice.repository.VendorOrganisationRepository;
 import tech.torbay.clientsservice.repository.VendorUserRepository;
+import tech.torbay.clientsservice.email.SpringBootEmail;
 
 @Component
 public class ClientService {
@@ -1685,7 +1690,55 @@ public class ClientService {
 		// TODO Auto-generated method stub
 		List<ClientUser> clientUsers = clientUserRepository.findAllActiveClientUser();
 		
+		for(ClientUser clientUser : clientUsers) {
+			List<ClientAssociation> clientAssociations = clientAssociationRepository.findAllByClientId(clientUser.getClientId());
+			
+			for(ClientAssociation clientAssociation : clientAssociations) {
+				ClientOrganisation clientOrg = clientOrganisationRepository.findByClientOrganisationId(clientAssociation.getClientOrganisationId());
+				if(clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() && clientOrg.getDeleteStatus() ==  DeleteStatus.ACTIVE.getValue()) {
+					List<Map<String, Object>> notifications = getClientNotifications(clientUser.getClientId(), clientOrg.getClientOrganisationId());
+					
+					sendUnreadNotificationAlertNotification(clientUser, getCountOfUnreadMessages(notifications), clientOrg);
+				}
+			}
+			
+		}
 		
+	}
+	
+	private long getCountOfUnreadMessages(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		long countBigCustomers = list
+				  .stream()
+				  .filter(notification -> notification.get("isViewed").toString().equals("false"))
+				  .count();
+		
+		return countBigCustomers;
+	}
+	
+	private void sendUnreadNotificationAlertNotification(ClientUser clientUser, long notificationCount,ClientOrganisation clientOrganisation) {
+		// TODO Auto-generated method stub
+		if(notificationCount == 0) {
+			return;
+		}
+		SpringBootEmail springBootEmail = new SpringBootEmail();
+		
+		try {
+			
+			String content, subject;
+			subject = "Notifications Received";
+			content = "You have "+notificationCount+" unread notifications , log in to Condonuity! ";
+			springBootEmail.sendUnreadNotificationAlertNotification(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), notificationCount, clientOrganisation.getOrganisationName() , content, subject);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");
 	}
 }
 

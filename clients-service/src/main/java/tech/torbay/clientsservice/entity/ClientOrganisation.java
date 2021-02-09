@@ -26,6 +26,7 @@ import org.hibernate.annotations.NaturalIdCache;
 import javax.persistence.JoinColumn;
 
 import tech.torbay.clientsservice.constants.Constants;
+import tech.torbay.clientsservice.constants.Constants.DeleteStatus;
 
 @Entity(name = "ClientOrganisation")
 @Table(name = "client_organisation")
@@ -63,8 +64,26 @@ public class ClientOrganisation {
     private String managerName = "";
     private String managerEmail = "";
     private String managerPhone = "";
+    private Integer activeStatus = 0;
+    private Integer deleteStatus = 0;
     
-    @Basic(optional = false)
+    public Integer getActiveStatus() {
+		return activeStatus;
+	}
+
+	public void setActiveStatus(Integer activeStatus) {
+		this.activeStatus = activeStatus;
+	}
+
+	public Integer getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(Integer deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+
+	@Basic(optional = false)
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
     

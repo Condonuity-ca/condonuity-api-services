@@ -2522,6 +2522,9 @@ public class VendorService {
 	
 	private void sendUnreadNotificationAlertNotification(VendorUser vendorUser, long notficationCount) {
 		// TODO Auto-generated method stub
+		if(notficationCount == 0) {
+			return;
+		}
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		
 		try {

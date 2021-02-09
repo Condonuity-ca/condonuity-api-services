@@ -51,7 +51,7 @@ public class SpringBootEmail {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
         // default = text/plain
@@ -103,7 +103,7 @@ public class SpringBootEmail {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
@@ -186,7 +186,7 @@ public class SpringBootEmail {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Reset your password");
 
         // default = text/plain
@@ -221,7 +221,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
         // default = text/plain

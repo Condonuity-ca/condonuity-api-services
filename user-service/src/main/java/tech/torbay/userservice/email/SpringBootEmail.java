@@ -52,7 +52,7 @@ public class SpringBootEmail {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
         // default = text/plain
@@ -152,7 +152,7 @@ public class SpringBootEmail {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Reset your password");
 
         // default = text/plain
@@ -187,7 +187,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 		
         helper.setTo(toEmail);
-        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
         // default = text/plain
@@ -242,7 +242,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 				
 		        helper.setTo(userEmail);
-		        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject("User Account Status Update");
 
 		        // default = text/plain
@@ -279,7 +279,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 				
 		        helper.setTo(userEmail);
-		        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject("Organisation Account Status Update");
 
 		        // default = text/plain
@@ -316,7 +316,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 				
 		        helper.setTo(userEmail);
-		        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject(subject);
 
 		        // default = text/plain
@@ -361,7 +361,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 				
 		        helper.setTo(userEmail);
-		        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject(subject);
 
 		        // default = text/plain
@@ -406,7 +406,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 				
 		        helper.setTo(userEmail);
-		        msg.setFrom(new InternetAddress("condonuitydev@gmail.com", "Condonuity"));
+		        msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
 		        helper.setSubject(subject);
 
 		        // default = text/plain
