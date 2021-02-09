@@ -2397,9 +2397,10 @@ public class VendorService {
 			if(notification.getUserId() == 0) {
 				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getOrganisationId() != 0) {
 					ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(notification.getOrganisationId());
-					
-					sendorOrganisationName = clientOrganisation.getOrganisationName();
-					sendorLegalCompanyName = clientOrganisation.getManagementCompany();
+					if(clientOrganisation != null) {
+						sendorOrganisationName = clientOrganisation.getOrganisationName();
+						sendorLegalCompanyName = clientOrganisation.getManagementCompany();						
+					}
 				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getOrganisationId() != 0) {
 					VendorOrganisation vendorOrganisation = vendorOrganisationRepository.findByVendorOrganisationId(notification.getOrganisationId());
 					if(vendorOrganisation != null) {
@@ -2410,13 +2411,16 @@ public class VendorService {
 			} else {
 				if(notification.getUserType() == Constants.UserType.CLIENT.getValue() && notification.getUserId() != 0) {
 					ClientUser clientUser = clientUserRepository.findByClientId(notification.getUserId());
-					
-					sendorFirstName = clientUser.getFirstName();
-					sendorLastName = clientUser.getLastName();
+					if(clientUser != null) {
+						sendorFirstName = clientUser.getFirstName();
+						sendorLastName = clientUser.getLastName();
+					}
 				} else if(notification.getUserType() == Constants.UserType.VENDOR.getValue() && notification.getUserId() != 0) {
 					VendorUser vendorUser = vendorUserRepository.findByUserId(notification.getUserId());
-					sendorFirstName = vendorUser.getFirstName();
-					sendorLastName = vendorUser.getLastName();
+					if(vendorUser != null) {
+						sendorFirstName = vendorUser.getFirstName();
+						sendorLastName = vendorUser.getLastName();
+					}
 				} 
 			}
 			
