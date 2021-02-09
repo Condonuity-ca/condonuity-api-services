@@ -983,7 +983,6 @@ public class ClientController {
 	@GetMapping("/client/notifications/{clientId}/{clientOrganisationId}")
 	public ResponseEntity<Object> getClientNotifications(@PathVariable("clientId") Integer clientId, @PathVariable("clientOrganisationId") Integer clientOrganisationId) {
 		List<Map<String,Object>>list = clientService.getClientNotifications(clientId, clientOrganisationId);
-		checkUnreadClientNotifications();
 		HashMap<String, Object> response = new HashMap();
 		if(list != null) {
 			long count = getCountOfUnreadMessages(list);
