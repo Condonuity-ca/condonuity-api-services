@@ -1059,6 +1059,18 @@ public class ClientController {
 		}
 	}
 	
+	@GetMapping("/runcronjobmanually")
+	public ResponseEntity<Object> RunCron() {
+		HashMap<String, Object> response = new HashMap();
+		response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
+		response.put("statusMessage", "Success");
+		response.put("responseMessage", "start running");
+		clientService.checkUnreadClientNotifications();
+		
+		return new ResponseEntity<Object>(response, HttpStatus.OK);
+		
+	}
+	
 	private void checkUnreadClientNotifications() {
 		// TODO Auto-generated method stub
 		clientService.checkUnreadClientNotifications();

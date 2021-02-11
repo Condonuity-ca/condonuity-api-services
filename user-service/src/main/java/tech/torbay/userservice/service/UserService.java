@@ -272,9 +272,13 @@ public class UserService {
 				} 
 				
 				List<VendorOrganisation> vendorOrgsAll = vendorOrganisationRepository.findAllByKeyword(keyword);
+				List<AvailableVendorProfiles> vendorOrgsAll_VAP = availableVendorProfilesRepository.findAllByKeywordVAP(keyword);
 				
 				for(VendorOrganisation vendorOrg : vendorOrgsAll) {
 			        result.add(getVendorOrganisationObj(clientOrganisationId, vendorOrg));
+				}
+				for(AvailableVendorProfiles vendorOrg : vendorOrgsAll_VAP) {
+			        result.add(getAvailableVendorOrganisationProfileObj(vendorOrg));
 				}
 		    	
 				if(tagContainedVendors != null && tagContainedVendors.size() > 0) {
