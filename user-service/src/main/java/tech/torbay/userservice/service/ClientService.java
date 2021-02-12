@@ -1131,6 +1131,8 @@ public class ClientService {
 		ClientUser modifiedByClientUser = clientUserRepository.findByClientId(modifiedByUserId);
 		if(modifiedByClientUser != null) {
 			modifiedBy = modifiedByClientUser.getFirstName()+" "+modifiedByClientUser.getLastName();
+		} else {
+			modifiedBy = "Support User";
 		}
 		ClientOrganisation clientOrganisation = clientOrganisationRepository.findByClientOrganisationId(clientOrgId);
 		notification.setUserType(UserType.CLIENT.getValue());

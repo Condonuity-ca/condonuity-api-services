@@ -1484,8 +1484,12 @@ public class VendorService {
 		notification.setUserType(UserType.VENDOR.getValue());
 		notification.setUserId(vendorUserId);
 		notification.setOrganisationId(vendorOrgId);
-		
-		String modifiedBy = modifiedbyVendoruser.getFirstName()+" "+modifiedbyVendoruser.getLastName();
+		String modifiedBy = "";
+		if(modifiedbyVendoruser != null) {
+			modifiedBy = modifiedbyVendoruser.getFirstName()+" "+modifiedbyVendoruser.getLastName();
+		} else {
+			modifiedBy = "Support User";
+		}
 		String username = vendoruser.getFirstName()+" "+vendoruser.getLastName();
 		if(username.trim().length() == 0) {
 			username = "( with Email : "+vendoruser.getEmail() +" )";
