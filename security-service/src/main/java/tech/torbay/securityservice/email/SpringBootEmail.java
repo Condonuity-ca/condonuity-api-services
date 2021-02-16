@@ -19,10 +19,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import tech.torbay.securityservice.config.ConfigProperties;
+
 public class SpringBootEmail {
 	// Send a normal text email
 	@Autowired
     private JavaMailSender javaMailSender;
+	@Autowired
+    private ConfigProperties configProperties;
 
 	public void sendEmail(String toEmail) {
 
@@ -69,7 +73,7 @@ public class SpringBootEmail {
 //        + content +"</div>\r\n" +
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -107,7 +111,7 @@ public class SpringBootEmail {
         helper.setSubject("Welcome to Condonuity");
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -195,7 +199,7 @@ public class SpringBootEmail {
         // true = text/html
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Reset your password</div>\r\n" +
@@ -239,7 +243,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 //        + content +"</div>\r\n" +
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\"https://app.condonuity.ca/assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +

@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import tech.torbay.userservice.Utils.Utils;
+import tech.torbay.userservice.config.ConfigProperties;
 import tech.torbay.userservice.config.SecurityAES;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.APIStatusCode;
@@ -56,6 +57,8 @@ public class SupportUserController {
 	private UserService userService;
 	@Autowired
 	private VendorService vendorService;
+	@Autowired
+    private ConfigProperties configProperties;
 
 	@ApiOperation(value = "Organisation Activation / De-Activation implementation by Support User and alerts using Email")
     @ApiResponses(
@@ -568,7 +571,7 @@ public class SupportUserController {
 
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
-		String content = "https://app.condonuity.ca/register/client-accept-invite?email="+clientUser.getEmail()
+		String content = configProperties.getBaseURL()+"register/client-accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
@@ -610,7 +613,7 @@ public class SupportUserController {
 
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
-		String content = "https://app.condonuity.ca/register/accept-invite?email="+clientUser.getEmail()
+		String content = configProperties.getBaseURL()+"register/accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
@@ -650,7 +653,7 @@ public class SupportUserController {
 
 			//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
 //			String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
-			String content = "https://app.condonuity.ca/register/accept-invite?email="+vendorUser.getEmail()
+			String content = configProperties.getBaseURL()+"register/accept-invite?email="+vendorUser.getEmail()
 			+"&userType="+Constants.UserType.VENDOR.getValue()
 			+"&hash="+ encryptUser
 			+"&expiry="+Utils.getLinkValidityTime();

@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.securityservice.config.ConfigProperties;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
@@ -94,6 +95,8 @@ public class UserController {
 	private VendorService vendorService;
 	@Autowired
 	private SupportService supportService;
+	@Autowired
+    private ConfigProperties configProperties;
 
 	@ApiOperation(value = "Fetch A User Basic Details in Condonuity Application")
     @ApiResponses(
@@ -937,7 +940,7 @@ public class UserController {
 
 		//String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/create-password?email="+email
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/create-password?email="+email
-		String content = "https://app.condonuity.ca/register/create-password?email="+email
+		String content = configProperties.getBaseURL()+"register/create-password?email="+email
 				+"&hash="+encryptUser
 				+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);

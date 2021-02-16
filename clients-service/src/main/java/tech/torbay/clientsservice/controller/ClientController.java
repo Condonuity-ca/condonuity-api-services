@@ -24,6 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.clientsservice.config.ConfigProperties;
 import tech.torbay.clientsservice.constants.Constants.APIStatusCode;
 import tech.torbay.clientsservice.entity.ClientAmenities;
 import tech.torbay.clientsservice.entity.ClientBuildingRepository;
@@ -32,7 +33,6 @@ import tech.torbay.clientsservice.entity.ClientOrganisation;
 import tech.torbay.clientsservice.entity.ClientTask;
 import tech.torbay.clientsservice.entity.ClientTaskComments;
 import tech.torbay.clientsservice.entity.ClientUser;
-import tech.torbay.clientsservice.entity.Notification;
 import tech.torbay.clientsservice.entity.OrganisationPayment;
 import tech.torbay.clientsservice.entity.UserWishList;
 import tech.torbay.clientsservice.service.ClientService;
@@ -837,7 +837,6 @@ public class ClientController {
     )
 	@GetMapping("/client/org/tasks/{clientOrgId}")
 	public ResponseEntity<Object> getClientTasks(@PathVariable("clientOrgId") Integer clientOrgId) {
-		
 		List<Map<String, Object>> clientTasks= clientService.getClientTasks(clientOrgId);
         if (clientTasks == null) {
         	ResponseMessage responseMessage = new ResponseMessage(

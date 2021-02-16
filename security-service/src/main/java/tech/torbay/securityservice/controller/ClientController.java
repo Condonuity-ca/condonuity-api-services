@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,6 +35,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.securityservice.config.ConfigProperties;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
@@ -69,6 +72,8 @@ public class ClientController {
     UserService userService;
     @Autowired
     VendorService vendorService;
+    @Autowired
+    private ConfigProperties configProperties;
 
 	/*New APIs Structure*/
 
@@ -757,7 +762,7 @@ public class ClientController {
 
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+clientUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/register-organization?email="+clientUser.getEmail()
-		String content = "https://app.condonuity.ca/register/register-organization?email="+clientUser.getEmail()
+		String content = configProperties.getBaseURL()+"register/register-organization?email="+clientUser.getEmail()
 		+"&hash="+ encryptClientUser
 		+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 //		System.out.println("contentAES Encrypt->"+content);
@@ -800,7 +805,7 @@ public class ClientController {
 
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/client-accept-invite?email="+clientUser.getEmail()
-		String content = "https://app.condonuity.ca/register/client-accept-invite?email="+clientUser.getEmail()
+		String content = configProperties.getBaseURL()+"register/client-accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
@@ -844,7 +849,7 @@ public class ClientController {
 
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+clientUser.getEmail()
-		String content = "https://app.condonuity.ca/register/accept-invite?email="+clientUser.getEmail()
+		String content = configProperties.getBaseURL()+"register/accept-invite?email="+clientUser.getEmail()
 		+"&userType="+Constants.UserType.CLIENT.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();

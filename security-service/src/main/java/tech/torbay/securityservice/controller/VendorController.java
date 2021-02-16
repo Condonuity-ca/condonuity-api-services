@@ -33,6 +33,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import tech.torbay.securityservice.config.ConfigProperties;
 import tech.torbay.securityservice.config.SecurityAES;
 import tech.torbay.securityservice.constants.Constants;
 import tech.torbay.securityservice.constants.Constants.APIStatusCode;
@@ -64,6 +65,8 @@ public class VendorController {
 	private UserService userService;
 	@Autowired
 	private ClientService clientService;
+	@Autowired
+    private ConfigProperties configProperties;
 
 	@ApiOperation(value = "New Vendor Registration")
     @ApiResponses(
@@ -683,7 +686,7 @@ public class VendorController {
 
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/register-organization?email="+vendorUser.getEmail()
-		String content = "https://app.condonuity.ca/register/register-organization?email="+vendorUser.getEmail()
+		String content = configProperties.getBaseURL()+"register/register-organization?email="+vendorUser.getEmail()
 		+"&hash="+ encryptVendorUser
 		+"&expiry="+Utils.getLinkValidityTime(); // AES algorithm
 
@@ -724,7 +727,7 @@ public class VendorController {
 
 //		String content = "http://condonuityappdev.eastus2.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
 //		String content = "http://condonuityuat.canadacentral.cloudapp.azure.com/register/accept-invite?email="+vendorUser.getEmail()
-		String content = "https://app.condonuity.ca/register/accept-invite?email="+vendorUser.getEmail()
+		String content = configProperties.getBaseURL()+"register/accept-invite?email="+vendorUser.getEmail()
 		+"&userType="+Constants.UserType.VENDOR.getValue()
 		+"&hash="+ encryptUser
 		+"&expiry="+Utils.getLinkValidityTime();
