@@ -782,7 +782,7 @@ public class UserController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendWelcomeEmailWithAttachment(email,"Sample_Welcome_Email"+Utils.getLinkValidityTime());
+			springBootEmail.sendWelcomeEmailWithAttachment(email,"Sample_Welcome_Email"+Utils.getLinkValidityTime(), configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -950,7 +950,7 @@ public class UserController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendPasswordResetEmailWithAttachment(email, content);
+			springBootEmail.sendPasswordResetEmailWithAttachment(email, content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

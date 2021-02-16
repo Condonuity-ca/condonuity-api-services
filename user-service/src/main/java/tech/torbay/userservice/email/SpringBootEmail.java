@@ -26,8 +26,6 @@ public class SpringBootEmail {
 	// Send a normal text email
 	@Autowired
     private JavaMailSender javaMailSender;
-	@Autowired
-    private ConfigProperties configProperties;
 
 	public void sendEmail(String toEmail) {
 
@@ -46,7 +44,7 @@ public class SpringBootEmail {
     }
 
 
-	public void sendWelcomeEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException {
+	public void sendWelcomeEmailWithAttachment(String toEmail, String content, String baseURL) throws MessagingException, IOException {
 
 		javaMailSender = getJavaMailSender();
 
@@ -74,7 +72,7 @@ public class SpringBootEmail {
 //        + content +"</div>\r\n" +
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -146,7 +144,7 @@ public class SpringBootEmail {
 	}
 
 
-	public void sendPasswordResetEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException  {
+	public void sendPasswordResetEmailWithAttachment(String toEmail, String content, String baseURL) throws MessagingException, IOException  {
 		// TODO Auto-generated method stub
 		javaMailSender = getJavaMailSender();
 
@@ -165,7 +163,7 @@ public class SpringBootEmail {
         // true = text/html
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Reset your password</div>\r\n" +
@@ -181,7 +179,7 @@ public class SpringBootEmail {
         javaMailSender.send(msg);
 	}
 
-public void sendInviteAcceptEmailWithAttachment(String toEmail, String username, String organisationName, String content) throws MessagingException, IOException {
+public void sendInviteAcceptEmailWithAttachment(String toEmail, String username, String organisationName, String content, String baseURL) throws MessagingException, IOException {
 
 		javaMailSender = getJavaMailSender();
 
@@ -194,22 +192,8 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
         msg.setFrom(new InternetAddress("no-reply@condonuity.ca", "Condonuity"));
         helper.setSubject("Welcome to Condonuity");
 
-        // default = text/plain
-        //helper.setText("Check attachment for image!");
-
-        // true = text/html
-//        helper.setText("<div style=\"width: 100%; border: 1px solid gray;\">\r\n" +
-//        		"<div style=\"padding: 1em; color: white; background-color: lightgrey; clear: left; text-align: left;\"><img src=\"http://torbay.tech/wp-content/uploads/2018/01/torbay-dark-3-300x101.png\" width=\"180\" height=\"80\" /></div>\r\n" +
-//        		"</div>\r\n" +
-//        		"<div style=\"border-left: 0px solid gray; padding: 1em; overflow: hidden;\">\r\n" +
-//        		"<div style=\"padding-top: 20px; font-size: 30px; font-weight: bold;\">Welcome to Condonuity</div>\r\n" +
-//        		"<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Thank you for Registering in Condonuity Application..</div>\r\n" +
-//        		"</div>"+
-//        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify your email to continue Registration\n"
-//        + content +"</div>\r\n" +
-//        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -235,7 +219,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 
 	public void sendUserAlertEmailForRemovalFromSystem(String userEmail, String username, List<String> organisationName,
-			String content) throws MessagingException, IOException {
+			String content, String baseURL) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 				javaMailSender = getJavaMailSender();
@@ -255,7 +239,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        // true = text/html
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
@@ -272,7 +256,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 	}
 
 	public void sendOrganisationAlertEmailForRemovalFromSystem(String userEmail, String organisationName,
-			String content) throws MessagingException, IOException {
+			String content, String baseURL) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 				javaMailSender = getJavaMailSender();
@@ -292,7 +276,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        // true = text/html
 
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Alert From Condonuity</div>\r\n" +
@@ -309,7 +293,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 	}
 
 	public void SendOrganisationAlertForApprovalFromSystem(String userEmail, String organisationName,
-			String content, String subject) throws MessagingException, IOException {
+			String content, String subject, String baseURL) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 				javaMailSender = getJavaMailSender();
@@ -327,7 +311,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        String loginURL = configProperties.getBaseURL();
+		        String loginURL = baseURL;
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
 		        if ( content.toLowerCase().contains("approved")) {
@@ -336,7 +320,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        	loginURLContent = "";
 		        }
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
@@ -354,7 +338,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 	}
 
 	public void SendUserAlertForApprovalFromSystem(String userEmail, String username, List<String> organisationName,
-			String content, String subject) throws MessagingException, IOException {
+			String content, String subject, String baseURL) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 				javaMailSender = getJavaMailSender();
@@ -370,7 +354,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 
 		        // default = text/plain
 		        //helper.setText("Check attachment for image!");
-		        String loginURL = configProperties.getBaseURL();
+		        String loginURL = baseURL;
 		        // true = text/html
 		        String header = content.toLowerCase().contains("approved") ? "Your account is now active!":"Your corporation account validation is unsuccessful";
 		        String loginURLContent = "";
@@ -380,7 +364,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        	loginURLContent = "";
 		        }
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +
@@ -399,7 +383,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 	}
 
 	public void sendUnreadNotificationAlertNotification(String userEmail, String username, long notificationCount, String organisationName,
-			String content, String subject) throws MessagingException, IOException {
+			String content, String subject, String baseURL) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 				javaMailSender = getJavaMailSender();
@@ -417,11 +401,11 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        String loginURL = configProperties.getBaseURL();
+		        String loginURL = baseURL;
 		        String header = "Notifications Alert";
 		        String loginURLContent = "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" ;
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +

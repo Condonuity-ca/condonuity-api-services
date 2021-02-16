@@ -19,8 +19,6 @@ public class SpringBootEmail {
 	// Send a normal text email
 	@Autowired
     private JavaMailSender javaMailSender;
-	@Autowired
-    private ConfigProperties configProperties;
 
 	@Bean
 	public JavaMailSender getJavaMailSender() {
@@ -47,7 +45,7 @@ public class SpringBootEmail {
 	}
 
 	public void sendUnreadNotificationAlertNotification(String userEmail, String username, long notificationCount, String organisationName,
-			String content, String subject) throws MessagingException, IOException {
+			String content, String subject, String baseURL) throws MessagingException, IOException {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 				javaMailSender = getJavaMailSender();
@@ -65,11 +63,11 @@ public class SpringBootEmail {
 		        //helper.setText("Check attachment for image!");
 
 		        // true = text/html
-		        String loginURL = configProperties.getBaseURL();
+		        String loginURL = baseURL;
 		        String header = "Notifications Alert";
 		        String loginURLContent = "<div style=\"margin-top:40px;margin-bottom:40px;\"><a href="+ loginURL +" style=\"background:#d84d34;height:40px;color:#fff;padding:20px 40px;text-decoration:none\">Login</a>" +"</div>\r\n" ;
 		        helper.setText("<div style=\"width: 100%;\">\r\n" +
-		        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+		        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
 		        		"</div>\r\n" +
 		        		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
 		        		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">"+header+"</div>\r\n" +

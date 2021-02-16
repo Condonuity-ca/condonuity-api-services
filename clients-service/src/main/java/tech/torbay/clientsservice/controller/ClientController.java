@@ -45,6 +45,8 @@ public class ClientController {
 
     @Autowired
     ClientService clientService;
+    @Autowired
+    ConfigProperties configProperties;
     
     private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
@@ -1064,7 +1066,7 @@ public class ClientController {
 		response.put("statusCode", APIStatusCode.REQUEST_SUCCESS.getValue());
 		response.put("statusMessage", "Success");
 		response.put("responseMessage", "start running");
-		clientService.checkUnreadClientNotifications();
+		clientService.checkUnreadClientNotifications(configProperties.getBaseURL());
 		
 		return new ResponseEntity<Object>(response, HttpStatus.OK);
 		
@@ -1072,6 +1074,6 @@ public class ClientController {
 	
 	private void checkUnreadClientNotifications() {
 		// TODO Auto-generated method stub
-		clientService.checkUnreadClientNotifications();
+		clientService.checkUnreadClientNotifications(configProperties.getBaseURL());
 	}
 }

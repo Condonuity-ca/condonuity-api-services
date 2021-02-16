@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 import tech.torbay.userservice.Utils.Utils;
+import tech.torbay.userservice.config.ConfigProperties;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.DeleteStatus;
 import tech.torbay.userservice.constants.Constants.Invalid;
@@ -163,6 +164,8 @@ public class VendorService {
 	ExternalMessageCommentRepository externalMessageCommentRepository;
 	@Autowired
 	UnclaimedVendorWishListRepository unclaimedVendorWishListRepository;
+	@Autowired
+	ConfigProperties configProperties;
 	
 
 	public List<VendorUser> findAllVendorUsers() {
@@ -2541,7 +2544,7 @@ public class VendorService {
 			subject = "Notifications Received";
 			content = "You have "+notficationCount+" unread notifications , log in to Condonuity! ";
 			VendorOrganisation vendorOrg = vendorOrganisationRepository.findByVendorOrganisationId(vendorUser.getVendorOrganisationId());
-			springBootEmail.sendUnreadNotificationAlertNotification(vendorUser.getEmail(), vendorUser.getFirstName()+" "+vendorUser.getLastName(), notficationCount, vendorOrg.getCompanyName() , content, subject);
+			springBootEmail.sendUnreadNotificationAlertNotification(vendorUser.getEmail(), vendorUser.getFirstName()+" "+vendorUser.getLastName(), notficationCount, vendorOrg.getCompanyName() , content, subject, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

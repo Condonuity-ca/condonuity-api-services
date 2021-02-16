@@ -1686,7 +1686,7 @@ public class ClientService {
 		notificationRepository.save(notification);
 	}
 
-	public void checkUnreadClientNotifications() {
+	public void checkUnreadClientNotifications(String baseURL) {
 		// TODO Auto-generated method stub
 		List<ClientUser> clientUsers = clientUserRepository.findAllActiveClientUser();
 		
@@ -1698,7 +1698,7 @@ public class ClientService {
 				if(clientOrg.getActiveStatus() == DeleteStatus.ACTIVE.getValue() && clientOrg.getDeleteStatus() ==  DeleteStatus.ACTIVE.getValue()) {
 					List<Map<String, Object>> notifications = getClientNotifications(clientUser.getClientId(), clientOrg.getClientOrganisationId());
 					
-					sendUnreadNotificationAlertNotification(clientUser, getCountOfUnreadMessages(notifications), clientOrg);
+					sendUnreadNotificationAlertNotification(clientUser, getCountOfUnreadMessages(notifications), clientOrg, baseURL);
 				}
 			}
 			
@@ -1716,7 +1716,7 @@ public class ClientService {
 		return countBigCustomers;
 	}
 	
-	private void sendUnreadNotificationAlertNotification(ClientUser clientUser, long notificationCount,ClientOrganisation clientOrganisation) {
+	private void sendUnreadNotificationAlertNotification(ClientUser clientUser, long notificationCount,ClientOrganisation clientOrganisation, String baseURL) {
 		// TODO Auto-generated method stub
 		if(notificationCount == 0) {
 			return;
@@ -1728,7 +1728,7 @@ public class ClientService {
 			String content, subject;
 			subject = "Notifications Received";
 			content = "You have "+notificationCount+" unread notifications , log in to Condonuity! ";
-			springBootEmail.sendUnreadNotificationAlertNotification(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), notificationCount, clientOrganisation.getOrganisationName() , content, subject);
+			springBootEmail.sendUnreadNotificationAlertNotification(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), notificationCount, clientOrganisation.getOrganisationName() , content, subject, baseURL);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

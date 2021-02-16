@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tech.torbay.userservice.config.ConfigProperties;
 import tech.torbay.userservice.constants.Constants;
 import tech.torbay.userservice.constants.Constants.DeleteStatus;
 import tech.torbay.userservice.constants.Constants.OrganisationAccountStatus;
@@ -124,6 +125,8 @@ public class SupportUserService {
 	UserProfileImagesRepository userProfileImagesRepository;
 	@Autowired
 	RegistrationLogsRepository registrationLogsRepository;
+	@Autowired
+	ConfigProperties configProperties;
 	
 	public boolean updateOrganisationApprovalStatus(Integer organisationId, Integer userType, Integer approvalStatus, Integer supportUserId) {
 		// TODO Auto-generated method stub
@@ -468,7 +471,7 @@ public class SupportUserService {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		
 		try {
-			springBootEmail.sendUserAlertEmailForRemovalFromSystem(userEmail, firstName+" "+lastName, organisationName , content);
+			springBootEmail.sendUserAlertEmailForRemovalFromSystem(userEmail, firstName+" "+lastName, organisationName , content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -486,7 +489,7 @@ public class SupportUserService {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		
 		try {
-			springBootEmail.sendOrganisationAlertEmailForRemovalFromSystem(userEmail, organisationName , content);
+			springBootEmail.sendOrganisationAlertEmailForRemovalFromSystem(userEmail, organisationName , content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -504,7 +507,7 @@ public class SupportUserService {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		
 		try {
-			springBootEmail.SendOrganisationAlertForApprovalFromSystem(userEmail, organisationName , content, subject);
+			springBootEmail.SendOrganisationAlertForApprovalFromSystem(userEmail, organisationName , content, subject, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -522,7 +525,7 @@ public class SupportUserService {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		
 		try {
-			springBootEmail.SendUserAlertForApprovalFromSystem(userEmail, firstName+" "+lastName, organisationName , content, subject);
+			springBootEmail.SendUserAlertForApprovalFromSystem(userEmail, firstName+" "+lastName, organisationName , content, subject, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

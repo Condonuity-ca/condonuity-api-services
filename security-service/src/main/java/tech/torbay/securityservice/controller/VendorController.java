@@ -173,7 +173,7 @@ public class VendorController {
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		try {
-			springBootEmail.sendRegistrationAlertForVerificationPending(email, content);
+			springBootEmail.sendRegistrationAlertForVerificationPending(email, content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -695,7 +695,7 @@ public class VendorController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendWelcomeEmailWithAttachment(vendorUser.getEmail(), content);
+			springBootEmail.sendWelcomeEmailWithAttachment(vendorUser.getEmail(), content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -736,7 +736,7 @@ public class VendorController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //			springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendInviteAcceptEmailWithAttachment(vendorUser.getEmail(), vendorUser.getFirstName()+" "+vendorUser.getLastName(),organisationName,content);
+			springBootEmail.sendInviteAcceptEmailWithAttachment(vendorUser.getEmail(), vendorUser.getFirstName()+" "+vendorUser.getLastName(),organisationName,content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

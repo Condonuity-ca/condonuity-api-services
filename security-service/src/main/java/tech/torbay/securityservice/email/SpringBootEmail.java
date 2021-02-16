@@ -12,12 +12,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.web.bind.annotation.RestController;
 
 import tech.torbay.securityservice.config.ConfigProperties;
 
@@ -25,11 +28,9 @@ public class SpringBootEmail {
 	// Send a normal text email
 	@Autowired
     private JavaMailSender javaMailSender;
-	@Autowired
-    private ConfigProperties configProperties;
 
 	public void sendEmail(String toEmail) {
-
+		
 		javaMailSender = getJavaMailSender();
 
         SimpleMailMessage msg = new SimpleMailMessage();
@@ -45,7 +46,7 @@ public class SpringBootEmail {
     }
 
 
-	public void sendWelcomeEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException {
+	public void sendWelcomeEmailWithAttachment(String toEmail, String content, String baseURL) throws MessagingException, IOException {
 
 		javaMailSender = getJavaMailSender();
 
@@ -72,8 +73,9 @@ public class SpringBootEmail {
 //        "<div style=\"padding-top: 40px; padding-left: 80px; font-size: 18px;\">Please verify your email to continue Registration\n"
 //        + content +"</div>\r\n" +
 //        "</div>", true);
+        System.out.println("base URL "+ baseURL);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -97,7 +99,7 @@ public class SpringBootEmail {
 
     }
 
-	public void sendRegistrationAlertForVerificationPending(String toEmail, String content) throws MessagingException, IOException {
+	public void sendRegistrationAlertForVerificationPending(String toEmail, String content, String baseURL) throws MessagingException, IOException {
 
 		javaMailSender = getJavaMailSender();
 
@@ -111,7 +113,7 @@ public class SpringBootEmail {
         helper.setSubject("Welcome to Condonuity");
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +
@@ -180,7 +182,7 @@ public class SpringBootEmail {
 	}
 
 
-	public void sendPasswordResetEmailWithAttachment(String toEmail, String content) throws MessagingException, IOException  {
+	public void sendPasswordResetEmailWithAttachment(String toEmail, String content, String baseURL) throws MessagingException, IOException  {
 		// TODO Auto-generated method stub
 		javaMailSender = getJavaMailSender();
 
@@ -199,7 +201,7 @@ public class SpringBootEmail {
         // true = text/html
 
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Reset your password</div>\r\n" +
@@ -215,7 +217,7 @@ public class SpringBootEmail {
         javaMailSender.send(msg);
 	}
 
-public void sendInviteAcceptEmailWithAttachment(String toEmail, String username, String organisationName, String content) throws MessagingException, IOException {
+public void sendInviteAcceptEmailWithAttachment(String toEmail, String username, String organisationName, String content, String baseURL) throws MessagingException, IOException {
 
 		javaMailSender = getJavaMailSender();
 
@@ -243,7 +245,7 @@ public void sendInviteAcceptEmailWithAttachment(String toEmail, String username,
 //        + content +"</div>\r\n" +
 //        "</div>", true);
         helper.setText("<div style=\"width: 100%;\">\r\n" +
-        		"<div style=\"text-align: center;\"><img src=\""+configProperties.getBaseURL()+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
+        		"<div style=\"text-align: center;\"><img src=\""+baseURL+"assets/images/logos/condo-logo.png\" width=\"227\" height=\"168\" /></div>\r\n" +
         		"</div>\r\n" +
         		"<div style=\"width:60%;background:#f7f7f7;text-align:center;margin:0 auto;padding-top:40px;padding-bottom:50px;border-radius:10px;\">\r\n" +
         		"<div style=\"font-size:30px;font-weight:bold;padding-bottom:30px;color:#373F49;\">Welcome to Condonuity</div>\r\n" +

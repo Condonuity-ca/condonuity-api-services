@@ -646,7 +646,7 @@ public class ClientController {
 		System.out.println("Sending Email...");
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 		try {
-			springBootEmail.sendRegistrationAlertForVerificationPending(email, content);
+			springBootEmail.sendRegistrationAlertForVerificationPending(email, content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -772,7 +772,7 @@ public class ClientController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendWelcomeEmailWithAttachment(clientUser.getEmail(), content);
+			springBootEmail.sendWelcomeEmailWithAttachment(clientUser.getEmail(), content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -814,7 +814,7 @@ public class ClientController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //		springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendInviteAcceptEmailWithAttachment(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), organisationName , content);
+			springBootEmail.sendInviteAcceptEmailWithAttachment(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), organisationName , content, configProperties.getBaseURL());
 			clientService.checkClientUserActiveStatus(clientUser);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
@@ -858,7 +858,7 @@ public class ClientController {
 		SpringBootEmail springBootEmail = new SpringBootEmail();
 //			springBootEmail.sendEmail(email);
 		try {
-			springBootEmail.sendInviteAcceptEmailWithAttachment(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), organisationName , content);
+			springBootEmail.sendInviteAcceptEmailWithAttachment(clientUser.getEmail(), clientUser.getFirstName()+" "+clientUser.getLastName(), organisationName , content, configProperties.getBaseURL());
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
