@@ -307,13 +307,14 @@ public class VendorService {
 //	        }
 	        	mappedObj.put("vendorOrganisationId", 0);
 	        if(vendorOrg.getCity() != null ) {
-	        	try {
-	        		Integer city = Integer.parseInt(vendorOrg.getCity());
-	        		ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
-	        		mappedObj.put("city",serviceCity.getCityName());
-	        	} catch(Exception exp) {
-	        		mappedObj.put("city","");
-	        	}
+				mappedObj.put("city",vendorOrg.getCity());
+	        	// try {
+	        	// 	Integer city = Integer.parseInt(vendorOrg.getCity());
+	        	// 	ServiceCities serviceCity = servicesCitiesRepository.findOneById(city);
+	        	// 	mappedObj.put("city",serviceCity.getCityName());
+	        	// } catch(Exception exp) {
+	        	// 	mappedObj.put("city","");
+	        	// }
 	        	
 	        } else {
 	        	mappedObj.put("city","");
@@ -1087,19 +1088,31 @@ public class VendorService {
 		return vendorPortfolioRepository.save(vendorPortfolio);
 	}
 	
-	public List<VendorInsurance> getVendorInsurance(Integer vendorOrganisationId) {
+//	public List<VendorInsurance> getVendorInsurance(Integer vendorOrganisationId) {
 		// TODO Auto-generated method stub
-		List<VendorInsurance> vendorinsurances =  vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisationId);
-		
-		List<VendorInsurance> singleInsurance = new ArrayList();
-		if(vendorinsurances != null && vendorinsurances.size() > 0) {
-			if(vendorinsurances.get(0).getInsuranceAvailability() == Constants.Availability.AVAILABLE.getValue()) {
-				singleInsurance.add(vendorinsurances.get(0));	
-			}
-		}
-		
-		return singleInsurance;
-	}
+//		List<VendorInsurance> vendorinsurances =  vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisationId);
+//		
+//		List<VendorInsurance> singleInsurance = new ArrayList();
+//		if(vendorinsurances != null && vendorinsurances.size() > 0) {
+//			if(vendorinsurances.get(0).getInsuranceAvailability() == Constants.Availability.AVAILABLE.getValue()) {
+//				singleInsurance.add(vendorinsurances.get(0));	
+//			}
+//		}
+//		
+//		return singleInsurance;
+//	}
+
+        public List<VendorInsurance> getVendorInsurance(Integer vendorOrganisationId) {
+          // TODO Auto-generated method stub
+          List<VendorInsurance> vendorinsurances =  vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisationId);
+        
+          List<VendorInsurance> singleInsurance = new ArrayList();
+            if(vendorinsurances != null && vendorinsurances.size() > 0) {
+              singleInsurance.add(vendorinsurances.get(0));
+            }
+        
+          return singleInsurance;
+        }
 
 	public VendorInsurance addVendorInsurance(VendorInsurance vendorInsurance) {
 		// TODO Auto-generated method stub
@@ -1720,6 +1733,8 @@ public class VendorService {
 	}
 	
 	public Object updateVendorInsuranceAndAllServices(Map<String, Object> vendorOrganisationData) {
+
+               System.out.println(">>>>> Vendor Organisation Values: " + vendorOrganisationData.toString());
 		// TODO Auto-generated method stub
 		try {
 			Integer vendorOrganisationId = Integer.parseInt(String.valueOf(vendorOrganisationData.get("vendorOrganisationId"))); 
@@ -1728,6 +1743,8 @@ public class VendorService {
 			final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 			VendorInsurance vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
 			
+                       System.out.println(">>>>> Vendor Insurance Values: " + vendorInsurance.toString()); 
+
 			String services = String.valueOf(vendorOrganisationData.get("services")); // string - abc,abc,acbc
 			String licenses = String.valueOf(vendorOrganisationData.get("licenses")); // string - abc,abc,acbc
 			String products = String.valueOf(vendorOrganisationData.get("products")); // string - abc,abc,acbc
@@ -1760,28 +1777,26 @@ public class VendorService {
 				List<VendorInsurance> existingVendorInsurances = vendorInsuranceRepository.findByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
 				if(existingVendorInsurances.size() > 0) {
 					VendorInsurance singleInsurance = existingVendorInsurances.get(0);
+					
+					System.out.println(">>>>>> Bonded Value: " + vendorInsurance.getInsuranceBonded());
+                                        singleInsurance.setInsuranceBonded(vendorInsurance.getInsuranceBonded());
+					singleInsurance.setInsuranceNumber(vendorInsurance.getInsuranceNumber());
+
 					if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.AVAILABLE.getValue()) {
 						singleInsurance.setInsuranceAvailability(vendorInsurance.getInsuranceAvailability());
-						singleInsurance.setInsuranceBonded(vendorInsurance.getInsuranceBonded());
 						singleInsurance.setInsuranceCompany(vendorInsurance.getInsuranceCompany());
 						singleInsurance.setInsuranceLiability(vendorInsurance.getInsuranceLiability());;
-						singleInsurance.setInsuranceNumber(vendorInsurance.getInsuranceNumber());
 						singleInsurance.setInsurancePolicyExpiryDate(vendorInsurance.getInsurancePolicyExpiryDate());
-						
-						vendorInsuranceRepository.save(singleInsurance);
-					} else if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {
-//						vendorInsuranceRepository.deleteByVendorOrganisationId(vendorOrganisation.getVendorOrganisationId());
-						
+						//vendorInsuranceRepository.save(singleInsurance);
+					} else if(vendorInsurance != null && vendorInsurance.getInsuranceAvailability() == Constants.InsuranceBondAvailability.NOT_AVAILABLE.getValue()) {						
 						//instead of delete - change empty of insurance data
 						singleInsurance.setInsuranceAvailability(vendorInsurance.getInsuranceAvailability());
-						singleInsurance.setInsuranceBonded(vendorInsurance.getInsuranceBonded());
 						singleInsurance.setInsuranceCompany("");
 						singleInsurance.setInsuranceLiability("");
-						singleInsurance.setInsuranceNumber(vendorInsurance.getInsuranceNumber());
-						singleInsurance.setInsurancePolicyExpiryDate("");
-						
-						vendorInsuranceRepository.save(singleInsurance);
+						singleInsurance.setInsurancePolicyExpiryDate("");						
+						//vendorInsuranceRepository.save(singleInsurance);
 					}
+                                        vendorInsuranceRepository.save(singleInsurance);
 					
 				} else {
 					if(vendorInsurance != null ) {

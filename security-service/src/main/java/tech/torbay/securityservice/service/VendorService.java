@@ -145,10 +145,12 @@ public class VendorService {
 			VendorInsurance vendorInsurance = null;
 			try {
 			vendorInsurance = mapper.convertValue(vendorOrganisationData.get("insurance"), VendorInsurance.class);
+			System.out.println("Vendor Registration Insurnce Details** :" + vendorInsurance.toString());
 			} catch(Exception exp) {
 				exp.printStackTrace();
 			}
 			
+
 			String serviceCities = String.valueOf(vendorOrganisationData.get("serviceCities")); // ids - 1,2,3
 			String services = String.valueOf(vendorOrganisationData.get("services")); // string - abc,abc,acbc
 			String licenses = String.valueOf(vendorOrganisationData.get("licenses")); // string - abc,abc,acbc

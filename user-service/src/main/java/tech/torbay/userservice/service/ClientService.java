@@ -348,6 +348,7 @@ public class ClientService {
 		
 		final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
 		ClientOrganisation clientOrg = mapper.convertValue(requestData.get("clientOrganisation"), ClientOrganisation.class);
+		System.out.println("Condo contact details to update: " + clientOrg.toString());
 		Integer modifiedByUserId = Integer.parseInt(String.valueOf(requestData.get("modifiedByUserId")));
 		
 		ClientOrganisation clientOrganisation =  clientOrganisationRepository.findByClientOrganisationId(clientOrg.getClientOrganisationId());
@@ -355,6 +356,8 @@ public class ClientService {
 		clientOrg.setDeleteStatus(clientOrganisation.getDeleteStatus());
 		clientOrg.setUserType(Constants.UserType.CLIENT.getValue());
 		ClientOrganisation clientOrgObj = clientOrganisationRepository.save(clientOrg);
+		System.out.println("Condo contact details to after updation: " + clientOrgObj.toString());
+
 		if(clientOrgObj != null) {
 			SendAccountUpdateAlert(Invalid.ID.getValue(), clientOrg.getClientOrganisationId(), modifiedByUserId, NotificationType.CLIENT_ORGANISATION_UPDATE.getValue());
 		}
